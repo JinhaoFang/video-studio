@@ -1,8 +1,9 @@
 # 不进 git 的内容：依赖与构建产物、本机参考资料、派发记录（.codex-runs）、
 # 第三方技能（按 skills-lock.json 和 DispatchDock 安装器重装；只有本仓库自有的 .claude/skills/studio-* 进 git）、
-# 媒体与渲染结果（public/episodes、out）。
+# 媒体与渲染结果（public/episodes、out）、Remotion 打包输出（build）。
 node_modules
 dist
+build
 .DS_Store
 .env
 references
