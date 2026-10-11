@@ -38,15 +38,27 @@ test("comments allow separate header blocks, shebangs, no headers and tool direc
     "bare.mjs": "export {};\n",
     "directives.ts": [
       "export {};",
-      "// eslint-disable no-unused-vars",
+      "/* eslint-disable no-unused-vars */",
+      "/* eslint-enable no-unused-vars */",
       "// eslint-disable-next-line no-unused-vars",
       "const value = 1; // eslint-disable-line no-unused-vars",
+      "const inline = 1; /* eslint-disable-line no-unused-vars */",
       "/* eslint-disable-next-line no-unused-vars */",
       "const other = 2;",
       "// @ts-expect-error Reason",
       "const result: string = 3;",
       "/* @ts-expect-error Reason */",
       "const last: string = 4;",
+      "// @ts-expect-error: Reason",
+      "const colon: string = 5;",
+      "/// @ts-expect-error: Reason",
+      "const triple: string = 6;",
+      "/* @ts-expect-error: Reason */",
+      "const block: string = 7;",
+      "/** @ts-expect-error: Reason */",
+      "const jsdoc: string = 8;",
+      "/*\n * @ts-expect-error: Reason */",
+      "const multiline: string = 9;",
     ].join("\n"),
     "view.tsx":
       "const view = <div>{/* eslint-disable-next-line rule */}</div>;\n",
@@ -105,6 +117,30 @@ for (const [name, path, code, line] of [
   ],
   ["unsupported directive", "sample.ts", "export {};\n// @ts-ignore\n", 2],
   [
+    "line eslint-disable is not an ESLint directive",
+    "sample.ts",
+    "export {};\n// eslint-disable explanation\n",
+    2,
+  ],
+  [
+    "invalid ESLint directive suffix",
+    "sample.ts",
+    "export {};\n// eslint-disable-next-lines rule\n",
+    2,
+  ],
+  [
+    "TypeScript directive before the last block line",
+    "sample.ts",
+    "export {};\n/* @ts-expect-error: Reason\n */\nconst value: string = 1;",
+    2,
+  ],
+  [
+    "multiline eslint-disable-line is not applied by ESLint",
+    "sample.ts",
+    "export {};\n/* eslint-disable-line rule\n */\n",
+    2,
+  ],
+  [
     "eslint-enable directive",
     "sample.ts",
     "export {};\n// eslint-enable rule\n",
@@ -140,6 +176,18 @@ for (const [name, code] of [
     "dynamic template import",
     "const loaded = import(`../episodes/demo/index.ts`);",
   ],
+  [
+    "dynamic template import with fixed prefix",
+    "const loaded = import(`../episodes/${ep}/index.ts`);",
+  ],
+  [
+    "normalized dynamic template prefix",
+    "const loaded = import(`../src/../episodes/${ep}/index.ts`);",
+  ],
+  [
+    "triple-slash path reference",
+    '/// <reference path="../episodes/demo/index.ts" />\nexport {};',
+  ],
   ["require", 'const loaded = require("../episodes/demo/index.ts");'],
   ["import equals", 'import loaded = require("../episodes/demo/index.ts");'],
   ["import type", 'type Loaded = typeof import("../episodes/demo/index.ts");'],
@@ -162,6 +210,7 @@ for (const [name, code] of [
       result.stderr,
       /^tools\/sample\.ts:1 dependency-direction .+$/m,
     );
+    assert.equal(result.stderr.trim().split("\n").length, 2);
   });
 }
 
@@ -217,12 +266,17 @@ test("src forbids literal episode asset paths, including template segments", (co
       "const template = `episodes/${name}/image.png`;",
       "const tail = `${name}/public/episodes/image.png`;",
       'const view = <img src="episodes/demo/image.png" />;',
+      'const relative = "../episodes/demo/image.png";',
+      'const nested = "other/episodes/demo/image.png";',
+      'const url = new URL("../episodes/demo/image.png", import.meta.url);',
+      'const resolved = require.resolve("../episodes/demo/index.ts");',
+      'const metaResolved = import.meta.resolve("../episodes/demo/index.ts");',
     ].join("\n"),
   });
   const result = run(root, "dependencies");
   assert.equal(result.status, 1);
-  assert.equal(result.stderr.trim().split("\n").length, 5);
-  for (const line of [2, 3, 4, 5, 6]) {
+  assert.equal(result.stderr.trim().split("\n").length, 10);
+  for (const line of [2, 3, 4, 5, 6, 7, 8, 9, 10, 11]) {
     assert.match(
       result.stderr,
       new RegExp(`^src/sample\\.tsx:${line} episode-path .+$`, "m"),
@@ -238,13 +292,19 @@ test("dependencies allow method modules, tool path strings and product-layer imp
       'export * from "./kit/value.ts";',
       'const loaded = import("./kit/value.ts");',
       'const required = require("./kit/value.ts");',
-      'const ordinary = "other/episodes/demo/file.png";',
+      'const ordinary = "my-episodes/demo/file.png";',
+      'const nested = "other/my-episodes/demo/file.png";',
+      "const loadedAtRuntime = import(moduleName);",
+      "const template = import(`../${directory}/index.ts`);",
     ].join("\n"),
     "tools/sample.ts": [
       'import { value } from "../src/kit/value.ts";',
       'const path = "episodes/demo/image.png";',
       'const publicPath = "/public/episodes/demo/image.png";',
       "const template = `episodes/${name}/image.png`;",
+      'const resolved = require.resolve("../episodes/demo/index.ts");',
+      'const metaResolved = import.meta.resolve("../episodes/demo/index.ts");',
+      'const mixedCase = import("../Episodes/demo/index.ts");',
     ].join("\n"),
     "episodes/demo/index.ts":
       'import "../../src/kit/value.ts"; import "../other/index.ts";',
@@ -252,6 +312,23 @@ test("dependencies allow method modules, tool path strings and product-layer imp
   });
   const result = run(root, "dependencies");
   assert.equal(result.status, 0, result.stderr);
+});
+
+test("dependencies deduplicate modules while retaining separate asset diagnostics on the same line", (context) => {
+  const root = fixture(context, {
+    ...episode,
+    "src/sample.ts": [
+      'import "episodes/demo/index.ts"; const asset = "episodes/demo/image.png";',
+      "const loaded = import(`../episodes/${ep}/index.ts`);",
+    ].join("\n"),
+  });
+  const result = run(root, "dependencies");
+  assert.equal(result.status, 1);
+  const lines = result.stderr.trim().split("\n");
+  assert.equal(lines.length, 3);
+  assert.match(lines[0], /^src\/sample\.ts:1 dependency-direction .+$/);
+  assert.match(lines[1], /^src\/sample\.ts:1 episode-path .+$/);
+  assert.match(lines[2], /^src\/sample\.ts:2 dependency-direction .+$/);
 });
 
 test("guardrails check tracked ignored paths and skip ignored untracked files", (context) => {

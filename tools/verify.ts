@@ -37,7 +37,12 @@ const tsc = join(
 );
 
 if (files.length > 0) {
-  run(`eslint (${files.length} files)`, [eslint, "--", ...files]);
+  run(`eslint (${files.length} files)`, [
+    eslint,
+    "--no-ignore",
+    "--",
+    ...files,
+  ]);
 }
 run("tsc (browser)", [tsc, "--project", "tsconfig.json"]);
 run("tsc (Node)", [tsc, "--project", "tools/tsconfig.json"]);

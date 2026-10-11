@@ -1,6 +1,6 @@
 /**
  * Shared verification input: tracked and non-ignored untracked code files.
- * Import listCodeFiles(root) from later guardrails; returned paths are relative
+ * Import listCodeFiles(root) in verification and guardrails; paths are relative
  * to root, sorted, unique, and limited to existing code files. Git alone decides
  * whether a directory is included, even when its name matches an ignored path.
  */

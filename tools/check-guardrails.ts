@@ -2,8 +2,10 @@
  * Run `node tools/check-guardrails.ts comments|dependencies [repository-root]`.
  * Check the shared Git file set and print `file:line rule explanation` on failure.
  * TypeScript syntax trees protect literal text from comment scanning and resolve
- * dependencies with the nearest repository tsconfig. Computed module names and
- * strings assembled at runtime are intentionally outside this static check.
+ * dependencies with the nearest repository tsconfig. Static template prefixes
+ * and triple-slash path references are checked. tools/ require.resolve and
+ * import.meta.resolve calls, module names assembled at runtime, and paths with
+ * different casing are intentionally outside this static check.
  */
 import { readFileSync } from "node:fs";
 import { dirname, isAbsolute, relative, resolve, sep } from "node:path";
@@ -94,11 +96,25 @@ const checkComments = (source: ts.SourceFile): void => {
         ? text.slice(2)
         : text.slice(2, -2)
     ).trim();
-    if (
-      /^(?:eslint-disable(?:-next-line|-line)?|@ts-expect-error)(?:\s|$)/.test(
-        content,
-      )
-    ) {
+    const singleLine = token === ts.SyntaxKind.SingleLineCommentTrivia;
+    const eslintDirectiveSyntax = singleLine
+      ? /^eslint-disable-(?:next-)?line(?:\s|$)/.test(content)
+      : /^eslint-(?:disable(?:-next-line|-line)?|enable)(?:\s|$)/.test(content);
+    const eslintDirective =
+      eslintDirectiveSyntax &&
+      !(
+        /^eslint-disable-line(?:\s|$)/.test(content) &&
+        /[\r\n\u2028\u2029]/.test(text)
+      );
+    const tsDirective = singleLine
+      ? /^\/\/\/?\s*@ts-expect-error/.test(text)
+      : /^(?:\/|\*)*\s*@ts-expect-error/.test(
+          text
+            .split(/\r\n|[\r\n\u2028\u2029]/)
+            .at(-1)!
+            .trimStart(),
+        );
+    if (eslintDirective || tsDirective) {
       continue;
     }
     report(
@@ -183,20 +199,34 @@ const checkDependencies = (source: ts.SourceFile, path: string): void => {
     return;
   }
   const options = compilerOptions(source.fileName);
+  const reportedPositions = new Set<number>();
   const checkModule = (node: ts.Node | undefined): void => {
+    const literal = node && ts.isTemplateExpression(node) ? node.head : node;
     if (
-      node &&
-      ts.isStringLiteralLike(node) &&
-      pointsToEpisodes(node.text, source, options)
+      literal &&
+      (ts.isStringLiteralLike(literal) || ts.isTemplateHead(literal)) &&
+      pointsToEpisodes(literal.text, source, options)
     ) {
+      const position = literal.getStart(source);
+      reportedPositions.add(position);
       report(
         source,
-        node.getStart(source),
+        position,
         "dependency-direction",
-        `Method-layer modules cannot reference episodes/: ${node.text}`,
+        `Method-layer modules cannot reference episodes/: ${literal.text}`,
       );
     }
   };
+  for (const reference of source.referencedFiles) {
+    if (pointsToEpisodes(reference.fileName, source, options)) {
+      report(
+        source,
+        reference.pos,
+        "dependency-direction",
+        `Method-layer modules cannot reference episodes/: ${reference.fileName}`,
+      );
+    }
+  }
   visit(source, (node) => {
     if (ts.isImportDeclaration(node) || ts.isExportDeclaration(node)) {
       checkModule(node.moduleSpecifier);
@@ -224,8 +254,8 @@ const checkDependencies = (source: ts.SourceFile, path: string): void => {
         ts.isTemplateHead(node) ||
         ts.isTemplateMiddle(node) ||
         ts.isTemplateTail(node)) &&
-      (node.text.startsWith("episodes/") ||
-        node.text.includes("public/episodes/"))
+      /(?:^|\/)episodes\//.test(node.text) &&
+      !reportedPositions.has(node.getStart(source))
     ) {
       report(
         source,

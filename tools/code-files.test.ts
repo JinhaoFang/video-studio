@@ -5,11 +5,29 @@
  */
 import assert from "node:assert/strict";
 import { execFileSync } from "node:child_process";
-import { mkdirSync, mkdtempSync, rmSync, writeFileSync } from "node:fs";
+import {
+  mkdirSync,
+  mkdtempSync,
+  readFileSync,
+  rmSync,
+  writeFileSync,
+} from "node:fs";
 import { tmpdir } from "node:os";
 import { dirname, join } from "node:path";
 import { test } from "node:test";
 import { listCodeFiles } from "./code-files.ts";
+
+test("file-scope header documents its current verification and guardrail consumers", () => {
+  const header = readFileSync(
+    new URL("./code-files.ts", import.meta.url),
+    "utf8",
+  ).split("*/", 1)[0];
+  assert.match(
+    header,
+    /Import listCodeFiles\(root\) in verification and guardrails/,
+  );
+  assert.doesNotMatch(header, /later guardrails/);
+});
 
 test("Git alone controls tracked and non-ignored untracked code paths", (context) => {
   const root = mkdtempSync(join(tmpdir(), "studio-code-files-"));

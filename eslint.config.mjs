@@ -21,7 +21,17 @@ const nodeGlobals = Object.fromEntries(
 
 export default [
   {
-    ignores: ["!**/node_modules/", "!**/node_modules/**"],
+    ignores: [
+      "**/node_modules/**",
+      "**/dist/**",
+      "**/build/**",
+      "**/out/**",
+      "references/**",
+      ".codex-runs/**",
+      ".agents/**",
+      ".claude/skills/*/**",
+      "!.claude/skills/studio-*/**",
+    ],
   },
   ...config
     .filter((entry) => !entry.ignores)
