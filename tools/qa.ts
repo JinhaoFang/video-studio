@@ -5,12 +5,14 @@
  * and a nonzero exit status, without writing to GitHub or changing source media.
  */
 import { framesUsage, runFrames } from "./qa-frames.ts";
+import { loudnessUsage, runLoudness } from "./qa-loudness.ts";
 
 const commands: Record<
   string,
   { usage: string; run: (args: string[]) => void }
 > = {
   frames: { usage: framesUsage, run: runFrames },
+  loudness: { usage: loudnessUsage, run: runLoudness },
 };
 
 const help = (): string =>
