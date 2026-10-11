@@ -5,7 +5,15 @@
  */
 import assert from "node:assert/strict";
 import { test } from "node:test";
-import { compareTimes, formatTimecode, parseTimecode } from "./qa-time.ts";
+import {
+  addTime,
+  subtractTime,
+  multiplyTime,
+  decimalTime,
+  compareTimes,
+  formatTimecode,
+  parseTimecode,
+} from "./qa-time.ts";
 
 test("QA time parsing accepts seconds, minutes, and hours without losing precision", () => {
   for (const input of ["72.5", "01:12.5", "00:01:12.500"]) {
@@ -71,7 +79,7 @@ test("QA time parsing rejects illegal syntax and out-of-range colon fields with 
       () => parseTimecode(input),
       (error: unknown) => {
         assert.ok(error instanceof Error);
-        assert.match(error.message, /Invalid time/);
+        assert.match(error.message, /时间无效/);
         assert.match(error.message, /12\.5/);
         assert.match(error.message, /01:12\.5/);
         assert.match(error.message, /00:01:12\.500/);
@@ -79,4 +87,21 @@ test("QA time parsing rejects illegal syntax and out-of-range colon fields with 
       },
     );
   }
+});
+
+test("exact arithmetic retains signed sub-millisecond offsets and formats negative times", () => {
+  const boundary = addTime(
+    parseTimecode("0.099999999999999999"),
+    decimalTime("0.000000000000000001"),
+  );
+  assert.equal(compareTimes(boundary, parseTimecode("0.1")), 0);
+  assert.equal(
+    formatTimecode(subtractTime(parseTimecode("0.1"), parseTimecode("0.2"))),
+    "-00:00.100",
+  );
+  assert.equal(formatTimecode(decimalTime("-59.9995")), "-01:00.000");
+  assert.equal(
+    compareTimes(multiplyTime(parseTimecode("3"), 1n, 3n), parseTimecode("1")),
+    0,
+  );
 });

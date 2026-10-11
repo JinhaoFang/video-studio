@@ -12,19 +12,16 @@
  * Run with `pnpm verify` or `node --test tools/qa-loudness.test.ts`.
  */
 import assert from "node:assert/strict";
-import { execFileSync, spawnSync } from "node:child_process";
 import {
-  mkdtempSync,
-  readFileSync,
-  readdirSync,
-  rmSync,
-  symlinkSync,
-  writeFileSync,
-} from "node:fs";
-import { tmpdir } from "node:os";
+  commandOutput as execFileSync,
+  runCommand as spawnSync,
+  temporaryDirectory as fixture,
+  media,
+  tone,
+} from "./test-support.ts";
+import { readFileSync, readdirSync, symlinkSync, writeFileSync } from "node:fs";
 import { join, resolve } from "node:path";
 import { test } from "node:test";
-import type { TestContext } from "node:test";
 
 type Report = {
   input: string;
@@ -44,12 +41,6 @@ type Report = {
 
 const cli = resolve(import.meta.dirname, "qa.ts");
 
-const fixture = (context: TestContext): string => {
-  const root = mkdtempSync(join(tmpdir(), "studio-loudness-"));
-  context.after(() => rmSync(root, { recursive: true, force: true }));
-  return root;
-};
-
 const run = (root: string, args: string[], path = process.env.PATH) =>
   spawnSync(process.execPath, [cli, "loudness", ...args], {
     cwd: root,
@@ -57,29 +48,6 @@ const run = (root: string, args: string[], path = process.env.PATH) =>
     env: { ...process.env, PATH: path },
     timeout: 30000,
   });
-
-const media = (args: string[]): void => {
-  execFileSync(
-    "ffmpeg",
-    ["-hide_banner", "-loglevel", "error", "-nostdin", "-y", ...args],
-    { timeout: 30000 },
-  );
-};
-
-const tone = (root: string, frequency = 1000, amplitude = 0.1): string => {
-  const path = join(root, `tone ${frequency} ${amplitude} ' $ ;.wav`);
-  const expression = `${amplitude}*sin(2*PI*${frequency}*t)`;
-  media([
-    "-f",
-    "lavfi",
-    "-i",
-    `aevalsrc=${expression}|${expression}:s=48000:d=5:c=stereo`,
-    "-c:a",
-    "pcm_f32le",
-    path,
-  ]);
-  return path;
-};
 
 const reportFrom = (stdout: string): { path: string; report: Report } => {
   const path = stdout.trim().split("\n").at(-1)!;
@@ -156,9 +124,9 @@ test("stereo sine Integrated and True Peak match BS.1770 theory within 0.1", (co
     );
     assert.match(
       result.stdout,
-      /Integrated: .* LUFS\nLRA: .* LU\nTrue Peak: .* dBTP/,
+      /整片响度： .* LUFS\nLRA: .* LU\n真峰值： .* dBTP/,
     );
-    assert.match(result.stdout, /Result: REPORT ONLY/);
+    assert.match(result.stdout, /结果： 仅报告/);
     writeFileSync(path, "overwrite me");
     const again = run(root, [input]);
     assert.equal(again.status, 0, again.stderr);
@@ -260,13 +228,13 @@ test("optional thresholds pass inclusively or fail independently with reports an
     if (item.integrated !== null) {
       assert.match(
         result.stdout,
-        new RegExp(`Integrated check: ${item.integrated ? "PASS" : "FAIL"}`),
+        new RegExp(`整片响度检查： ${item.integrated ? "通过" : "未通过"}`),
       );
     }
     if (item.truePeak !== null) {
       assert.match(
         result.stdout,
-        new RegExp(`True Peak check: ${item.truePeak ? "PASS" : "FAIL"}`),
+        new RegExp(`真峰值检查： ${item.truePeak ? "通过" : "未通过"}`),
       );
     }
   }
@@ -300,8 +268,8 @@ test("video audio is measured and video without audio fails clearly without a re
   const silentVideo = join(root, "no audio.mkv");
   media(["-i", video, "-map", "0:v:0", "-c:v", "copy", silentVideo]);
   const failure = run(root, [silentVideo, "--out", "should not exist"]);
-  assert.equal(failure.status, 1);
-  assert.match(failure.stderr, /No audio stream/);
+  assert.equal(failure.status, 2);
+  assert.match(failure.stderr, /没有音轨/);
   assert.ok(!readdirSync(root).includes("should not exist"));
 });
 
@@ -347,14 +315,14 @@ test("invalid arguments are rejected before measuring or creating output", (cont
     [input, "--max-true-peak", "-1", "--max-true-peak", "-2"],
   ]) {
     const result = run(root, args);
-    assert.equal(result.status, 1, JSON.stringify(args));
-    assert.match(result.stderr, /qa:/);
+    assert.equal(result.status, 2, JSON.stringify(args));
+    assert.match(result.stderr, /^出错：/);
   }
   assert.equal(readdirSync(root).length, 1);
   const help = run(root, ["--help"]);
   assert.equal(help.status, 0);
   assert.match(help.stdout, /pnpm qa loudness/);
-  assert.match(help.stdout, /No default thresholds/);
+  assert.match(help.stdout, /不设默认阈值/);
 });
 
 test("missing ffmpeg and ffprobe explain how to install them", (context) => {
@@ -362,13 +330,13 @@ test("missing ffmpeg and ffprobe explain how to install them", (context) => {
   const input = tone(root);
   const isolated = fixture(context);
   const noFfprobe = run(root, [input], isolated);
-  assert.equal(noFfprobe.status, 1);
-  assert.match(noFfprobe.stderr, /ffprobe is not installed.*Install ffmpeg/);
+  assert.equal(noFfprobe.status, 2);
+  assert.match(noFfprobe.stderr, /ffprobe .*请安装 ffmpeg/);
   const ffprobe = execFileSync("which", ["ffprobe"], {
     encoding: "utf8",
   }).trim();
   symlinkSync(ffprobe, join(isolated, "ffprobe"));
   const noFfmpeg = run(root, [input], isolated);
-  assert.equal(noFfmpeg.status, 1);
-  assert.match(noFfmpeg.stderr, /ffmpeg is not installed.*Install ffmpeg/);
+  assert.equal(noFfmpeg.status, 2);
+  assert.match(noFfmpeg.stderr, /ffmpeg .*请安装 ffmpeg/);
 });

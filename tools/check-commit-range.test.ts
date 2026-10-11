@@ -5,9 +5,8 @@
  * Run `node --test tools/check-commit-range.test.ts` or `pnpm verify`.
  */
 import assert from "node:assert/strict";
-import { execFileSync, spawnSync } from "node:child_process";
-import { mkdtempSync, rmSync, writeFileSync } from "node:fs";
-import { tmpdir } from "node:os";
+import { runCommand as spawnSync, gitRepository } from "./test-support.ts";
+import { writeFileSync } from "node:fs";
 import { join } from "node:path";
 import { test } from "node:test";
 import type { TestContext } from "node:test";
@@ -17,25 +16,7 @@ const valid =
   "feat(tools): 检查范围\n\n- 验证提交信息。\n\nRefs: #10\nRole: engineering";
 
 const fixture = (context: TestContext) => {
-  const root = mkdtempSync(join(tmpdir(), "studio-commit-range-"));
-  context.after(() => rmSync(root, { recursive: true, force: true }));
-  const git = (args: string[]): string =>
-    execFileSync(
-      "git",
-      [
-        "-c",
-        `core.hooksPath=${join(root, "no-hooks")}`,
-        "-c",
-        "commit.gpgSign=false",
-        "-c",
-        "user.name=Range Test",
-        "-c",
-        "user.email=range-test@example.com",
-        ...args,
-      ],
-      { cwd: root, encoding: "utf8", stdio: "pipe" },
-    ).trim();
-  git(["init", "--quiet", "--initial-branch=main"]);
+  const { root, git } = gitRepository(context);
   let serial = 0;
   const commit = (message: string): string => {
     const path = `file-${serial++}.txt`;
@@ -103,8 +84,9 @@ test("uses the supplied source branch in detached HEAD, never the current branch
   assert.equal(spec.status, 1, spec.output);
   assert.match(spec.stderr, /规则 g：/);
   const ticket = run(["origin/main", "ticket/10-ci"]);
-  assert.equal(ticket.status, 0, ticket.output);
-  assert.match(ticket.stdout, /分支 ticket\/10-ci/);
+  assert.equal(ticket.status, 1, ticket.output);
+  assert.match(ticket.stderr, /规则 g：/);
+  assert.match(ticket.stderr, /分支 ticket\/10-ci/);
 });
 
 test("an empty range succeeds without checking the invalid baseline", (context) => {
@@ -123,13 +105,13 @@ test("rejects missing or extra arguments and unresolved base revisions", (contex
     ["origin/main", "spec/1", "extra"],
   ]) {
     const result = run(args);
-    assert.equal(result.status, 1, result.output);
+    assert.equal(result.status, 2, result.output);
     assert.match(result.stderr, /用法：pnpm check:commits/);
   }
   for (const base of ["missing-ref", "--all", "origin/main..HEAD"]) {
     const result = run([base, "spec/1"]);
-    assert.equal(result.status, 1, result.output);
-    assert.match(result.stderr, /无法检查提交范围/);
+    assert.equal(result.status, 2, result.output);
+    assert.match(result.stderr, /^出错：/);
     assert.doesNotMatch(result.stdout, /检查通过/);
   }
 });

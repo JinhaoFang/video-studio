@@ -19,7 +19,7 @@ export const decimalTime = (value: string): Time => {
 export const parseTimecode = (input: string): Time => {
   const invalid = (): never => {
     throw new Error(
-      `Invalid time "${input}". Use seconds (12.5), mm:ss (01:12.5), or hh:mm:ss (00:01:12.500); no negatives or frame numbers, and colon-separated minutes/seconds must be < 60.`,
+      `时间无效「${input}」：请用秒数（12.5）、分:秒（01:12.5）或时:分:秒（00:01:12.500）；不接受负数和帧号，冒号分隔的分、秒必须小于 60。`,
     );
   };
   if (
@@ -52,10 +52,29 @@ export const compareTimes = (a: Time, b: Time): number => {
 };
 
 export const formatTimecode = (time: Time): string => {
+  const sign = time.numerator < 0n ? "-" : "";
+  const absolute = time.numerator < 0n ? -time.numerator : time.numerator;
   const milliseconds =
-    (time.numerator * 2000n + time.denominator) / (time.denominator * 2n);
+    (absolute * 2000n + time.denominator) / (time.denominator * 2n);
   const minutes = (milliseconds / 60000n).toString().padStart(2, "0");
   const seconds = ((milliseconds / 1000n) % 60n).toString().padStart(2, "0");
   const fraction = (milliseconds % 1000n).toString().padStart(3, "0");
-  return `${minutes}:${seconds}.${fraction}`;
+  return `${sign}${minutes}:${seconds}.${fraction}`;
 };
+
+export const addTime = (a: Time, b: Time): Time => ({
+  numerator: a.numerator * b.denominator + b.numerator * a.denominator,
+  denominator: a.denominator * b.denominator,
+});
+
+export const multiplyTime = (
+  time: Time,
+  numerator: bigint,
+  denominator = 1n,
+): Time => ({
+  numerator: time.numerator * numerator,
+  denominator: time.denominator * denominator,
+});
+
+export const subtractTime = (a: Time, b: Time): Time =>
+  addTime(a, multiplyTime(b, -1n));

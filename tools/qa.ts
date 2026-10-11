@@ -1,13 +1,14 @@
 /**
- * Run QA subcommands with `pnpm qa <command>`. Register later sheet, compare,
- * and loudness handlers in commands, with their usage strings and run(args).
- * Only implemented commands are advertised. Failures produce a concise error
- * and a nonzero exit status, without writing to GitHub or changing source media.
+ * Dispatch frames, sheet, compare and loudness with `pnpm qa <command>`.
+ * Add a usage string and run(args) handler to commands for future QA tools.
+ * Chinese help returns 0; check failures return 1; argument/runtime errors return 2.
  */
 import { framesUsage, runFrames } from "./qa-frames.ts";
 import { sheetUsage, runSheet } from "./qa-sheet.ts";
 import { compareUsage, runCompare } from "./qa-compare.ts";
 import { loudnessUsage, runLoudness } from "./qa-loudness.ts";
+
+import { reportError } from "./cli.ts";
 
 const commands: Record<
   string,
@@ -20,22 +21,19 @@ const commands: Record<
 };
 
 const help = (): string =>
-  `Usage: pnpm qa <command>\nAvailable commands:\n${Object.values(commands)
+  `用法：pnpm qa <子命令>\n可用子命令：\n${Object.values(commands)
     .map((command) => `  ${command.usage}`)
     .join("\n")}`;
 
 try {
   const [name, ...args] = process.argv.slice(2);
-  if (!name || name === "--help") {
+  if (name === "--help") {
     console.log(help());
-  } else if (!Object.hasOwn(commands, name)) {
-    throw new Error(`Unknown command: ${name}\n${help()}`);
+  } else if (!name || !Object.hasOwn(commands, name)) {
+    throw new Error(`${name ? `未知子命令：${name}` : "缺少子命令。"}\n${help()}`);
   } else {
     commands[name].run(args);
   }
 } catch (error) {
-  console.error(
-    `qa: ${error instanceof Error ? error.message : String(error)}`,
-  );
-  process.exitCode = 1;
+  reportError(error);
 }

@@ -4,13 +4,14 @@
  * All child processes receive argument arrays; --dry-run still reads GitHub but
  * only prints write arguments and the acceptance comment preview. Comment files
  * are temporary and removed after each run. No dependencies or shell evaluation.
- * TODO(design): confirm the CLI option names and frontier's plain-text grouping.
+ * Established in #4: CLI option names and frontier's plain-text grouping.
  */
 import { spawnSync } from "node:child_process";
 import { mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { parseArgs } from "node:util";
+import { reportError, usageError } from "../../../../tools/cli.ts";
 
 type Issue = { id: number; number: number; title: string; state: string };
 
@@ -37,10 +38,9 @@ const help: Record<string, string> = {
 const gh = (args: string[]): string => {
   const result = spawnSync("gh", args, { encoding: "utf8" });
   if (result.error || result.status !== 0) {
-    const detail = (result.error?.message || result.stderr || "未知错误")
-      .replace(/\s+/g, " ")
-      .trim();
-    throw new Error(`gh 调用失败（${args[0]}）：${detail}`);
+    throw new Error(
+      `gh 调用失败（${args[0]}），请检查 gh 安装、认证、仓库权限和网络。`,
+    );
   }
   return result.stdout.trim();
 };
@@ -77,12 +77,17 @@ const normalizeBlockers = (args: string[]): string[] => {
 
 const main = (): void => {
   const [command, ...input] = process.argv.slice(2);
-  if (!command) throw new Error(`缺少子命令，请运行 ${entry} --help`);
+  if (!command)
+    throw usageError("缺少子命令。", Object.values(help).join("\n\n"));
   if (command === "--help") {
-    console.log(Object.values(help).join("\n\n"));
+    console.log("用法：" + Object.values(help).join("\n\n"));
     return;
   }
-  if (!Object.hasOwn(help, command)) throw new Error(`未知子命令：${command}`);
+  if (!Object.hasOwn(help, command))
+    throw usageError(
+      `未知子命令：${command}`,
+      Object.values(help).join("\n\n"),
+    );
   const fields = ["commits", "verification", "design", "remaining"];
   const options: Record<
     string,
@@ -100,6 +105,10 @@ const main = (): void => {
       options[`${field}-file`] = { type: "string" };
     }
   }
+  if (input.includes("--help")) {
+    console.log(`用法：${help[command]}`);
+    return;
+  }
   let parsed;
   try {
     parsed = parseArgs({
@@ -107,10 +116,8 @@ const main = (): void => {
       options,
       allowPositionals: true,
     });
-  } catch (error) {
-    throw new Error(
-      `参数错误：${error instanceof Error ? error.message : String(error)}`,
-    );
+  } catch {
+    throw usageError("参数错误：请检查选项名称和值。", help[command]);
   }
   const { values, positionals } = parsed;
   if (values.help) {
@@ -118,7 +125,7 @@ const main = (): void => {
     return;
   }
   if (positionals.length !== (command === "link" ? 2 : 1)) {
-    throw new Error(`参数错误，请运行 ${entry} ${command} --help`);
+    throw usageError("缺少必需参数或有多余位置参数。", help[command]);
   }
   const numbers = positionals.map(issueNumber);
   const blockers = [
@@ -133,13 +140,16 @@ const main = (): void => {
   let body = "";
   if (command === "accept") {
     if (values.result !== "通过" && values.result !== "需返工") {
-      throw new Error("--result 必须是通过或需返工");
+      throw usageError("--result 必须是通过或需返工。", help[command]);
     }
     const contents = fields.map((field) => {
       const inline = values[field] as string | undefined;
       const file = values[`${field}-file`] as string | undefined;
       if ((inline === undefined) === (file === undefined)) {
-        throw new Error(`${field} 必须且只能提供文本或文件参数之一`);
+        throw usageError(
+          `${field} 必须且只能提供文本或文件参数之一。`,
+          help[command],
+        );
       }
       const content = file === undefined ? inline! : readFileSync(file, "utf8");
       if (!content.trim()) throw new Error(`${field} 不能为空`);
@@ -266,8 +276,5 @@ const main = (): void => {
 try {
   main();
 } catch (error) {
-  console.error(
-    `出错：${(error instanceof Error ? error.message : String(error)).replace(/\s+/g, " ")}`,
-  );
-  process.exitCode = 1;
+  reportError(error);
 }

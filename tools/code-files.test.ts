@@ -4,15 +4,11 @@
  * not enter verification. Run with `node --test tools/code-files.test.ts`.
  */
 import assert from "node:assert/strict";
-import { execFileSync } from "node:child_process";
 import {
-  mkdirSync,
-  mkdtempSync,
-  readFileSync,
-  rmSync,
-  writeFileSync,
-} from "node:fs";
-import { tmpdir } from "node:os";
+  commandOutput as execFileSync,
+  gitRepository,
+} from "./test-support.ts";
+import { mkdirSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { test } from "node:test";
 import { listCodeFiles } from "./code-files.ts";
@@ -30,9 +26,7 @@ test("file-scope header documents its current verification and guardrail consume
 });
 
 test("Git alone controls tracked and non-ignored untracked code paths", (context) => {
-  const root = mkdtempSync(join(tmpdir(), "studio-code-files-"));
-  context.after(() => rmSync(root, { recursive: true, force: true }));
-  execFileSync("git", ["init", "--quiet"], { cwd: root });
+  const { root } = gitRepository(context);
   writeFileSync(
     join(root, ".gitignore"),
     "build\nreferences\nnode_modules\nout\ndist\n.codex-runs\n.agents\n.claude/\n",

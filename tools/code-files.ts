@@ -12,7 +12,7 @@ export const listCodeFiles = (root: string = process.cwd()): string[] => {
   const paths = execFileSync(
     "git",
     ["ls-files", "--cached", "--others", "--exclude-standard", "-z"],
-    { cwd: root, encoding: "utf8" },
+    { cwd: root, encoding: "utf8", stdio: "pipe" },
   ).split("\0");
 
   return [...new Set(paths)]

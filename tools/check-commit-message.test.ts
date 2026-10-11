@@ -21,6 +21,24 @@ const cases: {
   rules: CommitViolation["rule"][];
   diagnostic?: RegExp;
 }[] = [
+  {
+    name: "g allows refs on ticket",
+    message: valid,
+    branch: "ticket/12-review-rework",
+    rules: [],
+  },
+  {
+    name: "g rejects missing refs on ticket",
+    message: valid.replace("Refs: #6\n", ""),
+    branch: "ticket/12-review-rework",
+    rules: ["g"],
+  },
+  {
+    name: "g matches ticket slash only",
+    message: valid.replace("Refs: #6\n", ""),
+    branch: "ticket-other",
+    rules: [],
+  },
   { name: "all required fields on spec", message: valid, rules: [] },
   ...["feat", "fix", "docs", "refactor", "test", "build", "chore"].map(
     (type) => ({

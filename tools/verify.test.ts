@@ -5,17 +5,13 @@
  * Run with `node --test tools/verify.test.ts` or `pnpm verify`.
  */
 import assert from "node:assert/strict";
-import { execFileSync, spawnSync } from "node:child_process";
 import {
-  copyFileSync,
-  mkdirSync,
-  mkdtempSync,
-  rmSync,
-  symlinkSync,
-  writeFileSync,
-} from "node:fs";
+  commandOutput as execFileSync,
+  runCommand as spawnSync,
+  gitRepository,
+} from "./test-support.ts";
+import { copyFileSync, mkdirSync, symlinkSync, writeFileSync } from "node:fs";
 import { createRequire } from "node:module";
-import { tmpdir } from "node:os";
 import { dirname, join, resolve } from "node:path";
 import { test } from "node:test";
 import type { TestContext } from "node:test";
@@ -38,9 +34,7 @@ const ignored = [
 ];
 
 const fixture = (context: TestContext): string => {
-  const root = mkdtempSync(join(tmpdir(), "studio-verify-"));
-  context.after(() => rmSync(root, { recursive: true, force: true }));
-  execFileSync("git", ["init", "--quiet"], { cwd: root });
+  const { root } = gitRepository(context);
   symlinkSync(
     join(repository, "node_modules"),
     join(root, "node_modules"),
@@ -91,6 +85,7 @@ test("verify checks tracked ignored code through eslint without scanning ignored
     "tools/verify.ts",
     "tools/code-files.ts",
     "tools/check-guardrails.ts",
+    "tools/cli.ts",
   ]) {
     copyFileSync(join(repository, path), join(root, path));
   }

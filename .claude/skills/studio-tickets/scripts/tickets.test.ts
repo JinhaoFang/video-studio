@@ -4,15 +4,11 @@
  * arrays and acceptance file contents. No test calls GitHub or uses the network.
  */
 import assert from "node:assert/strict";
-import { spawnSync } from "node:child_process";
 import {
-  existsSync,
-  mkdtempSync,
-  readFileSync,
-  rmSync,
-  writeFileSync,
-} from "node:fs";
-import { tmpdir } from "node:os";
+  runCommand as spawnSync,
+  temporaryDirectory,
+} from "../../../../tools/test-support.ts";
+import { existsSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { delimiter, join } from "node:path";
 import { test } from "node:test";
 
@@ -90,7 +86,7 @@ const run = (
   responses: Response[],
   files: Record<string, string> = {},
 ) => {
-  const directory = mkdtempSync(join(tmpdir(), "studio-tickets-test-"));
+  const directory = temporaryDirectory();
   try {
     writeFileSync(join(directory, "responses.json"), JSON.stringify(responses));
     for (const [name, contents] of Object.entries(files))
@@ -112,13 +108,13 @@ const response = JSON.parse(fs.readFileSync(path.join(root, "responses.json"), "
 const comparable = args.map((arg, index) => index === fileIndex + 1 && fileIndex >= 0 ? "<temporary>" : arg);
 if (!response || JSON.stringify(comparable) !== JSON.stringify(response.args)) {
   process.stderr.write("unexpected fake gh call: " + JSON.stringify(args));
-  process.exit(91);
+  process.exitCode = 91;
 }
-if (response.error) {
+else if (response.error) {
   process.stderr.write(response.error);
-  process.exit(1);
+  process.exitCode = 1;
 }
-if (response.value !== undefined) process.stdout.write(JSON.stringify(response.value));
+else if (response.value !== undefined) process.stdout.write(JSON.stringify(response.value));
 `,
       { mode: 0o755 },
     );
@@ -397,11 +393,11 @@ test("invalid arguments and missing files fail before any gh call with one Chine
     ["accept", "4", "--result", "通过", ...fields.slice(2), "--commits", " "],
   ]) {
     const result = run(args, []);
-    assert.notEqual(result.status, 0);
+    assert.equal(result.status, 2);
     assert.deepEqual(result.calls, []);
     const explanation = result.stderr.trim() || result.stdout.trim();
     assert.match(explanation, /[\u4e00-\u9fff]/);
-    assert.equal(explanation.split("\n").length, 1);
+    assert.match(result.stderr, /^出错：/);
   }
 });
 
@@ -451,7 +447,7 @@ test("query and write failures return nonzero; failed acceptance comment never c
   ];
   for (const scenario of scenarios) {
     const result = run(scenario.args, scenario.responses);
-    assert.notEqual(result.status, 0);
+    assert.equal(result.status, 2);
     assert.equal(result.calls.length, scenario.responses.length);
     assert.match(result.stderr, /^出错：gh 调用失败/);
     assert.equal(result.stderr.trim().split("\n").length, 1);

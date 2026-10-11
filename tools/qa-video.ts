@@ -1,16 +1,23 @@
 /**
  * Shared exact-timestamp probing and batch frame extraction for QA commands.
- * Probe presentation timestamps relative to the first displayed frame; choose
+ * Probe presentation timestamps relative to the file/player timeline origin; choose
  * the last frame at/before each request, preserving boundary and VFR accuracy.
  * One ffmpeg extraction pass per video selects all distinct indices in order;
  * repeated/unsorted requests map back to those files. ffprobe separately scans
- * timestamps. Display dimensions include sample aspect ratio.
+ * timestamps. Display dimensions include sample aspect ratio. Requests before
+ * the first displayed frame are rejected instead of synthesizing a picture.
  */
-import { spawnSync } from "node:child_process";
 import { statSync } from "node:fs";
 import { join } from "node:path";
-import { compareTimes, decimalTime, formatTimecode } from "./qa-time.ts";
+import {
+  addTime,
+  subtractTime,
+  compareTimes,
+  decimalTime,
+  formatTimecode,
+} from "./qa-time.ts";
 import type { Time } from "./qa-time.ts";
+import { runMedia } from "./qa-common.ts";
 
 type Probe = {
   streams: {
@@ -29,35 +36,11 @@ type Probe = {
   format: { duration?: string; start_time?: string };
 };
 
-export const runMedia = (
-  program: "ffmpeg" | "ffprobe",
-  args: string[],
-): string => {
-  const result = spawnSync(program, args, {
-    encoding: "utf8",
-    maxBuffer: 64 * 1024 * 1024,
-  });
-  if (result.error) {
-    if ((result.error as NodeJS.ErrnoException).code === "ENOENT") {
-      throw new Error(
-        `${program} is not installed or is not on PATH. Install ffmpeg (including ffprobe) and retry.`,
-      );
-    }
-    throw new Error(`${program}: ${result.error.message}`);
-  }
-  if (result.status !== 0) {
-    throw new Error(
-      `${program} failed: ${result.stderr.trim() || `exit ${result.status}`}`,
-    );
-  }
-  return result.stdout;
-};
-
 export type Video = { times: Time[]; end: Time; width: number; height: number };
 
 export const probeVideo = (video: string): Video => {
   if (!statSync(video).isFile()) {
-    throw new Error(`Not a video file: ${video}`);
+    throw new Error(`不是视频文件： ${video}`);
   }
   runMedia("ffmpeg", ["-version"]);
   const probe: Probe = JSON.parse(
@@ -78,64 +61,53 @@ export const probeVideo = (video: string): Video => {
   );
   const stream = probe.streams[0];
   if (!stream || !probe.frames?.length) {
-    throw new Error(`No decodable video frames: ${video}`);
+    throw new Error(`没有可解码的视频帧： ${video}`);
   }
   const [numerator, denominator] = stream.time_base.split("/").map(BigInt);
   const first = probe.frames[0].best_effort_timestamp;
   if (!Number.isSafeInteger(first) || numerator <= 0n || denominator <= 0n) {
-    throw new Error(`Cannot determine exact video timestamps: ${video}`);
+    throw new Error(`无法确定精确视频时间戳： ${video}`);
   }
-  const origin = BigInt(first!);
+  const origin = decimalTime(probe.format.start_time ?? "0");
   const ticks = (value: bigint): Time => ({
     numerator: value * numerator,
     denominator,
   });
   const times = probe.frames.map((frame) => {
     if (!Number.isSafeInteger(frame.best_effort_timestamp)) {
-      throw new Error(
-        `Missing or unsafe video presentation timestamp: ${video}`,
-      );
+      throw new Error(`缺少安全的视频呈现时间戳： ${video}`);
     }
-    return ticks(BigInt(frame.best_effort_timestamp!) - origin);
+    return subtractTime(ticks(BigInt(frame.best_effort_timestamp!)), origin);
   });
   if (
     times.some(
       (time, index) => index > 0 && compareTimes(time, times[index - 1]) < 0,
     )
   ) {
-    throw new Error(`Video presentation timestamps are not ordered: ${video}`);
+    throw new Error(`视频呈现时间戳未按顺序排列： ${video}`);
   }
   const last = probe.frames.at(-1)!;
   const lastDuration = last.duration ?? last.pkt_duration;
   let end: Time;
   if (Number.isSafeInteger(stream.duration_ts) && stream.duration_ts! > 0) {
-    end = ticks(
-      BigInt(stream.start_pts ?? first!) + BigInt(stream.duration_ts!) - origin,
+    end = subtractTime(
+      ticks(BigInt(stream.start_pts ?? first!) + BigInt(stream.duration_ts!)),
+      origin,
     );
   } else if (Number.isSafeInteger(lastDuration) && lastDuration! > 0) {
-    end = ticks(
-      BigInt(last.best_effort_timestamp!) - origin + BigInt(lastDuration!),
+    end = subtractTime(
+      ticks(BigInt(last.best_effort_timestamp!) + BigInt(lastDuration!)),
+      origin,
     );
   } else if (probe.format.duration && probe.format.duration !== "N/A") {
     const duration = decimalTime(probe.format.duration);
     const start = decimalTime(probe.format.start_time ?? "0");
-    const absoluteEnd = {
-      numerator:
-        duration.numerator * start.denominator +
-        start.numerator * duration.denominator,
-      denominator: duration.denominator * start.denominator,
-    };
-    end = {
-      numerator:
-        absoluteEnd.numerator * denominator -
-        origin * numerator * absoluteEnd.denominator,
-      denominator: absoluteEnd.denominator * denominator,
-    };
+    end = subtractTime(addTime(duration, start), origin);
   } else {
-    throw new Error(`Cannot determine video duration: ${video}`);
+    throw new Error(`无法确定视频时长： ${video}`);
   }
   if (compareTimes(end, times.at(-1)!) <= 0) {
-    throw new Error(`Invalid video duration: ${video}`);
+    throw new Error(`视频时长无效： ${video}`);
   }
   const [sarWidth, sarHeight] = (stream.sample_aspect_ratio ?? "1:1")
     .split(":")
@@ -167,15 +139,12 @@ export const validateTimes = (
     const comparison = compareTimes(time, video.end);
     if (
       time.numerator < 0n ||
+      compareTimes(time, video.times[0]) < 0 ||
       comparison > 0 ||
       (!allowEnd && comparison === 0)
     ) {
-      const label =
-        time.numerator < 0n
-          ? `-${formatTimecode({ ...time, numerator: -time.numerator })}`
-          : formatTimecode(time);
       throw new Error(
-        `Time ${label} is outside video duration (${formatTimecode(video.end)}${allowEnd ? "" : "; end is exclusive"}).`,
+        `时间 ${formatTimecode(time)} 超出视频范围（${formatTimecode(video.times[0])}～${formatTimecode(video.end)}${allowEnd ? "" : "，不含结尾"}）。`,
       );
     }
   }
@@ -222,7 +191,7 @@ export const extractFrames = (
   ]);
   for (const path of paths) {
     if (!statSync(path).size) {
-      throw new Error(`ffmpeg did not produce a frame: ${path}`);
+      throw new Error(`ffmpeg 未生成视频帧： ${path}`);
     }
   }
   const byIndex = new Map(unique.map((index, order) => [index, paths[order]]));

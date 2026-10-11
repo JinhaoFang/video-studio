@@ -8,39 +8,20 @@
  * because peak=true enables oversampling, these are reported here as dBTP.
  * No measurement or threshold changes the source media or sets a mix target.
  */
-import { spawnSync } from "node:child_process";
 import { mkdirSync, statSync, writeFileSync } from "node:fs";
-import { basename, extname, join, resolve } from "node:path";
+import { join, resolve } from "node:path";
+
+import { parseOptions, outputDirectory, runMedia } from "./qa-common.ts";
+import { usageError } from "./cli.ts";
 
 type Level = number | "-Infinity";
-
-const runMedia = (program: "ffmpeg" | "ffprobe", args: string[]): string => {
-  const result = spawnSync(program, args, {
-    encoding: "utf8",
-    maxBuffer: 4 * 1024 * 1024,
-  });
-  if (result.error) {
-    if ((result.error as NodeJS.ErrnoException).code === "ENOENT") {
-      throw new Error(
-        `${program} is not installed or is not on PATH. Install ffmpeg (including ffprobe) and retry.`,
-      );
-    }
-    throw new Error(`${program}: ${result.error.message}`);
-  }
-  if (result.status !== 0) {
-    throw new Error(
-      `${program} failed: ${result.stderr.trim() || `exit ${result.status}`}`,
-    );
-  }
-  return program === "ffprobe" ? result.stdout : result.stderr;
-};
 
 const readLevel = (value: unknown, name: string): Level => {
   if (value === "-inf") {
     return "-Infinity";
   }
   if (typeof value !== "string" || !Number.isFinite(Number(value))) {
-    throw new Error(`ffmpeg returned an invalid ${name} measurement.`);
+    throw new Error(`ffmpeg 返回了无效的 ${name} 测量值。`);
   }
   return Number(value);
 };
@@ -52,41 +33,28 @@ const displayLevel = (value: Level): string =>
   typeof value === "number" ? value.toFixed(2) : value;
 
 export const loudnessUsage =
-  "pnpm qa loudness <file> [--target-lufs <value>] [--tolerance <LU>] [--max-true-peak <dBTP>] [--out <directory>]";
+  "pnpm qa loudness <文件> [--target-lufs <数值>] [--tolerance <LU>] [--max-true-peak <dBTP>] [--out <目录>]";
 
 export const runLoudness = (args: string[]): void => {
-  if (args.includes("--help")) {
+  const { positional, options, help } = parseOptions(
+    args,
+    ["--target-lufs", "--tolerance", "--max-true-peak", "--out"],
+    loudnessUsage,
+  );
+  if (help) {
     console.log(
-      `${loudnessUsage}\n--target-lufs and --tolerance must be supplied together. No default thresholds.`,
+      `用法：${loudnessUsage}\n--target-lufs 和 --tolerance 必须一起提供；不设默认阈值。`,
     );
     return;
   }
-  const options = new Map<string, string>();
-  const positional: string[] = [];
-  for (let index = 0; index < args.length; index += 1) {
-    const arg = args[index];
-    if (arg.startsWith("--")) {
-      if (
-        !["--target-lufs", "--tolerance", "--max-true-peak", "--out"].includes(
-          arg,
-        )
-      ) {
-        throw new Error(`Unknown option: ${arg}\nUsage: ${loudnessUsage}`);
-      }
-      const value = args[++index];
-      if (options.has(arg) || !value || value.startsWith("--")) {
-        throw new Error(`Provide ${arg} exactly once with a value.`);
-      }
-      options.set(arg, value);
-    } else {
-      positional.push(arg);
-    }
-  }
   if (positional.length !== 1) {
-    throw new Error(`Provide exactly one input file.\nUsage: ${loudnessUsage}`);
+    throw usageError("请提供一个输入文件。", loudnessUsage);
   }
   if (options.has("--target-lufs") !== options.has("--tolerance")) {
-    throw new Error("--target-lufs and --tolerance must be supplied together.");
+    throw usageError(
+      "--target-lufs 和 --tolerance 必须一起提供。",
+      loudnessUsage,
+    );
   }
   const numericOption = (name: string): number | null => {
     const value = options.get(name);
@@ -97,7 +65,7 @@ export const runLoudness = (args: string[]): void => {
       !/^[+-]?(?:\d+(?:\.\d*)?|\.\d+)(?:[eE][+-]?\d+)?$/.test(value) ||
       !Number.isFinite(Number(value))
     ) {
-      throw new Error(`${name} must be a finite number.`);
+      throw new Error(`${name} 必须是有限数值。`);
     }
     return Number(value);
   };
@@ -107,11 +75,11 @@ export const runLoudness = (args: string[]): void => {
     maxTruePeakDbtp: numericOption("--max-true-peak"),
   };
   if (thresholds.toleranceLu !== null && thresholds.toleranceLu < 0) {
-    throw new Error("--tolerance must be nonnegative.");
+    throw new Error("--tolerance 必须非负。");
   }
   const input = resolve(positional[0]);
   if (!statSync(input).isFile()) {
-    throw new Error(`Not a media file: ${input}`);
+    throw new Error(`不是媒体文件： ${input}`);
   }
   const probe: { streams: unknown[] } = JSON.parse(
     runMedia("ffprobe", [
@@ -127,34 +95,38 @@ export const runLoudness = (args: string[]): void => {
     ]),
   );
   if (!probe.streams.length) {
-    throw new Error(`No audio stream: ${input}`);
+    throw new Error(`没有音轨： ${input}`);
   }
-  const output = runMedia("ffmpeg", [
-    "-hide_banner",
-    "-nostats",
-    "-nostdin",
-    "-i",
-    input,
-    "-map",
-    "0:a:0",
-    "-af",
-    "ebur128=peak=true:framelog=verbose",
-    "-f",
-    "null",
-    "-",
-  ]);
+  const output = runMedia(
+    "ffmpeg",
+    [
+      "-hide_banner",
+      "-nostats",
+      "-nostdin",
+      "-i",
+      input,
+      "-map",
+      "0:a:0",
+      "-af",
+      "ebur128=peak=true:framelog=verbose",
+      "-f",
+      "null",
+      "-",
+    ],
+    "stderr",
+  );
   const summaryIndex = output.lastIndexOf("Summary:");
   if (summaryIndex < 0) {
-    throw new Error("ffmpeg did not return a loudness summary.");
+    throw new Error("ffmpeg 未返回响度摘要。");
   }
   const summary = output.slice(summaryIndex);
   const truePeakDbtp = readLevel(
     summary.match(/\bPeak:\s*(-inf|[-\d.]+)\s+dBFS/)?.[1],
-    "True Peak",
+    "真峰值",
   );
   const integratedLufs = readLevel(
     summary.match(/\bI:\s*(-inf|[-\d.]+)\s+LUFS/)?.[1],
-    "Integrated",
+    "整片响度",
   );
   const measurements = {
     integratedLufs:
@@ -181,35 +153,33 @@ export const runLoudness = (args: string[]): void => {
   };
   const checked = Object.values(checks).filter((value) => value !== null);
   const passed = checked.length ? checked.every(Boolean) : null;
-  const directory = resolve(
-    options.get("--out") ??
-      join("out", "qa", "loudness", basename(input, extname(input))),
-  );
+  const directory = outputDirectory("loudness", input, options.get("--out"));
   mkdirSync(directory, { recursive: true });
   const path = join(directory, "loudness.json");
   writeFileSync(
     path,
     `${JSON.stringify({ input, measurements, thresholds, checks, passed }, null, 2)}\n`,
   );
-  console.log(`Input: ${input}`);
-  console.log(`Integrated: ${displayLevel(measurements.integratedLufs)} LUFS`);
+  console.log(`输入： ${input}`);
+  console.log(`整片响度： ${displayLevel(measurements.integratedLufs)} LUFS`);
   console.log(`LRA: ${displayLevel(measurements.loudnessRangeLu)} LU`);
-  console.log(`True Peak: ${displayLevel(measurements.truePeakDbtp)} dBTP`);
+  console.log(`真峰值： ${displayLevel(measurements.truePeakDbtp)} dBTP`);
   if (checks.integrated !== null) {
     console.log(
-      `Integrated check: ${checks.integrated ? "PASS" : "FAIL"} (target ${thresholds.targetLufs} LUFS +/- ${thresholds.toleranceLu} LU)`,
+      `整片响度检查： ${checks.integrated ? "通过" : "未通过"} （目标 ${thresholds.targetLufs} LUFS ± ${thresholds.toleranceLu} LU）`,
     );
   }
   if (checks.truePeak !== null) {
     console.log(
-      `True Peak check: ${checks.truePeak ? "PASS" : "FAIL"} (maximum ${thresholds.maxTruePeakDbtp} dBTP)`,
+      `真峰值检查： ${checks.truePeak ? "通过" : "未通过"} （上限 ${thresholds.maxTruePeakDbtp} dBTP）`,
     );
   }
   console.log(
-    `Result: ${passed === null ? "REPORT ONLY" : passed ? "PASS" : "FAIL"}`,
+    `结果： ${passed === null ? "仅报告" : passed ? "通过" : "未通过"}`,
   );
   console.log(path);
   if (passed === false) {
+    console.error("出错：响度阈值检查未通过。");
     process.exitCode = 1;
   }
 };

@@ -3,42 +3,46 @@
  * signed decimal offset arithmetic. Each video is extracted once for all times;
  * identical input paths share a single extraction for the combined requests.
  * Scale to the requested height, center on equal-width black cells, and cap the
- * complete image at 2000px. Annotation design is pending in qa-images.ts.
+ * complete image at 2000px. Annotation design is established in #8 and described in qa-images.ts.
  */
 import { mkdirSync, mkdtempSync, rmSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join, resolve } from "node:path";
 import {
-  addTime,
-  composeImage,
   outputDirectory,
+  outputNamer,
   parseOptions,
   positiveInteger,
-} from "./qa-images.ts";
-import { decimalTime, formatTimecode, parseTimecode } from "./qa-time.ts";
+} from "./qa-common.ts";
+import { composeImage } from "./qa-images.ts";
+import { usageError } from "./cli.ts";
+import {
+  addTime,
+  decimalTime,
+  formatTimecode,
+  parseTimecode,
+} from "./qa-time.ts";
 import { extractFrames, probeVideo, validateTimes } from "./qa-video.ts";
 
 export const compareUsage =
-  "pnpm qa compare <render> <reference> <time...> [--offset <seconds>] [--height <px>] [--out <directory>]";
+  "pnpm qa compare <渲染视频> <参考视频> <时间点…> [--offset <秒>] [--height <像素>] [--out <目录>]";
 
 export const runCompare = (args: string[]): void => {
-  if (args.includes("--help")) {
-    console.log(compareUsage);
-    return;
-  }
-  const { positional, options } = parseOptions(
+  const { positional, options, help } = parseOptions(
     args,
     ["--offset", "--height", "--out"],
     compareUsage,
   );
+  if (help) {
+    console.log(`用法：${compareUsage}`);
+    return;
+  }
   if (positional.length < 3) {
-    throw new Error(
-      `Provide two videos and at least one time.\nUsage: ${compareUsage}`,
-    );
+    throw usageError("请提供两个视频和至少一个时间点。", compareUsage);
   }
   const offsetValue = options.get("--offset") ?? "0";
   if (!/^-?\d+(?:\.\d+)?$/.test(offsetValue)) {
-    throw new Error("--offset must be signed decimal seconds.");
+    throw new Error("--offset 必须是可带负号的十进制秒数。");
   }
   const height = positiveInteger(options.get("--height") ?? "540", "--height");
   const offset = decimalTime(offsetValue);
@@ -97,15 +101,9 @@ export const runCompare = (args: string[]): void => {
         `scale=${rightWidth}:${height}`,
       );
     }
-    const names = new Map<string, number>();
+    const nameOutput = outputNamer(directory);
     requested.forEach((time, index) => {
-      const name = formatTimecode(time).replace(":", "-");
-      const occurrence = (names.get(name) ?? 0) + 1;
-      names.set(name, occurrence);
-      const output = join(
-        directory,
-        `${name}${occurrence > 1 ? `-${occurrence}` : ""}.jpg`,
-      );
+      const output = nameOutput(formatTimecode(time).replace(":", "-"));
       composeImage(
         [
           { path: leftFrames[index], label: `RENDER ${formatTimecode(time)}` },

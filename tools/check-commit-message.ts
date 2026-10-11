@@ -108,10 +108,14 @@ export const checkCommitMessage = (
         "任何行首都不能出现署名形状 <单词>-by: 或 Generated with/by，前面有空白、符号或 emoji 也不允许（不区分大小写）。",
     });
   }
-  if (branch.startsWith("spec/") && refs.length === 0 && !misplacedTrailers) {
+  if (
+    /^(spec|ticket)\//.test(branch) &&
+    refs.length === 0 &&
+    !misplacedTrailers
+  ) {
     violations.push({
       rule: "g",
-      message: "spec/* 分支必须在尾注写 Refs: #<号>。",
+      message: "spec/* 和 ticket/* 分支必须在尾注写 Refs: #<号>。",
     });
   }
   return violations;

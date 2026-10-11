@@ -4,10 +4,13 @@
  * Run with `node --test tools/check-guardrails.test.ts` or `pnpm verify`.
  */
 import assert from "node:assert/strict";
-import { execFileSync, spawnSync } from "node:child_process";
-import { mkdirSync, mkdtempSync, rmSync, writeFileSync } from "node:fs";
-import { tmpdir } from "node:os";
-import { dirname, join, resolve } from "node:path";
+import {
+  commandOutput as execFileSync,
+  runCommand as spawnSync,
+  gitRepository,
+} from "./test-support.ts";
+import { writeFileSync } from "node:fs";
+import { join, resolve } from "node:path";
 import { test } from "node:test";
 import type { TestContext } from "node:test";
 
@@ -17,14 +20,7 @@ const fixture = (
   context: TestContext,
   files: Record<string, string>,
 ): string => {
-  const root = mkdtempSync(join(tmpdir(), "studio-guardrails-"));
-  context.after(() => rmSync(root, { recursive: true, force: true }));
-  execFileSync("git", ["init", "--quiet"], { cwd: root });
-  for (const [path, text] of Object.entries(files)) {
-    mkdirSync(dirname(join(root, path)), { recursive: true });
-    writeFileSync(join(root, path), text);
-  }
-  return root;
+  return gitRepository(context, files).root;
 };
 
 const run = (root: string, mode: string) =>
@@ -159,7 +155,7 @@ for (const [name, path, code, line] of [
     assert.match(
       result.stderr,
       new RegExp(
-        `^${path.replaceAll(".", "\\.")}:${line} comment-position .+\\n$`,
+        `^出错：${path.replaceAll(".", "\\.")}:${line} comment-position .+\\n$`,
       ),
     );
   });
@@ -205,10 +201,13 @@ for (const [name, code] of [
       "dependencies",
     );
     assert.equal(result.status, 1);
-    assert.match(result.stderr, /^src\/sample\.ts:1 dependency-direction .+$/m);
     assert.match(
       result.stderr,
-      /^tools\/sample\.ts:1 dependency-direction .+$/m,
+      /^出错：src\/sample\.ts:1 dependency-direction .+$/m,
+    );
+    assert.match(
+      result.stderr,
+      /^出错：tools\/sample\.ts:1 dependency-direction .+$/m,
     );
     assert.equal(result.stderr.trim().split("\n").length, 2);
   });
@@ -232,14 +231,17 @@ test("dependencies resolve absolute paths, baseUrl and tsconfig paths aliases", 
   );
   const result = run(root, "dependencies");
   assert.equal(result.status, 1);
-  assert.match(result.stderr, /^src\/alias\.ts:1 dependency-direction .+$/m);
   assert.match(
     result.stderr,
-    /^tools\/base-url\.ts:1 dependency-direction .+$/m,
+    /^出错：src\/alias\.ts:1 dependency-direction .+$/m,
   );
   assert.match(
     result.stderr,
-    /^tools\/absolute\.ts:1 dependency-direction .+$/m,
+    /^出错：tools\/base-url\.ts:1 dependency-direction .+$/m,
+  );
+  assert.match(
+    result.stderr,
+    /^出错：tools\/absolute\.ts:1 dependency-direction .+$/m,
   );
 });
 
@@ -254,7 +256,10 @@ test("dependencies resolve the nearest tsconfig including inherited aliases", (c
   });
   const result = run(root, "dependencies");
   assert.equal(result.status, 1);
-  assert.match(result.stderr, /^tools\/sample\.ts:1 dependency-direction .+$/m);
+  assert.match(
+    result.stderr,
+    /^出错：tools\/sample\.ts:1 dependency-direction .+$/m,
+  );
 });
 
 test("src forbids literal episode asset paths, including template segments", (context) => {
@@ -279,7 +284,7 @@ test("src forbids literal episode asset paths, including template segments", (co
   for (const line of [2, 3, 4, 5, 6, 7, 8, 9, 10, 11]) {
     assert.match(
       result.stderr,
-      new RegExp(`^src/sample\\.tsx:${line} episode-path .+$`, "m"),
+      new RegExp(`^出错：src/sample\\.tsx:${line} episode-path .+$`, "m"),
     );
   }
 });
@@ -326,9 +331,9 @@ test("dependencies deduplicate modules while retaining separate asset diagnostic
   assert.equal(result.status, 1);
   const lines = result.stderr.trim().split("\n");
   assert.equal(lines.length, 3);
-  assert.match(lines[0], /^src\/sample\.ts:1 dependency-direction .+$/);
-  assert.match(lines[1], /^src\/sample\.ts:1 episode-path .+$/);
-  assert.match(lines[2], /^src\/sample\.ts:2 dependency-direction .+$/);
+  assert.match(lines[0], /^出错：src\/sample\.ts:1 dependency-direction .+$/);
+  assert.match(lines[1], /^出错：src\/sample\.ts:1 episode-path .+$/);
+  assert.match(lines[2], /^出错：src\/sample\.ts:2 dependency-direction .+$/);
 });
 
 test("guardrails check tracked ignored paths and skip ignored untracked files", (context) => {
@@ -347,12 +352,12 @@ test("guardrails check tracked ignored paths and skip ignored untracked files", 
   assert.equal(comments.status, 1);
   assert.match(
     comments.stderr,
-    /^src\/kit\/build\/tracked\.ts:2 comment-position .+\n$/,
+    /^出错：src\/kit\/build\/tracked\.ts:2 comment-position .+\n$/,
   );
   const dependencies = run(root, "dependencies");
   assert.equal(dependencies.status, 1);
   assert.match(
     dependencies.stderr,
-    /^src\/kit\/build\/tracked\.ts:3 dependency-direction .+\n$/,
+    /^出错：src\/kit\/build\/tracked\.ts:3 dependency-direction .+\n$/,
   );
 });

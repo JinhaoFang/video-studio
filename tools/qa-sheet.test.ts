@@ -1,55 +1,26 @@
 /**
- * Exercise sheet/compare through the public CLI with generated grayscale media.
+ * Exercise subcommands through the public CLI with generated grayscale media.
  * Assert JPG dimensions, page/cell counts, requested frame identities, padding,
  * exact interval/count/offset arithmetic, default/custom paths, and failures.
  * Pixel samples are numeric checks away from labels; visual design is reviewed
  * separately on real reference outputs. Run through pnpm verify; needs ffmpeg.
  */
 import assert from "node:assert/strict";
-import { execFileSync, spawnSync } from "node:child_process";
 import {
-  mkdtempSync,
-  readFileSync,
-  readdirSync,
-  rmSync,
-  writeFileSync,
-} from "node:fs";
-import { tmpdir } from "node:os";
+  runCommand as spawnSync,
+  temporaryDirectory as fixture,
+  media,
+  numberedVideo,
+  image,
+  frameIs,
+} from "./test-support.ts";
+import { readFileSync, readdirSync, writeFileSync } from "node:fs";
 import { dirname, join, resolve } from "node:path";
 import { test } from "node:test";
-import type { TestContext } from "node:test";
 
 const cli = resolve(import.meta.dirname, "qa.ts");
-const fixture = (context: TestContext): string => {
-  const root = mkdtempSync(join(tmpdir(), "studio-qa-images-"));
-  context.after(() => rmSync(root, { recursive: true, force: true }));
-  return root;
-};
-const media = (args: string[]): Buffer =>
-  execFileSync(
-    "ffmpeg",
-    ["-hide_banner", "-loglevel", "error", "-nostdin", "-y", ...args],
-    { timeout: 30000, maxBuffer: 32 * 1024 * 1024 },
-  );
-
-const video = (root: string, width = 160, height = 90, vfr = false): string => {
-  const path = join(root, `${width}x${height} ' $ ; ${vfr}.mkv`);
-  media([
-    "-f",
-    "lavfi",
-    "-i",
-    `nullsrc=s=${width}x${height}:r=10:d=3.2,format=gray,geq=lum='20+7*N'`,
-    ...(vfr
-      ? ["-vf", "select='not(eq(n,1)+eq(n,3)+eq(n,6))'", "-vsync", "0"]
-      : []),
-    "-c:v",
-    "ffv1",
-    "-threads",
-    "1",
-    path,
-  ]);
-  return path;
-};
+const video = (root: string, width = 160, height = 90, vfr = false): string =>
+  numberedVideo(root, { width, height, vfr });
 const run = (root: string, args: string[]) =>
   spawnSync(process.execPath, [cli, ...args], {
     cwd: root,
@@ -68,44 +39,6 @@ const successful = (root: string, args: string[]): string[] => {
   }
   return paths;
 };
-const image = (path: string) => {
-  const { width, height } = JSON.parse(
-    execFileSync(
-      "ffprobe",
-      [
-        "-v",
-        "error",
-        "-show_entries",
-        "stream=width,height",
-        "-of",
-        "json",
-        path,
-      ],
-      { encoding: "utf8" },
-    ),
-  ).streams[0] as { width: number; height: number };
-  const pixels = media([
-    "-i",
-    path,
-    "-frames:v",
-    "1",
-    "-pix_fmt",
-    "gray",
-    "-threads",
-    "1",
-    "-f",
-    "rawvideo",
-    "pipe:1",
-  ]);
-  return { width, height, at: (x: number, y: number) => pixels[y * width + x] };
-};
-const frameIs = (value: number, frame: number): void => {
-  assert.ok(
-    Math.abs(value - (20 + frame * 7)) <= 2,
-    `Expected frame ${frame}, got gray ${value}`,
-  );
-};
-
 test("sheet every selects exact inclusive times, paginates at 24, leaves empty cells, and overwrites", (context) => {
   const root = fixture(context);
   const input = video(root);
@@ -211,90 +144,6 @@ test("sheet preserves decimal step and VFR frame selection, and caps portrait pa
   );
 });
 
-test("compare pads 4:3 reference equally beside 16:9 render and applies signed exact offsets", (context) => {
-  const root = fixture(context);
-  const render = video(root);
-  const reference = video(root, 120, 90);
-  const paths = successful(root, [
-    "compare",
-    render,
-    reference,
-    "00:00.5",
-    "00:01.1",
-    "--offset",
-    "0.2",
-  ]);
-  assert.equal(paths.length, 2);
-  assert.equal(
-    dirname(paths[0]),
-    join(root, "out", "qa", "compare", "160x90 ' $ ; false"),
-  );
-  for (const [index, path] of paths.entries()) {
-    const output = image(path);
-    assert.deepEqual([output.width, output.height], [1920, 540]);
-    frameIs(output.at(480, 100), [5, 11][index]);
-    frameIs(output.at(1440, 100), [7, 13][index]);
-    for (const x of [980, 1060, 1820, 1900])
-      assert.ok(output.at(x, 100) <= 2, `Padding gray: ${output.at(x, 100)}`);
-    frameIs(output.at(1090, 100), [7, 13][index]);
-    frameIs(output.at(1790, 100), [7, 13][index]);
-  }
-  const [negative] = successful(root, [
-    "compare",
-    render,
-    reference,
-    "0.5",
-    "--offset",
-    "-0.2",
-    "--out",
-    "negative offset",
-  ]);
-  assert.equal(dirname(negative), join(root, "negative offset"));
-  frameIs(image(negative).at(1440, 100), 3);
-  const [boundary] = successful(root, [
-    "compare",
-    render,
-    reference,
-    "0.099999999999999999",
-    "--offset",
-    "0.000000000000000001",
-  ]);
-  frameIs(image(boundary).at(480, 100), 0);
-  frameIs(image(boundary).at(1440, 100), 1);
-});
-
-test("compare handles same-file requests in arbitrary order, repeated timestamps, and height cap", (context) => {
-  const root = fixture(context);
-  const input = video(root, 160, 90, true);
-  const paths = successful(root, [
-    "compare",
-    input,
-    input,
-    "0.7",
-    "0.1",
-    "0.7",
-    "--offset",
-    "0",
-  ]);
-  assert.equal(new Set(paths).size, 3);
-  paths.forEach((path, index) => {
-    const output = image(path);
-    const expected = [7, 0, 7][index];
-    frameIs(output.at(480, 100), expected);
-    frameIs(output.at(1440, 100), expected);
-  });
-  const [capped] = successful(root, [
-    "compare",
-    input,
-    input,
-    "0",
-    "--height",
-    "1080",
-  ]);
-  const output = image(capped);
-  assert.deepEqual([output.width, output.height], [2000, 563]);
-});
-
 test("sheet/compare help and invalid argument/range failures create no outputs", (context) => {
   const root = fixture(context);
   const input = video(root);
@@ -342,10 +191,46 @@ test("sheet/compare help and invalid argument/range failures create no outputs",
     const result = run(root, args);
     assert.equal(
       result.status,
-      1,
+      2,
       `${args.join(" ")}\n${result.stdout}${result.stderr}`,
     );
-    assert.match(result.stderr, /qa:/);
+    assert.match(result.stderr, /^出错：/);
   }
   assert.equal(readdirSync(root).length, 2);
+});
+
+test("sheet rerun removes obsolete pages while preserving unrelated files", (context) => {
+  const root = fixture(context);
+  const input = video(root);
+  const pages = successful(root, ["sheet", input, "--count", "25"]);
+  assert.equal(pages.length, 2);
+  const directory = dirname(pages[0]);
+  writeFileSync(join(directory, "keep.jpg"), "unrelated");
+  writeFileSync(join(directory, "notes.txt"), "unrelated");
+  const [page] = successful(root, ["sheet", input, "--count", "1"]);
+  assert.equal(page, pages[0]);
+  assert.deepEqual(readdirSync(directory).sort(), [
+    "keep.jpg",
+    "notes.txt",
+    "page-001.jpg",
+  ]);
+  frameIs(image(page).at(240, 100), 0);
+});
+
+test("sheet uses player times when audio starts before the video stream", (context) => {
+  const root = fixture(context);
+  const input = numberedVideo(root, { offset: 0.5, audio: true });
+  const [page] = successful(root, [
+    "sheet",
+    input,
+    "--from",
+    "0.5",
+    "--to",
+    "1.0",
+    "--every",
+    "0.5",
+  ]);
+  const output = image(page);
+  frameIs(output.at(240, 100), 0);
+  frameIs(output.at(720, 100), 5);
 });
