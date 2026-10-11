@@ -1,8 +1,20 @@
 # Issue tracker: GitHub
 
-Issues and specs for this repo live as GitHub issues. Use the `gh` CLI for all operations.
+Issues and specs for this repo live as GitHub issues (`JinhaoFang/video-studio`). Use the `gh` CLI for all operations. GitHub is the only copy: specs and tickets are not mirrored into the repo, and work is dispatched by issue number.
 
-> **Note:** this repo has no `git remote` configured yet. `gh` infers the owner/repo from `git remote -v`, so issue operations will fail until the repo is pushed to GitHub. Remove this note once the remote exists.
+## 本仓库的工单约定
+
+Spec 是一个 issue，它拆出的工单是它的 sub-issue，工单之间用原生的阻塞关系连接。除了 `to-tickets` 模板里的内容，每个工单还要有：
+
+- **执行角色标签**：三选一。`role:engineering` 派给 Codex，`role:design` 由设计负责人自己做，`ready-for-human` 只能由用户本人完成。判断标准见 `docs/roles/design.md`。
+- 正文多出四节：
+  - `## 写入范围`：允许改动的位置，写到目录一级，例如 `tools/`、`src/kit/subtitle/`。
+  - `## 测试接缝`：测试写在哪里，用 spec 里和用户确认过的接缝；不需要新测试就写"无"。
+  - `## 验收产物`：交付时给设计负责人看的东西，例如命令输出、关键帧、对比图、响度报告。
+  - `## 汇报要回答的问题`：没有就写"无"。
+- 需要在本机实际运行确认的验收项，在行首标【实测】。
+
+每个 spec 对应一个集成分支 `spec/<spec 号>-<英文短名>`。工单的提交都落在这个分支上，提交信息末尾带 `(#<工单号>)`。设计负责人验收后在工单下评论验收结论，然后关闭；spec 由合并 PR 时的 `Closes #<spec 号>` 关闭。
 
 ## Conventions
 
