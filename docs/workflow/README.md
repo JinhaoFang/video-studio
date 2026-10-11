@@ -20,7 +20,7 @@ GitHub                        设计负责人（Claude Code）                  
 spec #S
  └ 工单 #T  ─ 选出前置都已关闭的工单
    role:design      → 自己做、验收、提交
-   role:engineering → 按 issue 号派发 ───────────────────────────→ 读 #T 和 #S，做完、提交 "(#T)"、写汇报
+   role:engineering → 按 issue 号派发 ───────────────────────────→ 读 #T 和 #S，做完、提交（Refs: #T）、写汇报
                      ← 看汇报（TODO(design)、推断清单）、验收产物、code-review ←┘
    ready-for-human  → 告诉用户要做什么
  └ 评论验收结论、关闭 #T；全部关闭后推送分支、开 PR "Closes #S"
@@ -51,7 +51,7 @@ spec #S
 - **方法层**：`AGENTS.md`、`docs/roles/`、`docs/workflow/`、`docs/agents/`、`.claude/skills/studio-*`、`tools/`、`src/kit/`、`src/styles/`，加上 `skills-lock.json` 和 DispatchDock 的安装命令。
 - **产物层**：`episodes/`、`docs/research/`（里面有对他人作品的转写，不能公开）、本机的 `public/episodes/`。
 
-依赖只能从产物层指向方法层：每期可以用 `src/kit/`，`src/` 和 `tools/` 不能引用 `episodes/`。拆分时用 `git filter-repo --path …` 带着历史抽出需要的目录；提交信息里的 `(#号)` 用 `--replace-message` 改成 `JinhaoFang/video-studio#号`，这样拆出去以后链接仍然指向原仓库的 issue。
+依赖只能从产物层指向方法层：每期可以用 `src/kit/`，`src/` 和 `tools/` 不能引用 `episodes/`。拆分时用 `git filter-repo --path …` 带着历史抽出需要的目录；提交信息尾注里的 `Refs: #号` 用 `--replace-message` 改成 `Refs: JinhaoFang/video-studio#号`，这样拆出去以后链接仍然指向原仓库的 issue。
 
 ## 注意
 
