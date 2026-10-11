@@ -5,7 +5,13 @@
  * docs Markdown except research/reports, and repository-owned skill Markdown.
  * Git ignore rules define skill ownership, so renaming a tracked skill works.
  * Skip angle-bracket placeholders and dynamic/absolute node paths. Commands
- * are inspected as text, never executed; pnpm built-ins mirror CLI help.
+ * are inspected as text, never executed; the static built-in snapshot matches
+ * packageManager pnpm@10.34.6. Source: https://registry.npmjs.org/pnpm/10.34.6
+ * On pnpm upgrades, download the official pinned package and confirm its version
+ * using Node on bin/pnpm.cjs. Compare help --all, commandNames registrations
+ * (including completion-server), the npm passthrough allowlist, and run fallback
+ * aliases; update this snapshot/version and CLI fixture tests together. Checking
+ * documents never invokes pnpm; do not trust a wrapper's version/help alone.
  */
 import { execFileSync } from "node:child_process";
 import { readFileSync, statSync } from "node:fs";
@@ -13,17 +19,16 @@ import { isAbsolute, resolve } from "node:path";
 import { reportError, usageError } from "./cli.ts";
 
 const builtins = new Set(
-  `access add adduser approve-builds audit bin bugs cache cat-file cat-index change
-  ci clean clean-install completion config create dedupe deploy deprecate dislink
-  dist-tag dist-tags dlx docs doctor edit env exec fetch find find-hash get help
-  home i ic ignored-builds import info init install install-clean install-test
-  issues it la lane licenses licences link list ll ln login logout ls m multi
-  outdated owner owners pack pack-app patch patch-commit patch-remove peers ping
-  pipeline pkg prefix profile prune publish purge rb rebuild recursive remove
-  repo restart rm root rt run run-script runtime s sbom search se self-update
-  server set set-script setup shim show ss stage star stars start stop store
-  tasks team test t token tst un undeprecate uninstall uni unlink unpublish unstar
-  up update upgrade v version view whoami with xmas`.split(/\s+/),
+  `access add adduser approve-builds audit bin bugs c cache cat-file cat-index
+  ci clean-install completion completion-server config create dedupe deploy
+  deprecate dislink dist-tag dlx docs doctor edit env exec fetch find find-hash
+  get help home i ic ignored-builds import info init install install-clean
+  install-test issues it la licenses link list ll ln login logout ls m multi
+  outdated owner pack patch patch-commit patch-remove ping pkg prefix profile
+  prune publish rb rebuild recursive remove repo restart rm root run run-script
+  s se search self-update server set set-script setup show star stars start
+  store t team test token tst un uni uninstall unlink unpublish unstar up
+  update upgrade v version view whoami why xmas`.split(/\s+/),
 );
 
 const isRuleDocument = (path: string): boolean =>

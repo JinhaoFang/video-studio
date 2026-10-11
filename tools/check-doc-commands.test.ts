@@ -61,6 +61,34 @@ test("scripts, built-ins and placeholders pass in inline and fenced code", (cont
   assert.equal(result.stderr, "");
 });
 
+test("why and the config alias pass with literal package and key arguments", (context) => {
+  const { root } = fixture(context, {
+    "README.md": "`pnpm why remotion`\n`pnpm c get registry`\n",
+  });
+  const result = run(root);
+  assert.equal(result.status, 0, result.stderr);
+  assert.equal(result.stdout, "");
+  assert.equal(result.stderr, "");
+});
+
+test("commands outside the pinned pnpm version require a project script", (context) => {
+  const { root } = fixture(context, {
+    "README.md": "`pnpm pipeline build`\n`pnpm dist-tags ls remotion`\n",
+  });
+  const result = run(root);
+  assert.equal(result.status, 1);
+  assert.equal(result.stdout, "");
+  assert.match(
+    result.stderr,
+    /^出错：README\.md:1 doc-command .+pnpm pipeline build$/m,
+  );
+  assert.match(
+    result.stderr,
+    /^出错：README\.md:2 doc-command .+pnpm dist-tags ls remotion$/m,
+  );
+  assert.equal(result.stderr.trim().split("\n").length, 2);
+});
+
 test("explicit run requires a project script even when the name is a built-in", (context) => {
   const { root } = fixture(context, {
     "README.md": "`pnpm run install` `pnpm -s run exec`",
