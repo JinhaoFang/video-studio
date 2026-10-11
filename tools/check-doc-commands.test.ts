@@ -162,7 +162,7 @@ test("rule scope includes new docs and Git-owned skill Markdown, irrespective of
     "docs/workflow/new.md",
     "docs/agents/issue-tracker.md",
     "docs/new-rule.md",
-    ".claude/skills/studio-tickets/SKILL.md",
+    ".claude/skills/run-spec/SKILL.md",
     ".claude/skills/run-spec/report.md",
   ];
   const { root } = fixture(
@@ -179,7 +179,7 @@ test("rule scope includes new docs and Git-owned skill Markdown, irrespective of
 test("historical, reference, third-party and ignored untracked documents are excluded", (context) => {
   const { root, git } = fixture(context, {
     ".gitignore":
-      "references/\nout/\n.agents/\n.claude/skills/*\n!.claude/skills/studio-tickets/\ndocs/ignored.md\n",
+      "references/\nout/\n.agents/\n.claude/skills/*\n!.claude/skills/run-spec/\ndocs/ignored.md\n",
     "AGENTS.md": "`pnpm verify`",
     "docs/research/old.md": "`pnpm lint` `node tools/removed.ts`",
     "docs/reports/old.md": "`pnpm lint` `node tools/removed.ts`",

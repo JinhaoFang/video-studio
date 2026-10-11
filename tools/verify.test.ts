@@ -1,6 +1,7 @@
 /**
  * Exercise ESLint's directory defaults and verify's explicit Git file scope in
- * temporary repositories. Real CLI runs prove ignored tracked files are checked
+ * temporary repositories, including owned skill scripts/tests and Node types.
+ * Real CLI runs prove ignored tracked files are checked
  * without making direct `eslint .` traverse generated or third-party code.
  * Run with `node --test tools/verify.test.ts` or `pnpm verify`.
  */
@@ -30,6 +31,7 @@ const ignored = [
   ".codex-runs/ignored.ts",
   ".agents/ignored.ts",
   ".claude/skills/third-party/ignored.ts",
+  ".claude/skills/studio-fixture/ignored.ts",
   "vendor/node_modules/ignored.ts",
 ];
 
@@ -44,10 +46,7 @@ const fixture = (context: TestContext): string => {
     join(repository, "eslint.config.mjs"),
     join(root, "eslint.config.mjs"),
   );
-  writeFileSync(
-    join(root, ".gitignore"),
-    "build\ndist\nout\nreferences\n.codex-runs\n.agents\n.claude/skills/third-party\nnode_modules\n",
-  );
+  copyFileSync(join(repository, ".gitignore"), join(root, ".gitignore"));
   for (const path of ignored) {
     mkdirSync(dirname(join(root, path)), { recursive: true });
     writeFileSync(join(root, path), "export const = ;");
@@ -55,7 +54,7 @@ const fixture = (context: TestContext): string => {
   return root;
 };
 
-test("direct eslint ignores generated and third-party directories but checks studio skills", (context) => {
+test("direct eslint ignores generated and third-party directories but checks run-spec scripts and tests", (context) => {
   const root = fixture(context);
   const clean = spawnSync(process.execPath, [eslint, "."], {
     cwd: root,
@@ -64,9 +63,14 @@ test("direct eslint ignores generated and third-party directories but checks stu
   });
   assert.equal(clean.error, undefined);
   assert.equal(clean.status, 0, clean.stdout + clean.stderr);
-  const studio = join(root, ".claude/skills/studio-fixture/script.ts");
-  mkdirSync(dirname(studio), { recursive: true });
-  writeFileSync(studio, "export const = ;");
+  const paths = [
+    ".claude/skills/run-spec/scripts/script.ts",
+    ".claude/skills/run-spec/scripts/script.test.ts",
+  ];
+  for (const path of paths) {
+    mkdirSync(dirname(join(root, path)), { recursive: true });
+    writeFileSync(join(root, path), "export const = ;");
+  }
   const invalid = spawnSync(process.execPath, [eslint, "."], {
     cwd: root,
     encoding: "utf8",
@@ -74,8 +78,44 @@ test("direct eslint ignores generated and third-party directories but checks stu
   });
   assert.equal(invalid.error, undefined);
   assert.equal(invalid.status, 1);
-  assert.match(invalid.stdout, /studio-fixture\/script\.ts/);
+  for (const path of paths)
+    assert.ok(invalid.stdout.includes(path), invalid.stdout);
   assert.match(invalid.stdout, /Parsing error/);
+});
+
+test("Node type checking includes run-spec scripts and tests while excluding other skills", (context) => {
+  const root = fixture(context);
+  mkdirSync(join(root, "tools"));
+  for (const path of ["tsconfig.json", "tools/tsconfig.json"]) {
+    copyFileSync(join(repository, path), join(root, path));
+  }
+  const paths = [
+    ".claude/skills/run-spec/scripts/script.ts",
+    ".claude/skills/run-spec/scripts/script.test.ts",
+  ];
+  for (const path of paths) {
+    mkdirSync(dirname(join(root, path)), { recursive: true });
+    writeFileSync(join(root, path), "export const invalid: string = 1;");
+  }
+  const tsc = join(
+    dirname(require.resolve("typescript/package.json")),
+    "bin/tsc",
+  );
+  const result = spawnSync(
+    process.execPath,
+    [tsc, "--project", "tools/tsconfig.json"],
+    {
+      cwd: root,
+      encoding: "utf8",
+      timeout: 15000,
+    },
+  );
+  assert.equal(result.error, undefined);
+  assert.equal(result.status, 2, result.stdout + result.stderr);
+  for (const path of paths)
+    assert.ok(result.stdout.includes(path), result.stdout);
+  assert.match(result.stdout, /TS2322/);
+  assert.doesNotMatch(result.stdout + result.stderr, /ignored\.ts/);
 });
 
 test("verify checks tracked ignored code through eslint without scanning ignored untracked files", (context) => {

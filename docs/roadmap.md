@@ -19,11 +19,11 @@
 | 包管理、媒体 | pnpm；媒体和渲染结果不进 git | `AGENTS.md` |
 | 远程仓库 | `github.com/JinhaoFang/video-studio`（私有） | — |
 | 护栏 | `pnpm verify`、commit-msg 钩子、CI（推送 `spec/**` 和 PR） | `docs/workflow/README.md`「护栏」 |
-| 并行派发 | 可做的工程工单各开一个 git worktree 并行跑 Codex | `studio-tickets` 第 4、5 步 |
-| 审查 | 单张工单只做实测验收；每批合并后和 spec 收尾时由 Codex 跑 `code-review`，设计负责人取舍 | `studio-tickets` 第 6 步 |
+| 并行派发 | 可做的工程工单各开一个 git worktree 并行跑 Codex | `run-spec` 第 4、5 步 |
+| 审查 | 单张工单只做实测验收；每批合并后和 spec 收尾时由 Codex 跑 `code-review`，设计负责人取舍 | `run-spec` 第 6 步 |
 | 合并方式 | PR 只用 merge commit（GitHub 设置已锁定），每个提交和它的 `Refs` 都留在 `main` 上 | — |
 | 工单写法 | spec 和工单不写文件路径，需要时用功能描述「边界」；spec 不列工单清单 | `docs/agents/issue-tracker.md` |
-| 汇报 | spec 收尾时写汇报存进 `docs/reports/`，再清理中间产物 | `studio-tickets` 第 7 步 |
+| 汇报 | spec 收尾时写汇报存进 `docs/reports/`，再清理中间产物 | `run-spec` 第 7 步 |
 
 ## 进度
 

@@ -1,6 +1,6 @@
 # 执行技能的本仓库配置
 
-执行技能（`.claude/skills/studio-tickets/`）只写通用步骤，本仓库特有的值放在两处：
+执行技能（`.claude/skills/run-spec/`）只写通用步骤，本仓库特有的值放在两处：
 
 - `docs/agents/run-spec.json`：工单脚本要读的值；
 - 本文：配置项的含义，以及脚本用不到、但设计负责人执行时要知道的值。

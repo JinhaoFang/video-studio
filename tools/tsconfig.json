@@ -12,7 +12,7 @@
   },
   "include": [
     "./**/*.ts",
-    "../.claude/skills/studio-*/**/*.ts",
+    "../.claude/skills/run-spec/**/*.ts",
     "../src/**/*.test.ts",
     "../episodes/**/*.test.ts",
     "../*.test.ts"

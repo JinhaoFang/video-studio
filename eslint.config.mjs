@@ -1,6 +1,6 @@
 /**
  * Keep Remotion's recommended rules on browser code, and use its shared JS/TS
- * rules on Node tools, studio skill scripts, and root configuration files.
+ * rules on Node tools, repository-owned skill scripts, and root configuration files.
  * tools/code-files.ts determines the verification input independently of ESLint.
  */
 import { config } from "@remotion/eslint-config-flat";
@@ -12,7 +12,7 @@ const browser = [
 ];
 const node = [
   "tools/**/*.{ts,js,mjs,cjs}",
-  ".claude/skills/studio-*/**/*.{ts,js,mjs,cjs}",
+  ".claude/skills/run-spec/**/*.{ts,js,mjs,cjs}",
   "*.{ts,js,mjs,cjs}",
 ];
 const nodeGlobals = Object.fromEntries(
@@ -30,7 +30,7 @@ export default [
       ".codex-runs/**",
       ".agents/**",
       ".claude/skills/*/**",
-      "!.claude/skills/studio-*/**",
+      "!.claude/skills/run-spec/**",
     ],
   },
   ...config
