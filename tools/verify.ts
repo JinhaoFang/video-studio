@@ -1,6 +1,6 @@
 /**
  * Run repository verification with `pnpm verify`: ESLint, browser and Node
- * TypeScript checks, comment and dependency guardrails, then .test.ts files.
+ * TypeScript checks, comment/dependency/document command guardrails, then tests.
  * Tests live in the Node type-checking environment, including browser folders.
  * An empty test set succeeds without starting Node's broader test discovery.
  */
@@ -48,6 +48,7 @@ run("tsc (browser)", [tsc, "--project", "tsconfig.json"]);
 run("tsc (Node)", [tsc, "--project", "tools/tsconfig.json"]);
 run("comment position", ["tools/check-guardrails.ts", "comments"]);
 run("dependency direction", ["tools/check-guardrails.ts", "dependencies"]);
+run("规则文档命令存在性", ["tools/check-doc-commands.ts"]);
 
 const tests = files.filter((path) => path.endsWith(".test.ts"));
 if (tests.length > 0) {
