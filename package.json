@@ -28,6 +28,7 @@
     "dev": "remotion studio",
     "build": "remotion bundle",
     "upgrade": "remotion upgrade",
-    "verify": "node tools/verify.ts"
+    "verify": "node tools/verify.ts",
+    "prepare": "node tools/install-hooks.ts"
   }
 }
