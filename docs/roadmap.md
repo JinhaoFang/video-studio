@@ -23,6 +23,7 @@
 | 审查 | 单张工单只做实测验收；每批合并后和 spec 收尾时由 Codex 跑 `code-review`，设计负责人取舍 | `run-spec` 第 6 步 |
 | 合并方式 | PR 只用 merge commit（GitHub 设置已锁定），每个提交和它的 `Refs` 都留在 `main` 上 | — |
 | 工单写法 | spec 和工单不写文件路径，需要时用功能描述「边界」；spec 不列工单清单 | `docs/agents/issue-tracker.md` |
+| 执行技能 | `run-spec`：机械步骤交给工单脚本（`dispatch`、`land`、`accept`、`cleanup`），本仓库特有的值放配置，复制技能、写一份配置就能迁移 | `docs/agents/run-spec.md` |
 | 汇报 | spec 收尾时写汇报存进 `docs/reports/`，再清理中间产物 | `run-spec` 第 7 步 |
 
 ## 进度
@@ -32,14 +33,12 @@
 - [x] DispatchDock 技能安装与冒烟测试
 - [x] 彩排：spec #1"工作室护栏与验收工具"
 - [x] 彩排复盘：结论见 `docs/research/rehearsal-findings.md`「复盘结论」
-- [ ] spec #17：工单脚本补齐与技能改名
+- [x] spec #17：工单脚本补齐与技能改名，汇报见 `docs/reports/spec-17-run-spec.md`
 - [ ] 建仓过程复盘
 - [ ] 第一阶段：复刻开场 0:00～0:46
 - [ ] 第二阶段：新选题完整一期
 
-## 下一步：spec #17，然后第一阶段
-
-**spec #17"工单脚本补齐与技能改名"**：复盘中需要写代码的调整，输入是彩排发现的「复盘结论」（标着 spec #17 的条目，以及融合点分类）。已在新会话里执行，执行放在新会话，是为了让设计负责人的上下文保持小（复盘新发现第 1 条）。汇报见 `docs/reports/`。
+## 下一步：第一阶段
 
 **第一阶段**：单独建 spec，在新会话里：
 
