@@ -18,26 +18,24 @@
 | 时间机制 | 动画按台本句子编号定时，不写死帧号 | `docs/workflow/README.md` |
 | 包管理、媒体 | pnpm；媒体和渲染结果不进 git | `AGENTS.md` |
 | 远程仓库 | `github.com/JinhaoFang/video-studio`（私有） | — |
+| 护栏 | `pnpm verify`、commit-msg 钩子、CI（推送 `spec/**` 和 PR） | `docs/workflow/README.md`「护栏」 |
+| 并行派发 | 可做的工程工单各开一个 git worktree 并行跑 Codex | `studio-tickets` 第 4、5 步 |
+| 审查 | 单张工单只做实测验收，`code-review` 在 spec 收尾时统一做一次 | `studio-tickets` 第 5、6 步 |
 
 ## 进度
 
 - [x] 参考视频拆解：`docs/research/`
 - [x] 规则文档、工单约定、GitHub 仓库和标签
 - [x] DispatchDock 技能安装与冒烟测试
-- [ ] 彩排：spec"工作室护栏与验收工具"
+- [x] 彩排：spec #1"工作室护栏与验收工具"
 - [ ] 第一阶段：复刻开场 0:00～0:46
 - [ ] 第二阶段：新选题完整一期
 
-## 下一步：彩排
+## 下一步：第一阶段
 
-目的是把整套流程完整走一遍，同时做出后面要用的护栏和验收工具。在新会话里：
+第一阶段单独建 spec。在新会话里：
 
-1. 跑 `/grill-with-docs`，主题"工作室护栏与验收工具"。下面是供讨论的候选内容，还没有定：
-   - `pnpm verify`：eslint 覆盖 `src` 和 `episodes`（现在的 `pnpm lint` 只查 `src`），加上 tsc，再加一项"代码注释只能写在文件头"的检查。
-   - 提交钩子：按 `AGENTS.md` 的提交格式检查类型、范围、正文和 `Refs` / `Role` 尾注，拒绝署名尾注。
-   - 依赖方向检查：`src/` 和 `tools/` 不能引用 `episodes/`，保证以后能把方法层单独拆出去（见 `docs/workflow/README.md`「以后拆分」）。
-   - 验收工具：按时间点抽关键帧；拼带时间码的联系表；渲染帧和参考视频同一时间点左右并排对比；测响度（LUFS、真峰值）。
-   - 工单脚本：把 `studio-tickets` 里写回评论、关闭工单这类机械步骤做成命令。
+1. 跑 `/grill-with-docs`，主题"第一阶段：复刻开场 0:00～0:46"，先过下面的待定项。
 2. 跑 `/to-spec`，再跑 `/to-tickets`。
 3. 对设计负责人说"执行 spec #<号>"。
 
@@ -45,10 +43,17 @@
 
 输入：`docs/research/nasa-ep04/` 的 `shots.md` 前两章、`transcript.md` 前 22 句、`style.md`。
 
-待定：配音来源（MiniMax API、MiniMax 网页、其他 TTS）；开发期是否先用参考视频的音轨当临时配音（只在本机学习时用）；真实照片的来源和授权。
+待定：
 
-## 待核实
+- 配音来源（MiniMax API、MiniMax 网页、其他 TTS）；开发期是否先用参考视频的音轨当临时配音（只在本机学习时用）；真实照片的来源和授权。
+- 混音目标：参考视频实测 -16.0 LUFS、LRA 2.9 LU、真峰值 -1.0 dBTP（`pnpm qa loudness`）。定下后用 `loudness` 的阈值参数验收。
+- 彩排推到这里的两项验收工具：动态自检（长时间静止、一闪而过的变化，阈值用真实渲染来定）；按台本句子编号取时间点（等时间轴格式定下）。
+- kit 组件要写测试时，测试的运行环境怎么定：现在 `.test.ts` 都按 Node 环境检查和运行，测不了 JSX。
 
-- **`code-review` 重名**：Claude Code 自带一个 `/code-review`，Matt 的技能也叫 `code-review`，实际调用的是哪个还没有实测。实测后把结果告诉用户，是否调整 `studio-tickets` 由用户决定。
-- **sub-issue 与阻塞关系**：本机 gh 是 2.83，`gh issue create --parent` 要 2.94 以上，目前走 `gh api`。第一次用的时候确认是否顺畅。
-- **eslint 只查 `src`**：`tsconfig.json` 已经包含 `episodes`，但 `pnpm lint` 里的 eslint 还没有覆盖它。放进彩排的护栏一起解决。
+开工参照：`pnpm qa sheet <参考视频> --from 0 --to 46 --every 2` 生成的联系表，一页看完开场的镜头节奏。注册第一个合成后，删掉 README 里"没有合成时 `remotion compositions` 要加 `--quiet`"那句说明。
+
+## 彩排中核实的结论
+
+- **`code-review` 重名**：用 Skill 工具调用 `code-review`，加载的是仓库里 Matt 的版本（Standards、Spec 两条线并行的子代理审查）。用户在输入框直接打 `/code-review` 时调用哪个，没有实测。
+- **sub-issue 与阻塞关系**：gh 2.83 用 `gh api` 一次就建成了；注意 POST 的响应返回的是被操作的那个 issue（父 issue 或被阻塞的 issue），不是新加上的关系。现在统一用 `tickets.ts link`。
+- **eslint 覆盖范围**：已由 `pnpm verify` 解决，范围是 git 跟踪的和未被忽略的全部代码。

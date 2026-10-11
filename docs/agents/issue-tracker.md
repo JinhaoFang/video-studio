@@ -14,6 +14,8 @@ Spec 是一个 issue，它拆出的工单是它的 sub-issue，工单之间用�
   - `## 汇报要回答的问题`：没有就写"无"。
 - 需要在本机实际运行确认的验收项，在行首标【实测】。
 
+建立 sub-issue 和阻塞关系用 `node .claude/skills/studio-tickets/scripts/tickets.ts link <父> <子> [--blocked-by <号>…]`：它把 issue 号换算成 database id，已存在的关系会跳过。下文 Conventions 里的 `gh api` 写法是它的底层。
+
 每个 spec 对应一个集成分支 `spec/<spec 号>-<英文短名>`。工单的提交都落在这个分支上，提交信息带尾注 `Refs: #<工单号>`（格式见 `AGENTS.md`）。设计负责人验收后在工单下评论验收结论，然后关闭；spec 由合并 PR 时的 `Closes #<spec 号>` 关闭。
 
 ## Conventions
