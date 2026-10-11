@@ -27,14 +27,16 @@
   ```
 
   - 类型：`feat` 新功能、`fix` 修复、`docs` 文档、`refactor` 重构、`test` 测试、`build` 依赖与构建、`chore` 杂项。
-  - 范围：改动所在的模块，用目录名，如 `kit`、`styles`、`tools`、`workflow`、`roles`、`skills`；每期的改动用期目录名。
-  - 摘要用中文，一行说清结果。正文必写，只有改错字这类一眼就懂的改动可以省略。
-  - 尾注：做工单时写 `Refs: #<工单号>`（工单由验收关闭，不写 `Closes`）；`Role` 必写。尾注只有这两项，不加任何署名尾注（包括 AI 署名和 Co-Authored-By）。
+  - 范围：改动所在的模块，用目录名，如 `kit`、`styles`、`tools`、`workflow`、`roles`、`skills`；每期的改动用期目录名；跨多个模块的整仓改动用 `repo`。
+  - 摘要用中文，一行说清结果。正文必写，改错字也写一句。
+  - 尾注：最后一段只写 `Refs: #<工单号>`（可以多行；工单由验收关闭，不写 `Closes`）和 `Role`，两项在同一段。用 `-m` 时放进同一个 `-m`，中间是真正的换行，bash 里写 `-m $'Refs: #12\nRole: design'`。`spec/*` 和 `ticket/*` 分支上 `Refs` 必写。尾注只有这两项，不加任何署名尾注（包括 AI 署名和 Co-Authored-By）。
+  - 回滚提交也按这个格式写。
+  - 格式由 commit-msg 钩子检查（`pnpm install` 时启用，没生效就运行 `node tools/install-hooks.ts`），CI 在推送 `spec/**` 和 PR 时再查一遍。
 - 只做工单范围内的事。新增依赖在汇报里写明理由，优先选发布超过 7 天的版本。
 - 媒体（配音、音乐、图片、视频素材、渲染结果）不进 git：素材放 `public/episodes/<期>/`，渲染输出放 `out/`，来源和授权记在该期的 `sources.md`。
 - `references/` 是参考资料，只读。
 - 调用外部程序时参数用数组传，不拼 shell 字符串。
-- 验证命令：`pnpm lint`。
+- 验证命令：`pnpm verify`（eslint、tsc、注释位置、依赖方向、单元测试）。CI 在推送 `spec/**` 和 PR 时也跑它。
 
 ## 目录与归属
 
@@ -43,12 +45,12 @@
 | `docs/`、`GLOSSARY.md`、`docs/adr/` | 规则、工作流、研究、术语、决策记录 | 设计 |
 | `src/styles/` | 风格皮肤：一套设计令牌一个文件夹 | 设计 |
 | `src/kit/` | 跨期复用的组件与机制（字幕条、按句定时、镜头、颗粒暗角……） | 工程，按令牌和设计定稿实现 |
-| `src/Root.tsx` | 注册各期的合成，用 `<Folder>` 分组 | 谁新增合成谁登记 |
+| `episodes/index.ts`、`episodes/Root.tsx` | Remotion 入口：注册各期的合成，用 `<Folder>` 分组 | 谁新增合成谁登记 |
 | `episodes/<期>/` | 本期说明、台本、镜头剧本、`sources.md`、本期镜头代码 | 设计 |
 | `episodes/<期>/data/` | 工具生成的数据（时间轴等） | 工程 |
 | `tools/`、测试、`package.json`、构建配置 | 工程脚本：验收（抽帧、对比、响度）与管线（配音、对齐、混音、渲染） | 工程 |
 
-一段代码第一次写时放在所在期的目录；第二期还要用，再提到 `src/kit/`。
+一段代码第一次写时放在所在期的目录；第二期还要用，再提到 `src/kit/`。依赖只从 `episodes/` 指向 `src/`：`src/` 和 `tools/` 不引用 `episodes/`，kit 组件的素材路径由参数传入。
 
 ## Agent skills
 

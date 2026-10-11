@@ -7,11 +7,12 @@
     "strict": true,
     "noEmit": true,
     "lib": ["es2015"],
+    "types": ["react", "web"],
     "esModuleInterop": true,
     "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true,
     "noUnusedLocals": true
   },
   "include": ["src", "episodes"],
-  "exclude": ["remotion.config.ts"]
+  "exclude": ["remotion.config.ts", "**/*.test.ts"]
 }

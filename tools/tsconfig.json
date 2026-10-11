@@ -1,0 +1,21 @@
+{
+  "extends": "../tsconfig.json",
+  "compilerOptions": {
+    "target": "ES2022",
+    "module": "NodeNext",
+    "moduleResolution": "NodeNext",
+    "lib": ["ES2022"],
+    "types": ["node"],
+    "allowImportingTsExtensions": true,
+    "erasableSyntaxOnly": true,
+    "verbatimModuleSyntax": true
+  },
+  "include": [
+    "./**/*.ts",
+    "../.claude/skills/studio-*/**/*.ts",
+    "../src/**/*.test.ts",
+    "../episodes/**/*.test.ts",
+    "../*.test.ts"
+  ],
+  "exclude": []
+}
