@@ -29,7 +29,7 @@
   - 类型：`feat` 新功能、`fix` 修复、`docs` 文档、`refactor` 重构、`test` 测试、`build` 依赖与构建、`chore` 杂项。
   - 范围：改动所在的模块，用目录名，如 `kit`、`styles`、`tools`、`workflow`、`roles`、`skills`；每期的改动用期目录名；跨多个模块的整仓改动用 `repo`。
   - 摘要用中文，一行说清结果。正文必写，改错字也写一句。
-  - 尾注：最后一段只写 `Refs: #<工单号>`（可以多行；工单由验收关闭，不写 `Closes`）和 `Role`，两项在同一段。用 `-m` 时放进同一个 `-m`，中间是真正的换行，bash 里写 `-m $'Refs: #12\nRole: design'`。`spec/*` 分支上 `Refs` 必写。尾注只有这两项，不加任何署名尾注（包括 AI 署名和 Co-Authored-By）。
+  - 尾注：最后一段只写 `Refs: #<工单号>`（可以多行；工单由验收关闭，不写 `Closes`）和 `Role`，两项在同一段。用 `-m` 时放进同一个 `-m`，中间是真正的换行，bash 里写 `-m $'Refs: #12\nRole: design'`。`spec/*` 和 `ticket/*` 分支上 `Refs` 必写。尾注只有这两项，不加任何署名尾注（包括 AI 署名和 Co-Authored-By）。
   - 回滚提交也按这个格式写。
   - 格式由 commit-msg 钩子检查（`pnpm install` 时启用，没生效就运行 `node tools/install-hooks.ts`），CI 在推送 `spec/**` 和 PR 时再查一遍。
 - 只做工单范围内的事。新增依赖在汇报里写明理由，优先选发布超过 7 天的版本。
