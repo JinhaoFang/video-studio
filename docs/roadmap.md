@@ -14,7 +14,7 @@
 | 分工 | Claude Code 当设计负责人，Codex 当工程负责人 | `AGENTS.md`、`docs/roles/` |
 | 技能 | Matt 的技能负责想清楚、拆工单、审查、复盘；DispatchDock 负责派发；Remotion 是两边都用的领域知识。DispatchDock 只装在 `.claude/skills/`，Codex 看不到 | `docs/workflow/README.md` |
 | 工单 | 只存在 GitHub Issues 一份，按 issue 号派发，不复制进仓库 | `docs/agents/issue-tracker.md` |
-| Codex 权限 | 完全权限（`--sandbox danger-full-access`），可以联网、用 `gh` 读 issue | `studio-tickets` 技能；派发默认配置 `~/.config/codex-dispatch/config.json` |
+| Codex 权限 | 完全权限（`--sandbox danger-full-access`），可以联网、用 `gh` 读 issue | `docs/agents/run-spec.md` |
 | 时间机制 | 动画按台本句子编号定时，不写死帧号 | `docs/workflow/README.md` |
 | 包管理、媒体 | pnpm；媒体和渲染结果不进 git | `AGENTS.md` |
 | 远程仓库 | `github.com/JinhaoFang/video-studio`（私有） | — |
@@ -32,14 +32,14 @@
 - [x] DispatchDock 技能安装与冒烟测试
 - [x] 彩排：spec #1"工作室护栏与验收工具"
 - [x] 彩排复盘：结论见 `docs/research/rehearsal-findings.md`「复盘结论」
-- [ ] spec #2：工单脚本补齐与技能改名
+- [ ] spec #17：工单脚本补齐与技能改名
 - [ ] 建仓过程复盘
 - [ ] 第一阶段：复刻开场 0:00～0:46
 - [ ] 第二阶段：新选题完整一期
 
-## 下一步：spec #2，然后第一阶段
+## 下一步：spec #17，然后第一阶段
 
-**spec #2"工单脚本补齐与技能改名"**：复盘中需要写代码的调整，输入是彩排发现的「复盘结论」（标着 spec #2 的条目，以及融合点分类）。在复盘会话里跑 `/to-spec`、`/to-tickets`，然后开新会话说"执行 spec #<号>"。执行放在新会话，是为了让设计负责人的上下文保持小（复盘新发现第 1 条）。
+**spec #17"工单脚本补齐与技能改名"**：复盘中需要写代码的调整，输入是彩排发现的「复盘结论」（标着 spec #17 的条目，以及融合点分类）。已在新会话里执行，执行放在新会话，是为了让设计负责人的上下文保持小（复盘新发现第 1 条）。汇报见 `docs/reports/`。
 
 **第一阶段**：单独建 spec，在新会话里：
 

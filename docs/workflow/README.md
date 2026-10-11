@@ -42,9 +42,7 @@ spec #S
 
 pnpm 的版本由 `package.json` 的 `packageManager` 固定，本机装的 pnpm 会自动切换到这个版本，本地和 CI 一致。
 
-规则文档命令检查覆盖 Git 跟踪及未被忽略的未跟踪文档：根目录的 `AGENTS.md`、`CLAUDE.md`、`README.md`，`docs/` 下除 `research/`、`reports/` 外的 Markdown，以及 `.claude/skills/` 下由 Git 纳入的本仓库自有技能 Markdown（第三方技能由忽略规则排除）。在这些目录新增规则文档或改名自有技能会自动纳入；新增其他根目录规则文档时，要同步检查脚本的范围。研究记录和工作汇报保留历史命令。
-
-检查反引号内（含反引号代码块）的 pnpm 命令是否为项目脚本或 pnpm 内置命令，显式 `pnpm run` 只查项目脚本；同时检查 `node` 后的字面相对路径是否为存在的文件，路径按仓库根目录解析。带尖括号的占位命令、绝对路径和含变量的 node 路径跳过。可运行 `node tools/check-doc-commands.ts --help` 查看独立检查用法。
+规则文档命令检查的范围和规则写在检查脚本的文件头，运行 `node tools/check-doc-commands.ts --help` 查看用法。研究记录和工作汇报不在范围内，可以如实保留历史命令。
 
 ## 一期视频
 
@@ -70,4 +68,4 @@ pnpm 的版本由 `package.json` 的 `packageManager` 固定，本机装的 pnpm
 ## 注意
 
 - Codex 运行期间不要关掉 Claude Code 会话。只用技能时没有托管模式，关掉会话可能连带中断 Codex。
-- 一个工作区同时只跑一个 Codex。可做的工程工单不止一张时，每张开一个 git worktree 并行派发，做法见 `studio-tickets` 第 4、5 步。
+- 派发、合并、验收、审查、收尾的具体步骤只写在执行技能 `studio-tickets` 里，本仓库特有的值见 `docs/agents/run-spec.md`。
