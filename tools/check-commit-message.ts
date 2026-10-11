@@ -1,32 +1,43 @@
 /**
  * Validate a commit message and branch without reading Git or changing state.
- * Import checkCommitMessage(message, branch) from hooks or CI; an empty list passes.
- * Ignore Git's # comment lines and use the final trailer paragraph as the footer.
- * Merge subjects beginning with "Merge " bypass checks; detached HEAD uses "".
+ * Import checkCommitMessage(message, branch, options?); an empty list passes.
+ * Hooks use stripComments to remove # lines and truncate at Git's scissors line.
+ * CI checks final messages without stripping; git commit -m preserves # lines.
+ * Callers skip merges using MERGE_HEAD (hook) or parent count (CI), never subjects.
+ * Detached HEAD uses ""; a footer paragraph must consist entirely of trailers.
  */
 export type CommitViolation = {
   rule: "a" | "b" | "c" | "d" | "e" | "f" | "g";
   message: string;
 };
 
-const trailer =
-  /^[A-Za-z][A-Za-z0-9-]*(?:[ \t]+[A-Za-z][A-Za-z0-9-]*)*\s*[:：]/;
+export type CommitMessageOptions = {
+  stripComments?: boolean;
+};
+
+const trailer = /^[A-Za-z][A-Za-z0-9-]*:[ \t]+\S.*$/;
 const signature =
-  /\b(?:co-authored-by|signed-off-by|authored-by|committed-by|reviewed-by|tested-by|acked-by|reported-by|suggested-by|helped-by|approved-by|assisted-by|pair-programmed-by|generated\s+(?:with|by))\b/i;
+  /^[\s\p{P}\p{S}\p{M}\u200d]*(?:[\p{L}\p{N}_]+(?:-[\p{L}\p{N}_]+)*-by:|generated[ \t]+(?:with|by)\b)/iu;
 
 export const checkCommitMessage = (
   message: string,
   branch: string,
+  options: CommitMessageOptions = {},
 ): CommitViolation[] => {
-  const lines = message
-    .replaceAll("\r\n", "\n")
-    .split("\n")
-    .filter((line) => !line.startsWith("#"))
-    .map((line) => line.trimEnd());
+  let lines = message.replaceAll("\r\n", "\n").split("\n");
+  if (options.stripComments) {
+    const scissors = lines.findIndex(
+      (line) =>
+        line.trimEnd() ===
+        "# ------------------------ >8 ------------------------",
+    );
+    if (scissors !== -1) lines = lines.slice(0, scissors);
+    lines = lines.filter((line) => !line.startsWith("#"));
+  }
+  lines = lines.map((line) => line.trimEnd());
   while (lines[0] === "") lines.shift();
   while (lines.at(-1) === "") lines.pop();
   const subject = lines[0] ?? "";
-  if (subject.startsWith("Merge ")) return [];
 
   const violations: CommitViolation[] = [];
   const title = /^([^\s(]+)\(([^)]*)\)([:：])([ \t]*)(.*)$/.exec(subject);
@@ -60,7 +71,7 @@ export const checkCommitMessage = (
     .trim()
     .split(/\n\s*\n/);
   const last = paragraphs.at(-1) ?? "";
-  const footer = last.split("\n").some((line) => trailer.test(line))
+  const footer = last.split("\n").every((line) => trailer.test(line))
     ? paragraphs.pop()!.split("\n")
     : [];
   if (lines[1] !== "" || !paragraphs.some((paragraph) => paragraph.trim())) {
@@ -73,28 +84,31 @@ export const checkCommitMessage = (
     /^Role: (design|engineering)$/.test(line),
   );
   const refs = footer.filter((line) => /^Refs: #[1-9][0-9]*$/.test(line));
+  const misplacedTrailers = paragraphs.some((paragraph) =>
+    /^(?:Role|Refs)\s*[:：]/m.test(paragraph),
+  );
   if (
     roles.length !== 1 ||
-    refs.length > 1 ||
     footer.some(
       (line) => !/^Role: (design|engineering)$|^Refs: #[1-9][0-9]*$/.test(line),
     ) ||
-    paragraphs.some((paragraph) => /^(?:Role|Refs)\s*[:：]/m.test(paragraph))
+    misplacedTrailers
   ) {
     violations.push({
       rule: "e",
-      message:
-        "最后的尾注段只允许 Refs: #<号> 和 Role: design|engineering，各最多一项；Role 必写。",
+      message: misplacedTrailers
+        ? "Refs 和 Role 要放在最后同一段，用换行分隔；用 -m 提交时放在同一个 -m 里。"
+        : "最后的尾注段只允许 Refs: #<号> 和 Role: design|engineering；Refs 可写多行，Role 必写且只能写一项。",
     });
   }
-  if (signature.test(lines.join("\n"))) {
+  if (lines.some((line) => signature.test(line))) {
     violations.push({
       rule: "f",
       message:
-        "任何位置都不能出现署名，包括 Co-Authored-By、Signed-off-by、Generated with/by 等（不区分大小写）。",
+        "任何行首都不能出现署名形状 <单词>-by: 或 Generated with/by，前面有空白、符号或 emoji 也不允许（不区分大小写）。",
     });
   }
-  if (branch.startsWith("spec/") && refs.length === 0) {
+  if (branch.startsWith("spec/") && refs.length === 0 && !misplacedTrailers) {
     violations.push({
       rule: "g",
       message: "spec/* 分支必须在尾注写 Refs: #<号>。",
