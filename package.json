@@ -6,6 +6,7 @@
   "license": "UNLICENSED",
   "private": true,
   "type": "module",
+  "packageManager": "pnpm@10.34.6",
   "engines": {
     "node": ">=22.18.0"
   },
@@ -29,6 +30,7 @@
     "build": "remotion bundle",
     "upgrade": "remotion upgrade",
     "verify": "node tools/verify.ts",
+    "check:commits": "node tools/check-commit-range.ts",
     "prepare": "node tools/install-hooks.ts",
     "qa": "node tools/qa.ts"
   }
