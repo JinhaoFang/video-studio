@@ -44,6 +44,15 @@ spec #S
 - 第二次用到的代码提到 `src/kit/`，第二次用到的风格提到 `src/styles/`。
 - 满意的镜头记下来作为对标片，以后同类镜头照着它验收。
 
+## 以后拆分
+
+仓库按目录分成两层，拆分时按目录切开：
+
+- **方法层**：`AGENTS.md`、`docs/roles/`、`docs/workflow/`、`docs/agents/`、`.claude/skills/studio-*`、`tools/`、`src/kit/`、`src/styles/`，加上 `skills-lock.json` 和 DispatchDock 的安装命令。
+- **产物层**：`episodes/`、`docs/research/`（里面有对他人作品的转写，不能公开）、本机的 `public/episodes/`。
+
+依赖只能从产物层指向方法层：每期可以用 `src/kit/`，`src/` 和 `tools/` 不能引用 `episodes/`。拆分时用 `git filter-repo --path …` 带着历史抽出需要的目录；提交信息里的 `(#号)` 用 `--replace-message` 改成 `JinhaoFang/video-studio#号`，这样拆出去以后链接仍然指向原仓库的 issue。
+
 ## 注意
 
 - Codex 运行期间不要关掉 Claude Code 会话。只用技能时没有托管模式，关掉会话可能连带中断 Codex。
