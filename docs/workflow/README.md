@@ -51,7 +51,7 @@ spec #S
 - **方法层**：`AGENTS.md`、`docs/roles/`、`docs/workflow/`、`docs/agents/`、`.claude/skills/studio-*`、`tools/`、`src/kit/`、`src/styles/`，加上 `skills-lock.json` 和 DispatchDock 的安装命令。
 - **产物层**：`episodes/`、`docs/research/`（里面有对他人作品的转写，不能公开）、本机的 `public/episodes/`。
 
-依赖只能从产物层指向方法层：每期可以用 `src/kit/`，`src/` 和 `tools/` 不能引用 `episodes/`。拆分时用 `git filter-repo --path …` 带着历史抽出需要的目录；提交信息尾注里的 `Refs: #号` 用 `--replace-message` 改成 `Refs: JinhaoFang/video-studio#号`，这样拆出去以后链接仍然指向原仓库的 issue。
+依赖只能从产物层指向方法层：每期可以用 `src/kit/`，`src/` 和 `tools/` 不能引用 `episodes/`。注册各期合成的 Remotion 入口（`episodes/index.ts`、`episodes/Root.tsx`）属于产物层，所以 `src/` 里没有入口；拆出去的方法层要用时，自己配一个入口。拆分时用 `git filter-repo --path …` 带着历史抽出需要的目录；提交信息尾注里的 `Refs: #号` 用 `--replace-message` 改成 `Refs: JinhaoFang/video-studio#号`，这样拆出去以后链接仍然指向原仓库的 issue。
 
 ## 注意
 

@@ -27,7 +27,7 @@ gh api repos/{owner}/{repo}/issues/<S>/sub_issues --jq '.[] | {number, title, st
 
 ## 3. 按执行角色分流
 
-- `role:design`：自己做。按工单的验收标准验证，`pnpm lint` 通过后提交，提交信息按 `AGENTS.md` 的格式写，尾注 `Refs: #T`、`Role: design`。然后转到第 5 步。
+- `role:design`：自己做。按工单的验收标准验证，`pnpm verify` 通过后提交，提交信息按 `AGENTS.md` 的格式写，尾注 `Refs: #T`、`Role: design`。然后转到第 5 步。
 - `ready-for-human`：告诉用户要做什么、做完要交回什么，然后等用户。
 - 没有执行角色标签：按 `docs/roles/design.md` 的判断标准定一个，补上标签。
 - `role:engineering`：转到第 4 步。
@@ -51,7 +51,7 @@ node .claude/skills/codex-dispatch/codex-task.mjs "完成 GitHub 工单 #T（父
 ## 5. 验收并写回
 
 1. 读汇报 `.codex-runs/<记录名>.md`；`git log $BASE..HEAD --oneline`；确认 `git status` 干净，提交里只有写入范围内的文件。
-2. 自己跑 `pnpm lint`，再逐条核对工单的验收标准。验收产物要亲自看：图片用 Read 看，命令自己重跑。
+2. 自己跑 `pnpm verify`，再逐条核对工单的验收标准。验收产物要亲自看：图片用 Read 看，命令自己重跑。
 3. 汇报里的每一条 `TODO(design)` 和推断清单都要给出处理：接受，或者做决定、写进后续工单，或者自己动手改。
 4. 用 `code-review` 以 `$BASE` 为固定点做审查（仓库规范、工单要求两条线）。
 5. 在工单下评论验收结论，然后关闭；没通过的，评论问题后带补充说明回到第 4 步。评论格式：

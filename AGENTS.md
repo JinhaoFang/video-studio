@@ -34,7 +34,7 @@
 - 媒体（配音、音乐、图片、视频素材、渲染结果）不进 git：素材放 `public/episodes/<期>/`，渲染输出放 `out/`，来源和授权记在该期的 `sources.md`。
 - `references/` 是参考资料，只读。
 - 调用外部程序时参数用数组传，不拼 shell 字符串。
-- 验证命令：`pnpm lint`。
+- 验证命令：`pnpm verify`。
 
 ## 目录与归属
 
@@ -43,7 +43,7 @@
 | `docs/`、`GLOSSARY.md`、`docs/adr/` | 规则、工作流、研究、术语、决策记录 | 设计 |
 | `src/styles/` | 风格皮肤：一套设计令牌一个文件夹 | 设计 |
 | `src/kit/` | 跨期复用的组件与机制（字幕条、按句定时、镜头、颗粒暗角……） | 工程，按令牌和设计定稿实现 |
-| `src/Root.tsx` | 注册各期的合成，用 `<Folder>` 分组 | 谁新增合成谁登记 |
+| `episodes/index.ts`、`episodes/Root.tsx` | Remotion 入口：注册各期的合成，用 `<Folder>` 分组 | 谁新增合成谁登记 |
 | `episodes/<期>/` | 本期说明、台本、镜头剧本、`sources.md`、本期镜头代码 | 设计 |
 | `episodes/<期>/data/` | 工具生成的数据（时间轴等） | 工程 |
 | `tools/`、测试、`package.json`、构建配置 | 工程脚本：验收（抽帧、对比、响度）与管线（配音、对齐、混音、渲染） | 工程 |
