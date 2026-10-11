@@ -29,6 +29,7 @@
     "build": "remotion bundle",
     "upgrade": "remotion upgrade",
     "verify": "node tools/verify.ts",
-    "prepare": "node tools/install-hooks.ts"
+    "prepare": "node tools/install-hooks.ts",
+    "qa": "node tools/qa.ts"
   }
 }
