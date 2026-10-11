@@ -41,20 +41,14 @@
 2. 跑 `/to-spec`，再跑 `/to-tickets`。
 3. 对设计负责人说"执行 spec #<号>"。
 
-彩排时要观察的：
-
-- Codex 是否守住角色和写入范围。
-- 汇报 9 项是否齐全，推断清单是否真的有用。
-- 在 gh 2.83 下，sub-issue 和阻塞关系的 API 用起来是否顺畅（`gh issue create --parent` 要 2.94 以上，目前走 `gh api`）。
-- `code-review` 实际调用的是哪个版本（见下面的待核实）。
-
 ## 第一阶段：复刻开场
 
-输入：`docs/research/nasa-ep04/` 的 `shots.md` 前两章、`transcript.md` 前 22 句、`style.md`。开发期可以先用参考视频的音轨当临时配音，只在本机学习时用。
+输入：`docs/research/nasa-ep04/` 的 `shots.md` 前两章、`transcript.md` 前 22 句、`style.md`。
 
-待定：配音来源（MiniMax API、MiniMax 网页、其他 TTS）；真实照片的来源和授权。
+待定：配音来源（MiniMax API、MiniMax 网页、其他 TTS）；开发期是否先用参考视频的音轨当临时配音（只在本机学习时用）；真实照片的来源和授权。
 
 ## 待核实
 
-- **`code-review` 重名**：Claude Code 自带一个 `/code-review`，Matt 的技能也叫 `code-review`，需要实测实际调用的是哪个。如果 Matt 的版本被挡住，就把"对照工单检查"写进 `studio-tickets`。
+- **`code-review` 重名**：Claude Code 自带一个 `/code-review`，Matt 的技能也叫 `code-review`，实际调用的是哪个还没有实测。实测后把结果告诉用户，是否调整 `studio-tickets` 由用户决定。
+- **sub-issue 与阻塞关系**：本机 gh 是 2.83，`gh issue create --parent` 要 2.94 以上，目前走 `gh api`。第一次用的时候确认是否顺畅。
 - **eslint 只查 `src`**：`tsconfig.json` 已经包含 `episodes`，但 `pnpm lint` 里的 eslint 还没有覆盖它。放进彩排的护栏一起解决。
