@@ -20,7 +20,7 @@
 
 ## 执行时要知道的其他值
 
-- **按批审查的权限**：审查用 DispatchDock 的派发脚本直接派发，`--sandbox` 填上面的 `codexSandbox`。
+- **按批审查**：审查不走 `dispatch`，用 `dispatchScript` 指向的派发脚本直接派发，`--sandbox` 填 `codexSandbox`。
 - **汇报目录**：`docs/reports/`，范例是 `docs/reports/spec-1-guardrails.md`。
 - **实测用时**：一张工程工单派发后 5～10 分钟结束，一次按批审查约 4 分钟。告诉用户粗略用时就按这个估。
 - **常见的共享登记处**：`pnpm qa` 的子命令登记表、工单脚本的子命令登记表。并行的工单都要往里加一项时，派发的补充说明写"只加自己那一项"。
@@ -38,5 +38,6 @@
 
 1. 复制技能目录，确认它会进 git，第三方技能仍然不进。
 2. 写一份 `docs/agents/run-spec.json`，按上表逐项改成新仓库的值。
-3. 复制本文，改掉「执行时要知道的其他值」。
-4. 在 `docs/agents/issue-tracker.md` 里补上本仓库的工单约定，可以参照本仓库那一节。
+3. 让 git 忽略三类目录：验收产物根目录、派发记录目录 `.codex-runs/`、软链接进 worktree 的目录。Codex 会在 worktree 里写验收产物和派发记录；不忽略的话 worktree 就不干净，`land` 会拒绝合并。
+4. 复制本文，改掉「执行时要知道的其他值」。
+5. 在 `docs/agents/issue-tracker.md` 里补上本仓库的工单约定，可以参照本仓库那一节。
