@@ -5,6 +5,8 @@
  * and a nonzero exit status, without writing to GitHub or changing source media.
  */
 import { framesUsage, runFrames } from "./qa-frames.ts";
+import { sheetUsage, runSheet } from "./qa-sheet.ts";
+import { compareUsage, runCompare } from "./qa-compare.ts";
 import { loudnessUsage, runLoudness } from "./qa-loudness.ts";
 
 const commands: Record<
@@ -12,6 +14,8 @@ const commands: Record<
   { usage: string; run: (args: string[]) => void }
 > = {
   frames: { usage: framesUsage, run: runFrames },
+  sheet: { usage: sheetUsage, run: runSheet },
+  compare: { usage: compareUsage, run: runCompare },
   loudness: { usage: loudnessUsage, run: runLoudness },
 };
 
