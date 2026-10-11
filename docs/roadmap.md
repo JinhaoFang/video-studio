@@ -4,7 +4,7 @@
 
 1. **用 AI 做视频**：先复刻《设计风格小课 04：NASA 朋克》的开场 0:00～0:46，再用新选题做完整一期。
 2. **探索 DispatchDock**：只用它的两个技能（`codex-dispatch`、`dual-role-workflow`），不用监控软件。使用记录见 `docs/research/dispatchdock-notes.md`。
-3. **复利**：以仓库的形式沉淀规则、工具、组件和风格，下一期视频从这里起步。
+3. **复利**：以仓库的形式沉淀规则、工具、组件和风格，下一期视频从这里起步。人和 agent 一起搭建这个仓库的过程也要复盘记录，作为在别的仓库复用这套做法的参照。
 
 ## 已定（2026-10-11）
 
@@ -20,7 +20,10 @@
 | 远程仓库 | `github.com/JinhaoFang/video-studio`（私有） | — |
 | 护栏 | `pnpm verify`、commit-msg 钩子、CI（推送 `spec/**` 和 PR） | `docs/workflow/README.md`「护栏」 |
 | 并行派发 | 可做的工程工单各开一个 git worktree 并行跑 Codex | `studio-tickets` 第 4、5 步 |
-| 审查 | 单张工单只做实测验收，`code-review` 在 spec 收尾时统一做一次 | `studio-tickets` 第 5、6 步 |
+| 审查 | 单张工单只做实测验收；每批合并后和 spec 收尾时由 Codex 跑 `code-review`，设计负责人取舍 | `studio-tickets` 第 6 步 |
+| 合并方式 | PR 只用 merge commit（GitHub 设置已锁定），每个提交和它的 `Refs` 都留在 `main` 上 | — |
+| 工单写法 | spec 和工单不写文件路径，需要时用功能描述「边界」；spec 不列工单清单 | `docs/agents/issue-tracker.md` |
+| 汇报 | spec 收尾时写汇报存进 `docs/reports/`，再清理中间产物 | `studio-tickets` 第 7 步 |
 
 ## 进度
 
@@ -28,16 +31,23 @@
 - [x] 规则文档、工单约定、GitHub 仓库和标签
 - [x] DispatchDock 技能安装与冒烟测试
 - [x] 彩排：spec #1"工作室护栏与验收工具"
+- [x] 彩排复盘：结论见 `docs/research/rehearsal-findings.md`「复盘结论」
+- [ ] spec #2：工单脚本补齐与技能改名
+- [ ] 建仓过程复盘
 - [ ] 第一阶段：复刻开场 0:00～0:46
 - [ ] 第二阶段：新选题完整一期
 
-## 下一步：彩排复盘，然后第一阶段
+## 下一步：spec #2，然后第一阶段
 
-spec #1 合并后先复盘，输入是 `docs/research/rehearsal-findings.md`：落实里面已定的调整，回答待判断的问题。然后第一阶段单独建 spec，在新会话里：
+**spec #2"工单脚本补齐与技能改名"**：复盘中需要写代码的调整，输入是彩排发现的「复盘结论」（标着 spec #2 的条目，以及融合点分类）。在复盘会话里跑 `/to-spec`、`/to-tickets`，然后开新会话说"执行 spec #<号>"。执行放在新会话，是为了让设计负责人的上下文保持小（复盘新发现第 1 条）。
+
+**第一阶段**：单独建 spec，在新会话里：
 
 1. 跑 `/grill-with-docs`，主题"第一阶段：复刻开场 0:00～0:46"，先过下面的待定项。
 2. 跑 `/to-spec`，再跑 `/to-tickets`。
-3. 对设计负责人说"执行 spec #<号>"。
+3. 开新会话，对设计负责人说"执行 spec #<号>"。
+
+**建仓过程复盘**：时间不限。素材是仓库改名前的建仓会话，记录在 `~/.claude/projects/-root-project-my-video/`（仓库原名 my-video，改名后这个会话仍写在旧目录里），同期 Codex 的冒烟测试记录在 `~/.codex/sessions/2026/10/11/` 下 16:49～18:58 的几个文件。会话记录很大，先用脚本抽出双方的对话再读。
 
 ## 第一阶段：复刻开场
 
