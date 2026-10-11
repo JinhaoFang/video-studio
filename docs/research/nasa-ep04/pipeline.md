@@ -55,8 +55,7 @@ dual-role-workflow 的 `setup` 会在项目里建这几样东西（DispatchDock 
 ### 3.3 在本机能不能用
 
 - DispatchDock v0.1 官方只支持 Windows；派发脚本本身没有写死 Windows，只有"弹出只读进度窗口"是 Windows 专用。
-- 本机实测（2026-10-11）：Linux + Node 22.23 下 `CODEX_DRY_RUN=1` 空跑正常，能打印记录名和将发给 Codex 的指令。官方要求 Node 24，真实派发还没验证。
-- 本机已装 `codex-cli 0.161.0`，`~/.codex/auth.json` 存在（是否有效未验证）。
+- 本机实测（2026-10-11）：Linux + Node 22.23 下真实派发成功（官方要求 Node 24），详见 `docs/research/dispatchdock-notes.md`。
 
 ## 4. 制作阶段（按依赖顺序）
 

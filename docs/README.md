@@ -1,12 +1,16 @@
 # 文档地图
 
-本仓库用来分析、拆解和重建"用 agent 做讲解视频"的方法，主要对象是"路北路陈"的《设计风格小课 04：NASA 朋克》（Opus 5.5 设计 + Codex 执行，DispatchDock 协作）。参考资料在 `references/`（不进 git）。
-
 | 文档 | 内容 |
 |---|---|
-| `research/nasa-ep04/pipeline.md` | 制作流程：谁做什么、DispatchDock 怎么派活和验收、按依赖排的制作阶段、可学的做法 |
-| `research/nasa-ep04/shots.md` | 逐章镜头表：时间、画面、素材类型（实拍 / 截图 / 代码）、对应旁白 |
-| `research/nasa-ep04/style.md` | 视觉与声音系统：场景面、实测色板、字体、字幕条、反复出现的组件、运动语法、响度 |
-| `research/nasa-ep04/transcript.md` | 旁白逐句时间轴（191 句，GPU 上 Whisper 转写 + 人工校正） |
-| `research/table-videosop.md` | 对照：第二个参考视频（一只桌子）的 Table-Video SOP，和可以借用的做法 |
-| `rebuild-plan.md` | 在本仓库重建这套流程的分阶段计划，以及需要用户决定的事项 |
+| `../AGENTS.md` | 共同规则、角色、目录与归属（两个 agent 每次都会读） |
+| `roadmap.md` | 目标、已定的决策、进度和下一步，**新会话从这里看起** |
+| `workflow/README.md` | 制作工作流总图：每个阶段谁触发、用什么、产物在哪里 |
+| `roles/design.md` | 设计负责人：自己做和派出去的判断标准、验收方法 |
+| `roles/engineering.md` | 工程负责人：硬规则、可用技能、完成标准、汇报格式 |
+| `agents/issue-tracker.md` | GitHub 工单的操作方法和本仓库的工单约定 |
+| `agents/triage-labels.md`、`agents/domain.md` | Matt 技能的标签表、术语文档布局 |
+| `research/nasa-ep04/` | 参考视频拆解：`pipeline.md` 流程、`shots.md` 镜头表、`style.md` 视觉与声音、`transcript.md` 旁白时间轴 |
+| `research/table-videosop.md` | 对照：另一位作者的 Table-Video SOP，以及可以借用的做法 |
+| `research/dispatchdock-notes.md` | 使用 DispatchDock 的实测记录 |
+
+`GLOSSARY.md` 和 `docs/adr/` 由 `/grill-with-docs` 在第一次定下术语或决策时自动生成。
