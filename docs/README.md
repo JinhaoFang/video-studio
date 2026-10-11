@@ -13,5 +13,6 @@
 | `research/table-videosop.md` | 对照：另一位作者的 Table-Video SOP，以及可以借用的做法 |
 | `research/dispatchdock-notes.md` | 使用 DispatchDock 的实测记录 |
 | `research/rehearsal-findings.md` | 彩排发现：Matt 技能与 DispatchDock 结合的问题和已定的调整，spec #1 完成后复盘用 |
+| `reports/` | 每个 spec 完成后，设计负责人给用户的工作汇报 |
 
 `GLOSSARY.md` 和 `docs/adr/` 由 `/grill-with-docs` 在第一次定下术语或决策时自动生成。
