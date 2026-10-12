@@ -53,7 +53,7 @@
 - 初始化技能是负责安装 Matt 和 DispatchDock，还是只检查它们装好了没有；
 - 文档命令护栏、`pnpm verify` 这类仓库级护栏要不要随行。
 
-输入：`docs/workflow/bootstrap.md`「交给初始化技能的范围」，标【初始化】的步骤是候选。起点是本机的手工迁移包：仓库外的同级目录 `run-spec-package/`，不进 git，里面的 `README.md` 写了手工安装步骤。
+输入：`docs/workflow/bootstrap.md`「交给初始化技能的范围」，标【初始化】的步骤是候选；第一次手工迁移（design-system，2026-10-12）碰到的问题见 `docs/research/run-spec-migration.md`。那边的彩排 spec 跑完 `dispatch`、`land` 以后再开这个 spec。起点是本机的手工迁移包：仓库外的同级目录 `run-spec-package/`，不进 git，里面的 `README.md` 写了手工安装步骤。
 
 ## 第一阶段：复刻开场
 
