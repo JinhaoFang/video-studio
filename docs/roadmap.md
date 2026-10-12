@@ -24,7 +24,7 @@
 | 合并方式 | PR 只用 merge commit（GitHub 设置已锁定），每个提交和它的 `Refs` 都留在 `main` 上 | — |
 | 工单写法 | spec 和工单不写文件路径，需要时用功能描述「边界」；spec 不列工单清单 | `docs/agents/issue-tracker.md` |
 | 执行技能 | `run-spec`：机械步骤交给工单脚本（`dispatch`、`land`、`accept`、`cleanup`），本仓库特有的值放配置，复制技能、写一份配置就能迁移 | `docs/agents/run-spec.md` |
-| 汇报 | spec 收尾时写 HTML 可视化汇报存进 `docs/reports/`，再清理中间产物；用户要求时才发布到 claude.ai | `run-spec` 第 7 步 |
+| 汇报 | spec 收尾时写 HTML 可视化汇报存进 `docs/reports/`，再清理中间产物；不发布到外部服务 | `run-spec` 第 7 步 |
 
 ## 进度
 
