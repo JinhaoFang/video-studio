@@ -40,7 +40,7 @@ spec #S
 - commit-msg 钩子：按 `AGENTS.md` 的格式检查提交信息。
 - CI：推送 `spec/**` 和开 PR 时跑 `pnpm verify`，并逐条检查分支上的提交信息，兜住绕过本地钩子的提交。本地复现：`pnpm verify`，再 `pnpm check:commits origin/main <分支>`。
 
-pnpm 的版本由 `package.json` 的 `packageManager` 固定，本机装的 pnpm 会自动切换到这个版本，本地和 CI 一致。
+pnpm 的版本由 `package.json` 的 `packageManager` 固定，本机装的 pnpm 会自动切换到这个版本，本地和 CI 一致。文档命令护栏会检查内置命令白名单版本是否一致；升级时按 `tools/check-doc-commands.ts` 文件头的方法更新白名单和版本。
 
 规则文档命令检查的范围和规则写在检查脚本的文件头，运行 `node tools/check-doc-commands.ts --help` 查看用法。研究记录和工作汇报不在范围内，可以如实保留历史命令。
 

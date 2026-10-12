@@ -14,11 +14,48 @@ const script = resolve(import.meta.dirname, "check-doc-commands.ts");
 const fixture = (context: TestContext, files: Record<string, string>) =>
   gitRepository(context, {
     "package.json": JSON.stringify({
+      packageManager: "pnpm@10.34.6",
       scripts: { verify: "node tools/verify.ts", qa: "node tools/qa.ts" },
     }),
     ...files,
   });
 const run = (root: string) => runCommand(process.execPath, [script, root]);
+
+test("pnpm snapshot version matches packageManager, including integrity suffixes", (context) => {
+  for (const packageManager of ["pnpm@10.34.6", "pnpm@10.34.6+sha512.fixture"]) {
+    const { root } = fixture(context, {
+      "package.json": JSON.stringify({ packageManager }),
+    });
+    const result = run(root);
+    assert.equal(result.status, 0, result.stderr);
+    assert.equal(result.stdout, "");
+    assert.equal(result.stderr, "");
+  }
+});
+
+test("pnpm snapshot version mismatch fails with both versions and update instructions", (context) => {
+  const { root } = fixture(context, {
+    "package.json": JSON.stringify({ packageManager: "pnpm@10.35.0" }),
+  });
+  const result = run(root);
+  assert.equal(result.status, 1);
+  assert.equal(result.stdout, "");
+  assert.match(result.stderr, /^出错：package\.json:1 doc-command /);
+  assert.match(result.stderr, /白名单版本 10\.34\.6.*packageManager 版本 10\.35\.0/);
+  assert.match(result.stderr, /tools\/check-doc-commands\.ts 文件头.*更新白名单和版本/);
+});
+
+test("missing or non-pnpm packageManager cannot validate the pnpm snapshot", (context) => {
+  for (const packageManager of [undefined, "npm@10.34.6"]) {
+    const { root } = fixture(context, {
+      "package.json": JSON.stringify({ packageManager }),
+    });
+    const result = run(root);
+    assert.equal(result.status, 1);
+    assert.match(result.stderr, /白名单版本 10\.34\.6/);
+    assert.ok(result.stderr.includes(packageManager ?? "未声明"));
+  }
+});
 
 test("missing pnpm scripts report every invocation with file, line and command", (context) => {
   const { root } = fixture(context, {

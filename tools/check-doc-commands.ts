@@ -6,7 +6,8 @@
  * Git ignore rules define skill ownership, so renaming a tracked skill works.
  * Skip angle-bracket placeholders and dynamic/absolute node paths. Commands
  * are inspected as text, never executed; the static built-in snapshot matches
- * packageManager pnpm@10.34.6. Source: https://registry.npmjs.org/pnpm/10.34.6
+ * the builtinsVersion below, checked against packageManager on every run.
+ * Source: https://registry.npmjs.org/pnpm/10.34.6
  * On pnpm upgrades, download the official pinned package and confirm its version
  * using Node on bin/pnpm.cjs. Compare help --all, commandNames registrations
  * (including completion-server), the npm passthrough allowlist, and run fallback
@@ -18,6 +19,7 @@ import { readFileSync, statSync } from "node:fs";
 import { isAbsolute, resolve } from "node:path";
 import { reportError, usageError } from "./cli.ts";
 
+const builtinsVersion = "10.34.6";
 const builtins = new Set(
   `access add adduser approve-builds audit bin bugs c cache cat-file cat-index
   ci clean-install completion completion-server config create dedupe deploy
@@ -73,6 +75,15 @@ const main = (): void => {
     { cwd: root, encoding: "utf8", stdio: "pipe" },
   ).split("\0");
   let failures = 0;
+  const pnpmVersion = /^pnpm@([^+]+)(?:\+.*)?$/.exec(
+    manifest.packageManager ?? "",
+  )?.[1];
+  if (pnpmVersion !== builtinsVersion) {
+    console.error(
+      `出错：package.json:1 doc-command pnpm 白名单版本 ${builtinsVersion} 与 packageManager 版本 ${pnpmVersion ?? manifest.packageManager ?? "未声明"} 不一致；请按 tools/check-doc-commands.ts 文件头的方法更新白名单和版本。`,
+    );
+    failures += 1;
+  }
 
   for (const path of [...new Set(paths)].filter(isRuleDocument).sort()) {
     const absolute = resolve(root, path);
