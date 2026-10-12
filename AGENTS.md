@@ -36,7 +36,7 @@
 - 媒体（配音、音乐、图片、视频素材、渲染结果）不进 git：素材放 `public/episodes/<期>/`，渲染输出放 `out/`，来源和授权记在该期的 `sources.md`。
 - `references/` 是参考资料，只读。
 - 调用外部程序时参数用数组传，不拼 shell 字符串。
-- 验证命令：`pnpm verify`（eslint、tsc、注释位置、依赖方向、单元测试）。CI 在推送 `spec/**` 和 PR 时也跑它。
+- 验证命令：`pnpm verify`（eslint、tsc、注释位置、依赖方向、规则文档命令存在性、单元测试）。CI 在推送 `spec/**` 和 PR 时也跑它。
 
 ## 目录与归属
 

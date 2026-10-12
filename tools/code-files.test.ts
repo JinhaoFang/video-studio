@@ -8,7 +8,13 @@ import {
   commandOutput as execFileSync,
   gitRepository,
 } from "./test-support.ts";
-import { mkdirSync, readFileSync, rmSync, writeFileSync } from "node:fs";
+import {
+  copyFileSync,
+  mkdirSync,
+  readFileSync,
+  rmSync,
+  writeFileSync,
+} from "node:fs";
 import { dirname, join } from "node:path";
 import { test } from "node:test";
 import { listCodeFiles } from "./code-files.ts";
@@ -74,4 +80,30 @@ test("Git alone controls tracked and non-ignored untracked code paths", (context
   });
   rmSync(join(root, "deleted.ts"));
   assert.deepEqual(listCodeFiles(root), [...tracked, ...untracked].sort());
+});
+
+test("repository ignore rules include run-spec scripts and tests while excluding other skills", (context) => {
+  const { root, git } = gitRepository(context);
+  copyFileSync(
+    new URL("../.gitignore", import.meta.url),
+    join(root, ".gitignore"),
+  );
+  const owned = [
+    ".claude/skills/run-spec/scripts/tickets.ts",
+    ".claude/skills/run-spec/scripts/tickets.test.ts",
+  ];
+  const ignored = [
+    ".claude/skills/codex-dispatch/codex-task.mjs",
+    ".claude/skills/third-party/scripts/task.ts",
+    ".claude/skills/studio-fixture/scripts/task.ts",
+    ".agents/skills/third-party/scripts/task.test.ts",
+  ];
+  for (const path of [...owned, ...ignored]) {
+    mkdirSync(dirname(join(root, path)), { recursive: true });
+    writeFileSync(join(root, path), "");
+  }
+  assert.deepEqual(listCodeFiles(root), [...owned].sort());
+  git(["add", "--", ...owned]);
+  assert.deepEqual(listCodeFiles(root), [...owned].sort());
+  assert.deepEqual(git(["ls-files"]).split("\n"), [...owned].sort());
 });

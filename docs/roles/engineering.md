@@ -4,7 +4,7 @@
 
 ## 接工单
 
-- 工单是 GitHub issue。用 `gh issue view <号> --comments` 读全文，再读它的父 spec 和里面链接的文件。
+- 工单是 GitHub issue。用 `gh issue view <号> --json title,body,comments` 读正文和评论，父 spec 同样读取，再读里面链接的文件。
 - 你对 GitHub 只读。评论、关闭、改标签、推送、开 PR 都由设计负责人做。
 - 改哪些文件由你查看后决定；工单写了「边界」就不越过它。需要做边界外的改动时，先完成本工单能做的部分，再把需要改的地方和原因写进汇报。
 

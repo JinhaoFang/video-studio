@@ -9,7 +9,7 @@
 | 想清楚 | 用户 | `/grill-with-docs` | 术语进 `GLOSSARY.md`，难回头的决定进 `docs/adr/` |
 | 写 spec | 用户 | `/to-spec` | GitHub issue |
 | 拆工单 | 用户 | `/to-tickets` | spec 的 sub-issue，带阻塞关系；格式见 `docs/agents/issue-tracker.md` |
-| 执行与验收 | 用户在新会话里说"执行 spec #号"，设计负责人照做 | `studio-tickets`（内部用 `codex-dispatch`） | 集成分支上的提交、工单下的验收评论、`docs/reports/` 的汇报 |
+| 执行与验收 | 用户在新会话里说"执行 spec #号"，设计负责人照做 | `run-spec`（内部用 `codex-dispatch`） | 集成分支上的提交、工单下的验收评论、`docs/reports/` 的汇报 |
 | 合并 | 用户 | PR（正文用 `/pr` 的格式），只能用 merge commit | `main` |
 | 复盘 | 用户 | `/retro` | 规则文档、检查脚本、文档指针 |
 
@@ -36,11 +36,13 @@ spec #S
 
 能机械判断的规则交给护栏，不靠自觉：
 
-- `pnpm verify`：eslint、tsc、注释位置、依赖方向、单元测试。完成标准都以它通过为准。
+- `pnpm verify`：eslint、tsc、注释位置、依赖方向、规则文档命令存在性、单元测试。完成标准都以它通过为准。
 - commit-msg 钩子：按 `AGENTS.md` 的格式检查提交信息。
 - CI：推送 `spec/**` 和开 PR 时跑 `pnpm verify`，并逐条检查分支上的提交信息，兜住绕过本地钩子的提交。本地复现：`pnpm verify`，再 `pnpm check:commits origin/main <分支>`。
 
-pnpm 的版本由 `package.json` 的 `packageManager` 固定，本机装的 pnpm 会自动切换到这个版本，本地和 CI 一致。
+pnpm 的版本由 `package.json` 的 `packageManager` 固定，本机装的 pnpm 会自动切换到这个版本，本地和 CI 一致。文档命令护栏会检查内置命令白名单版本是否一致；升级时按 `tools/check-doc-commands.ts` 文件头的方法更新白名单和版本。
+
+规则文档命令检查的范围和规则写在检查脚本的文件头，运行 `node tools/check-doc-commands.ts --help` 查看用法。研究记录和工作汇报不在范围内，可以如实保留历史命令。
 
 ## 一期视频
 
@@ -58,7 +60,7 @@ pnpm 的版本由 `package.json` 的 `packageManager` 固定，本机装的 pnpm
 
 仓库按目录分成两层，拆分时按目录切开：
 
-- **方法层**：`AGENTS.md`、`docs/roles/`、`docs/workflow/`、`docs/agents/`、`.claude/skills/studio-*`、`tools/`、`.githooks/`、`.github/`、`src/kit/`、`src/styles/`，加上 `skills-lock.json` 和 DispatchDock 的安装命令。
+- **方法层**：`AGENTS.md`、`docs/roles/`、`docs/workflow/`、`docs/agents/`、`.claude/skills/run-spec`、`tools/`、`.githooks/`、`.github/`、`src/kit/`、`src/styles/`，加上 `skills-lock.json` 和 DispatchDock 的安装命令。
 - **产物层**：`episodes/`、`docs/research/`（里面有对他人作品的转写，不能公开）、本机的 `public/episodes/`。
 
 依赖只能从产物层指向方法层：每期可以用 `src/kit/`，`src/` 和 `tools/` 不能引用 `episodes/`。注册各期合成的 Remotion 入口（`episodes/index.ts`、`episodes/Root.tsx`）属于产物层，所以 `src/` 里没有入口；拆出去的方法层要用时，自己配一个入口。拆分时用 `git filter-repo --path …` 带着历史抽出需要的目录；提交信息尾注里的 `Refs: #号` 用 `--replace-message` 改成 `Refs: JinhaoFang/video-studio#号`，这样拆出去以后链接仍然指向原仓库的 issue。
@@ -66,4 +68,4 @@ pnpm 的版本由 `package.json` 的 `packageManager` 固定，本机装的 pnpm
 ## 注意
 
 - Codex 运行期间不要关掉 Claude Code 会话。只用技能时没有托管模式，关掉会话可能连带中断 Codex。
-- 一个工作区同时只跑一个 Codex。可做的工程工单不止一张时，每张开一个 git worktree 并行派发，做法见 `studio-tickets` 第 4、5 步。
+- 派发、合并、验收、审查、收尾的具体步骤只写在执行技能 `run-spec` 里，本仓库特有的值见 `docs/agents/run-spec.md`。

@@ -14,16 +14,17 @@
 | 分工 | Claude Code 当设计负责人，Codex 当工程负责人 | `AGENTS.md`、`docs/roles/` |
 | 技能 | Matt 的技能负责想清楚、拆工单、审查、复盘；DispatchDock 负责派发；Remotion 是两边都用的领域知识。DispatchDock 只装在 `.claude/skills/`，Codex 看不到 | `docs/workflow/README.md` |
 | 工单 | 只存在 GitHub Issues 一份，按 issue 号派发，不复制进仓库 | `docs/agents/issue-tracker.md` |
-| Codex 权限 | 完全权限（`--sandbox danger-full-access`），可以联网、用 `gh` 读 issue | `studio-tickets` 技能；派发默认配置 `~/.config/codex-dispatch/config.json` |
+| Codex 权限 | 完全权限（`--sandbox danger-full-access`），可以联网、用 `gh` 读 issue | `docs/agents/run-spec.md` |
 | 时间机制 | 动画按台本句子编号定时，不写死帧号 | `docs/workflow/README.md` |
 | 包管理、媒体 | pnpm；媒体和渲染结果不进 git | `AGENTS.md` |
 | 远程仓库 | `github.com/JinhaoFang/video-studio`（私有） | — |
 | 护栏 | `pnpm verify`、commit-msg 钩子、CI（推送 `spec/**` 和 PR） | `docs/workflow/README.md`「护栏」 |
-| 并行派发 | 可做的工程工单各开一个 git worktree 并行跑 Codex | `studio-tickets` 第 4、5 步 |
-| 审查 | 单张工单只做实测验收；每批合并后和 spec 收尾时由 Codex 跑 `code-review`，设计负责人取舍 | `studio-tickets` 第 6 步 |
+| 并行派发 | 可做的工程工单各开一个 git worktree 并行跑 Codex | `run-spec` 第 4、5 步 |
+| 审查 | 单张工单只做实测验收；每批合并后和 spec 收尾时由 Codex 跑 `code-review`，设计负责人取舍 | `run-spec` 第 6 步 |
 | 合并方式 | PR 只用 merge commit（GitHub 设置已锁定），每个提交和它的 `Refs` 都留在 `main` 上 | — |
 | 工单写法 | spec 和工单不写文件路径，需要时用功能描述「边界」；spec 不列工单清单 | `docs/agents/issue-tracker.md` |
-| 汇报 | spec 收尾时写汇报存进 `docs/reports/`，再清理中间产物 | `studio-tickets` 第 7 步 |
+| 执行技能 | `run-spec`：机械步骤交给工单脚本（`dispatch`、`land`、`accept`、`cleanup`），本仓库特有的值放配置，复制技能、写一份配置就能迁移 | `docs/agents/run-spec.md` |
+| 汇报 | spec 收尾时写 HTML 可视化汇报存进 `docs/reports/`，再清理中间产物；不发布到外部服务 | `run-spec` 第 7 步 |
 
 ## 进度
 
@@ -32,14 +33,13 @@
 - [x] DispatchDock 技能安装与冒烟测试
 - [x] 彩排：spec #1"工作室护栏与验收工具"
 - [x] 彩排复盘：结论见 `docs/research/rehearsal-findings.md`「复盘结论」
-- [ ] spec #2：工单脚本补齐与技能改名
+- [x] spec #17：工单脚本补齐与技能改名，汇报见 `docs/reports/spec-17-run-spec.html`
 - [ ] 建仓过程复盘
+- [ ] 迁移初始化技能（`setup-run-spec`）
 - [ ] 第一阶段：复刻开场 0:00～0:46
 - [ ] 第二阶段：新选题完整一期
 
-## 下一步：spec #2，然后第一阶段
-
-**spec #2"工单脚本补齐与技能改名"**：复盘中需要写代码的调整，输入是彩排发现的「复盘结论」（标着 spec #2 的条目，以及融合点分类）。在复盘会话里跑 `/to-spec`、`/to-tickets`，然后开新会话说"执行 spec #<号>"。执行放在新会话，是为了让设计负责人的上下文保持小（复盘新发现第 1 条）。
+## 下一步：第一阶段
 
 **第一阶段**：单独建 spec，在新会话里：
 
@@ -48,6 +48,14 @@
 3. 开新会话，对设计负责人说"执行 spec #<号>"。
 
 **建仓过程复盘**：时间不限。素材是仓库改名前的建仓会话，记录在 `~/.claude/projects/-root-project-my-video/`（仓库原名 my-video，改名后这个会话仍写在旧目录里），同期 Codex 的冒烟测试记录在 `~/.codex/sessions/2026/10/11/` 下 16:49～18:58 的几个文件。会话记录很大，先用脚本抽出双方的对话再读。
+
+**迁移初始化技能**：第一次真正把 `run-spec` 迁移到别的仓库时，单独建 spec。仿照 Matt 的 `setup-matt-pocock-skills`：先查看目标仓库，确认 Matt 的技能和 DispatchDock 已装好并初始化，再问几项只有人能回答的值，写好 `docs/agents/run-spec.json`、`run-spec.md` 和工单约定，补忽略规则和执行角色标签，最后自检。Matt 的 setup 技能只能由用户手动运行，初始化技能要在对的时候提示用户去跑。讨论时先定三件事：
+
+- 技能从哪里分发（例如按 `docs/workflow/README.md`「以后拆分」把方法层拆出去，用 `npx skills add` 安装）；
+- 初始化技能是负责安装 Matt 和 DispatchDock，还是只检查它们装好了没有；
+- 文档命令护栏、`pnpm verify` 这类仓库级护栏要不要随行。
+
+起点是本机的手工迁移包：仓库外的同级目录 `run-spec-package/`，不进 git，里面的 `README.md` 写了手工安装步骤。
 
 ## 第一阶段：复刻开场
 
