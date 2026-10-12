@@ -15,6 +15,8 @@
 
 整体流程见 `docs/workflow/README.md`。和用户讨论时，先问要用户拍板的（范围、取舍、费用、审美）；技术细节给出推荐，注明默认按推荐。执行 spec 和工单（选工单、派发、验收、写回、开 PR）按 `run-spec` 技能做。
 
+`docs/roadmap.md` 是新会话的入口。每个阶段（一个 spec、一次复盘）收尾时，更新它的进度和下一步，和收尾的提交一起提交；全部完成后怎么处理，见 `docs/workflow/bootstrap.md` 第 6 步。
+
 ## 技能
 
 全部可用。只有设计负责人能看到的三个技能：`codex-dispatch`（派发给 Codex）、`dual-role-workflow`（分工方法）、`run-spec`（本仓库执行工单的步骤）。
