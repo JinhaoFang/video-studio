@@ -31,12 +31,12 @@
   - 摘要用中文，一行说清结果。正文必写，改错字也写一句。
   - 尾注：最后一段只写 `Refs: #<工单号>`（可以多行；工单由验收关闭，不写 `Closes`）和 `Role`，两项在同一段。用 `-m` 时放进同一个 `-m`，中间是真正的换行，bash 里写 `-m $'Refs: #12\nRole: design'`。`spec/*` 和 `ticket/*` 分支上 `Refs` 必写。尾注只有这两项，不加任何署名尾注（包括 AI 署名和 Co-Authored-By）。
   - 回滚提交也按这个格式写。
-  - 格式由 commit-msg 钩子检查（`pnpm install` 时启用，没生效就运行 `node tools/install-hooks.ts`），CI 在推送 `spec/**` 和 PR 时再查一遍。
+  - 格式由 commit-msg 钩子检查（`pnpm install` 时启用，没生效就运行 `node tools/install-hooks.ts`），CI 再查一遍。
 - 只做工单范围内的事。新增依赖在汇报里写明理由，优先选发布超过 7 天的版本。
 - 媒体（配音、音乐、图片、视频素材、渲染结果）不进 git：素材放 `public/episodes/<期>/`，渲染输出放 `out/`，来源和授权记在该期的 `sources.md`。
 - `references/` 是参考资料，只读。
 - 调用外部程序时参数用数组传，不拼 shell 字符串。
-- 验证命令：`pnpm verify`（eslint、tsc、注释位置、依赖方向、规则文档命令存在性、单元测试）。CI 在推送 `spec/**` 和 PR 时也跑它。
+- 验证命令：`pnpm verify`，步骤见 `tools/verify.ts`。CI 什么时候跑见 `docs/workflow/README.md`「护栏」。
 
 ## 目录与归属
 

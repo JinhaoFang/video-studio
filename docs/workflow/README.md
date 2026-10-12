@@ -36,9 +36,9 @@ spec #S
 
 能机械判断的规则交给护栏，不靠自觉：
 
-- `pnpm verify`：eslint、tsc、注释位置、依赖方向、规则文档命令存在性、单元测试。完成标准都以它通过为准。
+- `pnpm verify`：步骤见 `tools/verify.ts`，运行时每步先打印 `[verify]` 标签。完成标准都以它通过为准。
 - commit-msg 钩子：按 `AGENTS.md` 的格式检查提交信息。
-- CI：推送 `spec/**` 和开 PR 时跑 `pnpm verify`，并逐条检查分支上的提交信息，兜住绕过本地钩子的提交。本地复现：`pnpm verify`，再 `pnpm check:commits origin/main <分支>`。
+- CI：开 PR、推送 `ticket/**` 和手动触发时跑 `pnpm verify`，并逐条检查分支上的提交信息，兜住绕过本地钩子的提交。工单分支只有派发时加了 `--allow-push` 才会被推上去。集成分支 `spec/**` 推送时不跑：`land` 合并每张工单前已在本机跑过同样的验证。同一个 PR 的新运行会取消还没跑完的旧运行。本地复现：`pnpm verify`，再 `pnpm check:commits origin/main <分支>`。
 
 pnpm 的版本由 `package.json` 的 `packageManager` 固定，本机装的 pnpm 会自动切换到这个版本，本地和 CI 一致。文档命令护栏会检查内置命令白名单版本是否一致；升级时按 `tools/check-doc-commands.ts` 文件头的方法更新白名单和版本。
 
