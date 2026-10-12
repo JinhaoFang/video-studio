@@ -18,12 +18,13 @@
 | 时间机制 | 动画按台本句子编号定时，不写死帧号 | `docs/workflow/README.md` |
 | 包管理、媒体 | pnpm；媒体和渲染结果不进 git | `AGENTS.md` |
 | 远程仓库 | `github.com/JinhaoFang/video-studio`（私有） | — |
-| 护栏 | `pnpm verify`、commit-msg 钩子、CI（推送 `spec/**` 和 PR） | `docs/workflow/README.md`「护栏」 |
+| 护栏 | `pnpm verify`、commit-msg 钩子、CI（开 PR、推送工单分支、手动触发；集成分支推送不跑） | `docs/workflow/README.md`「护栏」 |
 | 并行派发 | 可做的工程工单各开一个 git worktree 并行跑 Codex | `run-spec` 第 4、5 步 |
 | 审查 | 单张工单只做实测验收；每批合并后和 spec 收尾时由 Codex 跑 `code-review`，设计负责人取舍 | `run-spec` 第 6 步 |
 | 合并方式 | PR 只用 merge commit，合并后自动删除分支（GitHub 设置已锁定），每个提交和它的 `Refs` 都留在 `main` 上 | — |
 | 工单写法 | spec 和工单不写文件路径，需要时用功能描述「边界」；spec 不列工单清单 | `docs/agents/issue-tracker.md` |
-| 执行技能 | `run-spec`：机械步骤交给工单脚本（`dispatch`、`land`、`accept`、`cleanup`），本仓库特有的值放配置，复制技能、写一份配置就能迁移 | `docs/agents/run-spec.md` |
+| 执行技能 | `run-spec`：机械步骤交给工单脚本（`dispatch`、`land`、`accept`、`review`、`cleanup`、`doctor`），本仓库特有的值放配置 | `docs/agents/run-spec.md` |
+| 分发 | `run-spec`、`setup-run-spec` 在本仓库进 git；别的仓库用一条 `npx skills add` 安装、不进 git，再运行 `/setup-run-spec` 接入；更新就是重新运行安装命令 | `docs/agents/run-spec.md`「装到别的仓库」 |
 | 汇报 | spec 收尾时写 HTML 可视化汇报存进 `docs/reports/`，再清理中间产物；不发布到外部服务 | `run-spec` 第 7 步 |
 
 ## 进度
@@ -36,23 +37,17 @@
 - [x] spec #17：工单脚本补齐与技能改名，汇报见 `docs/reports/spec-17-run-spec.html`
 - [x] 建仓过程复盘：记录见 `docs/reports/bootstrap-retro.md`，可复用的开局步骤见 `docs/workflow/bootstrap.md`
 - [x] 手工迁移到 design-system，并在那边彩排（spec #32）：记录见 `docs/research/run-spec-migration.md`
-- [ ] `run-spec` 改进：修彩排发现的问题
-- [ ] 迁移初始化技能（`setup-run-spec`）
+- [x] spec #37：`run-spec` 改进和初始化技能 `setup-run-spec`，design-system 已换成安装版本，汇报见 `docs/reports/spec-37-run-spec-install.html`
 - [ ] 第一阶段：复刻开场 0:00～0:46
 - [ ] 第二阶段：新选题完整一期
 
 ## 下一步
 
-按顺序做，每项单独建 spec：在新会话里跑 `/grill-with-docs`，再跑 `/to-spec`、`/to-tickets`，然后开新会话，对设计负责人说"执行 spec #<号>"。
+**第一阶段**：单独建 spec。
 
-1. **`run-spec` 改进**：修 design-system 彩排发现的问题，清单在 `docs/research/run-spec-migration.md`「彩排」第 18～24 条和「费用」。初始化技能要分发的是修好的版本，所以排在它前面。改完以后，design-system 里那份 `run-spec` 要同步。
-2. **迁移初始化技能**：仿照 Matt 的 `setup-matt-pocock-skills`：先查看目标仓库，确认 Matt 的技能和 DispatchDock 已装好并初始化，再问几项只有人能回答的值，写好 `docs/agents/run-spec.json`、`run-spec.md` 和工单约定，补忽略规则和执行角色标签，最后自检。Matt 的 setup 技能只能由用户手动运行，初始化技能要在对的时候提示用户去跑。讨论时先定三件事：
-   - 技能从哪里分发（例如按 `docs/workflow/README.md`「以后拆分」把方法层拆出去，用 `npx skills add` 安装）。第 1 项改完要手工同步到 design-system，就是这个问题的第一个实例；
-   - 初始化技能是负责安装 Matt 和 DispatchDock，还是只检查它们装好了没有；
-   - 文档命令护栏、`pnpm verify` 这类仓库级护栏要不要随行。design-system 是按 pnpm 12 重新移植的，细节见那边汇报的「回报 video-studio」。
-
-   输入：`docs/workflow/bootstrap.md`「初始化技能做什么」，标【初始化】的步骤是候选；第一次手工迁移和彩排碰到的问题见 `docs/research/run-spec-migration.md`。起点是本机的手工迁移包：仓库外的同级目录 `run-spec-package/`，不进 git，里面的 `README.md` 写了手工安装步骤。
-3. **第一阶段**：主题"第一阶段：复刻开场 0:00～0:46"，先过下面的待定项。
+1. 在新会话里跑 `/grill-with-docs`，主题"第一阶段：复刻开场 0:00～0:46"，先过下面的待定项。
+2. 跑 `/to-spec`，再跑 `/to-tickets`。
+3. 开新会话，对设计负责人说"执行 spec #<号>"。执行要放在新会话里：spec #37 是在对齐用的长会话里执行的，设计负责人的缓存读取约为 Codex 输入的 4 倍；spec #17 在新会话里执行，只有 1.3 倍。
 
 ## 第一阶段：复刻开场
 
