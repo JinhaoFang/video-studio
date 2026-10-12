@@ -36,9 +36,9 @@ spec #S
 
 能机械判断的规则交给护栏，不靠自觉：
 
-- `pnpm verify`：eslint、tsc、注释位置、依赖方向、规则文档命令存在性、单元测试。完成标准都以它通过为准。
+- `pnpm verify`：步骤见 `tools/verify.ts`，运行时每步先打印 `[verify]` 标签。完成标准都以它通过为准。
 - commit-msg 钩子：按 `AGENTS.md` 的格式检查提交信息。
-- CI：推送 `spec/**` 和开 PR 时跑 `pnpm verify`，并逐条检查分支上的提交信息，兜住绕过本地钩子的提交。本地复现：`pnpm verify`，再 `pnpm check:commits origin/main <分支>`。
+- CI：开 PR、推送 `ticket/**` 和手动触发时跑 `pnpm verify`，并逐条检查分支上的提交信息，兜住绕过本地钩子的提交。工单分支只有派发时加了 `--allow-push` 才会被推上去。集成分支 `spec/**` 推送时不跑：`land` 合并每张工单前已在本机跑过同样的验证。同一个 PR 的新运行会取消还没跑完的旧运行。本地复现：`pnpm verify`，再 `pnpm check:commits origin/main <分支>`。
 
 pnpm 的版本由 `package.json` 的 `packageManager` 固定，本机装的 pnpm 会自动切换到这个版本，本地和 CI 一致。文档命令护栏会检查内置命令白名单版本是否一致；升级时按 `tools/check-doc-commands.ts` 文件头的方法更新白名单和版本。
 
@@ -60,7 +60,7 @@ pnpm 的版本由 `package.json` 的 `packageManager` 固定，本机装的 pnpm
 
 仓库按目录分成两层，拆分时按目录切开：
 
-- **方法层**：`AGENTS.md`、`docs/roles/`、`docs/workflow/`、`docs/agents/`、`.claude/skills/run-spec`、`tools/`、`.githooks/`、`.github/`、`src/kit/`、`src/styles/`，加上 `skills-lock.json` 和 DispatchDock 的安装命令。
+- **方法层**：`AGENTS.md`、`docs/roles/`、`docs/workflow/`、`docs/agents/`、`.claude/skills/run-spec`、`.claude/skills/setup-run-spec`、`tools/`、`.githooks/`、`.github/`、`src/kit/`、`src/styles/`，加上 `skills-lock.json` 和 DispatchDock 的安装命令。
 - **产物层**：`episodes/`、`docs/research/`（里面有对他人作品的转写，不能公开）、本机的 `public/episodes/`。
 
 依赖只能从产物层指向方法层：每期可以用 `src/kit/`，`src/` 和 `tools/` 不能引用 `episodes/`。注册各期合成的 Remotion 入口（`episodes/index.ts`、`episodes/Root.tsx`）属于产物层，所以 `src/` 里没有入口；拆出去的方法层要用时，自己配一个入口。拆分时用 `git filter-repo --path …` 带着历史抽出需要的目录；提交信息尾注里的 `Refs: #号` 用 `--replace-message` 改成 `Refs: JinhaoFang/video-studio#号`，这样拆出去以后链接仍然指向原仓库的 issue。

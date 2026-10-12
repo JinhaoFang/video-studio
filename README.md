@@ -21,7 +21,7 @@ pnpm check:commits origin/main ticket/12-review-rework
 
 `pnpm dev` 启动 Remotion Studio；入口为 `episodes/index.ts`，在 `episodes/Root.tsx` 注册各期合成。当前尚未注册任何合成。
 
-`pnpm verify` 依次执行 ESLint、浏览器与 Node 环境的 TypeScript 检查、注释位置检查、依赖方向检查、规则文档命令存在性检查、Node 自带的单元测试；任一步失败立即停止。它检查 Git 跟踪文件及未被忽略的未跟踪代码，包含工作室自有技能脚本，排除参考资料、第三方技能和输出目录。文档命令检查的范围和规则见 [工作流的护栏说明](docs/workflow/README.md#护栏)。
+`pnpm verify` 按 `tools/verify.ts` 的步骤依次执行检查和单元测试，任一步失败立即停止。它检查 Git 跟踪文件及未被忽略的未跟踪代码，包含工作室自有技能脚本，排除参考资料、第三方技能和输出目录。文档命令检查的范围和规则见 [工作流的护栏说明](docs/workflow/README.md#护栏)。
 
 `pnpm qa` 提供 `frames`、`sheet`、`compare`、`loudness` 四个验收子命令，运行 `pnpm qa <子命令> --help` 查看用法；默认产物写到 `out/qa/`。`pnpm check:commits <起点> <来源分支名>` 检查起点到 HEAD 的非合并提交信息。命令退出码为 0（通过）、1（检查未通过）、2（参数或运行错误）。
 
