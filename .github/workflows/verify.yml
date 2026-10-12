@@ -1,4 +1,7 @@
-# Verify spec pushes and PR source commits targeting main. Official actions are
+# Verify ticket pushes, PR source commits targeting main and manual dispatches;
+# spec pushes do not trigger verification. New PR runs cancel older runs for the
+# same PR. Commit checks use the PR head branch or the pushed/manually selected
+# branch. Official actions are
 # pinned to checkout v7.0.1, setup-node v7.0.0 and pnpm/action-setup v6.1.0 (Node 24).
 # Reproduce locally: pnpm verify; pnpm check:commits origin/main <source-branch>.
 name: Verify
@@ -6,10 +9,15 @@ name: Verify
 on:
   push:
     branches:
-      - "spec/**"
+      - "ticket/**"
   pull_request:
     branches:
       - main
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event_name }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
 permissions:
   contents: read
