@@ -35,6 +35,7 @@
 - [x] 彩排复盘：结论见 `docs/research/rehearsal-findings.md`「复盘结论」
 - [x] spec #17：工单脚本补齐与技能改名，汇报见 `docs/reports/spec-17-run-spec.html`
 - [ ] 建仓过程复盘
+- [ ] 迁移初始化技能（`setup-run-spec`）
 - [ ] 第一阶段：复刻开场 0:00～0:46
 - [ ] 第二阶段：新选题完整一期
 
@@ -47,6 +48,14 @@
 3. 开新会话，对设计负责人说"执行 spec #<号>"。
 
 **建仓过程复盘**：时间不限。素材是仓库改名前的建仓会话，记录在 `~/.claude/projects/-root-project-my-video/`（仓库原名 my-video，改名后这个会话仍写在旧目录里），同期 Codex 的冒烟测试记录在 `~/.codex/sessions/2026/10/11/` 下 16:49～18:58 的几个文件。会话记录很大，先用脚本抽出双方的对话再读。
+
+**迁移初始化技能**：第一次真正把 `run-spec` 迁移到别的仓库时，单独建 spec。仿照 Matt 的 `setup-matt-pocock-skills`：先查看目标仓库，确认 Matt 的技能和 DispatchDock 已装好并初始化，再问几项只有人能回答的值，写好 `docs/agents/run-spec.json`、`run-spec.md` 和工单约定，补忽略规则和执行角色标签，最后自检。Matt 的 setup 技能只能由用户手动运行，初始化技能要在对的时候提示用户去跑。讨论时先定三件事：
+
+- 技能从哪里分发（例如按 `docs/workflow/README.md`「以后拆分」把方法层拆出去，用 `npx skills add` 安装）；
+- 初始化技能是负责安装 Matt 和 DispatchDock，还是只检查它们装好了没有；
+- 文档命令护栏、`pnpm verify` 这类仓库级护栏要不要随行。
+
+起点是本机的手工迁移包：仓库外的同级目录 `run-spec-package/`，不进 git，里面的 `README.md` 写了手工安装步骤。
 
 ## 第一阶段：复刻开场
 
