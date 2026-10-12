@@ -21,7 +21,7 @@
 ## 执行时要知道的其他值
 
 - **按批审查**：审查不走 `dispatch`，用 `dispatchScript` 指向的派发脚本直接派发，`--sandbox` 填 `codexSandbox`。
-- **汇报目录**：`docs/reports/`，范例是 `docs/reports/spec-1-guardrails.md`。
+- **汇报目录**：`docs/reports/`。HTML 汇报的范例是 `docs/reports/spec-17-run-spec.html`；spec #1 的是改版前的 Markdown 汇报。
 - **实测用时**：一张工程工单派发后 5～10 分钟结束，一次按批审查约 4 分钟。告诉用户粗略用时就按这个估。
 - **常见的共享登记处**：`pnpm qa` 的子命令登记表、工单脚本的子命令登记表。并行的工单都要往里加一项时，派发的补充说明写"只加自己那一项"。
 

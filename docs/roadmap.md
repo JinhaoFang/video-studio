@@ -24,7 +24,7 @@
 | 合并方式 | PR 只用 merge commit（GitHub 设置已锁定），每个提交和它的 `Refs` 都留在 `main` 上 | — |
 | 工单写法 | spec 和工单不写文件路径，需要时用功能描述「边界」；spec 不列工单清单 | `docs/agents/issue-tracker.md` |
 | 执行技能 | `run-spec`：机械步骤交给工单脚本（`dispatch`、`land`、`accept`、`cleanup`），本仓库特有的值放配置，复制技能、写一份配置就能迁移 | `docs/agents/run-spec.md` |
-| 汇报 | spec 收尾时写汇报存进 `docs/reports/`，再清理中间产物 | `run-spec` 第 7 步 |
+| 汇报 | spec 收尾时写 HTML 可视化汇报存进 `docs/reports/`，再清理中间产物；用户要求时才发布到 claude.ai | `run-spec` 第 7 步 |
 
 ## 进度
 
@@ -33,7 +33,7 @@
 - [x] DispatchDock 技能安装与冒烟测试
 - [x] 彩排：spec #1"工作室护栏与验收工具"
 - [x] 彩排复盘：结论见 `docs/research/rehearsal-findings.md`「复盘结论」
-- [x] spec #17：工单脚本补齐与技能改名，汇报见 `docs/reports/spec-17-run-spec.md`
+- [x] spec #17：工单脚本补齐与技能改名，汇报见 `docs/reports/spec-17-run-spec.html`
 - [ ] 建仓过程复盘
 - [ ] 第一阶段：复刻开场 0:00～0:46
 - [ ] 第二阶段：新选题完整一期
