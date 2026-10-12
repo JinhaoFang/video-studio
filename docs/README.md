@@ -5,7 +5,7 @@
 | `../AGENTS.md` | 共同规则、角色、目录与归属（两个 agent 每次都会读） |
 | `roadmap.md` | 目标、已定的决策、进度和下一步，**新会话从这里看起** |
 | `workflow/README.md` | 制作工作流总图：每个阶段谁触发、用什么、产物在哪里 |
-| `workflow/bootstrap.md` | 开局：在新仓库里和 agent 一起搭起这套工作方式的步骤，以及哪些步骤交给迁移初始化技能 |
+| `workflow/bootstrap.md` | 开局：在新仓库里，或迁进已有仓库时，和 agent 一起搭起这套工作方式的步骤，以及哪些步骤交给迁移初始化技能 |
 | `roles/design.md` | 设计负责人：自己做和派出去的判断标准、验收方法 |
 | `roles/engineering.md` | 工程负责人：硬规则、可用技能、完成标准、汇报格式 |
 | `agents/issue-tracker.md` | GitHub 工单的操作方法和本仓库的工单约定 |
