@@ -14,7 +14,7 @@
 | `research/nasa-ep04/` | 参考视频拆解：`pipeline.md` 流程、`shots.md` 镜头表、`style.md` 视觉与声音、`transcript.md` 旁白时间轴 |
 | `research/table-videosop.md` | 对照：另一位作者的 Table-Video SOP，以及可以借用的做法 |
 | `research/dispatchdock-notes.md` | 使用 DispatchDock 的实测记录 |
-| `research/run-spec-migration.md` | `run-spec` 第一次迁移（design-system）的过程和碰到的问题，迁移初始化技能的输入 |
+| `research/run-spec-migration.md` | `run-spec` 第一次迁移（design-system）和那边彩排的过程、碰到的问题，`run-spec` 改进和迁移初始化技能的输入 |
 | `research/rehearsal-findings.md` | 彩排发现：Matt 技能与 DispatchDock 结合的问题和已定的调整，spec #1 完成后复盘用 |
 | `reports/` | 每个 spec 完成后，设计负责人给用户的工作汇报：从 spec #17 起是 HTML 可视化页面，spec #1 是 Markdown；`bootstrap-retro.md` 是建仓过程的复盘记录，`bootstrap-retro.html` 是它的可视化版本 |
 
