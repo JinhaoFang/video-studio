@@ -38,3 +38,4 @@ npx skills add JinhaoFang/video-studio --skill run-spec --skill setup-run-spec -
 - 装进去的两个技能只在 `.claude/skills/`，不进 git，Codex 看不到。
 - 更新就是重新运行这条命令。`npx skills update` 和按锁文件恢复的 `npx skills experimental_install` 都会把它们装进 `.agents/skills/`，Codex 就能看到了（2026-10-12 实测）。在那些仓库里用 `update` 更新别的技能时点名技能，更新完运行 `node .claude/skills/run-spec/scripts/tickets.ts doctor`。
 - 本仓库改了这两个技能，合进 `main` 以后，各仓库重新运行安装命令才拿到。
+- 早期手工迁移、`run-spec` 进过 git 的仓库，`/setup-run-spec` 会把它换成安装版本。那个 PR 合并后更新本地 `main`，先 `git fetch origin main:main` 再切过去；先切到还停在旧提交的本地 `main` 再拉取，git 会把 `run-spec` 从磁盘上删掉（design-system 实际碰到过），删了就重新运行安装命令。
