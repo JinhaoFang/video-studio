@@ -38,6 +38,6 @@
 
 1. 复制技能目录，确认它会进 git，第三方技能仍然不进。
 2. 写一份 `docs/agents/run-spec.json`，按上表逐项改成新仓库的值。
-3. 让 git 忽略三类目录：验收产物根目录、派发记录目录 `.codex-runs/`、软链接进 worktree 的目录。Codex 会在 worktree 里写验收产物和派发记录；不忽略的话 worktree 就不干净，`land` 会拒绝合并。
+3. 让 git 忽略三类目录：验收产物根目录、派发记录目录 `.codex-runs/`、软链接进 worktree 的目录。Codex 会在 worktree 里写验收产物和派发记录；不忽略的话 worktree 就不干净，`land` 会拒绝合并。软链接的目录在 `.gitignore` 里不带末尾斜杠，例如 `references` 而不是 `references/`：带斜杠的规则只匹配真目录，管不到 worktree 里的软链接。
 4. 复制本文，改掉「执行时要知道的其他值」。
 5. 在 `docs/agents/issue-tracker.md` 里补上本仓库的工单约定，可以参照本仓库那一节。
