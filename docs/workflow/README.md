@@ -4,14 +4,14 @@
 
 ## 一项工作的生命周期
 
-| 阶段 | 谁触发 | 用什么 | 产物在哪 |
-|---|---|---|---|
-| 想清楚 | 用户 | `/grill-with-docs` | 术语进 `GLOSSARY.md`，难回头的决定进 `docs/adr/` |
-| 写 spec | 用户 | `/to-spec` | GitHub issue |
-| 拆工单 | 用户 | `/to-tickets` | spec 的 sub-issue，带阻塞关系；格式见 `docs/agents/issue-tracker.md` |
-| 执行与验收 | 用户在新会话里说"执行 spec #号"，设计负责人照做 | `run-spec`（内部用 `codex-dispatch`） | 集成分支上的提交、工单下的验收评论、`docs/reports/` 的汇报 |
-| 合并 | 用户 | PR（正文用 `/pr` 的格式），只能用 merge commit | `main` |
-| 复盘 | 用户 | `/retro` | 规则文档、检查脚本、文档指针 |
+| 阶段       | 谁触发                                          | 用什么                                         | 产物在哪                                                             |
+| ---------- | ----------------------------------------------- | ---------------------------------------------- | -------------------------------------------------------------------- |
+| 想清楚     | 用户                                            | `/grill-with-docs`                             | 术语进 `GLOSSARY.md`，难回头的决定进 `docs/adr/`                     |
+| 写 spec    | 用户                                            | `/to-spec`                                     | GitHub issue                                                         |
+| 拆工单     | 用户                                            | `/to-tickets`                                  | spec 的 sub-issue，带阻塞关系；格式见 `docs/agents/issue-tracker.md` |
+| 执行与验收 | 用户在新会话里说"执行 spec #号"，设计负责人照做 | `run-spec`（内部用 `codex-dispatch`）          | 集成分支上的提交、工单下的验收评论、`docs/reports/` 的汇报           |
+| 合并       | 用户                                            | PR（正文用 `/pr` 的格式），只能用 merge commit | `main`                                                               |
+| 复盘       | 用户                                            | `/retro`                                       | 规则文档、检查脚本、文档指针                                         |
 
 执行阶段的回路：
 
@@ -53,6 +53,8 @@ pnpm 的版本由 `package.json` 的 `packageManager` 固定，本机装的 pnpm
 逐句配音：`pnpm tts --help`。输入参考转写的起止时间/旁白表格，按行编号为 `L001` 起；指定音色、模型、编号范围、素材目录和累计 credits 账本，每句生成 MP3 与含上下文、哈希和实际计费的 JSON。试听各组和重配共用账本，默认累计预算 300 credits；`--from` 与 `--to` 相同即可单独合成一句，覆盖已有文件需 `--replace`。凭据只从环境变量 `elevenlabs_apikey` 或 `--env` 指定的文件读取，允许等号两侧空格，不复制凭据。正式台本格式改变时需适配输入，不能直接把其他表格当参考转写使用。
 
 配音打分：`pnpm qa voice --help`。读取试听素材目录、原台本和账本，校验音频与上下文后，以本机缓存 faster-whisper large-v3（CUDA/float16，无台本提示词）逐句转写，输出 CER、语速、真峰值、截断风险和句中超过 0.4 秒的静音，以及原始识别和 ffmpeg 证据；`--python` 可指定已安装 faster-whisper 的解释器。截断标记是风险筛查，仍需结合原始转写核对。来源与授权记入该期 `sources.md`，音频放在不进 git 的 `public/episodes/<期>/`。
+
+渲染后用 `pnpm qa motion <视频>` 自检长时间静止和短暂闪现，报告默认写入 `out/qa/motion/<视频名>/motion.json`。`--keyframes <目录>` 可输出每个区间的三张关键帧，检出时退出 1，由设计负责人结合画面复核。范围、阈值与默认值见 `pnpm qa motion --help`。
 
 ## 复利
 
