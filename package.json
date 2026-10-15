@@ -34,6 +34,7 @@
     "verify": "node tools/verify.ts",
     "check:commits": "node tools/check-commit-range.ts",
     "prepare": "node tools/install-hooks.ts",
-    "qa": "node tools/qa.ts"
+    "qa": "node tools/qa.ts",
+    "tts": "node tools/tts.ts"
   }
 }

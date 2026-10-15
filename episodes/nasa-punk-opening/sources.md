@@ -112,3 +112,11 @@ Constraints: no text, no markings, no letters, no other objects, no tape, no cas
 | 台本文字和参考时间     | 同一视频的校正转写，前 22 句原文；末句停顿使用第 23 句起点                                                                                                                                                                                                                                 | 原片文字，只作本机复刻研究；研究转写已有仓库记录                                       | `script.md`、`data/reference-timeline.json`                          |
 | Noto Sans SC 常规字重  | Google Fonts，经 `@remotion/google-fonts/NotoSansSC` 加载                                                                                                                                                                                                                                  | SIL Open Font License 1.1；https://fonts.google.com/noto/specimen/Noto+Sans+SC/license | 渲染时加载，不提交字体媒体                                           |
 | 素字幕样片及验收图片   | 本期 Remotion 合成；近黑色来自 `docs/research/nasa-ep04/style.md`，居中文字按句切换                                                                                                                                                                                                        | 包含参考音轨，只在本机验收，不公开、不进 Git                                           | `out/qa/spec-60/61/`                                                 |
+
+## 配音试听（#63）
+
+- 原文：`docs/research/nasa-ep04/transcript.md` 的 L001～L003；来自参考视频的学习用转写。逐句带前后一句原文，L001 无前句，L003 的后句是 L004“这个标志”。未改写原文。
+- 生成服务：[ElevenLabs Text to Speech](https://elevenlabs.io/docs/api-reference/text-to-speech/convert.md)，2026-10-15；官方预设 Daniel（`onwK4e9ZLuTAKqWW03F9`）、Alice（`Xb7hH8MSUJpSbSDYk0k2`），各配 `eleven_v4`、`eleven_multilingual_v2`。MP3 44.1kHz/128kbps，seed=0，其他语音设置使用服务默认值。
+- 授权用途：使用账户免费额度生成，仅限本机非商业学习，不公开发布；[ElevenLabs 条款](https://elevenlabs.io/terms-of-use)与[免费计划使用说明](https://help.elevenlabs.io/hc/en-us/articles/13313564601361-Can-I-publish-the-content-I-generate-on-the-platform)适用。该记录不宣称取得了原文或参考视频的公开传播授权。
+- 本机素材目录：`public/episodes/nasa-punk-opening/voice-audition/<Daniel|Alice>/<模型>/L001.mp3`～`L003.mp3`；相邻 JSON 保存请求原文、上下文、SHA256、request/history ID 与实际 credits。媒体和这些本机记录均不进 git。
+- 复现命令与计费证据：本 worktree 的 `out/qa/spec-60/63/`；官方 API 核对见 `docs/research/nasa-ep04/elevenlabs-api.md`。
