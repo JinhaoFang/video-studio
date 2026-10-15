@@ -10,6 +10,8 @@
  * Proposal-study additions are measured in reference frames 15.5, 19.5 and 25.5s
  * at 852x480, scaled to 1920x1080. TODO(design): confirm the sampled paper/camera
  * geometry and texture opacity; annotation paths use conservative SVG curves.
+ * #68 adds wormStudy geometry measured at reference 32, 35.8, 40 and 44s;
+ * TODO(design): confirm sampled geometry, stage-2 separation and red trace centerlines.
  */
 export const color = {
   paper: "#EDE4D9",
@@ -170,4 +172,44 @@ export const proposal = {
     ],
     edge: "polygon(0% 9%, 3% 0%, 7% 6%, 10% 0%, 94% 0%, 97% 7%, 100% 4%, 97% 26%, 100% 35%, 97% 58%, 100% 72%, 96% 95%, 92% 91%, 88% 100%, 6% 100%, 3% 91%, 0% 95%, 3% 70%, 0% 60%, 3% 36%)",
   },
+} as const;
+
+export const wormStudy = {
+  close: { left: -300, top: -250, scale: 1.26 },
+  quoteCamera: { left: -1880, top: 210, scale: 2.1 },
+  rocketCamera: { left: -300, top: -95, scale: 1.26 },
+  finishCamera: { left: 100, top: -35, scale: 1 },
+  logotype: {
+    left: 100,
+    top: 160,
+    width: 1200,
+    sourceWidth: 508.204,
+    sourceHeight: 141.732,
+    crossbars: [
+      { x: 177, y: 80, width: 51, height: 12 },
+      { x: 414, y: 80, width: 51, height: 12 },
+    ],
+    firstAOffset: -236.917,
+    aApices: [202.224, 439.141],
+    traceWidth: 34,
+    traces: [
+      "M 14.592 138.533 V 37.033 C 14.592 7 53 7 60 37 L 78 105 C 86 136 122.3 136 122.3 104.7 V 3.2",
+      "M 148.245 138.533 L 183.06 28 C 190 9 214 9 221.39 28 L 250.97 124.2",
+      "M 370.614 17.534 H 304 C 260 17.534 260 71 304 71 H 330 C 374 71 374 124.2 330 124.2 H 250.97",
+      "M 385.16 138.533 L 420 28 C 427 9 451 9 458.3 28 L 493.12 138.533",
+    ],
+  },
+  quote: {
+    left: 1040,
+    top: 36,
+    width: 650,
+    height: 228,
+    padding: 18,
+    size: 32,
+    lineHeight: 1.13,
+    underline: { left: 14, top: 114, width: 334, height: 18 },
+  },
+  rocket: { width: 52, height: 152, gapAbove: 126, offsetX: 72 },
+  arrow: { width: 64, height: 128, gapAbove: 12 },
+  nickname: { left: 100, top: 550, size: 18 },
 } as const;

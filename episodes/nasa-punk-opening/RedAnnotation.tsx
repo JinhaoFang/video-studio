@@ -1,6 +1,6 @@
 /**
  * Episode-local red annotations for S06 and #68: circle, underline, strike and
- * arrow. Position and dimensions are in parent units; start/durationInFrames use
+ * arrow, upArrow and rocket. Position and dimensions are in parent units; start/durationInFrames use
  * the current Sequence's frame origin. SVG dash length reveals the actual path,
  * with the sample's eight-frame cubic ease-out and parent-coordinate stroke.
  * Optional stroke/color/rotation let callers use approved tokens in new shots.
@@ -15,6 +15,9 @@ const paths = {
   underline: "M 3 73 Q 26 69 49 73 T 97 71",
   strike: "M 3 53 Q 29 48 53 51 T 97 47",
   arrow: "M 4 88 Q 45 48 92 12 M 68 15 L 92 12 L 90 36",
+  upArrow: "M 50 96 L 50 4 M 28 25 L 50 4 L 72 25",
+  rocket:
+    "M 29 88 L 29 23 L 50 3 L 71 23 L 71 88 Z M 29 75 L 17 98 L 29 88 M 71 75 L 83 98 L 71 88",
 } as const;
 
 export type RedAnnotationProps = {

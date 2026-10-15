@@ -143,3 +143,10 @@ Constraints: no text, no markings, no letters, no other objects, no tape, no cas
 - 混音：旁白、低频与嘀嗒相加后转成同相双声道，用 ffmpeg 两遍 `loudnorm`，目标 -16 LUFS、内部真峰值上限 -2 dBTP，LRA 只作报告。`mix.wav` 为 48kHz/24bit PCM；可选 `--video` 复制已有渲染的视频码流，替换成唯一一条 320kbps AAC 音轨。旁白授权限制继续适用于混音成片。
 - 本机输出：`/root/project/video-studio.worktrees/70/out/qa/spec-60/70/mix/`；`voice.wav`、`music.wav`、`ticks.wav`、`mix-raw.wav`、`mix.wav`、`opening-mixed.mp4` 均为不进 git 的生成或渲染产物。`mix-report.json` 记录源文件 SHA256、令牌文件 SHA256、句子锚点、实际电平与 ffmpeg 参数数组。最终集成后重跑即可，不需要把这些输出复制进主工作区。
 - 对照：原参考视频仅裁取 0:00～0:46 音轨作本机响度与频谱验收，保存于同一验收根目录的 `reference-0-46.wav`，不进入正式混音。参考音轨及频谱的使用范围沿用 #61 的本机学习限制。
+
+## 字标阶段、手册引文和批注（#68）
+
+- `WormLogotype.tsx` 的④阶段逐字复制本清单 `logos/nasa-worm.svg` 的三条填充路径；②从同一原稿拆出字母并分离 S，③补两个 A 横杠。①延续 #67 的 Inter Bold（SIL OFL，Google Fonts）。这些阶段是镜头代码中的 SVG，不新增 public 媒体；原稿字节未修改，授权及徽记使用限制沿用上表。④的着色使用已有 `color.ink` / `color.wormRed`，不沿用下载文件的硬编码红色。
+- 引文逐字转录参考视频 35.8 秒画面：`technical precision. Elimination of cross-strokes in the two “A” letters imparts a vertical thrust to the logo-type and lends it a quality of unique-ness and contemporary character.` 显示时保留原画面的五行排版、断词，出处行沿用画面标识 `NHB 1430.2 · §1.1`；未额外校订原手册全文。按 spec 的本机复刻范围使用，不宣称取得原参考视频的公开传播授权。字族按已定规则使用 Geist（SIL OFL）。
+- 引文纸片使用 #62 的 `textures/paper-ivory-generated.png`，其余纸面、胶带和桌面继续复用原素材。本工单没有生成或下载新图片，没有调用付费服务，没有新增依赖。
+- 小火箭和向上箭头参考视频 40 秒画面，以 `RedAnnotation` 的程序 SVG 路径重建；其他批注保持 #67 原组件用法。可见图形与渲染、逐句对比、原稿叠图及临时 QA 合成入口均保存在 `/root/project/video-studio.worktrees/68/out/qa/spec-60/68/`，媒体不进 git。

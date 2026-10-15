@@ -12,6 +12,7 @@ import { FilmFinish } from "./FilmFinish";
 import { ShotFirstChapter, shotFirstChapterSpan } from "./ShotFirstChapter";
 import { Shot1974Proposal, shot1974ProposalSpan } from "./Shot1974Proposal";
 import { ShotWormHud, shotWormHudSpan } from "./ShotWormHud";
+import { ShotWormStudy, shotWormStudySpan } from "./ShotWormStudy";
 import { Subtitles } from "./Subtitles";
 import { sentenceFrame } from "./sentence-timing";
 
@@ -23,6 +24,7 @@ export const Opening = ({ timeline }: OpeningProps) => {
   const wormHud = shotWormHudSpan(timeline);
   const firstChapter = shotFirstChapterSpan(timeline);
   const proposal = shot1974ProposalSpan(timeline);
+  const wormStudy = shotWormStudySpan(timeline);
   return (
     <AbsoluteFill style={{ backgroundColor: color.nearBlack }}>
       <Sequence
@@ -48,6 +50,14 @@ export const Opening = ({ timeline }: OpeningProps) => {
         premountFor={fps}
       >
         <Shot1974Proposal timeline={timeline} />
+      </Sequence>
+      <Sequence
+        name="S08-S11 worm study"
+        from={wormStudy.start}
+        durationInFrames={wormStudy.durationInFrames}
+        premountFor={fps}
+      >
+        <ShotWormStudy timeline={timeline} />
       </Sequence>
       <FilmFinish />
       <Subtitles timeline={timeline} />
