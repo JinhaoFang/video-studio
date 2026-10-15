@@ -4,13 +4,15 @@
  * Start point: docs/research/nasa-ep04/style.md; frame-sampled colors win over the
  * description's values. Sizes are px at 1920x1080; durations are frames at 30fps.
  * Motion values were set by the 0:04-0:09 sample shot (#64); see the episode README.
+ * `stripe` is listed left to right as in the subtitle strip (blue, gold, orange, red);
+ * horizontal bands use it reversed, red on top. Sampled at reference 0:06 and 0:12.
  * firstChapter adds #66 reference-frame measurements without changing the sample.
  */
 export const color = {
   paper: "#EDE4D9",
   panel: "#E4DFD4",
   paperShade: "#DED8CE",
-  stripe: ["#4C5869", "#7B7F4C", "#CBA865", "#B15137"],
+  stripe: ["#2C4A84", "#DDA244", "#EE6A2E", "#D83A3A"],
   accentRed: "#CA4025",
   wormRed: "#BE3B2B",
   desk: "#251E17",
