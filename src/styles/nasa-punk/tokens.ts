@@ -7,6 +7,9 @@
  * `stripe` is listed left to right as in the subtitle strip (blue, gold, orange, red);
  * horizontal bands use it reversed, red on top. Sampled at reference 0:06 and 0:12.
  * firstChapter adds #66 reference-frame measurements without changing the sample.
+ * Proposal-study additions are measured in reference frames 15.5, 19.5 and 25.5s
+ * at 852x480, scaled to 1920x1080. TODO(design): confirm the sampled paper/camera
+ * geometry and texture opacity; annotation paths use conservative SVG curves.
  */
 export const color = {
   paper: "#EDE4D9",
@@ -97,4 +100,74 @@ export const firstChapter = {
   tagGap: 20,
   tagPaddingX: 18,
   tagPaddingY: 8,
+} as const;
+
+export const proposal = {
+  clock: {
+    left: 524,
+    top: 334,
+    width: 872,
+    height: 412,
+    radius: 8,
+    border: 1,
+    labelLeft: 56,
+    labelTop: 42,
+    digitTop: 94,
+    digitWidth: 174,
+    digitHeight: 266,
+    digitGap: 22,
+    digitSize: 198,
+    seamWidth: 3.2,
+    screwInset: 20,
+    screwSize: 10,
+    screwRotation: 45,
+    scrambleFrames: 45,
+    stepFrames: 3,
+    stopStaggerFrames: 3,
+  },
+  paper: {
+    width: 1720,
+    height: 1000,
+    rotation: -1,
+    textureOpacity: 0.55,
+    shadowY: 12,
+    shadowBlur: 48,
+    close: { left: 230, top: 146, scale: 2.1 },
+    wide: { left: 100, top: 35, scale: 1 },
+    badge: { left: 78, top: 75, width: 242, height: 202 },
+    year: { left: 324, top: 144, size: 60 },
+    insignia: { left: 324, top: 220, size: 12 },
+    nickname: { left: 324, top: 246, size: 48 },
+    circle: { left: 80, top: 64, width: 240, height: 232 },
+    registrationInset: 42,
+    registrationRadius: 16,
+    registrationArm: 28,
+    ruleWidth: 1,
+    gridStroke: 1.6,
+    gridOpacity: 0.35,
+    grid: { left: 160, top: 330, width: 1320, height: 552, cell: 54 },
+    logotype: { left: 100, baseline: 430, size: 342 },
+    documentCode: { left: 1100, top: 270, size: 12 },
+    title: {
+      left: 1250,
+      top: 875,
+      width: 420,
+      height: 88,
+      row: 28,
+      yearWidth: 136,
+      padding: 12,
+    },
+  },
+  tape: {
+    width: 150,
+    height: 58,
+    opacity: 0.78,
+    corners: [
+      { left: -32, top: 4, rotation: -38 },
+      { left: 1615, top: 2, rotation: 36 },
+      { left: -24, top: 948, rotation: 35 },
+      { left: 1617, top: 946, rotation: -34 },
+    ],
+    edge: "polygon(0% 9%, 3% 0%, 7% 6%, 10% 0%, 94% 0%, 97% 7%, 100% 4%, 97% 26%, 100% 35%, 97% 58%, 100% 72%, 96% 95%, 92% 91%, 88% 100%, 6% 100%, 3% 91%, 0% 95%, 3% 70%, 0% 60%, 3% 36%)",
+  },
 } as const;

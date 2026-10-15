@@ -173,3 +173,40 @@ S02（L003～L005，参考 0:04～0:09）由设计负责人亲手做，是其余
 本工单验收产物目录：`/root/project/video-studio.worktrees/66/out/qa/spec-60/66/`。包含 `chapter-01.mp4`、0:00～0:14 每 0.5 秒联系表 `sheet/`、L001/L002/L005～L007 各一张的 `compare/`、两边独立句子取点记录 `sentence-points.json`、动态自检 `motion/motion.json`，以及本次使用的时间轴快照和命令记录。片段末尾属于未接入的第二章，只作第一章衔接定位；正式配音切换由 #69 处理。
 
 补充实测在 `checks/results.json`：小样改动前后第 150、245、270 帧的 PNG 哈希完全一致；仅把 L002 延长 48 帧后，贴条和风格彩条对应画面也完全一致地后移 48 帧。`handoff/`、`peel/` 另附每 0.1 秒的局部联系表。L006 对比取句内贴条保持时刻，撕离过程见 `peel/`，L007 对比取彩条展开完成时刻。参考也将 L006、L007 合成一条字幕，本工单继续按现有字幕组件逐句显示；照片调色、彩条色值、HUD 线宽和字体都继续以小样为准。
+
+## 第二章上半 S05～S07（#67）
+
+`Shot1974Proposal.tsx` 接入 L008～L014；总合成只新增一个 `Sequence`，起点为 L008 −8，终点为 L015 开始。镜头自己不画字幕和颗粒暗角。`proposal` 是本工单新增的令牌组，已有令牌数值不变；几何按参考 15.5、19.5、25.5 秒的 852×480 帧折算到 1920×1080，纸张、胶带和桌面使用 #62 的纹理，徽章使用 `logos/nasa-meatball.svg`。
+
+| 事件                             | 句子锚点 / 参数                                          |
+| -------------------------------- | -------------------------------------------------------- |
+| 章节近黑覆盖层溶入               | L008 −8 至 L008，沿用 `chapterDissolveFrames`            |
+| 翻牌钟溶入 / 初始 2020           | L008 +8 起，8 帧软转场                                   |
+| 各位乱跳                         | L008 +16 起，共 45 帧；每 3 帧换一次，逐位相隔 3 帧停稳  |
+| 肉丸纸片溶入                     | L010 +8 起，8 帧软转场                                   |
+| 红圈画出                         | L011 起，8 帧，沿用小样 cubic ease-out 和 3.2px 纸面线宽 |
+| 红字 `"肉丸"` 打出               | L011 +12 起，沿用每帧 1.5 字符                           |
+| 同一张纸拉回、镜头下移、网格溶入 | L013 −8 起，12 帧，沿用小样 cubic ease-out               |
+| 网格区 Inter Bold `NASA` 溶入    | L013 +8 起，8 帧                                         |
+| 网格纸停留                       | 至 L015 开始；沿用每秒放大 1% 的线性缓推                 |
+
+`FlipYearClock` 接受 `fromYear`、`targetYear`、`start`、`scrambleFrames`；年份是 0～9999 整数，保留四位前导零。随机序列固定种子，每次跳数增量为 1～9，保证各位连续 tick 不会重复；各位停稳后只画静态字面。翻页是沿中缝旋转的上半字面，声音由声音工单接入。
+
+`RedAnnotation.tsx` 是本期内可复用的批注组件，#68 可直接导入：`shape` 支持 `circle`、`underline`、`strike`、`arrow`；必填纸面坐标 `left/top/width/height` 和当前 Sequence 内的 `start`，可选 `durationInFrames`、`stroke`、`color`、`rotation`。默认用现有红色、3.2px 线宽、8 帧画线。路径使用 dash offset 逐段露出，无淡入。调用示例：
+
+```tsx
+<RedAnnotation
+  shape="underline"
+  left={approvedBox.left}
+  top={approvedBox.top}
+  width={approvedBox.width}
+  height={approvedBox.height}
+  start={sentenceFrame(timeline, "L019") - sequenceStart}
+/>
+```
+
+`ProposalPaper` 导出同一张纸的徽章、网格和标题栏，接收 `circleStart`、`nicknameStart`、`gridStart`、`logotypeStart` 四个局部帧锚点；#68 接续网格纸时可复用，几何和收束景别见 `proposal.paper`。本镜头在 L015 前结束，不覆盖后续字形动画。
+
+验收产物：`/root/project/video-studio.worktrees/67/out/qa/spec-60/67/`。其中 `s05-s07.mp4` 是 0:13～0:28 的片段（播放器 0 秒对应合成 13 秒）；`compare/L008`～`L014` 是两边分别按句取点的对比，`sheet/contact-sheet.jpg` 是每 0.5 秒一格的合并联系表，`motion/motion.json` 是动态报告，`review.md` 记录偏移、复核结论和并行依赖。
+
+TODO(design)：确认参考取样的纸片/镜头几何、SVG 手绘曲线和保守句内偏移；#62 纹理在 1080p 已能看见纸纤维和胶带颗粒，是否再减弱由设计验收决定。当前分支未接入 #66 第一章和 #68 后续字形；真实章节衔接须合并 #66 后复核，本工单只提供近黑入场。参考字幕会合并连读句，本镜头继续使用既有逐句字幕；纸面比参考更暖、纹理更明显，沿用现有色板和生成素材，不改小样参数。

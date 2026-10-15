@@ -10,6 +10,7 @@ import type { Timeline } from "../../tools/timeline-types";
 import { color } from "../../src/styles/nasa-punk/tokens";
 import { FilmFinish } from "./FilmFinish";
 import { ShotFirstChapter, shotFirstChapterSpan } from "./ShotFirstChapter";
+import { Shot1974Proposal, shot1974ProposalSpan } from "./Shot1974Proposal";
 import { ShotWormHud, shotWormHudSpan } from "./ShotWormHud";
 import { Subtitles } from "./Subtitles";
 import { sentenceFrame } from "./sentence-timing";
@@ -21,6 +22,7 @@ export const Opening = ({ timeline }: OpeningProps) => {
   if (fps !== timeline.fps) throw new Error("合成帧率必须与时间轴一致。");
   const wormHud = shotWormHudSpan(timeline);
   const firstChapter = shotFirstChapterSpan(timeline);
+  const proposal = shot1974ProposalSpan(timeline);
   return (
     <AbsoluteFill style={{ backgroundColor: color.nearBlack }}>
       <Sequence
@@ -38,6 +40,14 @@ export const Opening = ({ timeline }: OpeningProps) => {
         premountFor={fps}
       >
         <ShotFirstChapter timeline={timeline} />
+      </Sequence>
+      <Sequence
+        name="S05-S07 1974 proposal"
+        from={proposal.start}
+        durationInFrames={proposal.durationInFrames}
+        premountFor={fps}
+      >
+        <Shot1974Proposal timeline={timeline} />
       </Sequence>
       <FilmFinish />
       <Subtitles timeline={timeline} />
