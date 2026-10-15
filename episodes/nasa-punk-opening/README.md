@@ -4,28 +4,26 @@
 
 ## 正式配音（#69）
 
-当前默认 `data/timeline.json` 使用 **Alice × eleven_v4 原始配音的 rubberband 变速版**。第三轮按最新验收统一用 `tempo=1.257143`、`pitch=1` 保持音高，未再调用 ElevenLabs。倍率取原始旁白 48.40 / 目标 38.5 = 1.257142857…，保留六位小数；实际解码旁白 **38.500272 秒**，比参考旁白 37.06 秒长 **1.440272 秒**。保留台本全部停顿和 0.37 秒开头留白后，总长 **1434 帧 / 47.80 秒**，比参考 1391 帧长 **43 帧 / 1.433333 秒**。时间轴来源仍为正式配音，`source.description` 标明倍率与原始、处理目录。
+当前默认 `data/timeline.json` 使用 **Alice × eleven_v4 原始配音的 rubberband 变速版**。第四轮按最新验收保留默认 `tempo=1.257143`，仅 L008 例外改为 **1.15 倍**，全部 `pitch=1` 保持音高。未调用 ElevenLabs。实测旁白 **38.612925 秒**，比参考旁白 37.06 秒长 **1.552925 秒**；保留台本停顿和 0.37 秒开头留白后，总长 **1437 帧 / 47.90 秒**，比第三轮增加 **3 帧 / 0.10 秒**，比参考 1391 帧长 **46 帧 / 1.533333 秒**。来源仍为正式配音，`source.description` 写明默认倍率、L008 例外及目录。
 
-原始 22 句 MP3 和同名合成 JSON 保留在 `public/episodes/nasa-punk-opening/voiceover/`，本轮逐文件哈希确认未变；相邻 `voiceover-rubberband/` 保存变速后的 22 个 44.1kHz/128kbps MP3 及 JSON。处理记录保留合成请求、原始哈希、处理后哈希和 ffmpeg 参数数组；原请求中的 `voice_settings.speed=1.2` 是第二轮历史设置，`eleven_v4` 不支持该设置，本轮实际变速只由 rubberband 完成。媒体与请求记录均不进 git。
+原始 22 句 MP3 和同名合成 JSON 保留在 `public/episodes/nasa-punk-opening/voiceover/`；第三轮 `voiceover-rubberband/` 原样保留。本轮从原始文件生成到此前不存在的新目录 **`voiceover-rubberband-v2/`**，含 22 个 44.1kHz/128kbps MP3 和同名 JSON，时间轴全部指向新目录。新旧变速音频逐文件 SHA256 对比，仅 L008 字节变化，其余 21 句完全一致。原始文件、旧目录和账本哈希均未变。JSON 保留合成请求及输入/输出哈希，`postProcessing.tempo` 记录每句实际倍率，另记音高和 ffmpeg 参数数组；媒体及本机处理记录不进 git。
 
-`data/voiceover-overrides.json` 只改合成文本和上下文：L005、L010、L014 的 NASA 写成「纳萨」，L006 使用「后来，」并省略前后文；其余句子带前后各一句改写后的文本，L022 后句为完整转写中的 L023。台本、字幕、镜头与入口代码本轮均未修改。
+`data/voiceover-overrides.json` 沿用批准的合成文本和上下文：L005、L010、L014 的 NASA 写成「纳萨」，L006 使用「后来，」并省略前后文。原始请求中的 `voice_settings.speed=1.2` 是第二轮历史设置，`eleven_v4` 不支持该设置；实际变速由 rubberband 完成。台本、字幕、镜头与入口代码本轮均未修改。
 
 ```console
 node tools/stretch-voice.ts --help
-node tools/stretch-voice.ts public/episodes/nasa-punk-opening/voiceover --tempo 1.257143 --out public/episodes/nasa-punk-opening/voiceover-rubberband
-pnpm qa voice public/episodes/nasa-punk-opening/voiceover-rubberband --transcript docs/research/nasa-ep04/transcript.md --ledger out/qa/spec-60/69/credits.json --out out/qa/spec-60/69/round3/voice-final --from L001 --to L022 --python /home/jh1/.cache/whisper-models/venv/bin/python --whisper-model /home/jh1/.cache/whisper-models/faster-whisper-large-v3 --overrides episodes/nasa-punk-opening/data/voiceover-overrides.json
-node tools/build-timeline.ts episodes/nasa-punk-opening/script.md --durations episodes/nasa-punk-opening/data/voiceover-durations.json --source elevenlabs --label "正式配音：Alice × eleven_v4；22 句统一 rubberband tempo=1.257143、pitch=1；原始保留在 voiceover/，处理文件在 voiceover-rubberband/" --leading-silence 0.37 --out episodes/nasa-punk-opening/data/timeline.json
+node tools/stretch-voice.ts public/episodes/nasa-punk-opening/voiceover --tempo 1.257143 --tempo-override L008=1.15 --out public/episodes/nasa-punk-opening/voiceover-rubberband-v2
+pnpm qa voice public/episodes/nasa-punk-opening/voiceover-rubberband-v2 --transcript docs/research/nasa-ep04/transcript.md --ledger out/qa/spec-60/69/credits.json --out out/qa/spec-60/69/round4/voice-L008 --from L008 --to L008 --python /home/jh1/.cache/whisper-models/venv/bin/python --whisper-model /home/jh1/.cache/whisper-models/faster-whisper-large-v3 --overrides episodes/nasa-punk-opening/data/voiceover-overrides.json
+node tools/build-timeline.ts episodes/nasa-punk-opening/script.md --durations episodes/nasa-punk-opening/data/voiceover-durations.json --source elevenlabs --label "正式配音：Alice × eleven_v4 原始合成；默认 ffmpeg rubberband tempo=1.257143，L008 例外 tempo=1.15；全部 pitch=1 保持音高；NASA 读纳萨，L006 后来，去上下文；原始文件保留在 voiceover/，处理文件在 voiceover-rubberband-v2/" --leading-silence 0.37 --out episodes/nasa-punk-opening/data/timeline.json
 ```
 
-变速工具要求新输出目录不存在，拒绝覆盖原始或已有结果；换倍率时继续输入原始 `voiceover/`，另选输出目录，不累计变速。原始合成与处理后 JSON 均兼容现有 `pnpm qa voice`。`data/voiceover-durations.json` 用 ffprobe 解码帧的 `nb_samples / sample_rate` 实测，排除 MP3 编码填充；验收脚本独立复算时间轴，最大偏差 0 帧。完整参数数组、CUDA 环境和日志在验收目录；Whisper 模型和 venv 只使用仓库外缓存。
+变速工具要求新输出目录不存在，拒绝覆盖原始或已有结果；换倍率时仍输入原始 `voiceover/`，另选输出目录，不累计变速。`--tempo-override L008=1.15` 可多次传入以覆盖不同句子；重复或不存在的编号、无效倍率会报错。JSON 可直接交给现有 `pnpm qa voice`。`data/voiceover-durations.json` 用 ffprobe 解码帧的 `nb_samples / sample_rate` 实测，排除 MP3 编码填充；独立复算时间轴最大偏差 **0 帧**。完整参数数组、CUDA 环境和日志在验收目录；Whisper 沿用仓库外缓存，ffmpeg 解码为数组以避开 PyAV 不兼容。
 
-本轮 **0 credits**，累计仍为 **429 / 1500**，沿用上轮账本的保守账户剩余 **9444**，未重新查询账户；账本哈希未变。原版 CER **0.50%（1/202）**，变速后同一套评分为 **2.48%（5/202）**。L007 为 11.11%（「它→他」同音识别差异），L008 从 0% 升至 **40%**（「时间→直接」），L022 从 0% 升至 **25%**（「它蠕虫→他如虫」），其余 19 句为 0%。年月数字及 NASA／纳萨／娜萨／娜莎沿用等价规则，没有新增识别豁免。
+本轮 **0 credits**，累计仍为 **429 / 1500**，沿用账本的保守账户剩余 **9444**，未重新查询账户。L008 用同一套 large-v3、CUDA/float16、beam=5、无台本提示词评分，转写 **「时间往回倒」**，CER 从第三轮 **40%（2/5）降为 0%（0/5）**；解码时长从 1.209093 秒变为 **1.321746 秒**，真峰值 **-6.6 dBTP**，无爆音、句中长静音和 ASR 首尾不符。QA 退出 **1**，仅余原有的头部留白不足 20ms 筛查标记；这是最新验收已接受的边缘标记，未据此加静音或重配。
 
-`pnpm qa voice` 退出 **1**：12 句首尾留白不足 20ms（L001、L002、L007、L008、L009、L010、L011、L016、L017、L018、L020、L022），L007/L008 另有 ASR 首字不符；其中新增边缘风险为 L007 尾部、L017 头部。最高真峰值 **-5.5 dBTP**，未检出爆音或句中超过 0.4 秒静音。边缘标记不能证明截断，CER 也不能独立确定变速是否造成错读；本轮按要求报告，未重新合成。
+其余 21 句音频字节一致，按最新验收范围沿用第三轮评分：L007 为 11.11%、L022 为 25%，均为已接受的同音识别差异，其余为 0%；合并本轮 L008 后 CER 为 **1.49%（3/202）**，这是复用结果的汇总，并非本轮重跑 22 句。原有 12 句边缘留白标记仍保留。S02 在 L008 之前，时间边界未变，原有动画完成结论沿用；其余镜头交对应工单。
 
-TODO(design)：复核 L008、L022 变速后的 CER 退化和边缘筛查标记，决定质量是否接受。现有 S02 的角框、标签、顶部信息栏和年份时间线均能完成；其余镜头尚未接入，动画完成情况交对应工单复核。
-
-本轮验收目录：`/root/project/video-studio.worktrees/69/out/qa/spec-60/69/round3/`。`opening.mp4` 为整段渲染，`comparison.html` 汇集 22 张同句中点对比图，`comparison-sheet.jpg` 为对比联系表；`voice-final/` 含 Whisper 原始转写、CER、真峰值、截断及静音筛查，`sentence-review.md` 和 `timeline-comparison.json` 给出参考／原版／变速后时长与逐句 CER。`acceptance.json` 保存时间轴复算、原始文件与账本哈希不变、镜头代码不变及 S02 动画边界证据。前两轮产物保留在上级目录。
+本轮验收目录：`/root/project/video-studio.worktrees/69/out/qa/spec-60/69/round4/`。`voice-L008/` 保存原始识别、CER 及音频诊断，`cli-check.json` 保存 10 项命令行实测，`acceptance.json` 保存倍率、哈希和时间轴复算证据，`sentence-review.md` 与 `timeline-comparison.json` 给出逐句时长及评分来源。本轮按最新验收只复核 L008；第三轮整段渲染、22 张逐句对比图及联系表保留在 `/root/project/video-studio.worktrees/69/out/qa/spec-60/69/round3/`，对应第三轮时间轴，未冒充本轮渲染。
 
 ## 生成与渲染
 
