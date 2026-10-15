@@ -24,8 +24,9 @@
 | 合并方式 | PR 只用 merge commit，合并后自动删除分支（GitHub 设置已锁定），每个提交和它的 `Refs` 都留在 `main` 上 | — |
 | 工单写法 | spec 和工单不写文件路径，需要时用功能描述「边界」；spec 不列工单清单 | `docs/agents/issue-tracker.md` |
 | 执行技能 | `run-spec`：机械步骤交给工单脚本（`dispatch`、`land`、`accept`、`review`、`cleanup`、`doctor`），本仓库特有的值放配置 | `docs/agents/run-spec.md` |
-| 分发 | `run-spec`、`setup-run-spec` 在本仓库进 git；别的仓库用一条 `npx skills add` 安装、不进 git，再运行 `/setup-run-spec` 接入；更新就是重新运行安装命令 | `docs/agents/run-spec.md`「装到别的仓库」 |
+| 分发 | `run-spec`、`setup-run-spec` 在本仓库进 git；别的仓库用一条 `npx skills add` 从版本 tag 安装（当前 `workflow-v1`）、不进 git，再运行 `/setup-run-spec` 接入；升级就是换成新版本号重新运行安装命令 | `docs/agents/run-spec.md`「装到别的仓库」 |
 | 汇报 | spec 收尾时写 HTML 可视化汇报存进 `docs/reports/`，再清理中间产物；不发布到外部服务 | `run-spec` 第 7 步 |
+| 流程版本 | 2026-10-15 建仓复盘、迁移和流程改进告一段落，打 tag `workflow-v1`，之后开始做视频；技能再改就攒成新版本打新 tag | GitHub Release `workflow-v1` |
 
 ## 进度
 
@@ -41,14 +42,18 @@
 - [x] design-system 真实 spec #1 复盘：`run-spec`、`setup-run-spec` 和开局指引的修改，记录见 `docs/research/run-spec-migration.md`「真实使用」
 - [x] spec #54：工单脚本的 gh 重试和 `.env` 自检（问题 32），汇报见 `docs/reports/spec-54-script-hardening.html`
 - [x] 第一轮改进的复核：做决定的三条移进角色文档，记录见 `docs/research/run-spec-migration.md`「第一轮改进之后」
+- [x] design-system spec #65：命令手册一条事实一行、网页构建产出验收截图，那边的 CI 恢复通过（问题 40）；汇报在那边的 `docs/reports/spec-65-tool-polish.html`
+- [x] 流程版本 `workflow-v1`：别的仓库改为从这个 tag 安装技能
 - [ ] 第一阶段：复刻开场 0:00～0:46
 - [ ] 第二阶段：新选题完整一期
 
 ## 下一步
 
-**先做**：design-system 的 spec #65（命令手册重排、截图验收工具）收尾。本仓库这次改的技能合进 `main` 后，design-system 重装并提交锁文件。
+**先做**：按 `docs/workflow/bootstrap.md` 第 6 步「全部完成时」精简本路线图，只留做视频要用的内容；建仓和流程改进的记录以 tag `workflow-v1` 为准。
 
 **检验这一轮改进**：下一个真实 spec 从对齐开始在新会话里走一遍，看三件事：难回头的方向有没有先给用户看、替用户定的有没有单列、要靠判断验收的工单派发前有没有定稿；汇报里对比设计负责人和 Codex 的用量（问题 37）。
+
+**以后再定**：方法层（两个技能、工作流文档）要不要拆成单独的仓库，拆法见 `docs/workflow/README.md`「以后拆分」。等第三个仓库也要用，或者做视频期间技能改得频繁时再定。
 
 **第一阶段**：单独建 spec。
 
