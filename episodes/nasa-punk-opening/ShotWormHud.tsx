@@ -6,6 +6,8 @@
  * 1975 — 1992 — 2020 timeline types. Every time is a sentence anchor plus frames.
  * Place inside a Sequence spanning shotWormHudSpan(timeline).
  * Exports the photo geometry and close framing so S03/S04 can continue the shot.
+ * #66 extends only the close hold through L007 and adds the chapter-end dissolve;
+ * the camera's linear push and every L003-L005 event keep the sample timing.
  */
 import {
   AbsoluteFill,
@@ -50,7 +52,8 @@ const fade = (frame: number, start: number, length: number) =>
 
 export const shotWormHudSpan = (timeline: Timeline) => {
   const start = sentenceFrame(timeline, "L003", -4);
-  const end = sentence(timeline, "L005").endFrame;
+  const end =
+    sentence(timeline, "L007").endFrame + motion.chapterDissolveFrames;
   return { start, durationInFrames: end - start };
 };
 
@@ -65,7 +68,18 @@ export const ShotWormHud = ({ timeline }: { timeline: Timeline }) => {
   const closeLength = durationInFrames - closeCut;
   const style = wormHudStyle;
   return (
-    <AbsoluteFill style={{ opacity: fade(local, 0, motion.dissolveFrames) }}>
+    <AbsoluteFill
+      style={{
+        opacity:
+          fade(local, 0, motion.dissolveFrames) *
+          (1 -
+            fade(
+              local,
+              durationInFrames - motion.chapterDissolveFrames,
+              motion.chapterDissolveFrames,
+            )),
+      }}
+    >
       <Sequence durationInFrames={wideLength} name="S02 wide">
         <PhotoCamera
           src={rolloutPhoto.src}

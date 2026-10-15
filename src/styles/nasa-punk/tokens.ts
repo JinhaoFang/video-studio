@@ -4,6 +4,7 @@
  * Start point: docs/research/nasa-ep04/style.md; frame-sampled colors win over the
  * description's values. Sizes are px at 1920x1080; durations are frames at 30fps.
  * Motion values were set by the 0:04-0:09 sample shot (#64); see the episode README.
+ * firstChapter adds #66 reference-frame measurements without changing the sample.
  */
 export const color = {
   paper: "#EDE4D9",
@@ -72,4 +73,26 @@ export const motion = {
   barDrawFrames: 12,
   typeCharsPerFrame: 1.5,
   pushPerSecond: 0.01,
+} as const;
+
+export const firstChapter = {
+  tightFraming: { anchor: { x: 1025, y: 540 }, scale: 1.43 },
+  middleFraming: { anchor: { x: 980, y: 540 }, scale: 0.94 },
+  reframeOffsetFrames: 18,
+  stampOffsetFrames: 30,
+  peelOffsetFrames: 24,
+  stripeOffsetFrames: 24,
+  paper: {
+    width: 540,
+    height: 220,
+    centerOffsetY: -18,
+    rotation: -3,
+    labelSize: 34,
+    shadowBlur: 12,
+  },
+  stripeHeight: 12,
+  stripeGap: 34,
+  tagGap: 20,
+  tagPaddingX: 18,
+  tagPaddingY: 8,
 } as const;
