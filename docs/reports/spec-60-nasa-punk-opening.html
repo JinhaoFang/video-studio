@@ -1,0 +1,456 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Spec #60 执行汇报</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&family=Noto+Sans+SC:wght@400;500;700&family=Noto+Serif+SC:wght@600;700&display=swap">
+<style>
+/* Layout: one reading column of briefing sections; charts and tables scroll inside their own frames. */
+:root {
+  --bg: #f4f6f9;
+  --surface: #ffffff;
+  --ink: #141820;
+  --ink-2: #485164;
+  --muted: #737d90;
+  --line: #dde2ea;
+  --accent: #2f45b5;
+  --accent-soft: #e6e9fa;
+  --s-feature: #2a78d6;
+  --s-rework: #eb6834;
+  --s-review: #1baf7a;
+  --s-prev: #9aa3b3;
+  --s-trial: #b7791f;
+  --good: #1a7f37;
+  --warn: #9a5b00;
+  --font-display: "Noto Serif SC", "Songti SC", "SimSun", serif;
+  --font-body: "Noto Sans SC", "PingFang SC", "Microsoft YaHei", sans-serif;
+  --font-data: "JetBrains Mono", ui-monospace, Menlo, Consolas, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #101319; --surface: #171b23; --ink: #eceef4; --ink-2: #b6bdcc; --muted: #8b93a5;
+    --line: #2a303c; --accent: #9eabff; --accent-soft: #232a4a;
+    --s-feature: #3987e5; --s-rework: #d95926; --s-review: #199e70; --s-prev: #5c6576; --s-trial: #e0a93b;
+    --good: #4cc46a; --warn: #f0a347; color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #101319; --surface: #171b23; --ink: #eceef4; --ink-2: #b6bdcc; --muted: #8b93a5;
+  --line: #2a303c; --accent: #9eabff; --accent-soft: #232a4a;
+  --s-feature: #3987e5; --s-rework: #d95926; --s-review: #199e70; --s-prev: #5c6576; --s-trial: #e0a93b;
+  --good: #4cc46a; --warn: #f0a347; color-scheme: dark;
+}
+*, *::before, *::after { box-sizing: border-box; }
+body { background: var(--bg); color: var(--ink); font-family: var(--font-body); font-size: 15px; line-height: 1.75; margin: 0; }
+table { font-size: inherit; }
+.page { max-width: 960px; margin: 0 auto; padding-inline: 20px; padding-block: 40px 72px; display: grid; gap: 56px; }
+h1, h2, h3 { font-family: var(--font-display); text-wrap: balance; margin: 0; line-height: 1.35; }
+h1 { font-size: clamp(26px, 4.4vw, 38px); }
+h2 { font-size: 22px; }
+h3 { font-size: 16px; font-family: var(--font-body); font-weight: 700; }
+p { margin: 0; max-width: 46em; }
+a { color: var(--accent); text-underline-offset: 3px; }
+a:focus-visible, [tabindex]:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+code, .mono { font-family: var(--font-data); font-size: 0.86em; }
+code { background: var(--accent-soft); padding: 1px 6px; border-radius: 4px; overflow-wrap: anywhere; }
+.eyebrow { font-family: var(--font-data); font-size: 12px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); }
+section { display: grid; gap: 18px; min-width: 0; }
+.section-head { display: grid; gap: 4px; border-top: 1px solid var(--line); padding-top: 20px; }
+.lede { font-size: 17px; color: var(--ink-2); }
+.muted { color: var(--muted); }
+.note { font-size: 13px; color: var(--muted); }
+
+header.hero { display: grid; gap: 14px; }
+.meta { display: flex; flex-wrap: wrap; gap: 6px 16px; font-size: 13px; color: var(--muted); }
+.status { display: inline-flex; align-items: center; gap: 6px; font-size: 12px; font-weight: 500; padding: 1px 10px; border-radius: 999px; border: 1px solid currentColor; }
+.status.pending { color: var(--warn); }
+.status.done { color: var(--good); }
+
+.kpis { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px; }
+.kpi { background: var(--surface); border: 1px solid var(--line); border-radius: 8px; padding: 14px 16px; display: grid; gap: 2px; min-width: 0; }
+.kpi .num { font-family: var(--font-data); font-size: 26px; font-weight: 500; font-variant-numeric: tabular-nums; line-height: 1.3; }
+.kpi .num small { font-size: 14px; color: var(--muted); font-weight: 400; }
+.kpi .label { font-size: 13px; color: var(--ink-2); }
+@media (max-width: 720px) { .kpis { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+
+.deliver { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px 28px; margin: 0; padding: 0; list-style: none; }
+.deliver li { display: grid; gap: 2px; min-width: 0; }
+.deliver b { font-weight: 700; }
+@media (max-width: 720px) { .deliver { grid-template-columns: 1fr; } }
+
+.flow { display: grid; gap: 10px; }
+.step { display: grid; grid-template-columns: 34px minmax(0, 1fr); gap: 12px; align-items: start; }
+.step .n { font-family: var(--font-data); font-size: 13px; width: 28px; height: 28px; border-radius: 50%; display: grid; place-items: center; background: var(--surface); border: 1px solid var(--line); color: var(--ink-2); margin-top: 2px; }
+.step .body { display: grid; gap: 2px; min-width: 0; }
+.step .title { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 10px; font-weight: 700; }
+.step .desc { font-size: 14px; color: var(--ink-2); }
+.who { font-size: 11px; font-weight: 500; padding: 0 8px; border-radius: 4px; border: 1px solid var(--line); color: var(--ink-2); background: var(--surface); }
+.who.user { border-color: var(--accent); color: var(--accent); }
+.who.codex { border-color: var(--s-review); }
+.who.script { border-color: var(--s-feature); }
+.loop { border: 1px dashed var(--accent); border-radius: 10px; padding: 14px 14px 10px; display: grid; gap: 10px; position: relative; }
+.loop-label { font-size: 12px; color: var(--accent); font-weight: 500; }
+
+.compare { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; }
+.compare > div { background: var(--surface); border: 1px solid var(--line); border-radius: 8px; padding: 14px 16px; min-width: 0; display: grid; gap: 8px; align-content: start; }
+.compare ol { margin: 0; padding-left: 1.3em; font-size: 13px; color: var(--ink-2); display: grid; gap: 2px; }
+.compare .cmd { font-family: var(--font-data); font-size: 13px; background: var(--accent-soft); border-radius: 6px; padding: 8px 10px; display: grid; gap: 4px; overflow-x: auto; }
+@media (max-width: 720px) { .compare { grid-template-columns: 1fr; } }
+
+.figure { background: var(--surface); border: 1px solid var(--line); border-radius: 8px; padding: 16px; display: grid; gap: 10px; min-width: 0; position: relative; }
+.chart-scroll { overflow-x: auto; }
+.legend { display: flex; flex-wrap: wrap; gap: 6px 18px; font-size: 13px; color: var(--ink-2); }
+.legend span { display: inline-flex; align-items: center; gap: 6px; }
+.swatch { width: 12px; height: 12px; border-radius: 3px; display: inline-block; }
+svg text { font-family: var(--font-body); }
+.tick-label, .row-label { fill: var(--ink-2); font-size: 12px; }
+.axis-label { fill: var(--muted); font-size: 11px; }
+.grid-line { stroke: var(--line); stroke-width: 1; }
+.marker-line { stroke: var(--accent); stroke-width: 1.5; stroke-dasharray: 4 4; }
+.marker-text { fill: var(--accent); font-size: 12px; }
+.bar-value { fill: var(--ink); font-size: 12px; font-family: var(--font-data); }
+.tip { position: absolute; pointer-events: none; background: var(--ink); color: var(--bg); font-size: 12px; line-height: 1.6; padding: 8px 10px; border-radius: 6px; max-width: 260px; z-index: 2; }
+.tip b { font-weight: 700; }
+.ratio { display: flex; flex-wrap: wrap; align-items: baseline; gap: 8px 14px; }
+.ratio .big { font-family: var(--font-data); font-size: 30px; font-variant-numeric: tabular-nums; }
+
+.table-wrap { overflow-x: auto; background: var(--surface); border: 1px solid var(--line); border-radius: 8px; }
+table { border-collapse: collapse; width: 100%; }
+th, td { text-align: left; padding: 9px 12px; border-bottom: 1px solid var(--line); vertical-align: top; }
+th { font-size: 12px; font-weight: 500; color: var(--muted); letter-spacing: 0.04em; white-space: nowrap; }
+tr:last-child td { border-bottom: 0; }
+td.num, th.num { text-align: right; font-family: var(--font-data); font-variant-numeric: tabular-nums; white-space: nowrap; }
+tr.total td { font-weight: 700; }
+.kind { display: inline-flex; align-items: center; gap: 6px; white-space: nowrap; }
+.chip { display: inline-block; font-size: 12px; padding: 0 8px; border-radius: 4px; background: var(--accent-soft); color: var(--accent); white-space: nowrap; }
+
+.items { display: grid; gap: 14px; margin: 0; padding: 0; list-style: none; }
+.items li { display: grid; gap: 2px; padding-left: 14px; border-left: 2px solid var(--line); }
+.items li.mine { border-left-color: var(--s-rework); }
+.items .head { font-weight: 700; display: flex; flex-wrap: wrap; gap: 6px 10px; align-items: center; }
+.items p { color: var(--ink-2); font-size: 14px; }
+.two-col { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 24px; }
+@media (max-width: 720px) { .two-col { grid-template-columns: 1fr; } }
+@media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+.diff-list { columns: 2; column-gap: 28px; margin: 0; padding-left: 1.2em; font-size: 14px; color: var(--ink-2); }
+.diff-list li { break-inside: avoid; margin-bottom: 4px; }
+@media (max-width: 720px) { .diff-list { columns: 1; } }
+tr.pick td { background: var(--accent-soft); }
+</style>
+</head>
+<body>
+<main class="page">
+
+<header class="hero">
+  <div class="eyebrow">Spec #60 · 设计负责人 → 用户 · 2026-10-16</div>
+  <h1>复刻 NASA 朋克开场 0:00～0:46</h1>
+  <p class="lede">目标是用本仓库的管线，把参考视频开头 46 秒按句子逐镜复刻出来：台本、正式配音、风格令牌、11 个镜头、配乐音效和混音。设计负责人只亲手做了风格令牌和 5 秒小样，其余 11 张工单全部派给 Codex，最后交出一条 47.9 秒的成片和一份按句的差异清单，只等你审片。</p>
+  <div class="meta">
+    <a href="https://github.com/JinhaoFang/video-studio/issues/60">spec #60</a>
+    <span id="pr-meta">PR 待开</span>
+  </div>
+</header>
+
+<div class="kpis" aria-label="关键数字" id="kpis"></div>
+
+<section id="deliver">
+  <div class="section-head">
+    <div class="eyebrow">交付</div>
+    <h2>做了什么，对你意味着什么</h2>
+  </div>
+  <ul class="deliver">
+    <li><b>成片</b><span class="muted"><code>out/renders/nasa-punk-opening.mp4</code>：1920×1080、30fps、47.9 秒、30.4 MB，带混音。联系表和 22 张按句对比图在同一目录。媒体不进 git。</span></li>
+    <li><b>按句定时，换配音不用改镜头</b><span class="muted">所有镜头事件都写成"第几句 + 几帧"。这次从临时配音换到正式配音，镜头代码一行没改。</span></li>
+    <li><b>NASA 朋克风格令牌和小样</b><span class="muted"><code>src/styles/nasa-punk/</code>：颜色、字体、字幕条、HUD、颗粒暗角、动效时长。下一期用这套风格时，从这里取值。</span></li>
+    <li><b>新增验收工具</b><span class="muted"><code>pnpm qa sentence</code> 按句取时间点，<code>pnpm qa voice</code> 给配音打分（错字率、语速、峰值），<code>pnpm qa motion</code> 查长时间静止和一闪而过。<code>tools/mix-opening.ts</code> 程序生成铺底和翻牌钟嘀嗒，并混到 -16 LUFS。</span></li>
+  </ul>
+  <h3>和参考不一样的地方（你审片时对照）</h3>
+  <ol class="diff-list" id="diffs"></ol>
+</section>
+
+<section id="voice">
+  <div class="section-head">
+    <div class="eyebrow">配音</div>
+    <h2>音色按可测指标选</h2>
+  </div>
+  <p>2 个音色 × 2 个模型，每组合成 L001～L003，用 Whisper 转写算错字率，再测语速和真峰值。排序规则：先错字率，再看检测出的风险数，最后看语速离参考的 300 字/分钟有多远。</p>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>音色 / 模型</th><th class="num">错字率</th><th class="num">语速（字/分钟）</th><th class="num">真峰值 dBTP</th><th class="num">credits</th></tr></thead>
+      <tbody id="voice-rows"></tbody>
+    </table>
+  </div>
+  <p class="note">选定 Alice × eleven_v4（高亮行）。正式配音 22 句又调了三处：NASA 在合成文本里写成"纳萨"，因为参考读两个音节；L006"后来"去掉上下文，否则会被读成 NASA；eleven_v4 不支持调速，所以合成后用 rubberband 保音高统一加速 1.257 倍，L008 单独 1.15 倍，因为快了会吞字。结果：旁白合计 38.6 秒，参考 37.1 秒；ElevenLabs 合计用了 429 credits。</p>
+</section>
+
+<section id="timeline">
+  <div class="section-head">
+    <div class="eyebrow">时间线</div>
+    <h2>派发与关键节点</h2>
+  </div>
+  <div class="legend" id="legend"></div>
+  <div class="chart-scroll"><svg id="gantt" role="img" aria-label="派发时间线：每次 Codex 运行一条横条"></svg></div>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>时刻</th><th>节点</th></tr></thead>
+      <tbody id="events"></tbody>
+    </table>
+  </div>
+</section>
+
+<section id="cost">
+  <div class="section-head">
+    <div class="eyebrow">成本与效率</div>
+    <h2>用了多少</h2>
+  </div>
+  <div class="figure">
+    <h3>设计负责人和 Codex 的 token 对比</h3>
+    <div class="chart-scroll"><svg id="split" role="img" aria-label="设计负责人与 Codex 的输入（含缓存）和输出 token 对比"></svg></div>
+    <p class="note" id="split-note"></p>
+  </div>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>运行</th><th class="num">用时（分钟）</th><th class="num">输入</th><th class="num">其中缓存</th><th class="num">输出</th></tr></thead>
+      <tbody id="dispatch-rows"></tbody>
+    </table>
+  </div>
+  <p class="note">审查的用时和用量含各自两个审查子代理。设计负责人主会话没有用子代理；它的输入几乎全是缓存读取，只有 464 个 token 是非缓存输入，另有约 41 万 token 写入缓存。主会话的数字截至写汇报时，开 PR、等 CI 这几步还没计入。<span id="prev-note"></span></p>
+</section>
+
+<section id="quality">
+  <div class="section-head">
+    <div class="eyebrow">质量</div>
+    <h2>验证与审查</h2>
+  </div>
+  <ul class="deliver">
+    <li><b>测试 198 → 312</b><span class="muted">新增的测试覆盖时间轴生成、按句取点、配音评分、动态自检（包括 #72 补的"切景后一闪"）。每次合并都跑了 <code>pnpm verify</code>。</span></li>
+    <li><b>成片实测</b><span class="muted">响度 -16.0 LUFS，真峰值 -2.0 dBTP；静音段 0；动态自检报警 0；L001、L011、L022 的声音起点比字幕晚 6～20 毫秒，都不到一帧；翻牌钟的嘀嗒和乱跳都在 14.30～15.80 秒。</span></li>
+    <li><b>镜头逐句对照</b><span class="muted">每张镜头工单都按句出了和参考的对比图，设计负责人逐张看过。另外亲自渲染核对了三处衔接：第一章到翻牌钟、网格纸接续、进出引文纸片。</span></li>
+    <li><b>审查</b><span class="muted" id="review-summary"></span></li>
+  </ul>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>审查</th><th>范围</th><th class="num">发现</th><th>处理</th></tr></thead>
+      <tbody id="review-rows"></tbody>
+    </table>
+  </div>
+</section>
+
+<section id="decisions">
+  <div class="section-head">
+    <div class="eyebrow">决定</div>
+    <h2>谁定了什么</h2>
+  </div>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>决定</th><th>谁</th></tr></thead>
+      <tbody>
+        <tr><td>开工前推送并合并 #59；Blender 研究的未提交改动先 <code>git stash</code></td><td>用户</td></tr>
+        <tr><td>设计负责人只做风格令牌和小样，其余全部派 Codex；用户只审成片和差异清单</td><td>用户（spec 里定的分工）</td></tr>
+        <tr><td>彩条用参考画面实测的鲜艳四色，不用风格笔记里偏灰的值</td><td>设计负责人</td></tr>
+        <tr><td>选 Alice × eleven_v4；NASA 读"纳萨"；后期统一变速、L008 单独放慢</td><td>设计负责人（按 #63、#69 的实测）</td></tr>
+        <tr><td>第一章保持照片到 L008 前，直接溶到翻牌钟，不留黑场</td><td>设计负责人（合并后对照参考改）</td></tr>
+        <tr><td>接受不修：快速移镜无运动模糊、纸面偏暖偏暗、贴条两端平直、字幕一句一条</td><td>设计负责人（列入差异清单，交你定）</td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<section id="issues">
+  <div class="section-head">
+    <div class="eyebrow">问题与处理</div>
+    <h2>遇到什么</h2>
+  </div>
+  <ul class="items">
+    <li class="mine"><div class="head">#69 第二轮的调速指示错了<span class="chip">设计负责人失误</span></div><p>我让 Codex 用 ElevenLabs 的 speed 参数调快，但 eleven_v4 不支持，仓库里的 API 笔记早有记录。白花约 250 credits，#69 也因此多返工一轮。第三轮改成合成后用 rubberband 保音高变速，换倍率不用再花钱。</p></li>
+    <li><div class="head">#69 返工 3 次</div><p>第一轮暴露了两个读音问题：NASA 被逐个字母读，"后来"被读成 NASA。第二轮是上面那个调速失误。第三轮按统一倍率加速后，L008 吞字，单独放慢到 1.15 倍。每一轮都靠 <code>pnpm qa voice</code> 逐句复核错字率定位问题。</p></li>
+    <li><div class="head">land 删 worktree 时连带删掉媒体</div><p>#61 的临时配音只放在 worktree 里，合并后跟着 worktree 被删掉，只好重新生成。之后每次 land 前先把新媒体拷回主工作区，派发说明里也写明了这一点。</p></li>
+    <li><div class="head">并行镜头合到一起后，章节之间出现 1.2 秒黑场</div><p>#66（第一章）和 #67（第二章）分开做，各自验收都对。合到一起才看到：第一章在 L007 说完就溶到黑，翻牌钟要到 L008 之后才出来。设计负责人对照参考，把它改成直接溶到翻牌钟。并行切开的镜头，衔接只能在合并后验收。</p></li>
+    <li><div class="head">#67 跑了约 3.3 小时</div><p>其他镜头工单 1 小时左右，#67 做了大量逐帧实测：无损逐列比对翻牌数字、换目标年份的变体渲染、整体后移时间轴的重渲染。结果可靠，但实测的量超过了工单的要求。</p></li>
+    <li><div class="head">合并冲突集中在同几个文件</div><p>并行镜头都要改 <code>Opening.tsx</code>、<code>tokens.ts</code> 和本期 README，合并时每次都在这三个文件上冲突。都是"两边都保留"的简单冲突，按派发说明里"只加自己那一项"的约定解决。</p></li>
+  </ul>
+</section>
+
+<section id="next">
+  <div class="section-head">
+    <div class="eyebrow">遗留与下一步</div>
+    <h2>接下来</h2>
+  </div>
+  <ul class="deliver">
+    <li><b>你：审片</b><span class="muted">看 <code>out/renders/nasa-punk-opening.mp4</code>，对照上面的差异清单，说哪些要改。每条意见会写成一张返工工单，在同一个分支上做。</span></li>
+    <li><b>你：审核合并 PR</b><span class="muted" id="next-pr">PR 待开。</span></li>
+    <li><b>取回 Blender 研究</b><span class="muted">开工前暂存的改动在 <code>git stash</code> 里（"blender-cli-wsl research (pre spec-60)"），用 <code>git stash pop</code> 取回。</span></li>
+    <li><b>可以提进 kit 的</b><span class="muted">字幕条、按句定时、颗粒暗角、红色手绘批注，第二期再用时提到 <code>src/kit/</code>。</span></li>
+  </ul>
+</section>
+
+<p class="note">数据来源：各工单验收评论和 spec #60 审查评论里的派发数据；设计负责人会话记录，按回复去重、跳过子代理；<code>out/qa/spec-60/</code> 下的验收产物；git 提交时间。时刻均为北京时间。</p>
+</main>
+
+<script>
+(function () {
+  var pr = { number: 73, url: "https://github.com/JinhaoFang/video-studio/pull/73", ci: "通过" };
+  var dispatches = [
+    ["gh-61", "骨架与临时配音", "feature", "20:21", 30.6, 4857485, 4706176, 43368],
+    ["gh-62", "素材与来源", "feature", "20:21", 25.7, 2159746, 2044416, 32122],
+    ["gh-63", "配音试听", "feature", "20:21", 34.1, 8206287, 8061440, 52060],
+    ["gh-65", "动态自检", "feature", "20:54", 19.6, 2627013, 2512640, 28642],
+    ["gh-69", "正式配音", "feature", "20:59", 17.6, 3392701, 3286656, 27344],
+    ["gh-66", "第一章镜头", "feature", "21:20", 66.8, 2770228, 2646016, 28407],
+    ["gh-67", "第二章上半", "feature", "21:20", 198.7, 4287479, 4119424, 42348],
+    ["gh-69-2", "正式配音 返工 1", "rework", "21:21", 29.5, 4898363, 4770944, 31656],
+    ["review-60-1", "第一批审查", "review", "21:22", 21.23, 3061627, 2807552, 15105],
+    ["gh-72", "返工：闪现漏报", "rework", "21:32", 11.7, 1202253, 1121920, 19502],
+    ["gh-69-3", "正式配音 返工 2", "rework", "21:51", 24.1, 2601210, 2489088, 24255],
+    ["gh-69-4", "正式配音 返工 3", "rework", "22:17", 14.4, 1529299, 1432192, 18645],
+    ["gh-70", "配乐与混音", "feature", "22:34", 43.4, 2428169, 2323456, 22274],
+    ["gh-68", "第二章下半", "feature", "24:46", 65.8, 7152427, 6967296, 47604],
+    ["review-60-2", "第二批审查", "review", "24:47", 17.72, 3743883, 3470720, 15793],
+    ["gh-71", "成片与验收", "feature", "25:57", 19.8, 4101404, 3930496, 34784],
+    ["review-60-final", "收尾审查", "review", "26:20", 9.73, 4007762, 3678464, 15796]
+  ];
+  var design = { replies: 220, input: 464, cacheWrite: 413954, cacheRead: 35316986, output: 130091 };
+  var prev = { name: "spec #54", codexMinutes: 20.36, codexInput: 2981782, codexOutput: 19885 };
+  var events = [
+    ["20:11", "开始执行：合并 #59，暂存 Blender 研究"], ["20:21", "并行派发 #61、#62、#63"],
+    ["20:54", "派发 #65；#61～#63 验收合并"], ["21:15", "设计负责人定稿风格令牌与小样（#64）"],
+    ["21:20", "并行派发 #66、#67；#69 第一轮验收需返工"], ["21:31", "第一批审查：1 项 P2 → 工单 #72，2 项 P3 自己改"],
+    ["22:30", "#66 合并；彩条改实测四色；#69 第四轮通过"], ["23:18", "#70 配乐混音合并"],
+    ["24:46", "#67 合并；修第一章到翻牌钟的黑场；派发 #68 和第二批审查"],
+    ["25:57", "#68 合并，派发 #71"], ["26:19", "#71 成片验收通过；派发收尾审查"], ["26:30", "收尾审查 0 项，开 PR"]
+  ];
+  var reviews = [
+    ["review-60-1", "#61～#65", "3", "P2 闪现漏报 → #72 返工；2 项 P3 文档由设计负责人修"],
+    ["review-60-2", "#66、#67、#69、#70、#72", "0", "—"],
+    ["review-60-final", "整个分支（对 main）", "0", "—"]
+  ];
+  var diffs = [
+    "L001～L002：照片调色、颗粒和中景切换时机略有差异",
+    "L003：参考字幕句中有全角空格（箭体上　印着…），这里没有",
+    "L004～L005、L006～L007、L009～L010、L012～L013：参考把连读的两句合成一条字幕，这里一句一条",
+    "L004：年份标签跨到 L005 才打完（参考同样跨句）",
+    "L005：VOID 贴条左右两端平直，参考是锯齿撕口",
+    "L007：彩条厚度、标签构图略有差异",
+    "L008～L009：翻牌钟的随机数字序列和字形不同",
+    "L010～L022：纸面比参考暖、暗，纹理更明显；参考接近白纸、暗角更重",
+    "L011：红圈形状不同；字幕“肉丸”不带引号",
+    "L013：Inter Bold 代替参考的 Helvetica",
+    "L015：第②阶段字母留缝和 S 的断口不同",
+    "L017～L021：快速移镜没有运动模糊",
+    "L020：小火箭更细长",
+    "L022：THE WORM 标签尺寸、位置不同；字幕“蠕虫”不带引号",
+    "整体：成片 47.9 秒，参考 46.4 秒，多出的 1.5 秒来自配音语速"
+  ];
+  var voices = [
+    ["Alice / eleven_multilingual_v2", "33.3%", "279", "-4.1", 30, false],
+    ["Alice / eleven_v4", "0%", "299", "-6.5", 30, true],
+    ["Daniel / eleven_multilingual_v2", "10.0%", "308", "-8.0", 30, false],
+    ["Daniel / eleven_v4", "3.3%", "276", "-3.2", 37, false]
+  ];
+  var kindVar = { feature: "--s-feature", rework: "--s-rework", review: "--s-review" };
+  var kindName = { feature: "工程工单", rework: "返工", review: "Codex 审查" };
+  var fmt = function (n) { return Math.round(n).toLocaleString("en-US"); };
+  var toMin = function (hm) { var p = hm.split(":").map(Number); return p[0] * 60 + p[1]; };
+  var clock = function (m) { var h = Math.floor(m / 60) % 24, mm = Math.round(m % 60); return h + ":" + (mm < 10 ? "0" : "") + mm; };
+  var NS = "http://www.w3.org/2000/svg";
+  var el = function (name, attrs, text) {
+    var node = document.createElementNS(NS, name);
+    for (var k in attrs) {
+      if ((k === "fill" || k === "stroke") && String(attrs[k]).indexOf("var(") === 0) node.style[k] = attrs[k];
+      else node.setAttribute(k, attrs[k]);
+    }
+    if (text != null) node.textContent = text;
+    return node;
+  };
+  var cell = function (tr, v, cls) { var td = document.createElement("td"); td.textContent = v; if (cls) td.className = cls; tr.appendChild(td); };
+
+  var total = dispatches.reduce(function (a, d) { return [a[0] + d[4], a[1] + d[5], a[2] + d[6], a[3] + d[7]]; }, [0, 0, 0, 0]);
+  var tickets = {}; dispatches.forEach(function (d) { if (d[2] !== "review") tickets[d[0].replace(/-\d+$/, "")] = 1; });
+  var reworks = dispatches.filter(function (d) { return d[2] === "rework"; }).length;
+  var findings = reviews.reduce(function (a, r) { return a + Number(r[2]); }, 0);
+  var designIn = design.input + design.cacheWrite + design.cacheRead;
+  document.getElementById("kpis").innerHTML = [
+    ["11 <small>+1</small>", "工程工单 + 设计工单 #64"],
+    [dispatches.length + " <small>次</small>", "Codex 运行，其中返工 " + reworks + " 次，累计 " + (total[0] / 60).toFixed(1) + " 小时（含并行）"],
+    ["47.9 <small>秒</small>", "成片，-16.0 LUFS"],
+    [findings + " <small>项</small>", "按批审查发现，已全部处理"]
+  ].map(function (k) { return '<div class="kpi"><span class="num">' + k[0] + '</span><span class="label">' + k[1] + "</span></div>"; }).join("");
+
+  document.getElementById("diffs").innerHTML = "";
+  diffs.forEach(function (t) { var li = document.createElement("li"); li.textContent = t; document.getElementById("diffs").appendChild(li); });
+
+  voices.forEach(function (v) {
+    var tr = document.createElement("tr"); if (v[5]) tr.className = "pick";
+    cell(tr, v[0]); cell(tr, v[1], "num"); cell(tr, v[2], "num"); cell(tr, v[3], "num"); cell(tr, String(v[4]), "num");
+    document.getElementById("voice-rows").appendChild(tr);
+  });
+
+  var rows = document.getElementById("dispatch-rows");
+  dispatches.forEach(function (d) {
+    var tr = document.createElement("tr");
+    cell(tr, d[0] + " " + d[1]); cell(tr, d[4].toFixed(1), "num"); cell(tr, fmt(d[5]), "num"); cell(tr, fmt(d[6]), "num"); cell(tr, fmt(d[7]), "num");
+    rows.appendChild(tr);
+  });
+  var tr = document.createElement("tr"); tr.className = "total";
+  cell(tr, "Codex 合计"); cell(tr, total[0].toFixed(1), "num"); cell(tr, fmt(total[1]), "num"); cell(tr, fmt(total[2]), "num"); cell(tr, fmt(total[3]), "num");
+  rows.appendChild(tr);
+  tr = document.createElement("tr"); tr.className = "total";
+  cell(tr, "设计负责人主会话（" + design.replies + " 次回复）"); cell(tr, "—", "num"); cell(tr, fmt(designIn), "num"); cell(tr, fmt(design.cacheRead), "num"); cell(tr, fmt(design.output), "num");
+  rows.appendChild(tr);
+  document.getElementById("prev-note").textContent = "对照上一期 " + prev.name + "（一张脚本小工单）：Codex " + prev.codexMinutes.toFixed(1) + " 分钟、输入 " + fmt(prev.codexInput) + "、输出 " + fmt(prev.codexOutput) + "；这一期 Codex 输出是它的 " + (total[3] / prev.codexOutput).toFixed(0) + " 倍。";
+
+  var split = document.getElementById("split");
+  var bars = [["输入（含缓存）", designIn, total[1]], ["输出", design.output, total[3]]];
+  var W = 640, left = 120, right = 120, rowH = 58, H = bars.length * rowH + 10;
+  split.setAttribute("viewBox", "0 0 " + W + " " + H); split.setAttribute("width", W);
+  bars.forEach(function (b, i) {
+    var y = i * rowH + 8, sum = b[1] + b[2], span = W - left - right;
+    var wD = span * b[1] / sum, wC = span * b[2] / sum;
+    split.appendChild(el("text", { x: left - 8, y: y + 24, "text-anchor": "end", "class": "row-label" }, b[0]));
+    split.appendChild(el("rect", { x: left, y: y + 10, width: wD, height: 22, fill: "var(--accent)" }));
+    split.appendChild(el("rect", { x: left + wD, y: y + 10, width: wC, height: 22, fill: "var(--s-feature)" }));
+    split.appendChild(el("text", { x: left + span + 8, y: y + 26, "class": "bar-value" }, "设计 " + (100 * b[1] / sum).toFixed(0) + "%"));
+    split.appendChild(el("text", { x: left, y: y + 50, "class": "axis-label" }, "设计负责人 " + fmt(b[1]) + " · Codex " + fmt(b[2])));
+  });
+  document.getElementById("split-note").textContent = "深色段是设计负责人，浅色段是 Codex。输入：设计负责人 " + fmt(designIn) + "，Codex " + fmt(total[1]) + "；输出：设计负责人 " + fmt(design.output) + "，Codex " + fmt(total[3]) + "。两边的输入大多是缓存读取。设计负责人输出占 " + (100 * design.output / (design.output + total[3])).toFixed(0) + "%，主要花在验收、看图、写派发说明和返工判断上。";
+
+  var ev = document.getElementById("events");
+  events.forEach(function (e) { var tr = document.createElement("tr"); cell(tr, clock(toMin(e[0]))); cell(tr, e[1]); ev.appendChild(tr); });
+
+  var rr = document.getElementById("review-rows");
+  reviews.forEach(function (r) { var tr = document.createElement("tr"); cell(tr, r[0]); cell(tr, r[1]); cell(tr, r[2], "num"); cell(tr, r[3]); rr.appendChild(tr); });
+  document.getElementById("review-summary").textContent = "按批审查 " + reviews.length + " 次，共发现 " + findings + " 项：1 项 P2 写成返工工单 #72 修好，2 项 P3 文档问题由设计负责人当场修。审查只读，不改代码。";
+
+  if (pr) {
+    document.getElementById("pr-meta").innerHTML = '<a href="' + pr.url + '">PR #' + pr.number + '</a> <span class="status ' + (pr.ci === "通过" ? "done" : "pending") + '">CI ' + pr.ci + "，待你审片和合并</span>";
+    document.getElementById("next-pr").textContent = "PR #" + pr.number + "，CI " + pr.ci + "。";
+  }
+
+  document.getElementById("legend").innerHTML = Object.keys(kindName).map(function (k) {
+    return '<span><i class="swatch" style="background:var(' + kindVar[k] + ')"></i>' + kindName[k] + "</span>";
+  }).join("");
+  var starts = dispatches.map(function (d) { return toMin(d[3]); });
+  var ends = dispatches.map(function (d, i) { return starts[i] + d[4]; });
+  var t0 = Math.floor(Math.min.apply(null, starts) / 30) * 30;
+  var t1 = Math.ceil(Math.max.apply(null, ends) / 30) * 30;
+  var GW = 760, gl = 160, gr = 60, gRow = 26, gTop = 24, GH = gTop + dispatches.length * gRow + 10;
+  var x = function (m) { return gl + (m - t0) / (t1 - t0) * (GW - gl - gr); };
+  var svg = document.getElementById("gantt");
+  svg.setAttribute("viewBox", "0 0 " + GW + " " + GH); svg.setAttribute("width", GW);
+  for (var m = t0; m <= t1; m += 30) {
+    svg.appendChild(el("line", { x1: x(m), x2: x(m), y1: gTop - 6, y2: GH - 6, "class": "grid-line" }));
+    svg.appendChild(el("text", { x: x(m), y: 14, "text-anchor": "middle", "class": "axis-label" }, clock(m)));
+  }
+  dispatches.forEach(function (d, i) {
+    var y = gTop + i * gRow, s = toMin(d[3]);
+    svg.appendChild(el("text", { x: gl - 8, y: y + 14, "text-anchor": "end", "class": "row-label" }, d[0] + " " + d[1].slice(0, 6)));
+    svg.appendChild(el("rect", { x: x(s), y: y + 3, width: Math.max(2, x(s + d[4]) - x(s)), height: 15, rx: 3, fill: "var(" + kindVar[d[2]] + ")" }));
+    svg.appendChild(el("text", { x: x(s + d[4]) + 6, y: y + 15, "class": "bar-value" }, d[4].toFixed(0) + " 分"));
+  });
+})();
+</script>
+</body>
+</html>
