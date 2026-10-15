@@ -69,3 +69,4 @@ pnpm 的版本由 `package.json` 的 `packageManager` 固定，本机装的 pnpm
 
 - Codex 运行期间不要关掉 Claude Code 会话。只用技能时没有托管模式，关掉会话可能连带中断 Codex。
 - 派发、合并、验收、审查、收尾的具体步骤只写在执行技能 `run-spec` 里，本仓库特有的值见 `docs/agents/run-spec.md`。
+- `code-review` 重名：用 Skill 工具调用 `code-review`，加载的是仓库里 Matt 的版本（Standards、Spec 两条线并行的子代理审查）。用户在输入框直接打 `/code-review` 时调用哪个，没有实测。
