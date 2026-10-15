@@ -38,13 +38,17 @@
 - [x] 建仓过程复盘：记录见 `docs/reports/bootstrap-retro.md`，可复用的开局步骤见 `docs/workflow/bootstrap.md`
 - [x] 手工迁移到 design-system，并在那边彩排（spec #32）：记录见 `docs/research/run-spec-migration.md`
 - [x] spec #37：`run-spec` 改进和初始化技能 `setup-run-spec`，design-system 已换成安装版本，汇报见 `docs/reports/spec-37-run-spec-install.html`
-- [x] design-system 真实 spec #1 复盘：`run-spec`、`setup-run-spec` 和开局指引的修改，记录见 `docs/research/run-spec-migration.md`「真实使用」；脚本两项待做（问题 32）
+- [x] design-system 真实 spec #1 复盘：`run-spec`、`setup-run-spec` 和开局指引的修改，记录见 `docs/research/run-spec-migration.md`「真实使用」
+- [x] spec #54：工单脚本的 gh 重试和 `.env` 自检（问题 32），汇报见 `docs/reports/spec-54-script-hardening.html`
+- [x] 第一轮改进的复核：做决定的三条移进角色文档，记录见 `docs/research/run-spec-migration.md`「第一轮改进之后」
 - [ ] 第一阶段：复刻开场 0:00～0:46
 - [ ] 第二阶段：新选题完整一期
 
 ## 下一步
 
-**先做**：design-system 的内部改进（角色文档的分工与指针、命令手册拆分、截图验收工具），在 design-system 里做，开工前重装 `run-spec`、`setup-run-spec`。
+**先做**：design-system 的 spec #65（命令手册重排、截图验收工具）收尾。本仓库这次改的技能合进 `main` 后，design-system 重装并提交锁文件。
+
+**检验这一轮改进**：下一个真实 spec 从对齐开始在新会话里走一遍，看三件事：难回头的方向有没有先给用户看、替用户定的有没有单列、要靠判断验收的工单派发前有没有定稿；汇报里对比设计负责人和 Codex 的用量（问题 37）。
 
 **第一阶段**：单独建 spec。
 
