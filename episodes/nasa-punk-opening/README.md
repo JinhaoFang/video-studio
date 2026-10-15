@@ -47,6 +47,26 @@ node tools/build-timeline.ts --help
 node tools/build-timeline.ts episodes/nasa-punk-opening/script.md --durations <时长清单.json> --source elevenlabs --label <音色和模型> --leading-silence 0.37 --out episodes/nasa-punk-opening/data/timeline.json
 ```
 
+## 配乐、嘀嗒与混音（#70）
+
+`node tools/mix-opening.ts` 从正式 `data/timeline.json` 读取每句音频，按合成相同的起点、末帧裁切规则拼接旁白；程序生成贯穿全长的 80 Hz 正弦铺底与 2300 Hz 翻牌嘀嗒，再以 ffmpeg 两遍 `loudnorm` 输出 48kHz/24bit 双声道 `mix.wav`。不调用外部生成服务，不新增依赖。配乐全长 RMS 比旁白低 **20 dB**；当前原始旁白为 **-25.81 dBFS RMS**、配乐为 **-45.81 dBFS RMS**，这是共同响度归一化前的单声道分轨测量。嘀嗒用每次翻牌间隔长度的 Hann 包络，幅度随仍在乱跳的数字位数减少。音色、包络与电平差采用保守实现，待设计负责人确认（`TODO(design)`），不做审美细调。
+
+翻牌钟时间直接读取 `--tokens` 所指文件的 `motion`、`proposal.clock`，不复制令牌数值。与 #67 `Shot1974Proposal.tsx` / `FlipYearClock.tsx` 对齐：从 `L008 + motion.chapterDissolveFrames + motion.dissolveFrames` 开始，到该帧加 `proposal.clock.scrambleFrames` 结束，每隔 `stepFrames` 一次；每位的停止时间同样取 `stopStaggerFrames`。当前正式轴 L008 / L009 / L010 起点为 **413 / 459 / 492 帧**，嘀嗒为 **429～474 帧（14.30～15.80 秒，末帧不含）**，15 次，逐位停在 465 / 468 / 471 / 474 帧。改时间轴后重跑即可；区间不再覆盖 L008～L009 或越过 L010 时会报错，要求核对镜头。
+
+#67 尚未合并时，只读它的令牌文件；合并后将 `--tokens` 换成本 worktree 的 `src/styles/nasa-punk/tokens.ts`。当前分支尚未包含 `proposal.clock`，直接使用本地令牌会明确报错，不回退到另一份硬编码数字。
+
+```console
+node tools/mix-opening.ts --help
+node tools/mix-opening.ts episodes/nasa-punk-opening/data/timeline.json --tokens /root/project/video-studio.worktrees/67/src/styles/nasa-punk/tokens.ts --out out/qa/spec-60/70/mix
+pnpm exec remotion render NasaPunkOpening out/qa/spec-60/70/opening-remotion.mp4 --concurrency 4
+node tools/mix-opening.ts episodes/nasa-punk-opening/data/timeline.json --tokens /root/project/video-studio.worktrees/67/src/styles/nasa-punk/tokens.ts --out out/qa/spec-60/70/mix --video out/qa/spec-60/70/opening-remotion.mp4
+pnpm qa loudness out/qa/spec-60/70/mix/opening-mixed.mp4 --target-lufs -16 --tolerance 1 --max-true-peak -1 --out out/qa/spec-60/70/final
+```
+
+采用**渲染后替换音轨**：`--video` 校验输入视频的帧率和帧数，复制视频码流，仅映射一条混音 AAC（320kbps）到 `opening-mixed.mp4`。这样归一化后的音轨不会与原来的逐句配音重复叠加，并能在 AAC 编码之后验收；`Opening.tsx` 无需修改，Studio 仍播放逐句旁白。输出的分轨、混音与 MP4 均在忽略目录 `out/`，不进 git。ffmpeg 参数数组、素材与令牌哈希、句子锚点和电平测量写入 `mix-report.json`；逐命令日志与参数另存，便于复现和排错。
+
+归一化以 -16 LUFS 为目标，内部留 -2 dBTP 的编码余量；`linear=true` 在本次峰均比下自动采用动态归一化。`LRA=20` 是 ffmpeg 支持的宽松归一化参数，不设 LRA 验收阈值。本次最终 MP4 实测 **-16.0 LUFS、-2.0 dBTP、LRA 2.7 LU**，低于 -45 dB 且超过 0.4 秒的静音段 **0**。参考前 **46.000 秒**用同样设置测得 **-15.9 LUFS、-2.6 dBTP、LRA 2.8 LU**。验收根目录为 `/root/project/video-studio.worktrees/70/out/qa/spec-60/70/`，`final/` 与 `reference/` 保存同规格的全段频谱图、响度和静音报告；`clock-alignment.json` 保存 #67 对齐证据。当前 MP4 的画面只含本分支已经接入的镜头，用于本工单音轨验收；最终镜头集成后按同一命令替换音轨。
+
 ## 时间轴约定
 
 格式版本 `version: 1`，`fps: 30`，`source.kind` 为 `temporary` 或 `elevenlabs`，`source.description` 记录参考文件或音色与模型。`leadingSilenceSeconds` 是第一句起点的秒数；`durationInFrames` 是含末句停顿的总帧数。`lines` 按 L001 起连续编号。

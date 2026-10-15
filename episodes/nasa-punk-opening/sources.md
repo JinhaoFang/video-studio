@@ -133,3 +133,13 @@ Constraints: no text, no markings, no letters, no other objects, no tape, no cas
 - ffprobe 解码样本实测当前旁白 **38.612925 秒**；`data/voiceover-durations.json` 和 `data/timeline.json` 全部指向新目录，来源仍为正式配音并记下默认倍率与 L008 例外，总长 **1437 帧 / 47.90 秒**，比第三轮增加 3 帧。Whisper 只用仓库外缓存模型和 venv，经 ffmpeg 解码数组，不使用不兼容的 PyAV 解码；评分仍采用原台本和已批准的等价规则。
 - 本轮只复核 L008：转写「时间往回倒」，CER **0%（0/5）**，第三轮为 40%；真峰值 **-6.6 dBTP**，无爆音、句中长静音、ASR 首尾不符。QA 仍退出 1，仅有原先的头部留白不足 20ms 标记，已在最新验收接受，未重新合成。其余 21 句复用第三轮评分，L007/L022 的同音差异与原有 12 句边缘标记均已接受；合并结果 CER 为 **1.49%（3/202）**，不是本轮全量复测。
 - 本轮原始识别、时长及哈希证据在 `/root/project/video-studio.worktrees/69/out/qa/spec-60/69/round4/`；第三轮整段渲染和 22 张逐句对比图仍保留在相邻 `round3/`，仅作当轮验收。合并前须由设计负责人把本 worktree 的 `voiceover/`、`voiceover-rubberband/`、`voiceover-rubberband-v2/` 三目录（含 MP3 和 JSON）另行拷回主工作区；当前合成使用 `voiceover-rubberband-v2/`，媒体不进 git。
+
+## 程序配乐、翻牌嘀嗒与混音（#70）
+
+- 生成入口：`node tools/mix-opening.ts --help`；2026-10-15 在本 worktree 用 Node 22、ffmpeg 4.4.2 执行，复现参数见本期 README。配乐和音效全部由数学函数合成，不使用第三方音乐、采样、素材或生成服务，不涉及第三方音效授权。
+- 配乐 `music.wav`：48kHz 浮点单声道，80 Hz 正弦，持续时间取正式时间轴总帧数 / fps；全长 RMS 比旁白低 20 dB。没有段落拼接、循环接缝和句间静音。
+- 音效 `ticks.wav`：2300 Hz 正弦，每次翻牌用 Hann 包络；发声区间、周期和逐位停稳直接读取 #67 的 `motion` 与 `proposal.clock` 令牌，锚点是 L008 起点加章节溶解与普通溶解时长。各次幅度随仍乱跳的位数减少，最后一位停稳即结束。当前为 429～474 帧 / 14.30～15.80 秒；不复制另一份时长数字。
+- 正式旁白：读取 `data/timeline.json` 的 22 句 `voiceover-rubberband-v2/` MP3，沿用上一节来源与授权，输入从主工作区只读复制到本 worktree；逐句音频、台本、时间轴和主工作区媒体均未修改。混音不使用含参考配乐的 `temporary/` 音轨。
+- 混音：旁白、低频与嘀嗒相加后转成同相双声道，用 ffmpeg 两遍 `loudnorm`，目标 -16 LUFS、内部真峰值上限 -2 dBTP，LRA 只作报告。`mix.wav` 为 48kHz/24bit PCM；可选 `--video` 复制已有渲染的视频码流，替换成唯一一条 320kbps AAC 音轨。旁白授权限制继续适用于混音成片。
+- 本机输出：`/root/project/video-studio.worktrees/70/out/qa/spec-60/70/mix/`；`voice.wav`、`music.wav`、`ticks.wav`、`mix-raw.wav`、`mix.wav`、`opening-mixed.mp4` 均为不进 git 的生成或渲染产物。`mix-report.json` 记录源文件 SHA256、令牌文件 SHA256、句子锚点、实际电平与 ffmpeg 参数数组。最终集成后重跑即可，不需要把这些输出复制进主工作区。
+- 对照：原参考视频仅裁取 0:00～0:46 音轨作本机响度与频谱验收，保存于同一验收根目录的 `reference-0-46.wav`，不进入正式混音。参考音轨及频谱的使用范围沿用 #61 的本机学习限制。

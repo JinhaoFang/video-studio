@@ -56,6 +56,8 @@ pnpm 的版本由 `package.json` 的 `packageManager` 固定，本机装的 pnpm
 
 配音打分：`pnpm qa voice --help`。读取试听素材目录、原台本和账本，校验音频与上下文后，以本机缓存 faster-whisper large-v3（CUDA/float16，无台本提示词）逐句转写，输出 CER、语速、真峰值、截断风险和句中超过 0.4 秒的静音，以及原始识别和 ffmpeg 证据；`--python` 可指定已安装 faster-whisper 的解释器。有合成改写时传入与 tts 相同的 `--overrides`；仍按原台本评分，年月数字和 NASA／纳萨／娜萨／娜莎按读法等价计分，另列严格 CER。截断标记是风险筛查，仍需结合原始转写核对。来源与授权记入该期 `sources.md`，音频放在不进 git 的 `public/episodes/<期>/`。
 
+NASA 开场的配乐、音效与混音：`node tools/mix-opening.ts --help`。传入正式时间轴、含 `motion` / `proposal.clock` 的风格令牌和 `out/` 输出目录，生成分轨与两遍归一化混音；`--video` 校验帧率和帧数后复制视频码流、替换音轨。改时间轴后重跑，最终 AAC 成片仍须用 `pnpm qa loudness` 带目标 -16 LUFS、容差 1 LU、真峰值上限 -1 dBTP 验收；LRA 只报告。#67 并行令牌的只读路径、合并后的切换和完整命令见 [本期说明](../../episodes/nasa-punk-opening/README.md#配乐嘀嗒与混音70)。
+
 渲染后用 `pnpm qa motion <视频>` 自检长时间静止和短暂闪现，报告默认写入 `out/qa/motion/<视频名>/motion.json`。`--keyframes <目录>` 可输出每个区间的三张关键帧，检出时退出 1，由设计负责人结合画面复核。范围、阈值与默认值见 `pnpm qa motion --help`。
 
 ## 复利
