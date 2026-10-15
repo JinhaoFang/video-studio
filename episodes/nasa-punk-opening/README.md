@@ -4,27 +4,28 @@
 
 ## 正式配音（#69）
 
-当前默认 `data/timeline.json` 使用 **Alice × eleven_v4**。#69 返工后，22 句全部重新合成，统一 `voice_settings.speed=1.2`、seed=0、MP3 44.1kHz/128kbps，未做后期变速、裁剪或重新编码。正式媒体位于 `public/episodes/nasa-punk-opening/voiceover/L001.mp3`～`L022.mp3`，相邻 JSON 保存原文、合成请求、SHA256 与计费记录；均不进 git。上一轮音频保留在验收目录 `previous-64215d2/voiceover/`。
+当前默认 `data/timeline.json` 使用 **Alice × eleven_v4 原始配音的 rubberband 变速版**。第三轮按最新验收统一用 `tempo=1.257143`、`pitch=1` 保持音高，未再调用 ElevenLabs。倍率取原始旁白 48.40 / 目标 38.5 = 1.257142857…，保留六位小数；实际解码旁白 **38.500272 秒**，比参考旁白 37.06 秒长 **1.440272 秒**。保留台本全部停顿和 0.37 秒开头留白后，总长 **1434 帧 / 47.80 秒**，比参考 1391 帧长 **43 帧 / 1.433333 秒**。时间轴来源仍为正式配音，`source.description` 标明倍率与原始、处理目录。
 
-`data/voiceover-overrides.json` 只改合成文本和上下文：L005、L010、L014 的 NASA 写成「纳萨」，L006 使用「后来，」并省略前后文；其余句子带前后各一句改写后的文本，L022 后句仍为完整转写中的 L023。台本、字幕与镜头代码保持原文。L006 本轮首次即识别为「后来」；L003 另重配两次、L014 一次后通过。
+原始 22 句 MP3 和同名合成 JSON 保留在 `public/episodes/nasa-punk-opening/voiceover/`，本轮逐文件哈希确认未变；相邻 `voiceover-rubberband/` 保存变速后的 22 个 44.1kHz/128kbps MP3 及 JSON。处理记录保留合成请求、原始哈希、处理后哈希和 ffmpeg 参数数组；原请求中的 `voice_settings.speed=1.2` 是第二轮历史设置，`eleven_v4` 不支持该设置，本轮实际变速只由 rubberband 完成。媒体与请求记录均不进 git。
 
-`data/voiceover-durations.json` 用 ffprobe 解码帧的 `nb_samples / sample_rate` 实测，排除 MP3 编码填充。旁白合计 **48.40 秒**，保留台本停顿与 0.37 秒开头留白后为 **1731 帧 / 57.70 秒**；比参考旁白 37.06 秒长 **11.34 秒**，比参考时间轴 1391 帧长 **340 帧 / 11.333333 秒**。单句比参考增幅最大为 L014 +1.00 秒、L016 +0.98 秒、L010 +0.90 秒。时间轴独立复算最大偏差为 0 帧。
-
-**返工的 37～40 秒目标仍未通过。** `1.2` 取官方公开 OpenAPI `TtsVoiceSettings.speed` 的上限（0.7～1.2）；但本机实测同一 L002、Alice × eleven_v4、seed=0，在 speed=0.7 和 1.2 下均为 2.64 秒，服务历史仅回显 `stability`，没有 `speed`。不能据请求成功认定语速控制已经生效；诊断记录为验收目录的 `speed-probe-result.json` 和 `speed-api-evidence.json`。
+`data/voiceover-overrides.json` 只改合成文本和上下文：L005、L010、L014 的 NASA 写成「纳萨」，L006 使用「后来，」并省略前后文；其余句子带前后各一句改写后的文本，L022 后句为完整转写中的 L023。台本、字幕、镜头与入口代码本轮均未修改。
 
 ```console
-pnpm tts --voice Alice --model eleven_v4 --from L001 --to L022 --transcript docs/research/nasa-ep04/transcript.md --out public/episodes/nasa-punk-opening/voiceover --ledger out/qa/spec-60/69/credits.json --env /root/project/video-studio/.env --budget 1500 --speed 1.2 --overrides episodes/nasa-punk-opening/data/voiceover-overrides.json
-pnpm qa voice public/episodes/nasa-punk-opening/voiceover --transcript docs/research/nasa-ep04/transcript.md --ledger out/qa/spec-60/69/credits.json --out out/qa/spec-60/69/voice-final --from L001 --to L022 --python /home/jh1/.cache/whisper-models/venv/bin/python --whisper-model /home/jh1/.cache/whisper-models/faster-whisper-large-v3 --overrides episodes/nasa-punk-opening/data/voiceover-overrides.json
-node tools/build-timeline.ts episodes/nasa-punk-opening/script.md --durations episodes/nasa-punk-opening/data/voiceover-durations.json --source elevenlabs --label "正式配音：Alice × eleven_v4；22 句由 #69 返工统一 speed=1.2、seed=0；NASA 合成读纳萨，L006 后来，去前后文；其余带改写后的相邻上下文" --leading-silence 0.37 --out episodes/nasa-punk-opening/data/timeline.json
+node tools/stretch-voice.ts --help
+node tools/stretch-voice.ts public/episodes/nasa-punk-opening/voiceover --tempo 1.257143 --out public/episodes/nasa-punk-opening/voiceover-rubberband
+pnpm qa voice public/episodes/nasa-punk-opening/voiceover-rubberband --transcript docs/research/nasa-ep04/transcript.md --ledger out/qa/spec-60/69/credits.json --out out/qa/spec-60/69/round3/voice-final --from L001 --to L022 --python /home/jh1/.cache/whisper-models/venv/bin/python --whisper-model /home/jh1/.cache/whisper-models/faster-whisper-large-v3 --overrides episodes/nasa-punk-opening/data/voiceover-overrides.json
+node tools/build-timeline.ts episodes/nasa-punk-opening/script.md --durations episodes/nasa-punk-opening/data/voiceover-durations.json --source elevenlabs --label "正式配音：Alice × eleven_v4；22 句统一 rubberband tempo=1.257143、pitch=1；原始保留在 voiceover/，处理文件在 voiceover-rubberband/" --leading-silence 0.37 --out episodes/nasa-punk-opening/data/timeline.json
 ```
 
-合成命令用于空的正式素材目录；现有文件默认拒绝覆盖。单句重配令 `--from`、`--to` 相同并加 `--replace`，继续使用同一账本。调用外部程序均传参数数组；精确参数、CUDA 环境与日志保存在验收目录，凭据和模型不复制。
+变速工具要求新输出目录不存在，拒绝覆盖原始或已有结果；换倍率时继续输入原始 `voiceover/`，另选输出目录，不累计变速。原始合成与处理后 JSON 均兼容现有 `pnpm qa voice`。`data/voiceover-durations.json` 用 ffprobe 解码帧的 `nb_samples / sample_rate` 实测，排除 MP3 编码填充；验收脚本独立复算时间轴，最大偏差 0 帧。完整参数数组、CUDA 环境和日志在验收目录；Whisper 模型和 venv 只使用仓库外缓存。
 
-本工单累计 **429 / 1500 credits**，其中上一轮 178、本轮 251（22 句 199、语速诊断 11、L003 两次重配共 24、L014 重配 17）；保守账户剩余 **9444**。Whisper 按原台本计算，年月数字及 NASA／纳萨／娜萨／娜莎等价，最终 CER **0.50%（1/202）**，仅 L007「它→她」为 11.11%，其余 21 句为 0%。无爆音、无句中超过 0.4 秒静音；首尾留白风险保留，未据此声称存在截断。
+本轮 **0 credits**，累计仍为 **429 / 1500**，沿用上轮账本的保守账户剩余 **9444**，未重新查询账户；账本哈希未变。原版 CER **0.50%（1/202）**，变速后同一套评分为 **2.48%（5/202）**。L007 为 11.11%（「它→他」同音识别差异），L008 从 0% 升至 **40%**（「时间→直接」），L022 从 0% 升至 **25%**（「它蠕虫→他如虫」），其余 19 句为 0%。年月数字及 NASA／纳萨／娜萨／娜莎沿用等价规则，没有新增识别豁免。
 
-TODO(design)：指定 Alice × eleven_v4 在本次接口实测中未响应 speed；需设计负责人决定如何达到语速目标（是否允许改用其他模型或另定合成控制方式）。L007 同音识别差异及多音字读音仍受 ASR 能力限制。#64 的 S02 已在新合成上验收，角框、标签及时间线能在镜头结束前完成；其他镜头尚未接入，交对应工单复核。
+`pnpm qa voice` 退出 **1**：12 句首尾留白不足 20ms（L001、L002、L007、L008、L009、L010、L011、L016、L017、L018、L020、L022），L007/L008 另有 ASR 首字不符；其中新增边缘风险为 L007 尾部、L017 头部。最高真峰值 **-5.5 dBTP**，未检出爆音或句中超过 0.4 秒静音。边缘标记不能证明截断，CER 也不能独立确定变速是否造成错读；本轮按要求报告，未重新合成。
 
-验收目录：`/root/project/video-studio.worktrees/69/out/qa/spec-60/69/`。`opening.mp4` 为接入 #64 字幕条、S02 小样后的完整合成；`comparison.html`、`comparison-sheet.jpg` 汇集 22 张逐句对比图，L003～L005 可见照片与 HUD；`voice-final/` 含原始 Whisper 与测量，`sentence-review.md` 汇集逐句 CER、参考／上轮／本轮时长；`acceptance.json` 记录时长目标未通过与镜头代码未修改的证据。两边分别在各自同一句中点取帧。
+TODO(design)：复核 L008、L022 变速后的 CER 退化和边缘筛查标记，决定质量是否接受。现有 S02 的角框、标签、顶部信息栏和年份时间线均能完成；其余镜头尚未接入，动画完成情况交对应工单复核。
+
+本轮验收目录：`/root/project/video-studio.worktrees/69/out/qa/spec-60/69/round3/`。`opening.mp4` 为整段渲染，`comparison.html` 汇集 22 张同句中点对比图，`comparison-sheet.jpg` 为对比联系表；`voice-final/` 含 Whisper 原始转写、CER、真峰值、截断及静音筛查，`sentence-review.md` 和 `timeline-comparison.json` 给出参考／原版／变速后时长与逐句 CER。`acceptance.json` 保存时间轴复算、原始文件与账本哈希不变、镜头代码不变及 S02 动画边界证据。前两轮产物保留在上级目录。
 
 ## 生成与渲染
 

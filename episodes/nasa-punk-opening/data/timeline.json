@@ -3,208 +3,208 @@
   "fps": 30,
   "source": {
     "kind": "elevenlabs",
-    "description": "正式配音：Alice × eleven_v4；22 句由 #69 返工统一 speed=1.2、seed=0；NASA 合成读纳萨，L006 后来，去前后文；其余带改写后的相邻上下文"
+    "description": "正式配音：Alice × eleven_v4 原始合成；22 句统一 ffmpeg rubberband tempo=1.257143、pitch=1 保持音高；NASA 读纳萨，L006 后来，去上下文；原始文件保留在 voiceover/，处理文件在 voiceover-rubberband/"
   },
   "leadingSilenceSeconds": 0.37,
-  "durationInFrames": 1731,
+  "durationInFrames": 1434,
   "lines": [
     {
       "id": "L001",
       "text": "2020年5月",
       "pauseAfterSeconds": 0.08,
       "startFrame": 11,
-      "endFrame": 52,
-      "audioDurationSeconds": 1.36,
-      "audioSrc": "episodes/nasa-punk-opening/voiceover/L001.mp3"
+      "endFrame": 44,
+      "audioDurationSeconds": 1.081814058956916,
+      "audioSrc": "episodes/nasa-punk-opening/voiceover-rubberband/L001.mp3"
     },
     {
       "id": "L002",
       "text": "一枚火箭在夜里推出厂房",
       "pauseAfterSeconds": 0.24,
-      "startFrame": 54,
-      "endFrame": 134,
-      "audioDurationSeconds": 2.64,
-      "audioSrc": "episodes/nasa-punk-opening/voiceover/L002.mp3"
+      "startFrame": 46,
+      "endFrame": 109,
+      "audioDurationSeconds": 2.1,
+      "audioSrc": "episodes/nasa-punk-opening/voiceover-rubberband/L002.mp3"
     },
     {
       "id": "L003",
       "text": "箭体上印着一个红色的标志",
       "pauseAfterSeconds": 0.84,
-      "startFrame": 141,
-      "endFrame": 225,
-      "audioDurationSeconds": 2.8,
-      "audioSrc": "episodes/nasa-punk-opening/voiceover/L003.mp3"
+      "startFrame": 116,
+      "endFrame": 183,
+      "audioDurationSeconds": 2.2272789115646257,
+      "audioSrc": "episodes/nasa-punk-opening/voiceover-rubberband/L003.mp3"
     },
     {
       "id": "L004",
       "text": "这个标志",
       "pauseAfterSeconds": 0.1,
-      "startFrame": 250,
-      "endFrame": 281,
-      "audioDurationSeconds": 1.04,
-      "audioSrc": "episodes/nasa-punk-opening/voiceover/L004.mp3"
+      "startFrame": 208,
+      "endFrame": 233,
+      "audioDurationSeconds": 0.8272789115646259,
+      "audioSrc": "episodes/nasa-punk-opening/voiceover-rubberband/L004.mp3"
     },
     {
       "id": "L005",
       "text": "NASA自己废过一次",
       "pauseAfterSeconds": 0.7,
-      "startFrame": 284,
-      "endFrame": 347,
-      "audioDurationSeconds": 2.08,
-      "audioSrc": "episodes/nasa-punk-opening/voiceover/L005.mp3"
+      "startFrame": 236,
+      "endFrame": 286,
+      "audioDurationSeconds": 1.6545351473922902,
+      "audioSrc": "episodes/nasa-punk-opening/voiceover-rubberband/L005.mp3"
     },
     {
       "id": "L006",
       "text": "后来",
       "pauseAfterSeconds": 0.02,
-      "startFrame": 368,
-      "endFrame": 396,
-      "audioDurationSeconds": 0.96,
-      "audioSrc": "episodes/nasa-punk-opening/voiceover/L006.mp3"
+      "startFrame": 307,
+      "endFrame": 330,
+      "audioDurationSeconds": 0.7636281179138322,
+      "audioSrc": "episodes/nasa-punk-opening/voiceover-rubberband/L006.mp3"
     },
     {
       "id": "L007",
       "text": "它还长成了一种风格",
       "pauseAfterSeconds": 1.3,
-      "startFrame": 397,
-      "endFrame": 452,
-      "audioDurationSeconds": 1.84,
-      "audioSrc": "episodes/nasa-punk-opening/voiceover/L007.mp3"
+      "startFrame": 330,
+      "endFrame": 374,
+      "audioDurationSeconds": 1.463922902494331,
+      "audioSrc": "episodes/nasa-punk-opening/voiceover-rubberband/L007.mp3"
     },
     {
       "id": "L008",
       "text": "时间往回倒",
       "pauseAfterSeconds": 0.2,
-      "startFrame": 491,
-      "endFrame": 537,
-      "audioDurationSeconds": 1.52,
-      "audioSrc": "episodes/nasa-punk-opening/voiceover/L008.mp3"
+      "startFrame": 413,
+      "endFrame": 449,
+      "audioDurationSeconds": 1.2090929705215419,
+      "audioSrc": "episodes/nasa-punk-opening/voiceover-rubberband/L008.mp3"
     },
     {
       "id": "L009",
       "text": "1974年",
       "pauseAfterSeconds": 0.08,
-      "startFrame": 543,
-      "endFrame": 581,
-      "audioDurationSeconds": 1.28,
-      "audioSrc": "episodes/nasa-punk-opening/voiceover/L009.mp3"
+      "startFrame": 455,
+      "endFrame": 486,
+      "audioDurationSeconds": 1.0181859410430838,
+      "audioSrc": "episodes/nasa-punk-opening/voiceover-rubberband/L009.mp3"
     },
     {
       "id": "L010",
       "text": "NASA用的还是一个蓝色的圆形徽章",
       "pauseAfterSeconds": 0.14,
-      "startFrame": 584,
-      "endFrame": 682,
-      "audioDurationSeconds": 3.28,
-      "audioSrc": "episodes/nasa-punk-opening/voiceover/L010.mp3"
+      "startFrame": 488,
+      "endFrame": 567,
+      "audioDurationSeconds": 2.6090929705215418,
+      "audioSrc": "episodes/nasa-punk-opening/voiceover-rubberband/L010.mp3"
     },
     {
       "id": "L011",
       "text": "大家管它叫肉丸",
       "pauseAfterSeconds": 0.7,
-      "startFrame": 686,
-      "endFrame": 737,
-      "audioDurationSeconds": 1.68,
-      "audioSrc": "episodes/nasa-punk-opening/voiceover/L011.mp3"
+      "startFrame": 571,
+      "endFrame": 611,
+      "audioDurationSeconds": 1.3363718820861679,
+      "audioSrc": "episodes/nasa-punk-opening/voiceover-rubberband/L011.mp3"
     },
     {
       "id": "L012",
       "text": "那一年",
       "pauseAfterSeconds": 0.1,
-      "startFrame": 758,
-      "endFrame": 779,
-      "audioDurationSeconds": 0.72,
-      "audioSrc": "episodes/nasa-punk-opening/voiceover/L012.mp3"
+      "startFrame": 632,
+      "endFrame": 649,
+      "audioDurationSeconds": 0.5727210884353742,
+      "audioSrc": "episodes/nasa-punk-opening/voiceover-rubberband/L012.mp3"
     },
     {
       "id": "L013",
       "text": "美国政府推动各个机构换新形象",
       "pauseAfterSeconds": 0.28,
-      "startFrame": 782,
-      "endFrame": 883,
-      "audioDurationSeconds": 3.36,
-      "audioSrc": "episodes/nasa-punk-opening/voiceover/L013.mp3"
+      "startFrame": 652,
+      "endFrame": 732,
+      "audioDurationSeconds": 2.6727210884353743,
+      "audioSrc": "episodes/nasa-punk-opening/voiceover-rubberband/L013.mp3"
     },
     {
       "id": "L014",
       "text": "纽约两个年轻设计师接下了NASA这一单",
       "pauseAfterSeconds": 0.56,
-      "startFrame": 891,
-      "endFrame": 1002,
-      "audioDurationSeconds": 3.68,
-      "audioSrc": "episodes/nasa-punk-opening/voiceover/L014.mp3"
+      "startFrame": 741,
+      "endFrame": 828,
+      "audioDurationSeconds": 2.927278911564626,
+      "audioSrc": "episodes/nasa-punk-opening/voiceover-rubberband/L014.mp3"
     },
     {
       "id": "L015",
       "text": "他们把四个字母削到最简",
       "pauseAfterSeconds": 0,
-      "startFrame": 1019,
-      "endFrame": 1095,
-      "audioDurationSeconds": 2.56,
-      "audioSrc": "episodes/nasa-punk-opening/voiceover/L015.mp3"
+      "startFrame": 845,
+      "endFrame": 906,
+      "audioDurationSeconds": 2.0363718820861676,
+      "audioSrc": "episodes/nasa-punk-opening/voiceover-rubberband/L015.mp3"
     },
     {
       "id": "L016",
       "text": "笔画一样粗　连成一条",
       "pauseAfterSeconds": 0.44,
-      "startFrame": 1095,
-      "endFrame": 1184,
-      "audioDurationSeconds": 2.96,
-      "audioSrc": "episodes/nasa-punk-opening/voiceover/L016.mp3"
+      "startFrame": 906,
+      "endFrame": 977,
+      "audioDurationSeconds": 2.35453514739229,
+      "audioSrc": "episodes/nasa-punk-opening/voiceover-rubberband/L016.mp3"
     },
     {
       "id": "L017",
       "text": "两个A干脆去掉了横杠",
       "pauseAfterSeconds": 0.56,
-      "startFrame": 1197,
-      "endFrame": 1265,
-      "audioDurationSeconds": 2.24,
-      "audioSrc": "episodes/nasa-punk-opening/voiceover/L017.mp3"
+      "startFrame": 990,
+      "endFrame": 1044,
+      "audioDurationSeconds": 1.781814058956916,
+      "audioSrc": "episodes/nasa-punk-opening/voiceover-rubberband/L017.mp3"
     },
     {
       "id": "L018",
       "text": "手册里写着",
       "pauseAfterSeconds": 0,
-      "startFrame": 1281,
-      "endFrame": 1322,
-      "audioDurationSeconds": 1.36,
-      "audioSrc": "episodes/nasa-punk-opening/voiceover/L018.mp3"
+      "startFrame": 1060,
+      "endFrame": 1093,
+      "audioDurationSeconds": 1.081814058956916,
+      "audioSrc": "episodes/nasa-punk-opening/voiceover-rubberband/L018.mp3"
     },
     {
       "id": "L019",
       "text": "这样　字标就有了一股向上的推力",
       "pauseAfterSeconds": 0.54,
-      "startFrame": 1322,
-      "endFrame": 1430,
-      "audioDurationSeconds": 3.6,
-      "audioSrc": "episodes/nasa-punk-opening/voiceover/L019.mp3"
+      "startFrame": 1093,
+      "endFrame": 1179,
+      "audioDurationSeconds": 2.8636281179138323,
+      "audioSrc": "episodes/nasa-punk-opening/voiceover-rubberband/L019.mp3"
     },
     {
       "id": "L020",
       "text": "像两枚等着发射的火箭",
       "pauseAfterSeconds": 0.7,
-      "startFrame": 1446,
-      "endFrame": 1523,
-      "audioDurationSeconds": 2.56,
-      "audioSrc": "episodes/nasa-punk-opening/voiceover/L020.mp3"
+      "startFrame": 1195,
+      "endFrame": 1256,
+      "audioDurationSeconds": 2.0363718820861676,
+      "audioSrc": "episodes/nasa-punk-opening/voiceover-rubberband/L020.mp3"
     },
     {
       "id": "L021",
       "text": "笔画弯弯曲曲连成一条",
       "pauseAfterSeconds": 0,
-      "startFrame": 1544,
-      "endFrame": 1631,
-      "audioDurationSeconds": 2.88,
-      "audioSrc": "episodes/nasa-punk-opening/voiceover/L021.mp3"
+      "startFrame": 1277,
+      "endFrame": 1346,
+      "audioDurationSeconds": 2.290907029478458,
+      "audioSrc": "episodes/nasa-punk-opening/voiceover-rubberband/L021.mp3"
     },
     {
       "id": "L022",
       "text": "后来大家叫它蠕虫",
       "pauseAfterSeconds": 1.34,
-      "startFrame": 1631,
-      "endFrame": 1691,
-      "audioDurationSeconds": 2,
-      "audioSrc": "episodes/nasa-punk-opening/voiceover/L022.mp3"
+      "startFrame": 1346,
+      "endFrame": 1394,
+      "audioDurationSeconds": 1.590907029478458,
+      "audioSrc": "episodes/nasa-punk-opening/voiceover-rubberband/L022.mp3"
     }
   ]
 }

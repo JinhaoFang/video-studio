@@ -124,10 +124,11 @@ Constraints: no text, no markings, no letters, no other objects, no tape, no cas
 ## 正式配音（#69）
 
 - 生成服务与授权沿用上节 ElevenLabs 条款及免费计划限制，仅本机非商业学习，不公开发布。选定官方预设 Alice（`Xb7hH8MSUJpSbSDYk0k2`）× `eleven_v4`。
-- 原文：`script.md` 的 L001～L022，与参考转写一致。返工仅按 #69 验收评论改合成文本：NASA 读「纳萨」、L006「后来，」不带前后文，配置见 `data/voiceover-overrides.json`。其余请求带改写后的相邻文本，L022 后句为 L023；台本与字幕不变。
-- 2026-10-15 全部 22 句重新合成，统一 `voice_settings.speed=1.2`、seed=0，MP3 44.1kHz/128kbps，其余使用服务默认设置。L003 重配两次、L014 一次；L006 去上下文首次即正确。交付文件未经后期变速、修剪或重新编码。
-- 本 worktree 正式素材：`public/episodes/nasa-punk-opening/voiceover/L001.mp3`～`L022.mp3` 及同名 JSON。旧版保存在 `/root/project/video-studio.worktrees/69/out/qa/spec-60/69/previous-64215d2/voiceover/`，正式目录已先清空再生成；语速探针与重配中间文件不属于正式配音。
-- 累计 **429 / 1500 credits**（上一轮 178、本轮 251）；加上 #63 的 127，账户累计 556 / 10000，保守剩余 **9444**。本轮包括22句199、L002 speed=0.7诊断11、L003两次重配24、L014重配17。凭据只在内存读取主工作区 `.env`，不复制、不写入记录。
-- 语速范围出处：[官方 OpenAPI](https://api.elevenlabs.io/openapi.json) 的 `TtsVoiceSettings.speed`（0.7～1.2）。本轮同句 speed=0.7 / 1.2 均为2.64秒，历史仅回显 stability，实测未达到37～40秒；完整请求、公开schema摘录与诊断在验收目录。保留指定模型，未另行决定替代语音方案。
-- ffprobe 解码样本总时长 **48.40秒**；`data/voiceover-durations.json` 为正式清单，`data/timeline.json` 标明合成设置，总长1731帧／57.70秒。Whisper只使用仓库外现有模型和Python环境；对照原文、日期及批准的NASA读法等价后 CER **0.50%（1/202）**。
-- 完整渲染、22张逐句对比图和原始测量位于 `/root/project/video-studio.worktrees/69/out/qa/spec-60/69/`，含参考画面，仅本机验收。质量与时长遗留见 [README.md](README.md)「正式配音（#69）」。合并前须由设计负责人另行复制正式媒体及请求记录回主工作区。
+- 原文：`script.md` 的 L001～L022，与参考转写一致。第二轮按 #69 验收改合成文本：NASA 读「纳萨」、L006「后来，」不带前后文，配置见 `data/voiceover-overrides.json`。其余请求带改写后的相邻文本，L022 后句为 L023；台本与字幕不变。
+- 原始合成：2026-10-15 的第二轮共 22 句，seed=0、MP3 44.1kHz/128kbps；请求均发送 `voice_settings.speed=1.2`，但 `eleven_v4` 不支持 Speed（见 [API 研究](../../docs/research/nasa-ep04/elevenlabs-api.md)），原始解码旁白仍为 48.40 秒。L003 重配两次、L014 一次，L006 去上下文首次正确。本轮不再调用服务或查询账户。
+- 原始媒体及合成请求保留在本 worktree 的 `public/episodes/nasa-punk-opening/voiceover/L001.mp3`～`L022.mp3` 与同名 JSON，第三轮逐文件 SHA256 确认未改。第一轮旧版仍在 `/root/project/video-studio.worktrees/69/out/qa/spec-60/69/previous-64215d2/voiceover/`；语速探针与重配中间文件不属于正式配音。
+- 第三轮后期处理：`node tools/stretch-voice.ts` 输入原始目录，统一 ffmpeg `rubberband=tempo=1.257143:pitch=1` 保持音高，输出到相邻 `voiceover-rubberband/`；44.1kHz/128kbps MP3 重新编码，未裁剪、未改台本停顿、未使用 atempo。倍率按 48.40 / 38.5 计算，保留六位小数；更换倍率仍从原始目录开始。处理后 JSON 保留原始合成来源，并补充输入/输出哈希、倍率、音高和 ffmpeg 参数数组；完整命令见该期 README 和验收目录。
+- 本轮 **0 credits**；累计 **429 / 1500**（第一轮 178、第二轮 251），加上 #63 的 127，账户累计 556 / 10000。账本哈希未变，沿用此前保守剩余 **9444**，不是本轮新查余额。第二轮 251 包含 22 句 199、L002 speed 探针 11、L003 两次重配 24、L014 重配 17。
+- ffprobe 解码样本实测处理后旁白 **38.500272 秒**；`data/voiceover-durations.json` 指向变速媒体，`data/timeline.json` 来源仍为正式配音并记下倍率，总长 **1434 帧 / 47.80 秒**。Whisper 只使用仓库外缓存模型和 venv，沿用原台本、日期及批准的 NASA 等价规则；CER 从 0.50% 升至 **2.48%（5/202）**，退化句为 L008（40%）、L022（25%），L007（11.11%）为保留的同音识别差异。
+- 处理后最高真峰值 **-5.5 dBTP**，无爆音、无句中超过 0.4 秒静音；12 句边缘留白不足 20ms，L007/L008 有 ASR 首字不符，配音 QA 退出 1。标记不能证明截断，按验收要求报告并保留文件供复核，未重新合成。
+- 整段渲染、22 张逐句对比图、原始识别及前后时长表在 `/root/project/video-studio.worktrees/69/out/qa/spec-60/69/round3/`，含参考画面，仅本机验收。质量待定项见 [README.md](README.md)「正式配音（#69）」。合并前须由设计负责人把本 worktree 的 `voiceover/`、`voiceover-rubberband/` 两目录（含 MP3 和 JSON）另行拷回主工作区；媒体不进 git。
