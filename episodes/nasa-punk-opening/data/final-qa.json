@@ -1,0 +1,395 @@
+{
+  "issue": 71,
+  "parentSpec": 60,
+  "composition": "NasaPunkOpening",
+  "sourceCommit": "198478345dc8b5cff73febc55be4ba9b371d09b3",
+  "sourceSha256": {
+    "episodes/nasa-punk-opening/data/timeline.json": "dfcbb37028c5de37195d7bf160f3d05bad30e3296ca0f051c5eee4baa219b2bb",
+    "episodes/nasa-punk-opening/data/reference-timeline.json": "e5b42d100c04935671b2acb5501d4cd8e5d282f816d12828dadb08b2f818c2eb",
+    "src/styles/nasa-punk/tokens.ts": "6c820dda6f89fd22118f511077013cd3ab69579d6ed31d82c219ad48309872b7",
+    "episodes/nasa-punk-opening/Shot1974Proposal.tsx": "1ce90d295b7c1abecb754f860398230b1bab3f9ce68119e402fdd1a179d57809",
+    "episodes/nasa-punk-opening/FlipYearClock.tsx": "fb7d644049dc2bcd7de2b65e2ae07c6d8b9f239ab8ff91340c5c2d2cffc00255",
+    "episodes/nasa-punk-opening/subtitle-schedule.ts": "7937da81e68402ebe02396fd93c9ed6500e8a0ddfab85f45ecd1658371966967"
+  },
+  "artifactDirectory": "/root/project/video-studio.worktrees/71/out/qa/spec-60/71",
+  "finalVideo": {
+    "path": "/root/project/video-studio.worktrees/71/out/qa/spec-60/71/mix/opening-mixed.mp4",
+    "sha256": "a757eac3f2df526a7d17b0ed0c1f8e7e73f2eb7ef9ca49324fc2ceb1dbc9bd18",
+    "bytes": 30445628,
+    "width": 1920,
+    "height": 1080,
+    "fps": 30,
+    "frames": 1437,
+    "durationSeconds": 47.9,
+    "videoCodec": "h264",
+    "audioCodec": "aac",
+    "audioSampleRate": 48000,
+    "audioChannels": 2,
+    "audioStreams": 1,
+    "decodeExitCode": 0,
+    "videoBitstreamUnchanged": true
+  },
+  "render": {
+    "argv": [
+      "pnpm",
+      "exec",
+      "remotion",
+      "render",
+      "NasaPunkOpening",
+      "/root/project/video-studio.worktrees/71/out/qa/spec-60/71/opening-remotion.mp4",
+      "--concurrency",
+      "4"
+    ],
+    "elapsedSeconds": 232.21300220489502,
+    "exitCode": 0,
+    "includesBrowserDownloadAndBundling": true
+  },
+  "mix": {
+    "argv": [
+      "node",
+      "tools/mix-opening.ts",
+      "episodes/nasa-punk-opening/data/timeline.json",
+      "--tokens",
+      "src/styles/nasa-punk/tokens.ts",
+      "--out",
+      "/root/project/video-studio.worktrees/71/out/qa/spec-60/71/mix",
+      "--video",
+      "/root/project/video-studio.worktrees/71/out/qa/spec-60/71/opening-remotion.mp4"
+    ],
+    "elapsedSeconds": 4.814395427703857,
+    "report": "/root/project/video-studio.worktrees/71/out/qa/spec-60/71/mix/mix-report.json"
+  },
+  "loudness": {
+    "input": "/root/project/video-studio.worktrees/71/out/qa/spec-60/71/mix/opening-mixed.mp4",
+    "measurements": {
+      "integratedLufs": -16,
+      "loudnessRangeLu": 2.7,
+      "truePeakDbtp": -2
+    },
+    "thresholds": {
+      "targetLufs": -16,
+      "toleranceLu": 1,
+      "maxTruePeakDbtp": -1
+    },
+    "checks": {
+      "integrated": true,
+      "truePeak": true
+    },
+    "passed": true
+  },
+  "silence": {
+    "input": "/root/project/video-studio.worktrees/71/out/qa/spec-60/71/mix/opening-mixed.mp4",
+    "noiseDb": -45,
+    "minimumDurationSeconds": 0.4,
+    "starts": [],
+    "ends": [],
+    "count": 0,
+    "passed": true
+  },
+  "motion": {
+    "report": "/root/project/video-studio.worktrees/71/out/qa/spec-60/71/motion/motion.json",
+    "thresholds": {
+      "stillSeconds": 3,
+      "stillDiff": 0.003,
+      "flashSeconds": 0.25,
+      "flashDiff": 0.03,
+      "noiseFloor": 2
+    },
+    "frameCount": 1437,
+    "findings": [],
+    "unexplainedFindings": 0,
+    "passed": true
+  },
+  "sync": {
+    "report": "/root/project/video-studio.worktrees/71/out/qa/spec-60/71/sync/whisper.json",
+    "method": "Whisper on ffmpeg-decoded WAV; acoustic onset after 180Hz highpass at -40dB; final/voice derivative correlation over 0.5s with +/-0.1s search; subtitle schedule and actual frames.",
+    "screeningToleranceSeconds": 0.03333333333333333,
+    "sentences": [
+      {
+        "id": "L001",
+        "transcription": "2020年5月",
+        "subtitleAnchorSeconds": 0.36666666666666664,
+        "subtitleFirstVisibleFrame": 12,
+        "subtitleFullyExpandedFrame": 17,
+        "acousticOnsetAbsoluteSeconds": 0.3870416666666667,
+        "acousticOnsetMinusSubtitleAnchorSeconds": 0.020375000000000032,
+        "finalVersusVoicePlacementLagSeconds": 0.0,
+        "normalizedWaveformCorrelation": 0.9999796041058505,
+        "passed": true
+      },
+      {
+        "id": "L011",
+        "transcription": "大家管它叫肉丸",
+        "subtitleAnchorSeconds": 19.133333333333333,
+        "subtitleFirstVisibleFrame": 574,
+        "subtitleFullyExpandedFrame": 574,
+        "acousticOnsetAbsoluteSeconds": 19.13952133333333,
+        "acousticOnsetMinusSubtitleAnchorSeconds": 0.006187999999999305,
+        "finalVersusVoicePlacementLagSeconds": 0.0,
+        "normalizedWaveformCorrelation": 0.9999835737970098,
+        "passed": true
+      },
+      {
+        "id": "L022",
+        "transcription": "后来大家叫他如虫",
+        "subtitleAnchorSeconds": 44.96666666666667,
+        "subtitleFirstVisibleFrame": 1349,
+        "subtitleFullyExpandedFrame": 1349,
+        "acousticOnsetAbsoluteSeconds": 44.97522966666667,
+        "acousticOnsetMinusSubtitleAnchorSeconds": 0.008563000000002818,
+        "finalVersusVoicePlacementLagSeconds": 0.0,
+        "normalizedWaveformCorrelation": 0.9990301957311478,
+        "passed": true
+      }
+    ],
+    "asrLimitations": [
+      "Short-crop first-word timestamps pinned to zero; not used as acoustic onsets.",
+      "L022 他/如虫 is a homophone transcription difference already accepted in #69; synthesis and subtitles unchanged."
+    ]
+  },
+  "clock": {
+    "report": "/root/project/video-studio.worktrees/71/out/qa/spec-60/71/clock-alignment.json",
+    "passed": true,
+    "startFrame": 429,
+    "endFrame": 474,
+    "eventCount": 15,
+    "columnStopFrames": [
+      465,
+      468,
+      471,
+      474
+    ],
+    "spectrogram": "/root/project/video-studio.worktrees/71/out/qa/spec-60/71/clock/spectrum.png"
+  },
+  "contactSheet": {
+    "path": "/root/project/video-studio.worktrees/71/out/qa/spec-60/71/sheet/page-001.jpg",
+    "fromSeconds": 0,
+    "toSeconds": 46,
+    "everySeconds": 2,
+    "cellCount": 24
+  },
+  "comparisons": [
+    {
+      "id": "L001",
+      "renderFrame": 29,
+      "referenceFrame": 29,
+      "renderOffsetFrames": 18,
+      "referenceOffsetFrames": 18,
+      "path": "/root/project/video-studio.worktrees/71/out/qa/spec-60/71/compare/L001/00-00.967.jpg",
+      "difference": "照片取景接近；照片调色、细颗粒和字幕字形沿用小样，与参考有细微差异。"
+    },
+    {
+      "id": "L002",
+      "renderFrame": 85,
+      "referenceFrame": 89,
+      "renderOffsetFrames": 39,
+      "referenceOffsetFrames": 39,
+      "path": "/root/project/video-studio.worktrees/71/out/qa/spec-60/71/compare/L002/00-02.833.jpg",
+      "difference": "中景的缩放、照片细节和调色略有差异；镜头切换跟正式配音走。"
+    },
+    {
+      "id": "L003",
+      "renderFrame": 170,
+      "referenceFrame": 168,
+      "renderOffsetFrames": 54,
+      "referenceOffsetFrames": 54,
+      "path": "/root/project/video-studio.worktrees/71/out/qa/spec-60/71/compare/L003/00-05.667.jpg",
+      "difference": "参考字幕在『箭体上』后有全角空格，本片没有；HUD 字号、线宽及照片调色沿用小样。"
+    },
+    {
+      "id": "L004",
+      "renderFrame": 227,
+      "referenceFrame": 238,
+      "renderOffsetFrames": 19,
+      "referenceOffsetFrames": 19,
+      "path": "/root/project/video-studio.worktrees/71/out/qa/spec-60/71/compare/L004/00-07.567.jpg",
+      "difference": "参考合并 L004/L005 字幕，本片分句；正式轴句子较短，句内末段年份标签仍在打字，参考已完整。"
+    },
+    {
+      "id": "L005",
+      "renderFrame": 281,
+      "referenceFrame": 287,
+      "renderOffsetFrames": 45,
+      "referenceOffsetFrames": 45,
+      "path": "/root/project/video-studio.worktrees/71/out/qa/spec-60/71/compare/L005/00-09.367.jpg",
+      "difference": "贴条左右端平直，参考为锯齿撕口；纸纹、阴影及旋转略有差异；字幕按句拆开。"
+    },
+    {
+      "id": "L006",
+      "renderFrame": 322,
+      "referenceFrame": 333,
+      "renderOffsetFrames": 15,
+      "referenceOffsetFrames": 15,
+      "path": "/root/project/video-studio.worktrees/71/out/qa/spec-60/71/compare/L006/00-10.733.jpg",
+      "difference": "参考合并 L006/L007 字幕；本片撕离固定为 L006+24 帧，正式 L006 只有23帧，因此撕离起点在 L007+1 帧；本句对比沿用 #66 的保持状态取点。"
+    },
+    {
+      "id": "L007",
+      "renderFrame": 362,
+      "referenceFrame": 369,
+      "renderOffsetFrames": 32,
+      "referenceOffsetFrames": 32,
+      "path": "/root/project/video-studio.worktrees/71/out/qa/spec-60/71/compare/L007/00-12.067.jpg",
+      "difference": "彩条厚度、取色和标签构图沿用定稿，与参考略有差异；本句单独显示字幕。"
+    },
+    {
+      "id": "L008",
+      "renderFrame": 431,
+      "referenceFrame": 434,
+      "renderOffsetFrames": 18,
+      "referenceOffsetFrames": 18,
+      "path": "/root/project/video-studio.worktrees/71/out/qa/spec-60/71/compare/L008/00-14.367.jpg",
+      "difference": "乱跳数字的固定随机序列不同；钟体、数字字形和明暗沿用已合并实现。"
+    },
+    {
+      "id": "L009",
+      "renderFrame": 486,
+      "referenceFrame": 480,
+      "renderOffsetFrames": 27,
+      "referenceOffsetFrames": 33,
+      "path": "/root/project/video-studio.worktrees/71/out/qa/spec-60/71/compare/L009/00-16.200.jpg",
+      "difference": "参考把1974年与下一句字幕合并，本片只显示本句；钟体和数字字形略有差异。"
+    },
+    {
+      "id": "L010",
+      "renderFrame": 528,
+      "referenceFrame": 527,
+      "renderOffsetFrames": 36,
+      "referenceOffsetFrames": 36,
+      "path": "/root/project/video-studio.worktrees/71/out/qa/spec-60/71/compare/L010/00-17.600.jpg",
+      "difference": "纸面更暖、更暗，胶带和纸纤维更明显，徽章与年份的构图略有差异；字幕与L009分开。"
+    },
+    {
+      "id": "L011",
+      "renderFrame": 592,
+      "referenceFrame": 585,
+      "renderOffsetFrames": 18,
+      "referenceOffsetFrames": 18,
+      "path": "/root/project/video-studio.worktrees/71/out/qa/spec-60/71/compare/L011/00-19.733.jpg",
+      "difference": "红圈形状和线宽略有差异；参考字幕肉丸带引号，台本及本片字幕不带。"
+    },
+    {
+      "id": "L012",
+      "renderFrame": 641,
+      "referenceFrame": 629,
+      "renderOffsetFrames": 6,
+      "referenceOffsetFrames": 6,
+      "path": "/root/project/video-studio.worktrees/71/out/qa/spec-60/71/compare/L012/00-21.367.jpg",
+      "difference": "纸片缩放、旋转、纸纹和暖暗程度沿用现有素材及令牌。"
+    },
+    {
+      "id": "L013",
+      "renderFrame": 685,
+      "referenceFrame": 674,
+      "renderOffsetFrames": 30,
+      "referenceOffsetFrames": 30,
+      "path": "/root/project/video-studio.worktrees/71/out/qa/spec-60/71/compare/L013/00-22.833.jpg",
+      "difference": "普通NASA使用Inter Bold替代字形，网格、字标宽度及纸片构图略有差异；参考合并L012/L013字幕。"
+    },
+    {
+      "id": "L014",
+      "renderFrame": 780,
+      "referenceFrame": 762,
+      "renderOffsetFrames": 36,
+      "referenceOffsetFrames": 36,
+      "path": "/root/project/video-studio.worktrees/71/out/qa/spec-60/71/compare/L014/00-26.000.jpg",
+      "difference": "字标字形、标题栏位置/尺寸与参考略有差异；纸面仍更暖、更暗。"
+    },
+    {
+      "id": "L015",
+      "renderFrame": 879,
+      "referenceFrame": 854,
+      "renderOffsetFrames": 30,
+      "referenceOffsetFrames": 30,
+      "path": "/root/project/video-studio.worktrees/71/out/qa/spec-60/71/compare/L015/00-29.300.jpg",
+      "difference": "②阶段的字母分离、S留缝和轮廓是已合并的保守实现，与参考形变阶段有差异。"
+    },
+    {
+      "id": "L016",
+      "renderFrame": 940,
+      "referenceFrame": 909,
+      "renderOffsetFrames": 30,
+      "referenceOffsetFrames": 30,
+      "path": "/root/project/video-studio.worktrees/71/out/qa/spec-60/71/compare/L016/00-31.333.jpg",
+      "difference": "③阶段按SVG短溶解切换；参考的句内字幕分段与本片整句显示不同。"
+    },
+    {
+      "id": "L017",
+      "renderFrame": 1019,
+      "referenceFrame": 977,
+      "renderOffsetFrames": 25,
+      "referenceOffsetFrames": 25,
+      "path": "/root/project/video-studio.worktrees/71/out/qa/spec-60/71/compare/L017/00-33.967.jpg",
+      "difference": "两个A红色划线的角度、横杠消失过程和近景构图略有差异；快速移镜没有运动模糊。"
+    },
+    {
+      "id": "L018",
+      "renderFrame": 1090,
+      "referenceFrame": 1055,
+      "renderOffsetFrames": 26,
+      "referenceOffsetFrames": 26,
+      "path": "/root/project/video-studio.worktrees/71/out/qa/spec-60/71/compare/L018/00-36.333.jpg",
+      "difference": "引文使用Geist替代字形，字面/纸片位置、投影和暖暗程度略有差异；快速移镜没有运动模糊。"
+    },
+    {
+      "id": "L019",
+      "renderFrame": 1132,
+      "referenceFrame": 1097,
+      "renderOffsetFrames": 36,
+      "referenceOffsetFrames": 36,
+      "path": "/root/project/video-studio.worktrees/71/out/qa/spec-60/71/compare/L019/00-37.733.jpg",
+      "difference": "红下划线的细度、弧度和端点略有差异，引文字形及纸面质感沿用既定实现。"
+    },
+    {
+      "id": "L020",
+      "renderFrame": 1238,
+      "referenceFrame": 1207,
+      "renderOffsetFrames": 40,
+      "referenceOffsetFrames": 40,
+      "path": "/root/project/video-studio.worktrees/71/out/qa/spec-60/71/compare/L020/00-41.267.jpg",
+      "difference": "线描小火箭更细长，箭头/火箭轮廓及景别略有差异；快速移镜没有运动模糊。"
+    },
+    {
+      "id": "L021",
+      "renderFrame": 1335,
+      "referenceFrame": 1293,
+      "renderOffsetFrames": 55,
+      "referenceOffsetFrames": 55,
+      "path": "/root/project/video-studio.worktrees/71/out/qa/spec-60/71/compare/L021/00-44.500.jpg",
+      "difference": "逐笔变红的句内进度与参考略有差异，红色更暗；快速移镜没有运动模糊。"
+    },
+    {
+      "id": "L022",
+      "renderFrame": 1373,
+      "referenceFrame": 1325,
+      "renderOffsetFrames": 24,
+      "referenceOffsetFrames": 24,
+      "path": "/root/project/video-studio.worktrees/71/out/qa/spec-60/71/compare/L022/00-45.767.jpg",
+      "difference": "THE WORM标签的字号/位置略有差异；参考字幕蠕虫带引号，本片不带；末尾保留本章纸面到47.90秒，参考开场约46.37秒。"
+    }
+  ],
+  "repositoryVerification": {
+    "argv": [
+      "pnpm",
+      "verify"
+    ],
+    "exitCode": 0,
+    "elapsedSeconds": 45.51751637458801,
+    "log": "/root/project/video-studio.worktrees/71/out/qa/spec-60/71/verify.log",
+    "tests": 312,
+    "passed": true
+  },
+  "designFollowUps": [
+    "L004/L006：是否调整正式短句中的打字完成/撕离锚点；需要改镜头，交设计负责人决定。",
+    "L005-L022：复核下列逐句差异，沿用已合并的令牌、纸纹、SVG、批注及配音。",
+    "动态自检没有报警，无需镜头返修；审美取舍见差异清单。"
+  ],
+  "inferences": [
+    "L003对比取+54帧，L004两边取+19帧；L009正式取+27、参考沿用+33，其余沿用#66/#67/#68的首个逐句偏移。",
+    "L006句内取保持状态，撕离发生在下一句；未越界取点或改镜头。",
+    "同步以一帧为诊断筛查容差，不改任何创作时长；声学测量使用-40dB和180Hz高通排除80Hz铺底，原始Whisper时间戳照实保留。",
+    "提交生成的final-qa.json及本期README定位验收产物，媒体、日志和临时QA脚本留在out。"
+  ],
+  "deviations": [],
+  "newDependencies": []
+}

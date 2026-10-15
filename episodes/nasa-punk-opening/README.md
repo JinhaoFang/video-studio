@@ -53,19 +53,30 @@ node tools/build-timeline.ts episodes/nasa-punk-opening/script.md --durations <�
 
 翻牌钟时间直接读取 `--tokens` 所指文件的 `motion`、`proposal.clock`，不复制令牌数值。与 #67 `Shot1974Proposal.tsx` / `FlipYearClock.tsx` 对齐：从 `L008 + motion.chapterDissolveFrames + motion.dissolveFrames` 开始，到该帧加 `proposal.clock.scrambleFrames` 结束，每隔 `stepFrames` 一次；每位的停止时间同样取 `stopStaggerFrames`。当前正式轴 L008 / L009 / L010 起点为 **413 / 459 / 492 帧**，嘀嗒为 **429～474 帧（14.30～15.80 秒，末帧不含）**，15 次，逐位停在 465 / 468 / 471 / 474 帧。改时间轴后重跑即可；区间不再覆盖 L008～L009 或越过 L010 时会报错，要求核对镜头。
 
-#67 尚未合并时，只读它的令牌文件；合并后将 `--tokens` 换成本 worktree 的 `src/styles/nasa-punk/tokens.ts`。当前分支尚未包含 `proposal.clock`，直接使用本地令牌会明确报错，不回退到另一份硬编码数字。
+#67 单独开发时由 #70 只读它的令牌文件；当前已集成全部镜头，`--tokens` 使用本 worktree 的 `src/styles/nasa-punk/tokens.ts`。工具要求令牌包含 `proposal.clock`，缺失时明确报错，不回退到另一份硬编码数字。
 
 ```console
 node tools/mix-opening.ts --help
-node tools/mix-opening.ts episodes/nasa-punk-opening/data/timeline.json --tokens /root/project/video-studio.worktrees/67/src/styles/nasa-punk/tokens.ts --out out/qa/spec-60/70/mix
-pnpm exec remotion render NasaPunkOpening out/qa/spec-60/70/opening-remotion.mp4 --concurrency 4
-node tools/mix-opening.ts episodes/nasa-punk-opening/data/timeline.json --tokens /root/project/video-studio.worktrees/67/src/styles/nasa-punk/tokens.ts --out out/qa/spec-60/70/mix --video out/qa/spec-60/70/opening-remotion.mp4
-pnpm qa loudness out/qa/spec-60/70/mix/opening-mixed.mp4 --target-lufs -16 --tolerance 1 --max-true-peak -1 --out out/qa/spec-60/70/final
+pnpm exec remotion render NasaPunkOpening out/qa/spec-60/71/opening-remotion.mp4 --concurrency 4
+node tools/mix-opening.ts episodes/nasa-punk-opening/data/timeline.json --tokens src/styles/nasa-punk/tokens.ts --out out/qa/spec-60/71/mix --video out/qa/spec-60/71/opening-remotion.mp4
+pnpm qa loudness out/qa/spec-60/71/mix/opening-mixed.mp4 --target-lufs -16 --tolerance 1 --max-true-peak -1 --out out/qa/spec-60/71/final
 ```
 
 采用**渲染后替换音轨**：`--video` 校验输入视频的帧率和帧数，复制视频码流，仅映射一条混音 AAC（320kbps）到 `opening-mixed.mp4`。这样归一化后的音轨不会与原来的逐句配音重复叠加，并能在 AAC 编码之后验收；`Opening.tsx` 无需修改，Studio 仍播放逐句旁白。输出的分轨、混音与 MP4 均在忽略目录 `out/`，不进 git。ffmpeg 参数数组、素材与令牌哈希、句子锚点和电平测量写入 `mix-report.json`；逐命令日志与参数另存，便于复现和排错。
 
-归一化以 -16 LUFS 为目标，内部留 -2 dBTP 的编码余量；`linear=true` 在本次峰均比下自动采用动态归一化。`LRA=20` 是 ffmpeg 支持的宽松归一化参数，不设 LRA 验收阈值。本次最终 MP4 实测 **-16.0 LUFS、-2.0 dBTP、LRA 2.7 LU**，低于 -45 dB 且超过 0.4 秒的静音段 **0**。参考前 **46.000 秒**用同样设置测得 **-15.9 LUFS、-2.6 dBTP、LRA 2.8 LU**。验收根目录为 `/root/project/video-studio.worktrees/70/out/qa/spec-60/70/`，`final/` 与 `reference/` 保存同规格的全段频谱图、响度和静音报告；`clock-alignment.json` 保存 #67 对齐证据。当前 MP4 的画面只含本分支已经接入的镜头，用于本工单音轨验收；最终镜头集成后按同一命令替换音轨。
+归一化以 -16 LUFS 为目标，内部留 -2 dBTP 的编码余量；`linear=true` 在本次峰均比下自动采用动态归一化。`LRA=20` 是 ffmpeg 支持的宽松归一化参数，不设 LRA 验收阈值。#70 的 MP4 实测 **-16.0 LUFS、-2.0 dBTP、LRA 2.7 LU**，低于 -45 dB 且超过 0.4 秒的静音段 **0**。参考前 **46.000 秒**用同样设置测得 **-15.9 LUFS、-2.6 dBTP、LRA 2.8 LU**。#70 验收根目录为 `/root/project/video-studio.worktrees/70/out/qa/spec-60/70/`，`final/` 与 `reference/` 保存同规格的全段频谱图、响度和静音报告；`clock-alignment.json` 保存 #67 对齐证据。当时的 MP4 只含 #70 分支已接入的镜头，用于音轨验收；全部镜头集成后的成片及重新测量见下文 #71。
+
+## 最终成片验收（#71）
+
+全部镜头集成后的成片为 `/root/project/video-studio.worktrees/71/out/qa/spec-60/71/mix/opening-mixed.mp4`，1920×1080、30fps、1437帧 / **47.90秒**，唯一一条48kHz双声道AAC混音。大小 **30,445,628字节（30.45MB / 29.04MiB）**；Remotion渲染耗时 **232.213秒**（含浏览器下载、打包和编码），混音耗时 **4.814秒**。镜头、令牌、台本和正式时间轴均未修改，媒体不进git；生成的验收摘要存于 [data/final-qa.json](data/final-qa.json)。
+
+本次验收根目录为 `/root/project/video-studio.worktrees/71/out/qa/spec-60/71/`：`review.md`含逐句差异、取点与证据路径；`compare/L001`～`L022`各一张左成片右参考的对比图，两侧均经 `pnpm --silent qa sentence`按独立时间轴取点；`sentence-points.json`记录偏移。`sheet/page-001.jpg`覆盖0:00～0:46、每2秒一格，共24格。
+
+最终AAC重新实测 **-16.0 LUFS、-2.0 dBTP、LRA 2.7 LU**，响度阈值通过；低于-45dB且持续至少0.4秒的区间 **0**，见`final/`。`motion/motion.json`按默认阈值扫描全部1437帧，报警 **0**；`playback.log`记录完整音视频解码退出0，`final/probe.json`确认视频、音轨和容器均47.90秒。`clock-alignment.json`核对嘀嗒和乱跳同为 **[429,474)帧 / [14.30,15.80)秒**、15次，`clock/`保留最终成片的逐0.1秒联系表与频谱。
+
+L001/L011/L022字幕锚点分别为 **0.366667 / 19.133333 / 44.966667秒**；成片声音起点分别为 **0.387042 / 19.139521 / 44.975230秒**，与锚点相差 **20.375 / 6.188 / 8.563毫秒**，均在一帧内。`sync/`保留最终AAC解码WAV、缓存Whisper原始转写、语音门限诊断和实际字幕帧。短片段首词ASR时间戳落在裁切起点，未用它作为同步证据；改用180Hz高通后的-40dB语音起点及成片/旁白波形相关核对，三句位置偏移均为0。L022同音识别差异沿用#69已接受的结论。
+
+逐句差异和`TODO(design)`见验收目录`review.md`及摘要：L004的年份标签打字在正式短句末尚未完成，L006+24帧的撕离已在L007+1帧，是否调整由设计负责人决定；动态自检无报警。参考合并连读字幕、L003句内全角空格、贴条侧边平直、纸面更暖暗、快速移镜无运动模糊、全长比参考增加46帧等已知差异均保留在清单中。
 
 ## 时间轴约定
 
