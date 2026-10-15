@@ -1,8 +1,9 @@
 /**
  * Exercise the motion CLI using ffmpeg-generated temporary media, never checked
- * in. Cover quiet/noisy holds, single-frame and faded return flashes, sustained
- * cuts, slow push/pull, native VFR timing, range clipping, configurable inclusive
- * thresholds, optional evidence images, help and argument/runtime failures.
+ * in. Cover quiet/noisy holds, single-frame and faded return flashes, flashes
+ * after cuts and at range ends, sustained cuts, slow push/pull, native VFR timing,
+ * range clipping, configurable inclusive thresholds, optional evidence images,
+ * help and argument/runtime failures.
  * Run with `node --test tools/qa-motion.test.ts` or `pnpm verify`.
  */
 import assert from "node:assert/strict";
@@ -162,6 +163,47 @@ test("brief faded excursions are found even when no adjacent step reaches the fl
   assert.equal(report.findings[0].type, "flash");
   near(report.findings[0].startSeconds, 0.5);
   near(report.findings[0].endSeconds, 20 / 30);
+});
+
+test("a persistent cut does not hide a following one-frame return flash", (context) => {
+  const root = temporaryDirectory(context);
+  const input = makeVideo(
+    root,
+    "color=black:s=320x180:r=30:d=1,trim=end_frame=22,drawbox=color=gray:t=fill:enable='gte(n,15)',drawbox=color=white:t=fill:enable='eq(n,18)'",
+  );
+  const result = run(root, [input]);
+  assert.equal(result.status, 1, result.stdout + result.stderr);
+  const report = reportFrom(result.stdout).report;
+  assert.equal(report.analysis.frameCount, 22);
+  assert.equal(report.findings.length, 1);
+  const flash = report.findings[0];
+  assert.equal(flash.type, "flash");
+  near(flash.startSeconds, 0.6);
+  near(flash.endSeconds, 19 / 30);
+  assert.equal(flash.returnDifference, 0);
+});
+
+test("a flash after a cut is reported when its recovery frame is the last frame of the scan", (context) => {
+  const root = temporaryDirectory(context);
+  for (const frames of [20, 22]) {
+    const input = makeVideo(
+      root,
+      `color=black:s=320x180:r=30:d=1,trim=end_frame=${frames},drawbox=color=gray:t=fill:enable='gte(n,15)',drawbox=color=white:t=fill:enable='eq(n,18)'`,
+    );
+    const result = run(
+      root,
+      frames === 20 ? [input] : [input, "--to", String(20 / 30)],
+    );
+    assert.equal(result.status, 1, result.stdout + result.stderr);
+    const report = reportFrom(result.stdout).report;
+    assert.equal(report.analysis.frameCount, 20);
+    assert.equal(report.findings.length, 1);
+    const flash = report.findings[0];
+    assert.equal(flash.type, "flash");
+    near(flash.startSeconds, 0.6);
+    near(flash.endSeconds, 19 / 30);
+    assert.equal(flash.returnDifference, 0);
+  }
 });
 
 test("persistent cuts and long excursions pass; flash duration is configurable and inclusive", (context) => {

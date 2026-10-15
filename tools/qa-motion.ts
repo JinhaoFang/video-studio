@@ -4,8 +4,11 @@
  * differences above a configurable 8-bit deadband, normalized to [0,1]. Still
  * runs compare against their first frame so slow accumulated motion breaks a
  * run. Flash candidates must leave and return to a preceding frame within the
- * maximum duration, reaching the flash threshold before returning. Decode to a
- * temporary raw file; keep only anchors and short-lived candidates in memory.
+ * maximum duration, reaching the flash threshold before returning. Collect only
+ * completed candidates, then select the earliest nonoverlapping excursions so
+ * persistent cuts cannot mask flashes and faded flashes retain their full span.
+ * Decode to a temporary raw file; keep only anchors, short-lived candidates and
+ * completed event metadata in memory.
  * Range endpoints use player time and are exclusive at the end. Optional JPGs
  * reuse exact-timestamp extraction. Defaults calibrated against spec #60's
  * reference opening and #61's plain render; findings need human review.
@@ -157,6 +160,7 @@ export const runMotion = (args: string[]): void => {
     return sum / frameBytes / 255;
   };
   const events: Event[] = [];
+  const flashes: Event[] = [];
   let longestStillSeconds = 0;
   let maxAdjacentDifference = 0;
   let maxFrameGapSeconds = 0;
@@ -254,33 +258,32 @@ export const runMotion = (args: string[]): void => {
         }
         const adjacent = difference(previous, frame);
         maxAdjacentDifference = Math.max(maxAdjacentDifference, adjacent);
-        candidates = candidates.filter(
-          (candidate) =>
-            times[index] - times[candidate.start] <=
-            thresholds.flashSeconds + 1e-9,
-        );
-        for (const candidate of candidates) {
+        candidates = candidates.filter((candidate) => {
+          if (
+            times[index] - times[candidate.start] >
+            thresholds.flashSeconds + 1e-9
+          ) {
+            return false;
+          }
           const distance = difference(candidate.before, frame);
           if (distance > candidate.maxDifference) {
             candidate.maxDifference = distance;
             candidate.peak = index;
           }
-        }
-        const candidate = candidates.find(
-          (item) => item.maxDifference >= thresholds.flashDiff,
-        );
-        const returnDifference = candidate
-          ? difference(candidate.before, frame)
-          : Infinity;
-        if (candidate && returnDifference <= thresholds.stillDiff) {
-          events.push({
+          if (
+            candidate.maxDifference < thresholds.flashDiff ||
+            distance > thresholds.stillDiff
+          ) {
+            return true;
+          }
+          flashes.push({
             finding: {
               type: "flash",
               startSeconds: times[candidate.start],
               endSeconds: times[index],
               durationSeconds: times[index] - times[candidate.start],
               maxDifference: candidate.maxDifference,
-              returnDifference,
+              returnDifference: distance,
               keyframes: [],
             },
             frames: [
@@ -289,8 +292,9 @@ export const runMotion = (args: string[]): void => {
               { role: "after", index },
             ],
           });
-          candidates = [];
-        } else if (adjacent > thresholds.stillDiff) {
+          return false;
+        });
+        if (adjacent > thresholds.stillDiff) {
           candidates.push({
             before: previous,
             start: index,
@@ -304,6 +308,14 @@ export const runMotion = (args: string[]): void => {
       maxFrameGapSeconds = Math.max(maxFrameGapSeconds, end - times.at(-1)!);
     } finally {
       closeSync(descriptor);
+    }
+    let lastFlashEnd = -Infinity;
+    flashes.sort((a, b) => a.finding.startSeconds - b.finding.startSeconds);
+    for (const flash of flashes) {
+      if (flash.finding.startSeconds > lastFlashEnd) {
+        events.push(flash);
+        lastFlashEnd = flash.finding.endSeconds;
+      }
     }
     events.sort((a, b) => a.finding.startSeconds - b.finding.startSeconds);
     if (options.has("--keyframes") && events.length > 0) {
