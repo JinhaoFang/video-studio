@@ -1,5 +1,5 @@
 /**
- * Dispatch frames, sheet, compare and loudness with `pnpm qa <command>`.
+ * Dispatch frames, sheet, compare, loudness and sentence with `pnpm qa <command>`.
  * Add a usage string and run(args) handler to commands for future QA tools.
  * Chinese help returns 0; check failures return 1; argument/runtime errors return 2.
  */
@@ -7,6 +7,7 @@ import { framesUsage, runFrames } from "./qa-frames.ts";
 import { sheetUsage, runSheet } from "./qa-sheet.ts";
 import { compareUsage, runCompare } from "./qa-compare.ts";
 import { loudnessUsage, runLoudness } from "./qa-loudness.ts";
+import { sentenceUsage, runSentence } from "./qa-sentence.ts";
 
 import { reportError } from "./cli.ts";
 
@@ -18,6 +19,7 @@ const commands: Record<
   sheet: { usage: sheetUsage, run: runSheet },
   compare: { usage: compareUsage, run: runCompare },
   loudness: { usage: loudnessUsage, run: runLoudness },
+  sentence: { usage: sentenceUsage, run: runSentence },
 };
 
 const help = (): string =>
