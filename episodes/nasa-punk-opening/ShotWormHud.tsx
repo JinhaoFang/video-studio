@@ -6,7 +6,8 @@
  * 1975 — 1992 — 2020 timeline types. Every time is a sentence anchor plus frames.
  * Place inside a Sequence spanning shotWormHudSpan(timeline).
  * Exports the photo geometry and close framing so S03/S04 can continue the shot.
- * #66 extends only the close hold through L007 and adds the chapter-end dissolve;
+ * #66 extends only the close hold through the L007-L008 pause and adds the
+ * chapter-end dissolve over the last chapterDissolveFrames before L008;
  * the camera's linear push and every L003-L005 event keep the sample timing.
  */
 import {
@@ -20,7 +21,7 @@ import type { Timeline } from "../../tools/timeline-types";
 import { hud, motion } from "../../src/styles/nasa-punk/tokens";
 import { HudBox, HudTopBar, PhotoCredit } from "./Hud";
 import { PhotoCamera, pushScaleTo } from "./PhotoCamera";
-import { sentence, sentenceFrame } from "./sentence-timing";
+import { sentenceFrame } from "./sentence-timing";
 
 export const rolloutPhoto = {
   src: "episodes/nasa-punk-opening/photos/demo2-rollout-NHQ202005210001.jpg",
@@ -52,8 +53,7 @@ const fade = (frame: number, start: number, length: number) =>
 
 export const shotWormHudSpan = (timeline: Timeline) => {
   const start = sentenceFrame(timeline, "L003", -4);
-  const end =
-    sentence(timeline, "L007").endFrame + motion.chapterDissolveFrames;
+  const end = sentenceFrame(timeline, "L008");
   return { start, durationInFrames: end - start };
 };
 

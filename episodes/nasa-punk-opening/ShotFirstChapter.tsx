@@ -34,7 +34,7 @@ import {
   wideFraming,
   wormHudStyle,
 } from "./ShotWormHud";
-import { sentence, sentenceFrame } from "./sentence-timing";
+import { sentenceFrame } from "./sentence-timing";
 
 const clamp = { extrapolateLeft: "clamp", extrapolateRight: "clamp" } as const;
 const easeOut = (t: number) => 1 - (1 - t) ** 3;
@@ -54,8 +54,7 @@ export const shotFirstChapterSpan = (timeline: Timeline) => {
   const start =
     sentenceFrame(timeline, "L001") -
     Math.round(timeline.leadingSilenceSeconds * timeline.fps);
-  const end =
-    sentence(timeline, "L007").endFrame + motion.chapterDissolveFrames;
+  const end = sentenceFrame(timeline, "L008");
   return { start, durationInFrames: end - start };
 };
 

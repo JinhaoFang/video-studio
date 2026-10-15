@@ -3,8 +3,9 @@
  * sheet and a camera pull/downward move revealing Inter Bold NASA on the grid.
  * Place in a Sequence spanning shot1974ProposalSpan(timeline). Every event is a
  * sentence anchor plus sample motion frames, so replacing voiceover is safe.
- * The incoming opaque black dissolves over the previous chapter; #66 supplies
- * that chapter's outgoing dissolve. Finish and subtitles stay in Opening.
+ * The clock on near-black dissolves straight over the previous chapter during
+ * the frames before L008 (no black hold), matching the reference; the scramble
+ * starts at L008 + chapterDissolveFrames + dissolveFrames, which #70 ticks follow. Finish and subtitles stay in Opening.
  * TODO(design): confirm reference-sampled geometry and the conservative timing
  * offsets documented in this episode's README, and #62's texture-grain strength.
  */
@@ -36,7 +37,10 @@ export const Shot1974Proposal = ({ timeline }: { timeline: Timeline }) => {
   const { start } = shot1974ProposalSpan(timeline);
   const at = (id: string, offset = 0) =>
     sentenceFrame(timeline, id, offset) - start;
-  const clockStart = at("L008", motion.chapterDissolveFrames);
+  const scrambleStart = at(
+    "L008",
+    motion.chapterDissolveFrames + motion.dissolveFrames,
+  );
   const paperStart = at("L010", motion.dissolveFrames);
   const moveStart = at("L013", -motion.dissolveFrames);
   const moveEnd = moveStart + motion.barDrawFrames;
@@ -81,20 +85,8 @@ export const Shot1974Proposal = ({ timeline }: { timeline: Timeline }) => {
         overflow: "hidden",
       }}
     >
-      <AbsoluteFill
-        style={{
-          opacity: interpolate(
-            frame,
-            [clockStart, clockStart + motion.dissolveFrames],
-            [0, 1],
-            clamp,
-          ),
-        }}
-      >
-        <FlipYearClock
-          start={clockStart + motion.dissolveFrames}
-          targetYear={1974}
-        />
+      <AbsoluteFill>
+        <FlipYearClock start={scrambleStart} targetYear={1974} />
       </AbsoluteFill>
       {frame >= paperStart ? (
         <AbsoluteFill
