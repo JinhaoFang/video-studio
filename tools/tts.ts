@@ -5,6 +5,7 @@
  * metadata is persisted. No automatic retries; pending reservations block reuse
  * after interruption until the ledger is reconciled against the account.
  * Seed 0 is best-effort reproducibility, not a waveform equality guarantee.
+ * Optional speed and text/context overrides affect synthesis only, never captions.
  */
 import { createHash } from "node:crypto";
 import {
@@ -20,10 +21,15 @@ import {
 import { dirname, join, resolve } from "node:path";
 import { reportError, usageError } from "./cli.ts";
 import { parseOptions, positiveInteger } from "./qa-common.ts";
-import { readTranscript, sentenceIndex } from "./tts-input.ts";
+import {
+  readSynthesisOverrides,
+  readTranscript,
+  sentenceIndex,
+  synthesisText,
+} from "./tts-input.ts";
 
 const usage =
-  "pnpm tts --voice <Daniel|Alice|音色ID> --model <模型ID> --from <L001> --to <L022> --transcript <台本.md> --out <素材目录> --ledger <账本.json> [--env <.env>] [--budget <credits>] [--replace]";
+  "pnpm tts --voice <Daniel|Alice|音色ID> --model <模型ID> --from <L001> --to <L022> --transcript <台本.md> --out <素材目录> --ledger <账本.json> [--env <.env>] [--budget <credits>] [--speed <0.7～1.2>] [--overrides <改写.json>] [--replace]";
 type Subscription = {
   character_count: number;
   character_limit: number;
@@ -80,12 +86,14 @@ const main = async () => {
       "--env",
       "--budget",
       "--ledger",
+      "--speed",
+      "--overrides",
     ],
     usage,
   );
   if (help) {
     console.log(
-      `用法：${usage}\n每句生成 MP3 和同名 JSON，带前后各一句原文；边界句省略不存在的上下文。\n默认预算 300 credits，四组试听及重配必须共用同一账本；不自动重试。\n已有文件默认拒绝覆盖；--replace 可单独重配同一句。\nkey 从 elevenlabs_apikey 环境变量或 --env（默认 .env）读取，允许等号两侧空格。\n音频格式 mp3_44100_128，seed=0，其他语音设置使用服务默认值。`,
+      `用法：${usage}\n每句生成 MP3 和同名 JSON，带前后各一句原文；边界句省略不存在的上下文。\n默认预算 300 credits，四组试听及重配必须共用同一账本；不自动重试。\n已有文件默认拒绝覆盖；--replace 可单独重配同一句。\n--speed 显式设置 voice_settings.speed，省略时使用服务默认值。\n--overrides 格式：{"L005":{"text":"纳萨自己废过一次"},"L006":{"text":"后来，","previous_text":null,"next_text":null}}；相邻上下文同步使用改写文本，null 表示省略。台本与字幕不变。\nkey 从 elevenlabs_apikey 环境变量或 --env（默认 .env）读取，允许等号两侧空格。\n音频格式 mp3_44100_128，seed=0，其他语音设置使用服务默认值。`,
     );
     return;
   }
@@ -101,6 +109,15 @@ const main = async () => {
   if (!/^[a-zA-Z0-9_-]+$/.test(voice) || !/^[a-zA-Z0-9_-]+$/.test(model))
     throw new Error("音色和模型只能包含英文字母、数字、下划线或连字符。");
   const rows = readTranscript(resolve(required("--transcript")));
+  const overrides = readSynthesisOverrides(options.get("--overrides"), rows);
+  const speed = options.has("--speed")
+    ? Number(options.get("--speed"))
+    : undefined;
+  if (
+    speed !== undefined &&
+    (!Number.isFinite(speed) || speed < 0.7 || speed > 1.2)
+  )
+    throw usageError("--speed 必须在 0.7～1.2 之间。", usage);
   const start = sentenceIndex(required("--from"));
   const end = sentenceIndex(required("--to"));
   if (end < start || end >= rows.length)
@@ -224,7 +241,11 @@ const main = async () => {
       Math.ceil(Array.from(text).length * multiplier);
     const batchCost = rows
       .slice(start, end + 1)
-      .reduce((sum, row) => sum + estimate(row.text), 0);
+      .reduce(
+        (sum, _, offset) =>
+          sum + estimate(synthesisText(rows, start + offset, overrides).text),
+        0,
+      );
     if (
       spent() + batchCost > budget ||
       batchCost > account.character_limit - account.character_count
@@ -237,21 +258,20 @@ const main = async () => {
       const row = rows[index];
       const output = join(directory, `${row.id}.mp3`);
       const body = {
-        text: row.text,
+        ...synthesisText(rows, index, overrides),
         model_id: model,
         seed: 0,
-        ...(rows[index - 1] ? { previous_text: rows[index - 1].text } : {}),
-        ...(rows[index + 1] ? { next_text: rows[index + 1].text } : {}),
+        ...(speed === undefined ? {} : { voice_settings: { speed } }),
       };
       const before = ledger.latest;
-      if (spent() + estimate(row.text) > budget)
+      if (spent() + estimate(body.text) > budget)
         throw new Error("累计 credits 已达到预算，停止合成。");
       const entry: Entry = {
         id: row.id,
         voice,
         model,
         output,
-        reserved: estimate(row.text),
+        reserved: estimate(body.text),
         credits: null,
         status: "pending",
       };
@@ -289,6 +309,7 @@ const main = async () => {
           voiceId: selectedVoice.voice_id,
           model,
           request: body,
+          referenceText: row.text,
           audio: output,
           sha256: createHash("sha256").update(bytes).digest("hex"),
           credits: entry.credits,

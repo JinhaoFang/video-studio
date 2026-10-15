@@ -4,6 +4,7 @@ Called by pnpm qa voice; --help is also available directly. ASR never receives
 the reference text as a prompt. Keep raw segments/words and ffmpeg diagnostics.
 Edge and ASR mismatch flags are screening heuristics, not proof of truncation.
 Decode with ffmpeg into arrays to avoid PyAV decoder API version differences.
+Score original narration with date and approved NASA pronunciation equivalence.
 """
 
 import argparse
@@ -79,7 +80,7 @@ def normalize(text):
     )
 
 
-def date_normalize(text):
+def pronunciation_normalize(text):
     digits = dict(zip("零〇一二两三四五六七八九", [0, 0, 1, 2, 2, 3, 4, 5, 6, 7, 8, 9]))
 
     def convert(match):
@@ -96,7 +97,11 @@ def date_normalize(text):
         return str(total + current) + unit
 
     return normalize(
-        re.sub(r"([零〇一二两三四五六七八九十百千]+)(年|月)", convert, text)
+        re.sub(
+            r"纳萨|娜萨|娜莎",
+            "NASA",
+            re.sub(r"([零〇一二两三四五六七八九十百千]+)(年|月)", convert, text),
+        )
     )
 
 
@@ -245,7 +250,7 @@ def main():
             )
             raw_segments = [asdict(segment) for segment in segments]
             actual = "".join(segment["text"] for segment in raw_segments).strip()
-            reference = item["request"]["text"]
+            reference = item.get("referenceText", item["request"]["text"])
             transcripts.append(
                 {
                     "id": item["id"],
@@ -256,9 +261,9 @@ def main():
             )
             evidence = out / f"{safe_name}-{item['id']}-ffmpeg.txt"
             measured = measure(audio, evidence)
-            canonical_reference, canonical_actual = date_normalize(
+            canonical_reference, canonical_actual = pronunciation_normalize(
                 reference
-            ), date_normalize(actual)
+            ), pronunciation_normalize(actual)
             errors = edit_distance(canonical_reference, canonical_actual)
             boundary = {
                 "head": not canonical_actual.startswith(canonical_reference[:1]),
@@ -401,9 +406,9 @@ def main():
     lines = [
         f"# 配音试听对比（{sample_label}）",
         "",
-        f"推荐候选：**{ranked[0]['name']}**。按日期等价 CER、检测风险数、与 300 字/分钟的距离依次排序；音色审美由设计负责人定。",
+        f"推荐候选：**{ranked[0]['name']}**。按读法等价 CER、检测风险数、与 300 字/分钟的距离依次排序；音色审美由设计负责人定。",
         "",
-        "| 音色 / 模型 | CER（日期等价） | 严格 CER | 语速：全文件 / 去首尾静音（字/分钟） | 真峰值 dBTP | 截断/长静音等标记 | credits（含重配） |",
+        "| 音色 / 模型 | CER（读法等价） | 严格 CER | 语速：全文件 / 去首尾静音（字/分钟） | 真峰值 dBTP | 截断/长静音等标记 | credits（含重配） |",
         "|---|---:|---:|---:|---:|---|---:|",
     ]
     for g in groups:
@@ -420,11 +425,11 @@ def main():
             "",
             f"总消耗 **{total} / {ledger['budget']} credits**，保守剩余额度 **{remaining}**（初始额度减逐请求实际计费，与账户最近查询余额 {reported_remaining} 取较小值；账户接口可能延迟）；各组计费包含账本中的失败/重配请求。",
             "",
-            "计量：faster-whisper large-v3，CUDA/float16，中文、beam=5、不提供台本提示词、不启用 VAD；逐句原始转写见同目录 *-whisper.md / JSON。CER 为逐句编辑距离之和除参考字符总数，NFKC、忽略标点空白与英文大小写；日期等价列只把年月前的汉字数字统一为阿拉伯数字，不掩盖其他错字。语速分母分别为解码音频总时长、扣除首尾静音后的总时长，避免 MP3 编码填充影响；分子保留原文数字/英文的字母字符数。",
+            "计量：faster-whisper large-v3，CUDA/float16，中文、beam=5、不提供台本提示词、不启用 VAD；逐句原始转写见同目录 *-whisper.md / JSON。CER 为逐句编辑距离之和除参考字符总数，NFKC、忽略标点空白与英文大小写；读法等价列把年月前的汉字数字统一为阿拉伯数字，并把 NASA／纳萨／娜萨／娜莎统一为 NASA；其余差异保留。语速分母分别为解码音频总时长、扣除首尾静音后的总时长，避免 MP3 编码填充影响；分子保留原文数字/英文的字母字符数。",
             "",
             "音频：ffmpeg ebur128 peak=true 测真峰值，>=0 dBTP 标爆音风险；silencedetect 的阈值 -40 dBFS、最短 10ms，严格超过 0.4 秒的句中静音标记。首尾静音少于 20ms、ASR 首尾字不符分别标记截断风险与识别不符；这些检查不能证明发音完整。完整测量在 voice-scores.json，原始音频诊断在 *-ffmpeg.txt。",
             "",
-            f"读法建议：{date_note}{coverage}“印着”的“着”等多音字，即使 ASR 转成同一个字，也不能独立证明读音正确；“箭/件/肩”等近音识别差异也应结合这一限制理解。#69 建议先保留原文合成，再复核 NASA、1974；若识别错误，再由设计负责人决定年份改成“一九七四年”或 NASA 改成字母逐读等方案，字幕保持原文。",
+            f"读法建议：{date_note}{coverage}“印着”的“着”等多音字，即使 ASR 转成同一个字，也不能独立证明读音正确；“箭/件/肩”等近音识别差异也应结合这一限制理解。合成改写以设计负责人批准的 overrides 为准；字幕与 CER 参考始终保留原文。",
             "",
         ]
     )

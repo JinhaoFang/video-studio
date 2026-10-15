@@ -123,9 +123,11 @@ Constraints: no text, no markings, no letters, no other objects, no tape, no cas
 
 ## 正式配音（#69）
 
-- 选定组合：#63 验收选定的官方预设 Alice（`Xb7hH8MSUJpSbSDYk0k2`）× `eleven_v4`；生成服务与授权沿用上节 ElevenLabs 条款及免费计划限制，仅本机非商业学习，不公开发布。
-- 原文：`script.md` 的 L001～L022，与 `docs/research/nasa-ep04/transcript.md` 完全一致。每次请求带前后各一句；L001 无前句，L022 后句为完整转写的 L023。未改写年份、NASA、字幕或台本，seed=0，默认语音设置，MP3 44.1kHz/128kbps。
-- 本 worktree 正式素材：`public/episodes/nasa-punk-opening/voiceover/L001.mp3`～`L022.mp3` 及同名请求 JSON。L001～L003 从主工作区 `voice-audition/Alice/eleven_v4/` 复制，原文、前后句、模型、seed 和 SHA256 均核对一致，新增计费为零；请求 JSON 额外记录原始来源。其余 19 句新合成，L006 按原文重配两次后保留第二次结果；未修剪、拉伸或重新编码交付 MP3。
-- 本工单实际计费 **178 credits**，包含 L006 两次重配；与 #63 的 127 合计 305，账户复查使用 305 / 10000、剩余 **9695**。账本、请求计费响应头记录、复用哈希、账户脱敏快照均在 `/root/project/video-studio.worktrees/69/out/qa/spec-60/69/`；凭据只在内存读取主工作区 `.env`，不复制、不写入记录。
-- 时长：ffprobe 解码帧样本数排除 MP3 填充；`data/voiceover-durations.json` 保存正式清单，`data/timeline.json` 标明 ElevenLabs 正式来源。Whisper 只用外部缓存的 large-v3 和既有 Python 环境，不下载模型、不进 git。
-- 验收渲染与 22 张逐句对比图位于同一验收目录，含参考画面，仅作本机验收；正式配音质量遗留及时间变化见 [README.md](README.md)「正式配音（#69）」。媒体与请求记录须由设计负责人合并前另行复制回主工作区。
+- 生成服务与授权沿用上节 ElevenLabs 条款及免费计划限制，仅本机非商业学习，不公开发布。选定官方预设 Alice（`Xb7hH8MSUJpSbSDYk0k2`）× `eleven_v4`。
+- 原文：`script.md` 的 L001～L022，与参考转写一致。返工仅按 #69 验收评论改合成文本：NASA 读「纳萨」、L006「后来，」不带前后文，配置见 `data/voiceover-overrides.json`。其余请求带改写后的相邻文本，L022 后句为 L023；台本与字幕不变。
+- 2026-10-15 全部 22 句重新合成，统一 `voice_settings.speed=1.2`、seed=0，MP3 44.1kHz/128kbps，其余使用服务默认设置。L003 重配两次、L014 一次；L006 去上下文首次即正确。交付文件未经后期变速、修剪或重新编码。
+- 本 worktree 正式素材：`public/episodes/nasa-punk-opening/voiceover/L001.mp3`～`L022.mp3` 及同名 JSON。旧版保存在 `/root/project/video-studio.worktrees/69/out/qa/spec-60/69/previous-64215d2/voiceover/`，正式目录已先清空再生成；语速探针与重配中间文件不属于正式配音。
+- 累计 **429 / 1500 credits**（上一轮 178、本轮 251）；加上 #63 的 127，账户累计 556 / 10000，保守剩余 **9444**。本轮包括22句199、L002 speed=0.7诊断11、L003两次重配24、L014重配17。凭据只在内存读取主工作区 `.env`，不复制、不写入记录。
+- 语速范围出处：[官方 OpenAPI](https://api.elevenlabs.io/openapi.json) 的 `TtsVoiceSettings.speed`（0.7～1.2）。本轮同句 speed=0.7 / 1.2 均为2.64秒，历史仅回显 stability，实测未达到37～40秒；完整请求、公开schema摘录与诊断在验收目录。保留指定模型，未另行决定替代语音方案。
+- ffprobe 解码样本总时长 **48.40秒**；`data/voiceover-durations.json` 为正式清单，`data/timeline.json` 标明合成设置，总长1731帧／57.70秒。Whisper只使用仓库外现有模型和Python环境；对照原文、日期及批准的NASA读法等价后 CER **0.50%（1/202）**。
+- 完整渲染、22张逐句对比图和原始测量位于 `/root/project/video-studio.worktrees/69/out/qa/spec-60/69/`，含参考画面，仅本机验收。质量与时长遗留见 [README.md](README.md)「正式配音（#69）」。合并前须由设计负责人另行复制正式媒体及请求记录回主工作区。

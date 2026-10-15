@@ -50,9 +50,9 @@ pnpm 的版本由 `package.json` 的 `packageManager` 固定，本机装的 pnpm
 
 时间机制：台本每句一个编号（`L001`、`L002`……）和句后停顿，以每句音频的实测时长累计生成时间轴，记录每句的起止帧和配音来源。镜头代码按"某句开始后多少帧"定时，不写死帧号。改稿或重配音后重新生成时间轴，动画会跟着走。当前格式、生成工具和 `pnpm qa sentence` 按句取点用法见 [NASA 朋克开场说明](../../episodes/nasa-punk-opening/README.md)。
 
-逐句配音：`pnpm tts --help`。输入参考转写的起止时间/旁白表格，按行编号为 `L001` 起；指定音色、模型、编号范围、素材目录和累计 credits 账本，每句生成 MP3 与含上下文、哈希和实际计费的 JSON。试听各组和重配共用账本，默认累计预算 300 credits；`--from` 与 `--to` 相同即可单独合成一句，覆盖已有文件需 `--replace`。凭据只从环境变量 `elevenlabs_apikey` 或 `--env` 指定的文件读取，允许等号两侧空格，不复制凭据。正式台本格式改变时需适配输入，不能直接把其他表格当参考转写使用。
+逐句配音：`pnpm tts --help`。输入参考转写的起止时间/旁白表格，按行编号为 `L001` 起；指定音色、模型、编号范围、素材目录和累计 credits 账本，每句生成 MP3 与含上下文、哈希和实际计费的 JSON。试听各组和重配共用账本，默认累计预算 300 credits；`--from` 与 `--to` 相同即可单独合成一句，覆盖已有文件需 `--replace`。`--speed` 可在官方 API 的 0.7～1.2 范围内设置合成语速；`--overrides` 读取按句子编号索引的 JSON：`text` 改写合成文本，`previous_text` / `next_text` 设为 `null` 可省略上下文，相邻请求也使用改写后的文本，台本和字幕保持原文。凭据只从环境变量 `elevenlabs_apikey` 或 `--env` 指定的文件读取，允许等号两侧空格，不复制凭据。正式台本格式改变时需适配输入，不能直接把其他表格当参考转写使用。
 
-配音打分：`pnpm qa voice --help`。读取试听素材目录、原台本和账本，校验音频与上下文后，以本机缓存 faster-whisper large-v3（CUDA/float16，无台本提示词）逐句转写，输出 CER、语速、真峰值、截断风险和句中超过 0.4 秒的静音，以及原始识别和 ffmpeg 证据；`--python` 可指定已安装 faster-whisper 的解释器。截断标记是风险筛查，仍需结合原始转写核对。来源与授权记入该期 `sources.md`，音频放在不进 git 的 `public/episodes/<期>/`。
+配音打分：`pnpm qa voice --help`。读取试听素材目录、原台本和账本，校验音频与上下文后，以本机缓存 faster-whisper large-v3（CUDA/float16，无台本提示词）逐句转写，输出 CER、语速、真峰值、截断风险和句中超过 0.4 秒的静音，以及原始识别和 ffmpeg 证据；`--python` 可指定已安装 faster-whisper 的解释器。有合成改写时传入与 tts 相同的 `--overrides`；仍按原台本评分，年月数字和 NASA／纳萨／娜萨／娜莎按读法等价计分，另列严格 CER。截断标记是风险筛查，仍需结合原始转写核对。来源与授权记入该期 `sources.md`，音频放在不进 git 的 `public/episodes/<期>/`。
 
 渲染后用 `pnpm qa motion <视频>` 自检长时间静止和短暂闪现，报告默认写入 `out/qa/motion/<视频名>/motion.json`。`--keyframes <目录>` 可输出每个区间的三张关键帧，检出时退出 1，由设计负责人结合画面复核。范围、阈值与默认值见 `pnpm qa motion --help`。
 
