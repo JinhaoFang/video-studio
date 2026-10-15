@@ -120,3 +120,12 @@ Constraints: no text, no markings, no letters, no other objects, no tape, no cas
 - 授权用途：使用账户免费额度生成，仅限本机非商业学习，不公开发布；[ElevenLabs 条款](https://elevenlabs.io/terms-of-use)与[免费计划使用说明](https://help.elevenlabs.io/hc/en-us/articles/13313564601361-Can-I-publish-the-content-I-generate-on-the-platform)适用。该记录不宣称取得了原文或参考视频的公开传播授权。
 - 本机素材目录：`public/episodes/nasa-punk-opening/voice-audition/<Daniel|Alice>/<模型>/L001.mp3`～`L003.mp3`；相邻 JSON 保存请求原文、上下文、SHA256、request/history ID 与实际 credits。媒体和这些本机记录均不进 git。
 - 复现命令与计费证据：本 worktree 的 `out/qa/spec-60/63/`；官方 API 核对见 `docs/research/nasa-ep04/elevenlabs-api.md`。
+
+## 正式配音（#69）
+
+- 选定组合：#63 验收选定的官方预设 Alice（`Xb7hH8MSUJpSbSDYk0k2`）× `eleven_v4`；生成服务与授权沿用上节 ElevenLabs 条款及免费计划限制，仅本机非商业学习，不公开发布。
+- 原文：`script.md` 的 L001～L022，与 `docs/research/nasa-ep04/transcript.md` 完全一致。每次请求带前后各一句；L001 无前句，L022 后句为完整转写的 L023。未改写年份、NASA、字幕或台本，seed=0，默认语音设置，MP3 44.1kHz/128kbps。
+- 本 worktree 正式素材：`public/episodes/nasa-punk-opening/voiceover/L001.mp3`～`L022.mp3` 及同名请求 JSON。L001～L003 从主工作区 `voice-audition/Alice/eleven_v4/` 复制，原文、前后句、模型、seed 和 SHA256 均核对一致，新增计费为零；请求 JSON 额外记录原始来源。其余 19 句新合成，L006 按原文重配两次后保留第二次结果；未修剪、拉伸或重新编码交付 MP3。
+- 本工单实际计费 **178 credits**，包含 L006 两次重配；与 #63 的 127 合计 305，账户复查使用 305 / 10000、剩余 **9695**。账本、请求计费响应头记录、复用哈希、账户脱敏快照均在 `/root/project/video-studio.worktrees/69/out/qa/spec-60/69/`；凭据只在内存读取主工作区 `.env`，不复制、不写入记录。
+- 时长：ffprobe 解码帧样本数排除 MP3 填充；`data/voiceover-durations.json` 保存正式清单，`data/timeline.json` 标明 ElevenLabs 正式来源。Whisper 只用外部缓存的 large-v3 和既有 Python 环境，不下载模型、不进 git。
+- 验收渲染与 22 张逐句对比图位于同一验收目录，含参考画面，仅作本机验收；正式配音质量遗留及时间变化见 [README.md](README.md)「正式配音（#69）」。媒体与请求记录须由设计负责人合并前另行复制回主工作区。

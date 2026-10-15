@@ -1,6 +1,27 @@
 # NASA 朋克开场
 
-父 spec #60，骨架工单 #61。范围为参考视频开场前 22 句，1920×1080、30fps；合成 `NasaPunkOpening` 是近黑底上按句接入的镜头、颗粒暗角、字幕条和逐句配音；已接入的镜头见下文「小样定稿」。正式镜头按 [storyboard.md](storyboard.md) 接入，台本见 [script.md](script.md)，来源见 [sources.md](sources.md)。
+父 spec #60，骨架工单 #61，正式配音切换 #69。范围为参考视频开场前 22 句，1920×1080、30fps；合成 `NasaPunkOpening` 是近黑底上按句接入的镜头、颗粒暗角、字幕条和逐句配音；已接入的镜头见下文「小样定稿」。正式镜头按 [storyboard.md](storyboard.md) 接入，台本见 [script.md](script.md)，来源见 [sources.md](sources.md)。
+
+## 正式配音（#69）
+
+当前默认 `data/timeline.json` 使用 **Alice × eleven_v4**，媒体位于 `public/episodes/nasa-punk-opening/voiceover/L001.mp3`～`L022.mp3`。L001～L003 核对原文、前后句及 SHA256 后复用 #63；其余 19 句按原文逐句合成，前后各一句上下文、seed=0、默认语音设置。L022 的后句仍取完整参考转写中的 L023，未为片段结尾删掉上下文。音频与旁边的请求 JSON 均不进 git。
+
+`data/voiceover-durations.json` 用 ffprobe 解码帧的 `nb_samples / sample_rate` 实测，排除 MP3 编码填充；22 句音频共 **49.12 秒**，保留台本全部停顿及 0.37 秒开头留白后，合成总长 **1752 帧 / 58.40 秒**。比参考时间轴的 1391 帧长 **361 帧 / 12.03 秒**；单句增幅最大为 L014 +1.56 秒、L005 +1.50 秒、L010 +1.46 秒。合成与镜头代码没有修改，换音仅更新时间轴数据。
+
+```console
+pnpm tts --voice Alice --model eleven_v4 --from L004 --to L022 --transcript docs/research/nasa-ep04/transcript.md --out public/episodes/nasa-punk-opening/voiceover --ledger out/qa/spec-60/69/credits.json --env /root/project/video-studio/.env --budget 1500
+pnpm qa voice public/episodes/nasa-punk-opening/voiceover --transcript docs/research/nasa-ep04/transcript.md --ledger out/qa/spec-60/69/credits.json --out out/qa/spec-60/69/voice-final --from L001 --to L022 --python /home/jh1/.cache/whisper-models/venv/bin/python --whisper-model /home/jh1/.cache/whisper-models/faster-whisper-large-v3
+node tools/build-timeline.ts episodes/nasa-punk-opening/script.md --durations episodes/nasa-punk-opening/data/voiceover-durations.json --source elevenlabs --label "正式配音：Alice × eleven_v4；L001–L003 复用 #63，其余由 #69 生成；逐句原文与前后句，seed=0" --leading-silence 0.37 --out episodes/nasa-punk-opening/data/timeline.json
+```
+
+以上合成命令用于尚无 L004～L022 的素材目录；现有文件会拒绝覆盖。单句重配需使 `--from` 与 `--to` 相同并显式加 `--replace`，共用原账本。本机 Whisper 的 CUDA 搜索路径、全部命令参数数组和日志在验收目录保存，不复制 `.env` 或模型。
+
+本工单实际新增 **178 / 1500 credits**（首轮 174，L006 两次重配各 2），账户复查剩余 **9695**。独立逐句 CER 为 **2.97%（6/202）**：L006「后来」三次均识别为「NASA」（200%），补做真实前后句拼接与单句加静音转写仍异常；L007「它→他」11.11%、L020「像→向」10%，其余 19 句 0%。无爆音、无句中 >0.4 秒静音；边缘留白风险保留，不把风险标记当作已确认截断。NASA、1974、两个 A 在对应句中均完整识别。
+
+TODO(design)：复核 L006 是否接受或另定合成文本；本工单已按每句最多两次重配停止，未改台本、字幕和读法。L007、L020 的同音识别差异及「着」「削」「长」等多音字不能仅凭 ASR 确认实际读音。当前只验证了素字幕骨架，#64 小样及其余正式镜头接入后，需复查缩短的 L006（−0.12 秒）和 L009（−0.28 秒）是否影响动画完成。
+
+验收目录：`/root/project/video-studio.worktrees/69/out/qa/spec-60/69/`。`opening.mp4` 为切换后整段；`comparison.html` 汇集 22 张逐句对比图；`voice-final/` 为原始 Whisper、检测测量和汇总；`sentence-review.md` 汇集逐句 CER 与新旧时长；`timeline-comparison.json`、`sentence-points.json` 与 `audio-probe.json` 保存数值证据。对比图两边分别在各自同一句的中点取帧，不使用全片固定偏移。
+
 
 ## 生成与渲染
 
@@ -15,7 +36,7 @@ pnpm exec remotion render NasaPunkOpening out/qa/spec-60/61/opening.mp4
 
 Remotion 默认 AAC 输出的尾包可能让 MP4 容器时长比视频流多不足一帧。本次验收保留原始导出为 `opening-remotion.mp4`，用 ffmpeg 复制视频码流，仅把音轨重编码裁到 `durationInFrames / fps`（本次 2225600 个 48kHz 样本），得到 `opening.mp4`；完整参数数组保存在验收目录的 `normalize-command.json`。裁整后的容器时长 46.367 秒，视频流 46.366667 秒。
 
-`data/timeline.json` 的起止帧直接来自转写时间；`data/reference-timeline.json` 是同格式的参考时间轴，音频路径为 `null`。`audio-durations.json` 保存实测清单，`timeline-check.json` 比较「音频时长 + 句后停顿」复算和直接时间轴的全部边界。当前最大偏差 **0 帧**。
+以下为 #61 临时配音流程，重新运行会覆盖当前正式时间轴。`data/reference-timeline.json` 保留同格式的参考时间轴，音频路径为 `null`。`audio-durations.json` 保存临时音轨实测清单，`timeline-check.json` 仅记录 #61 的临时音轨复算与参考边界对照，最大偏差 **0 帧**，不表示正式配音与参考等长。
 
 换音后，每句音频用 ffprobe 实测时长，清单格式为 `[{"id":"L001","durationSeconds":1.22,"src":"episodes/nasa-punk-opening/voiceover/L001.wav"}, …]`，路径相对于 `public/`。使用下列命令重新生成，合成和所有按句锚点会跟着移动。正式合成音频由 #63 及后续工单提供。
 
@@ -30,7 +51,7 @@ node tools/build-timeline.ts episodes/nasa-punk-opening/script.md --durations <�
 
 每句字段：`id`、`text`、`startFrame`（含）、`endFrame`（不含）、`pauseAfterSeconds`、`audioDurationSeconds`、`audioSrc`（相对 public 的路径，参考轴为 null）。秒数先转整数纳秒累计，只在绝对边界四舍五入到帧；不得把每段音频和每个停顿分别取整再相加。
 
-开头留白 0.37 秒；末句结束 45.01 秒，句后停顿为下一句在 46.35 秒开始前的 1.34 秒。总长取整为 **1391 帧，即 46.366667 秒**，相对原始秒数差半帧，末句的取整终点为 1350 帧、尾部为 41 帧。
+开头留白 0.37 秒；参考轴末句结束 45.01 秒，句后停顿为下一句在 46.35 秒开始前的 1.34 秒。参考轴总长取整为 **1391 帧，即 46.366667 秒**，相对原始秒数差半帧，末句的取整终点为 1350 帧、尾部为 41 帧。正式轴时长见上文，停顿不变。
 
 镜头只使用句子锚点。`sentenceFrame` 接受整数帧偏移（可以为负），`sentence` 可读取末帧；不把参考视频秒数写进镜头：
 
