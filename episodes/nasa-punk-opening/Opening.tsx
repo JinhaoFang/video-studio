@@ -1,60 +1,48 @@
 /**
- * Minimal sentence-synchronized opening: near-black, centered text and local
- * reference clips. One data-driven template owns all lines. Colors follow
- * research/style.md; font size scales the existing qa-images.ts 24px at 540p.
- * TODO(design): Confirm the provisional 48px size; the formal subtitle treatment
- * and all scene visuals belong to later tickets. No animation is added here.
+ * NASA-punk opening composition: near-black base, sentence-anchored shots, the
+ * grain/vignette finish, the subtitle bar and per-line voice audio from the
+ * timeline. Shots so far: S02 sample (L003-L005); other shots join here as their
+ * tickets land, each in a Sequence built from sentence anchors.
  */
-import { Fragment } from "react";
 import { Audio } from "@remotion/media";
-import { loadFont } from "@remotion/google-fonts/NotoSansSC";
 import { AbsoluteFill, Sequence, staticFile, useVideoConfig } from "remotion";
 import type { Timeline } from "../../tools/timeline-types";
+import { color } from "../../src/styles/nasa-punk/tokens";
+import { FilmFinish } from "./FilmFinish";
+import { ShotWormHud, shotWormHudSpan } from "./ShotWormHud";
+import { Subtitles } from "./Subtitles";
 import { sentenceFrame } from "./sentence-timing";
-
-const { fontFamily } = loadFont("normal", {
-  weights: ["400"],
-  subsets: ["chinese-simplified", "latin"],
-});
 
 export type OpeningProps = { timeline: Timeline };
 
 export const Opening = ({ timeline }: OpeningProps) => {
-  const { fps, height } = useVideoConfig();
+  const { fps } = useVideoConfig();
   if (fps !== timeline.fps) throw new Error("合成帧率必须与时间轴一致。");
+  const wormHud = shotWormHudSpan(timeline);
   return (
-    <AbsoluteFill
-      style={{
-        backgroundColor: "#0D0B09",
-        color: "white",
-        fontFamily,
-        fontSize: (24 * height) / 540,
-        justifyContent: "center",
-        alignItems: "center",
-      }}
-    >
-      {timeline.lines.map((line) => (
-        <Fragment key={line.id}>
-          <Sequence
-            name={line.id}
+    <AbsoluteFill style={{ backgroundColor: color.nearBlack }}>
+      <Sequence
+        name="S02 worm HUD"
+        from={wormHud.start}
+        durationInFrames={wormHud.durationInFrames}
+        premountFor={fps}
+      >
+        <ShotWormHud timeline={timeline} />
+      </Sequence>
+      <FilmFinish />
+      <Subtitles timeline={timeline} />
+      {timeline.lines.map((line) =>
+        line.audioSrc ? (
+          <Audio
+            key={line.id}
+            name={`${line.id} 配音`}
+            src={staticFile(line.audioSrc)}
             from={sentenceFrame(timeline, line.id)}
             durationInFrames={line.endFrame - line.startFrame}
             premountFor={fps}
-            style={{ justifyContent: "center", alignItems: "center" }}
-          >
-            <div style={{ whiteSpace: "pre" }}>{line.text}</div>
-          </Sequence>
-          {line.audioSrc ? (
-            <Audio
-              name={`${line.id} 临时配音`}
-              src={staticFile(line.audioSrc)}
-              from={sentenceFrame(timeline, line.id)}
-              durationInFrames={line.endFrame - line.startFrame}
-              premountFor={fps}
-            />
-          ) : null}
-        </Fragment>
-      ))}
+          />
+        ) : null,
+      )}
     </AbsoluteFill>
   );
 };

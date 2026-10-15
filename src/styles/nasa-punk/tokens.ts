@@ -1,0 +1,75 @@
+/**
+ * NASA-punk style tokens (design-owned). Scene code reads colors, type, subtitle,
+ * HUD, finish and motion values from here instead of hard-coding them.
+ * Start point: docs/research/nasa-ep04/style.md; frame-sampled colors win over the
+ * description's values. Sizes are px at 1920x1080; durations are frames at 30fps.
+ * Motion values were set by the 0:04-0:09 sample shot (#64); see the episode README.
+ */
+export const color = {
+  paper: "#EDE4D9",
+  panel: "#E4DFD4",
+  paperShade: "#DED8CE",
+  stripe: ["#4C5869", "#7B7F4C", "#CBA865", "#B15137"],
+  accentRed: "#CA4025",
+  wormRed: "#BE3B2B",
+  desk: "#251E17",
+  deskCorner: "#1B1611",
+  nearBlack: "#0D0B09",
+  warningYellow: "#E29C12",
+  ink: "#1E1A16",
+  inkSoft: "#4A443E",
+  inkMuted: "#8C8680",
+  subtitleBg: "rgba(58, 53, 49, 0.86)",
+  subtitleText: "#F2EDE8",
+  hudOnDark: "rgba(237, 228, 217, 0.78)",
+  hudOnDarkLine: "rgba(237, 228, 217, 0.45)",
+  hudOnDarkFaint: "rgba(237, 228, 217, 0.55)",
+} as const;
+
+export const typeScale = {
+  subtitle: { size: 36, weight: 500, letterSpacing: "0.02em" },
+  hudBar: { size: 15, weight: 400, letterSpacing: "0.18em" },
+  credit: { size: 13, weight: 400, letterSpacing: "0.12em" },
+  hudLabel: { weight: 700, mutedWeight: 400, letterSpacing: "0.22em" },
+  hudTimeline: { weight: 700, letterSpacing: "0.3em" },
+} as const;
+
+export const subtitle = {
+  bottom: 48,
+  height: 58,
+  paddingX: 28,
+  stripeWidth: 5.5,
+  expandFrames: 6,
+  collapseFrames: 6,
+  holdAfterFrames: 9,
+  joinGapFrames: 5,
+  stripKeepGapFrames: 30,
+  stripFadeFrames: 6,
+} as const;
+
+export const hud = {
+  edgeInset: 63,
+  barLineY: 62,
+  barTextGap: 10,
+  creditBottom: 38,
+  bracketArmRatio: 0.11,
+  bracketStroke: 3.2,
+} as const;
+
+export const finish = {
+  grainOpacity: 0.11,
+  grainFrequency: 0.85,
+  grainSeedCycle: 24,
+  vignetteInner: 0.5,
+  vignetteStrength: 0.55,
+  photoFilter: "sepia(0.2) saturate(0.82) contrast(1.04) brightness(0.96)",
+} as const;
+
+export const motion = {
+  dissolveFrames: 8,
+  chapterDissolveFrames: 8,
+  lineDrawFrames: 8,
+  barDrawFrames: 12,
+  typeCharsPerFrame: 1.5,
+  pushPerSecond: 0.01,
+} as const;
