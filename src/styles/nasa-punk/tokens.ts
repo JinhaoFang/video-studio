@@ -4,6 +4,8 @@
  * Start point: docs/research/nasa-ep04/style.md; frame-sampled colors win over the
  * description's values. Sizes are px at 1920x1080; durations are frames at 30fps.
  * Motion values were set by the 0:04-0:09 sample shot (#64); see the episode README.
+ * pushInFrames is the L004 push-in to the close framing, measured at reference
+ * 7.6-8.1s (#74); reframes within one photo are camera moves, not dissolves.
  * `stripe` is listed left to right as in the subtitle strip (blue, gold, orange, red);
  * horizontal bands use it reversed, red on top. Sampled at reference 0:06 and 0:12.
  * firstChapter adds #66 reference-frame measurements without changing the sample.
@@ -80,12 +82,11 @@ export const motion = {
   barDrawFrames: 12,
   typeCharsPerFrame: 1.5,
   pushPerSecond: 0.01,
+  pushInFrames: 14,
 } as const;
 
 export const firstChapter = {
   tightFraming: { anchor: { x: 1025, y: 540 }, scale: 1.43 },
-  middleFraming: { anchor: { x: 980, y: 540 }, scale: 0.94 },
-  reframeOffsetFrames: 18,
   stampOffsetFrames: 30,
   peelOffsetFrames: 24,
   stripeOffsetFrames: 24,

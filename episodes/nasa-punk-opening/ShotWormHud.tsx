@@ -1,26 +1,31 @@
 /**
- * S02 sample shot, L003-L005 (reference 0:04-0:09), the design reference for all
- * other shots. Night rollout photo (NHQ202005210001) dissolves in with a slow push;
- * the top HUD bar draws, corner brackets frame the worm and the label types; at
- * L004 a short dissolve cuts to a closer framing of the same photo where the
- * 1975 — 1992 — 2020 timeline types. Every time is a sentence anchor plus frames.
- * Place inside a Sequence spanning shotWormHudSpan(timeline).
- * Exports the photo geometry and close framing so S03/S04 can continue the shot.
- * #66 extends only the close hold through the L007-L008 pause and adds the
- * chapter-end dissolve over the last chapterDissolveFrames before L008;
- * the camera's linear push and every L003-L005 event keep the sample timing.
+ * First-chapter photo shot, L001-L007 (reference 0:00-0:13): one camera over the
+ * night rollout photo (NHQ202005210001) from the leading silence to L008. It opens
+ * on a tight worm close-up, pulls out through L002 to the wide framing, and at
+ * L004 pushes in to the close framing; every reframe is one eased camera move on
+ * the same image (#74), never a dissolve between crops. The top HUD bar and credit
+ * draw on the wide framing and fade out during the push; corner brackets and the
+ * label are pinned to the photo and scale with it, the 1975 — 1992 — 2020 timeline
+ * types as the push lands. `overlays` render in photo pixels on the same camera
+ * (S03/S04 paper and stripes). The whole shot dissolves out before L008.
+ * Every time is a sentence anchor plus frames; place inside a Sequence spanning
+ * rolloutSpan(timeline).
  */
-import {
-  AbsoluteFill,
-  Sequence,
-  interpolate,
-  useCurrentFrame,
-  useVideoConfig,
-} from "remotion";
+import type { ReactNode } from "react";
+import { AbsoluteFill, interpolate, useCurrentFrame } from "remotion";
 import type { Timeline } from "../../tools/timeline-types";
-import { hud, motion } from "../../src/styles/nasa-punk/tokens";
+import {
+  firstChapter,
+  hud,
+  motion,
+} from "../../src/styles/nasa-punk/tokens";
 import { HudBox, HudTopBar, PhotoCredit } from "./Hud";
-import { PhotoCamera, pushScaleTo } from "./PhotoCamera";
+import {
+  type CameraPath,
+  PhotoCamera,
+  easeInOutCubic,
+  easeInOutSine,
+} from "./PhotoCamera";
 import { sentenceFrame } from "./sentence-timing";
 
 export const rolloutPhoto = {
@@ -45,118 +50,109 @@ export const wormHudStyle = {
 export const wideFraming = { anchor: { x: 931, y: 540 }, scale: 0.58 };
 export const closeFraming = { anchor: { x: 950, y: 459 }, scale: 1.19 };
 
-const fade = (frame: number, start: number, length: number) =>
-  interpolate(frame, [start, start + length], [0, 1], {
-    extrapolateLeft: "clamp",
-    extrapolateRight: "clamp",
-  });
+const clamp = { extrapolateLeft: "clamp", extrapolateRight: "clamp" } as const;
 
-export const shotWormHudSpan = (timeline: Timeline) => {
-  const start = sentenceFrame(timeline, "L003", -4);
+export const rolloutSpan = (timeline: Timeline) => {
+  const start =
+    sentenceFrame(timeline, "L001") -
+    Math.round(timeline.leadingSilenceSeconds * timeline.fps);
   const end = sentenceFrame(timeline, "L008");
   return { start, durationInFrames: end - start };
 };
 
-export const ShotWormHud = ({ timeline }: { timeline: Timeline }) => {
-  const local = useCurrentFrame();
-  const { fps } = useVideoConfig();
-  const { start, durationInFrames } = shotWormHudSpan(timeline);
+export const rolloutCamera = (timeline: Timeline): CameraPath => {
+  const { start } = rolloutSpan(timeline);
+  const pullStart = sentenceFrame(timeline, "L002") - start;
+  const pullEnd = sentenceFrame(timeline, "L003", -4) - start;
+  return {
+    from: firstChapter.tightFraming,
+    moves: [
+      {
+        start: pullStart,
+        durationInFrames: pullEnd - pullStart,
+        to: wideFraming,
+        easing: easeInOutSine,
+      },
+      {
+        start: sentenceFrame(timeline, "L004") - start,
+        durationInFrames: motion.pushInFrames,
+        to: closeFraming,
+        easing: easeInOutCubic,
+      },
+    ],
+  };
+};
+
+export const ShotWormHud = ({
+  timeline,
+  overlays,
+}: {
+  timeline: Timeline;
+  overlays?: ReactNode;
+}) => {
+  const frame = useCurrentFrame();
+  const { start, durationInFrames } = rolloutSpan(timeline);
   const at = (id: string, offset: number) =>
     sentenceFrame(timeline, id, offset) - start;
-  const closeCut = at("L004", 9);
-  const wideLength = closeCut + motion.dissolveFrames;
-  const closeLength = durationInFrames - closeCut;
+  const pushStart = at("L004", 0);
+  const screenHud = interpolate(
+    frame,
+    [pushStart, pushStart + motion.pushInFrames],
+    [1, 0],
+    clamp,
+  );
   const style = wormHudStyle;
   return (
     <AbsoluteFill
       style={{
-        opacity:
-          fade(local, 0, motion.dissolveFrames) *
-          (1 -
-            fade(
-              local,
-              durationInFrames - motion.chapterDissolveFrames,
-              motion.chapterDissolveFrames,
-            )),
+        opacity: interpolate(
+          frame,
+          [durationInFrames - motion.chapterDissolveFrames, durationInFrames],
+          [1, 0],
+          clamp,
+        ),
       }}
     >
-      <Sequence durationInFrames={wideLength} name="S02 wide">
-        <PhotoCamera
-          src={rolloutPhoto.src}
-          width={rolloutPhoto.width}
-          height={rolloutPhoto.height}
-          move={{
-            focus: rolloutPhoto.worm,
-            anchor: wideFraming.anchor,
-            scaleFrom: wideFraming.scale,
-            scaleTo: pushScaleTo(
-              wideFraming.scale,
-              wideLength,
-              fps,
-              motion.pushPerSecond,
-            ),
-            durationInFrames: wideLength,
-          }}
-        >
-          <HudBox
-            box={rolloutPhoto.hudBox}
-            stroke={hud.bracketStroke / wideFraming.scale}
-            bracketStart={at("L003", 24)}
-            label={style.label}
-            labelMuted={style.labelMuted}
-            labelStart={at("L003", 36)}
-            labelSize={style.labelSize}
-            labelGap={style.labelGap}
-          />
-        </PhotoCamera>
-        <HudTopBar
-          items={[
-            "FALCON 9 · CREW DRAGON · DEMO-2",
-            "LC-39A · KENNEDY SPACE CENTER",
-            "ROLLOUT · 2020.05.21",
-          ]}
-          start={at("L003", 6)}
-        />
-        <PhotoCredit text={rolloutPhoto.credit} start={at("L003", 6)} />
-      </Sequence>
-      <Sequence from={closeCut} durationInFrames={closeLength} name="S02 close">
-        <AbsoluteFill
-          style={{ opacity: fade(local, closeCut, motion.dissolveFrames) }}
-        >
-          <PhotoCamera
-            src={rolloutPhoto.src}
-            width={rolloutPhoto.width}
-            height={rolloutPhoto.height}
-            move={{
-              focus: rolloutPhoto.worm,
-              anchor: closeFraming.anchor,
-              scaleFrom: closeFraming.scale,
-              scaleTo: pushScaleTo(
-                closeFraming.scale,
-                closeLength,
-                fps,
-                motion.pushPerSecond,
-              ),
-              durationInFrames: closeLength,
-            }}
-          >
+      <PhotoCamera
+        src={rolloutPhoto.src}
+        width={rolloutPhoto.width}
+        height={rolloutPhoto.height}
+        focus={rolloutPhoto.worm}
+        path={rolloutCamera(timeline)}
+      >
+        {(camera) => (
+          <>
             <HudBox
               box={rolloutPhoto.hudBox}
-              stroke={hud.bracketStroke / closeFraming.scale}
-              bracketStart={-motion.lineDrawFrames}
+              stroke={hud.bracketStroke / camera.scale}
+              bracketStart={at("L003", 24)}
               label={style.label}
               labelMuted={style.labelMuted}
-              labelStart={-100}
+              labelStart={at("L003", 36)}
               labelSize={style.labelSize}
               labelGap={style.labelGap}
               timeline={style.timeline}
-              timelineStart={0}
+              timelineStart={at("L004", 9)}
               timelineSize={style.timelineSize}
               timelineGap={style.timelineGap}
             />
-          </PhotoCamera>
+            {overlays}
+          </>
+        )}
+      </PhotoCamera>
+      {screenHud > 0 ? (
+        <AbsoluteFill style={{ opacity: screenHud }}>
+          <HudTopBar
+            items={[
+              "FALCON 9 · CREW DRAGON · DEMO-2",
+              "LC-39A · KENNEDY SPACE CENTER",
+              "ROLLOUT · 2020.05.21",
+            ]}
+            start={at("L003", 6)}
+          />
+          <PhotoCredit text={rolloutPhoto.credit} start={at("L003", 6)} />
         </AbsoluteFill>
-      </Sequence>
+      ) : null}
     </AbsoluteFill>
   );
 };
