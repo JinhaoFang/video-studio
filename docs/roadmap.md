@@ -20,14 +20,12 @@
 ## 进度
 
 - [x] 建仓、复盘与流程改进：见 Release `workflow-v1`（https://github.com/JinhaoFang/video-studio/releases/tag/workflow-v1），汇报和复盘记录的链接都在那里
-- [x] 第一阶段：复刻开场 0:00～0:46：spec #60，PR #73，成片 47.9 秒，汇报 `docs/reports/spec-60-nasa-punk-opening.html`；待用户审片
+- [x] 第一阶段：复刻开场 0:00～0:46：spec #60，PR #73，成片 47.9 秒，汇报 `docs/reports/spec-60-nasa-punk-opening.html`；用户审片后返工 #74，已合并
 - [ ] 第二阶段：新选题完整一期
 
 ## 下一步
 
-**审片返工**：用户看本机成片 `out/renders/nasa-punk-opening.mp4`，对照汇报里的差异清单提意见。每条意见写成返工工单挂到 #60 下，在 `spec/60-nasa-punk-opening` 上做，全部关闭后按 `run-spec` 第 7 步更新 PR、汇报和本文。
-
-**第二阶段**：用户合并 #73 后，在新会话里跑 `/grill-with-docs` 定新选题，再 `/to-spec`、`/to-tickets`，开新会话执行。开工前先过下面的待定项。
+**第二阶段**：在新会话里跑 `/grill-with-docs` 定新选题，再 `/to-spec`、`/to-tickets`，开新会话执行。开工前先过下面的待定项。
 
 **检验流程的结论（spec #60）**：在新会话里执行，设计负责人主会话缓存读取约 3,530 万 token，是 Codex 输入（约 6,700 万）的 0.53 倍，比 #17 的 1.3 倍、#37 的 4.5 倍都低。按设计负责人只做令牌和小样的分工，11 张工程工单派给 Codex，用户只审成片。
 
@@ -38,6 +36,8 @@
 - 并行镜头都要改总合成、令牌和本期 README，每次合并都冲突。第二期再用时，考虑让每个镜头自己登记，或者把令牌按镜头拆文件。
 - 实测的量没有上限：#67 为逐帧证明跑了约 3.3 小时，其他镜头工单约 1 小时。工单的验收产物要写明到什么程度就够。
 - 派发前先核对外部 API 的能力：#69 按不支持的 speed 参数合成，多花约 250 credits。仓库里的 `docs/research/nasa-ep04/elevenlabs-api.md` 早有记录。
+- 审片返工 #74：开场同一张照片的推拉被做成溶解换页，根源是小样把镜头内换景别定成溶解、参考拆解用 2 秒联系表、验收只看静态对比图。规则已写进 `docs/roles/design.md`「镜头运动」和运镜验收要求。用户确认先只写这两条，待定：镜头剧本加“运镜”一列；`docs/research/table-videosop.md` 补桌子 SOP 的 `experience/镜头推进与转场.md`、`视觉叙事与连续MG.md` 要点。
+- 贴条纹理用 SVG `<image>` 时，Remotion 不等加载，并行渲染会缺帧（#74）。可以在 lint 里禁止镜头代码用 SVG `<image>`，交工程负责人做。
 - 可以提进 `src/kit/` 的：字幕条、按句定时、颗粒暗角、红色手绘批注。第二期再用时提。
 
 ## 第二阶段：新选题

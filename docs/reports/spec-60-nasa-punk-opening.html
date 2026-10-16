@@ -147,7 +147,7 @@ tr.pick td { background: var(--accent-soft); }
 <header class="hero">
   <div class="eyebrow">Spec #60 · 设计负责人 → 用户 · 2026-10-16</div>
   <h1>复刻 NASA 朋克开场 0:00～0:46</h1>
-  <p class="lede">目标是用本仓库的管线，把参考视频开头 46 秒按句子逐镜复刻出来：台本、正式配音、风格令牌、11 个镜头、配乐音效和混音。设计负责人只亲手做了风格令牌和 5 秒小样，其余 11 张工单全部派给 Codex，最后交出一条 47.9 秒的成片和一份按句的差异清单，只等你审片。</p>
+  <p class="lede">目标是用本仓库的管线，把参考视频开头 46 秒按句子逐镜复刻出来：台本、正式配音、风格令牌、11 个镜头、配乐音效和混音。设计负责人只亲手做了风格令牌和 5 秒小样，其余 11 张工单全部派给 Codex，最后交出一条 47.9 秒的成片和一份按句的差异清单。你审片提出两处问题（开场推拉做成了换页、VOID 贴条闪一帧），返工 #74 修好后你确认通过。</p>
   <div class="meta">
     <a href="https://github.com/JinhaoFang/video-studio/issues/60">spec #60</a>
     <span id="pr-meta">PR 待开</span>
@@ -162,12 +162,12 @@ tr.pick td { background: var(--accent-soft); }
     <h2>做了什么，对你意味着什么</h2>
   </div>
   <ul class="deliver">
-    <li><b>成片</b><span class="muted"><code>out/renders/nasa-punk-opening.mp4</code>：1920×1080、30fps、47.9 秒、30.4 MB，带混音。联系表和 22 张按句对比图在同一目录。媒体不进 git。</span></li>
+    <li><b>成片</b><span class="muted"><code>out/renders/nasa-punk-opening.mp4</code>：1920×1080、30fps、47.9 秒、32.1 MB，带混音（#74 返工后重渲）。验收产物在 <code>out/qa/spec-60/</code>。媒体不进 git。</span></li>
     <li><b>按句定时，换配音不用改镜头</b><span class="muted">所有镜头事件都写成"第几句 + 几帧"。这次从临时配音换到正式配音，镜头代码一行没改。</span></li>
     <li><b>NASA 朋克风格令牌和小样</b><span class="muted"><code>src/styles/nasa-punk/</code>：颜色、字体、字幕条、HUD、颗粒暗角、动效时长。下一期用这套风格时，从这里取值。</span></li>
     <li><b>新增验收工具</b><span class="muted"><code>pnpm qa sentence</code> 按句取时间点，<code>pnpm qa voice</code> 给配音打分（错字率、语速、峰值），<code>pnpm qa motion</code> 查长时间静止和一闪而过。<code>tools/mix-opening.ts</code> 程序生成铺底和翻牌钟嘀嗒，并混到 -16 LUFS。</span></li>
   </ul>
-  <h3>和参考不一样的地方（你审片时对照）</h3>
+  <h3>和参考不一样的地方（你已审过，以下接受不修）</h3>
   <ol class="diff-list" id="diffs"></ol>
 </section>
 
@@ -269,6 +269,8 @@ tr.pick td { background: var(--accent-soft); }
     <li><div class="head">#69 返工 3 次</div><p>第一轮暴露了两个读音问题：NASA 被逐个字母读，"后来"被读成 NASA。第二轮是上面那个调速失误。第三轮按统一倍率加速后，L008 吞字，单独放慢到 1.15 倍。每一轮都靠 <code>pnpm qa voice</code> 逐句复核错字率定位问题。</p></li>
     <li><div class="head">land 删 worktree 时连带删掉媒体</div><p>#61 的临时配音只放在 worktree 里，合并后跟着 worktree 被删掉，只好重新生成。之后每次 land 前先把新媒体拷回主工作区，派发说明里也写明了这一点。</p></li>
     <li><div class="head">并行镜头合到一起后，章节之间出现 1.2 秒黑场</div><p>#66（第一章）和 #67（第二章）分开做，各自验收都对。合到一起才看到：第一章在 L007 说完就溶到黑，翻牌钟要到 L008 之后才出来。设计负责人对照参考，把它改成直接溶到翻牌钟。并行切开的镜头，衔接只能在合并后验收。</p></li>
+    <li class="mine"><div class="head">审片返工 #74：开场推拉做成了换页<span class="chip">设计负责人失误</span></div><p>你指出 0～8 秒第 2、3 秒的拉远和第 7 秒的推近像 PPT 换页。根源在我做的小样：把“镜头内切景别用 8 帧溶解”定成了通用参数，参考拆解又按 2 秒一帧的联系表写成了“几张照片切换”，验收只看句子时间点的静态对比图。改成同一张照片上一台相机连续推拉，HUD 和贴条挂在相机下；规则写进 <code>docs/roles/design.md</code>「镜头运动」，运镜镜头必须验 0.1 秒密集帧。</p></li>
+    <li><div class="head">审片返工 #74：VOID 贴条闪掉一帧</div><p>贴条纹理用 SVG <code>&lt;image&gt;</code> 加载，Remotion 截帧不等它；并行渲染时某个标签页从第 272 帧起画，纹理没加载就截了，单独渲染又是好的。改用 <code>&lt;Img&gt;</code> 裁切，8 路并发重渲逐帧确认。这类问题只有密集帧看得出来。</p></li>
     <li><div class="head">#67 跑了约 3.3 小时</div><p>其他镜头工单 1 小时左右，#67 做了大量逐帧实测：无损逐列比对翻牌数字、换目标年份的变体渲染、整体后移时间轴的重渲染。结果可靠，但实测的量超过了工单的要求。</p></li>
     <li><div class="head">合并冲突集中在同几个文件</div><p>并行镜头都要改 <code>Opening.tsx</code>、<code>tokens.ts</code> 和本期 README，合并时每次都在这三个文件上冲突。都是"两边都保留"的简单冲突，按派发说明里"只加自己那一项"的约定解决。</p></li>
   </ul>
@@ -280,7 +282,7 @@ tr.pick td { background: var(--accent-soft); }
     <h2>接下来</h2>
   </div>
   <ul class="deliver">
-    <li><b>你：审片</b><span class="muted">看 <code>out/renders/nasa-punk-opening.mp4</code>，对照上面的差异清单，说哪些要改。每条意见会写成一张返工工单，在同一个分支上做。</span></li>
+    <li><b>审片</b><span class="muted">已完成：两处意见经 #74 返工，你确认通过并允许合并。</span></li>
     <li><b>你：审核合并 PR</b><span class="muted" id="next-pr">PR 待开。</span></li>
     <li><b>取回 Blender 研究</b><span class="muted">开工前暂存的改动在 <code>git stash</code> 里（"blender-cli-wsl research (pre spec-60)"），用 <code>git stash pop</code> 取回。</span></li>
     <li><b>可以提进 kit 的</b><span class="muted">字幕条、按句定时、颗粒暗角、红色手绘批注，第二期再用时提到 <code>src/kit/</code>。</span></li>
@@ -310,7 +312,8 @@ tr.pick td { background: var(--accent-soft); }
     ["gh-68", "第二章下半", "feature", "24:46", 65.8, 7152427, 6967296, 47604],
     ["review-60-2", "第二批审查", "review", "24:47", 17.72, 3743883, 3470720, 15793],
     ["gh-71", "成片与验收", "feature", "25:57", 19.8, 4101404, 3930496, 34784],
-    ["review-60-final", "收尾审查", "review", "26:20", 9.73, 4007762, 3678464, 15796]
+    ["review-60-final", "收尾审查", "review", "26:20", 9.73, 4007762, 3678464, 15796],
+    ["review-60-rework-74", "返工审查", "review", "33:18", 37.07, 1685595, 1494784, 13101]
   ];
   var design = { replies: 220, input: 464, cacheWrite: 413954, cacheRead: 35316986, output: 130091 };
   var prev = { name: "spec #54", codexMinutes: 20.36, codexInput: 2981782, codexOutput: 19885 };
@@ -320,15 +323,18 @@ tr.pick td { background: var(--accent-soft); }
     ["21:20", "并行派发 #66、#67；#69 第一轮验收需返工"], ["21:31", "第一批审查：1 项 P2 → 工单 #72，2 项 P3 自己改"],
     ["22:30", "#66 合并；彩条改实测四色；#69 第四轮通过"], ["23:18", "#70 配乐混音合并"],
     ["24:46", "#67 合并；修第一章到翻牌钟的黑场；派发 #68 和第二批审查"],
-    ["25:57", "#68 合并，派发 #71"], ["26:19", "#71 成片验收通过；派发收尾审查"], ["26:30", "收尾审查 0 项，开 PR"]
+    ["25:57", "#68 合并，派发 #71"], ["26:19", "#71 成片验收通过；派发收尾审查"], ["26:30", "收尾审查 0 项，开 PR"],
+    ["33:10", "用户审片：开场推拉像换页 → 返工 #74"], ["33:35", "用户审片：VOID 贴条闪帧 → #74 追加修复"],
+    ["33:56", "#74 验收通过；返工范围审查 1 项 P3；重渲全片"]
   ];
   var reviews = [
     ["review-60-1", "#61～#65", "3", "P2 闪现漏报 → #72 返工；2 项 P3 文档由设计负责人修"],
     ["review-60-2", "#66、#67、#69、#70、#72", "0", "—"],
-    ["review-60-final", "整个分支（对 main）", "0", "—"]
+    ["review-60-final", "整个分支（对 main）", "0", "—"],
+    ["review-60-rework-74", "返工 #74（开 PR 之后）", "1", "P3 README 残留描述，设计负责人当场改"]
   ];
   var diffs = [
-    "L001～L002：照片调色、颗粒和中景切换时机略有差异",
+    "L001～L002：照片调色、颗粒略有差异",
     "L003：参考字幕句中有全角空格（箭体上　印着…），这里没有",
     "L004～L005、L006～L007、L009～L010、L012～L013：参考把连读的两句合成一条字幕，这里一句一条",
     "L004：年份标签跨到 L005 才打完（参考同样跨句）",
@@ -422,10 +428,10 @@ tr.pick td { background: var(--accent-soft); }
 
   var rr = document.getElementById("review-rows");
   reviews.forEach(function (r) { var tr = document.createElement("tr"); cell(tr, r[0]); cell(tr, r[1]); cell(tr, r[2], "num"); cell(tr, r[3]); rr.appendChild(tr); });
-  document.getElementById("review-summary").textContent = "按批审查 " + reviews.length + " 次，共发现 " + findings + " 项：1 项 P2 写成返工工单 #72 修好，2 项 P3 文档问题由设计负责人当场修。审查只读，不改代码。";
+  document.getElementById("review-summary").textContent = "按批审查 " + reviews.length + " 次，共发现 " + findings + " 项：1 项 P2 写成返工工单 #72 修好，2 项 P3 文档问题由设计负责人当场修；返工 #74 审查的 1 项 P3 也当场修。审查只读，不改代码。";
 
   if (pr) {
-    document.getElementById("pr-meta").innerHTML = '<a href="' + pr.url + '">PR #' + pr.number + '</a> <span class="status ' + (pr.ci === "通过" ? "done" : "pending") + '">CI ' + pr.ci + "，待你审片和合并</span>";
+    document.getElementById("pr-meta").innerHTML = '<a href="' + pr.url + '">PR #' + pr.number + '</a> <span class="status ' + (pr.ci === "通过" ? "done" : "pending") + '">CI ' + pr.ci + "，用户已审片，允许合并</span>";
     document.getElementById("next-pr").textContent = "PR #" + pr.number + "，CI " + pr.ci + "。";
   }
 
