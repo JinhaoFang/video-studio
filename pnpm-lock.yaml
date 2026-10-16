@@ -11,6 +11,12 @@ importers:
       '@remotion/cli':
         specifier: 4.0.534
         version: 4.0.534(postcss@8.5.29)(react-dom@19.2.3(react@19.2.3))(react@19.2.3)(supports-color@8.0.0)
+      '@remotion/google-fonts':
+        specifier: 4.0.534
+        version: 4.0.534(react-dom@19.2.3(react@19.2.3))(react@19.2.3)
+      '@remotion/media':
+        specifier: 4.0.534
+        version: 4.0.534(react-dom@19.2.3(react@19.2.3))(react@19.2.3)
       react:
         specifier: 19.2.3
         version: 19.2.3
@@ -492,6 +498,9 @@ packages:
     resolution: {integrity: sha512-ERw/E9+gLk7+PYMaGP1yIPJ1I8jV9ZSJCXni3Ms271AZ/AjC0Bppx9ozhztItJtZF+91WmEdstB3wZAIEA8iBg==}
     peerDependencies:
       eslint: '>=9'
+
+  '@remotion/google-fonts@4.0.534':
+    resolution: {integrity: sha512-bgXF3QJ5Mkjmnaz1ROm1UfeP0jCJpkv4y6EPoisIVtexqVgwk9Zmp1dMemE81ok38zDLHTqM0/+5msBKWuhg3A==}
 
   '@remotion/licensing@4.0.534':
     resolution: {integrity: sha512-pNP8OfY+vbDbjNBLYGoxGyE0SsReRy85G/QTF17mQC86dt2+pzsYlOkG2mq6R4tkt27xaQv8O5EFiJfYYfVkkw==}
@@ -2370,6 +2379,13 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
       - typescript
+
+  '@remotion/google-fonts@4.0.534(react-dom@19.2.3(react@19.2.3))(react@19.2.3)':
+    dependencies:
+      remotion: 4.0.534(react-dom@19.2.3(react@19.2.3))(react@19.2.3)
+    transitivePeerDependencies:
+      - react
+      - react-dom
 
   '@remotion/licensing@4.0.534': {}
 

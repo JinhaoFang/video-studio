@@ -12,6 +12,8 @@
   },
   "dependencies": {
     "@remotion/cli": "4.0.534",
+    "@remotion/google-fonts": "4.0.534",
+    "@remotion/media": "4.0.534",
     "react": "19.2.3",
     "react-dom": "19.2.3",
     "remotion": "4.0.534"
@@ -32,6 +34,7 @@
     "verify": "node tools/verify.ts",
     "check:commits": "node tools/check-commit-range.ts",
     "prepare": "node tools/install-hooks.ts",
-    "qa": "node tools/qa.ts"
+    "qa": "node tools/qa.ts",
+    "tts": "node tools/tts.ts"
   }
 }

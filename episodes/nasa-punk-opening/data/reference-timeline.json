@@ -1,0 +1,210 @@
+{
+  "version": 1,
+  "fps": 30,
+  "source": {
+    "kind": "temporary",
+    "description": "docs/research/nasa-ep04/transcript.md"
+  },
+  "leadingSilenceSeconds": 0.37,
+  "durationInFrames": 1391,
+  "lines": [
+    {
+      "id": "L001",
+      "text": "2020年5月",
+      "pauseAfterSeconds": 0.08,
+      "startFrame": 11,
+      "endFrame": 48,
+      "audioDurationSeconds": 1.2200000000000002,
+      "audioSrc": null
+    },
+    {
+      "id": "L002",
+      "text": "一枚火箭在夜里推出厂房",
+      "pauseAfterSeconds": 0.24,
+      "startFrame": 50,
+      "endFrame": 107,
+      "audioDurationSeconds": 1.9,
+      "audioSrc": null
+    },
+    {
+      "id": "L003",
+      "text": "箭体上印着一个红色的标志",
+      "pauseAfterSeconds": 0.84,
+      "startFrame": 114,
+      "endFrame": 194,
+      "audioDurationSeconds": 2.64,
+      "audioSrc": null
+    },
+    {
+      "id": "L004",
+      "text": "这个标志",
+      "pauseAfterSeconds": 0.1,
+      "startFrame": 219,
+      "endFrame": 239,
+      "audioDurationSeconds": 0.6600000000000001,
+      "audioSrc": null
+    },
+    {
+      "id": "L005",
+      "text": "NASA自己废过一次",
+      "pauseAfterSeconds": 0.7,
+      "startFrame": 242,
+      "endFrame": 297,
+      "audioDurationSeconds": 1.8599999999999994,
+      "audioSrc": null
+    },
+    {
+      "id": "L006",
+      "text": "后来",
+      "pauseAfterSeconds": 0.02,
+      "startFrame": 318,
+      "endFrame": 336,
+      "audioDurationSeconds": 0.6000000000000014,
+      "audioSrc": null
+    },
+    {
+      "id": "L007",
+      "text": "它还长成了一种风格",
+      "pauseAfterSeconds": 1.3,
+      "startFrame": 337,
+      "endFrame": 377,
+      "audioDurationSeconds": 1.3200000000000003,
+      "audioSrc": null
+    },
+    {
+      "id": "L008",
+      "text": "时间往回倒",
+      "pauseAfterSeconds": 0.2,
+      "startFrame": 416,
+      "endFrame": 441,
+      "audioDurationSeconds": 0.8399999999999999,
+      "audioSrc": null
+    },
+    {
+      "id": "L009",
+      "text": "1974年",
+      "pauseAfterSeconds": 0.08,
+      "startFrame": 447,
+      "endFrame": 489,
+      "audioDurationSeconds": 1.3999999999999986,
+      "audioSrc": null
+    },
+    {
+      "id": "L010",
+      "text": "NASA用的还是一个蓝色的圆形徽章",
+      "pauseAfterSeconds": 0.14,
+      "startFrame": 491,
+      "endFrame": 563,
+      "audioDurationSeconds": 2.379999999999999,
+      "audioSrc": null
+    },
+    {
+      "id": "L011",
+      "text": "大家管它叫肉丸",
+      "pauseAfterSeconds": 0.7,
+      "startFrame": 567,
+      "endFrame": 602,
+      "audioDurationSeconds": 1.1600000000000001,
+      "audioSrc": null
+    },
+    {
+      "id": "L012",
+      "text": "那一年",
+      "pauseAfterSeconds": 0.1,
+      "startFrame": 623,
+      "endFrame": 641,
+      "audioDurationSeconds": 0.6000000000000014,
+      "audioSrc": null
+    },
+    {
+      "id": "L013",
+      "text": "美国政府推动各个机构换新形象",
+      "pauseAfterSeconds": 0.28,
+      "startFrame": 644,
+      "endFrame": 718,
+      "audioDurationSeconds": 2.4800000000000004,
+      "audioSrc": null
+    },
+    {
+      "id": "L014",
+      "text": "纽约两个年轻设计师接下了NASA这一单",
+      "pauseAfterSeconds": 0.56,
+      "startFrame": 726,
+      "endFrame": 807,
+      "audioDurationSeconds": 2.6799999999999997,
+      "audioSrc": null
+    },
+    {
+      "id": "L015",
+      "text": "他们把四个字母削到最简",
+      "pauseAfterSeconds": 0,
+      "startFrame": 824,
+      "endFrame": 879,
+      "audioDurationSeconds": 1.8599999999999994,
+      "audioSrc": null
+    },
+    {
+      "id": "L016",
+      "text": "笔画一样粗　连成一条",
+      "pauseAfterSeconds": 0.44,
+      "startFrame": 879,
+      "endFrame": 939,
+      "audioDurationSeconds": 1.9800000000000004,
+      "audioSrc": null
+    },
+    {
+      "id": "L017",
+      "text": "两个A干脆去掉了横杠",
+      "pauseAfterSeconds": 0.56,
+      "startFrame": 952,
+      "endFrame": 1013,
+      "audioDurationSeconds": 2.0199999999999996,
+      "audioSrc": null
+    },
+    {
+      "id": "L018",
+      "text": "手册里写着",
+      "pauseAfterSeconds": 0,
+      "startFrame": 1029,
+      "endFrame": 1061,
+      "audioDurationSeconds": 1.0399999999999991,
+      "audioSrc": null
+    },
+    {
+      "id": "L019",
+      "text": "这样　字标就有了一股向上的推力",
+      "pauseAfterSeconds": 0.54,
+      "startFrame": 1061,
+      "endFrame": 1151,
+      "audioDurationSeconds": 3,
+      "audioSrc": null
+    },
+    {
+      "id": "L020",
+      "text": "像两枚等着发射的火箭",
+      "pauseAfterSeconds": 0.7,
+      "startFrame": 1167,
+      "endFrame": 1217,
+      "audioDurationSeconds": 1.6799999999999997,
+      "audioSrc": null
+    },
+    {
+      "id": "L021",
+      "text": "笔画弯弯曲曲连成一条",
+      "pauseAfterSeconds": 0,
+      "startFrame": 1238,
+      "endFrame": 1301,
+      "audioDurationSeconds": 2.0799999999999983,
+      "audioSrc": null
+    },
+    {
+      "id": "L022",
+      "text": "后来大家叫它蠕虫",
+      "pauseAfterSeconds": 1.34,
+      "startFrame": 1301,
+      "endFrame": 1350,
+      "audioDurationSeconds": 1.6599999999999966,
+      "audioSrc": null
+    }
+  ]
+}

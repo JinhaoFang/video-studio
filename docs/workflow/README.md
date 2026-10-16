@@ -4,14 +4,14 @@
 
 ## 一项工作的生命周期
 
-| 阶段 | 谁触发 | 用什么 | 产物在哪 |
-|---|---|---|---|
-| 想清楚 | 用户 | `/grill-with-docs` | 术语进 `GLOSSARY.md`，难回头的决定进 `docs/adr/` |
-| 写 spec | 用户 | `/to-spec` | GitHub issue |
-| 拆工单 | 用户 | `/to-tickets` | spec 的 sub-issue，带阻塞关系；格式见 `docs/agents/issue-tracker.md` |
-| 执行与验收 | 用户在新会话里说"执行 spec #号"，设计负责人照做 | `run-spec`（内部用 `codex-dispatch`） | 集成分支上的提交、工单下的验收评论、`docs/reports/` 的汇报 |
-| 合并 | 用户 | PR（正文用 `/pr` 的格式），只能用 merge commit | `main` |
-| 复盘 | 用户 | `/retro` | 规则文档、检查脚本、文档指针 |
+| 阶段       | 谁触发                                          | 用什么                                         | 产物在哪                                                             |
+| ---------- | ----------------------------------------------- | ---------------------------------------------- | -------------------------------------------------------------------- |
+| 想清楚     | 用户                                            | `/grill-with-docs`                             | 术语进 `GLOSSARY.md`，难回头的决定进 `docs/adr/`                     |
+| 写 spec    | 用户                                            | `/to-spec`                                     | GitHub issue                                                         |
+| 拆工单     | 用户                                            | `/to-tickets`                                  | spec 的 sub-issue，带阻塞关系；格式见 `docs/agents/issue-tracker.md` |
+| 执行与验收 | 用户在新会话里说"执行 spec #号"，设计负责人照做 | `run-spec`（内部用 `codex-dispatch`）          | 集成分支上的提交、工单下的验收评论、`docs/reports/` 的汇报           |
+| 合并       | 用户                                            | PR（正文用 `/pr` 的格式），只能用 merge commit | `main`                                                               |
+| 复盘       | 用户                                            | `/retro`                                       | 规则文档、检查脚本、文档指针                                         |
 
 执行阶段的回路：
 
@@ -48,7 +48,17 @@ pnpm 的版本由 `package.json` 的 `packageManager` 固定，本机装的 pnpm
 
 一期对应一个 spec 和一个目录 `episodes/<期>/`。目录里放本期说明、台本、镜头剧本、`sources.md`、`data/` 下的生成数据和本期镜头代码。
 
-时间机制：台本每句一个编号（`L001`、`L002`……），配音对齐后生成时间轴，记录每句的起止帧。镜头代码按"某句开始后多少帧"定时，不写死帧号。改稿或重配音后，重跑对齐，动画会跟着走。
+时间机制：台本每句一个编号（`L001`、`L002`……）和句后停顿，以每句音频的实测时长累计生成时间轴，记录每句的起止帧和配音来源。镜头代码按"某句开始后多少帧"定时，不写死帧号。改稿或重配音后重新生成时间轴，动画会跟着走。当前格式、生成工具和 `pnpm qa sentence` 按句取点用法见 [NASA 朋克开场说明](../../episodes/nasa-punk-opening/README.md)。
+
+逐句配音：`pnpm tts --help`。输入参考转写的起止时间/旁白表格，按行编号为 `L001` 起；指定音色、模型、编号范围、素材目录和累计 credits 账本，每句生成 MP3 与含上下文、哈希和实际计费的 JSON。试听各组和重配共用账本，默认累计预算 300 credits；`--from` 与 `--to` 相同即可单独合成一句，覆盖已有文件需 `--replace`。`--speed` 在官方 API 的 0.7～1.2 范围内发送合成语速设置，是否生效取决于模型；`eleven_v4` 不支持 Speed（见 [API 研究](../research/nasa-ep04/elevenlabs-api.md)），不能以请求成功判定生效。`--overrides` 读取按句子编号索引的 JSON：`text` 改写合成文本，`previous_text` / `next_text` 设为 `null` 可省略上下文，相邻请求也使用改写后的文本，台本和字幕保持原文。凭据只从环境变量 `elevenlabs_apikey` 或 `--env` 指定的文件读取，允许等号两侧空格，不复制凭据。正式台本格式改变时需适配输入，不能直接把其他表格当参考转写使用。
+
+后期等比变速：`node tools/stretch-voice.ts --help`。输入原始逐句 MP3 目录、`--tempo` 默认倍率和不存在的 `--out` 目录，用 ffmpeg `rubberband` 变速、`pitch=1` 保持音高；可重复传入 `--tempo-override L008=1.15` 覆盖不同句子的倍率，重复或不存在的编号、无效倍率会报错。输出 44.1kHz/128kbps MP3 及兼容配音打分的 JSON，逐句记录实际倍率、原始哈希和处理参数，不覆盖原始文件。调整倍率仍从原始目录生成到新目录，再跑同一套 `pnpm qa voice` 评分；时间轴读取变速后的实测时长，来源说明写明默认倍率和例外。NASA 开场的复现命令见该期说明。
+
+配音打分：`pnpm qa voice --help`。读取试听素材目录、原台本和账本，校验音频与上下文后，以本机缓存 faster-whisper large-v3（CUDA/float16，无台本提示词）逐句转写，输出 CER、语速、真峰值、截断风险和句中超过 0.4 秒的静音，以及原始识别和 ffmpeg 证据；`--python` 可指定已安装 faster-whisper 的解释器。有合成改写时传入与 tts 相同的 `--overrides`；仍按原台本评分，年月数字和 NASA／纳萨／娜萨／娜莎按读法等价计分，另列严格 CER。截断标记是风险筛查，仍需结合原始转写核对。来源与授权记入该期 `sources.md`，音频放在不进 git 的 `public/episodes/<期>/`。
+
+NASA 开场的配乐、音效与混音：`node tools/mix-opening.ts --help`。传入正式时间轴、含 `motion` / `proposal.clock` 的风格令牌和 `out/` 输出目录，生成分轨与两遍归一化混音；`--video` 校验帧率和帧数后复制视频码流、替换音轨。改时间轴后重跑，最终 AAC 成片仍须用 `pnpm qa loudness` 带目标 -16 LUFS、容差 1 LU、真峰值上限 -1 dBTP 验收；LRA 只报告。#67 并行令牌的只读路径、合并后的切换和完整命令见 [本期说明](../../episodes/nasa-punk-opening/README.md#配乐嘀嗒与混音70)。
+
+渲染后用 `pnpm qa motion <视频>` 自检长时间静止和短暂闪现，报告默认写入 `out/qa/motion/<视频名>/motion.json`。`--keyframes <目录>` 可输出每个区间的三张关键帧，检出时退出 1，由设计负责人结合画面复核。范围、阈值与默认值见 `pnpm qa motion --help`。
 
 ## 复利
 
