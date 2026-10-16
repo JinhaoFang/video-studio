@@ -2,6 +2,8 @@
  * Keep Remotion's recommended rules on browser code, and use its shared JS/TS
  * rules on Node tools, repository-owned skill scripts, and root configuration files.
  * tools/code-files.ts determines the verification input independently of ESLint.
+ * Browser code may not use SVG <image>: Remotion does not wait for it to load, so
+ * parallel renders drop frames (#74); use Remotion <Img> inside a sized container.
  */
 import { config } from "@remotion/eslint-config-flat";
 
@@ -44,6 +46,16 @@ export default [
     })),
   {
     files: browser,
+    rules: {
+      "no-restricted-syntax": [
+        "error",
+        {
+          selector: "JSXOpeningElement[name.name='image']",
+          message:
+            "SVG <image> 不等加载，并行渲染会缺帧；改用 remotion 的 <Img> 放进定尺寸容器裁切。",
+        },
+      ],
+    },
     languageOptions: {
       globals: {
         window: "readonly",
