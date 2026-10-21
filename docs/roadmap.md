@@ -5,7 +5,7 @@
 1. **用 AI 做视频**：先复刻《设计风格小课 04：NASA 朋克》的开场 0:00～0:46，再用新选题做完整一期。
 2. **复利**：以仓库的形式沉淀规则、工具、组件和风格，下一期视频从这里起步。
 
-开发流程固定在 `workflow-v1`。做视频时发现的流程问题，记进本文的「待定」或 `docs/research/run-spec-migration.md`，攒够了再出下一个版本。
+开发流程固定在 `workflow-v2`。做视频时发现的流程问题，记进本文的「待定」或 `docs/research/run-spec-migration.md`，攒够了再出下一个版本。
 
 ## 已定
 
@@ -15,12 +15,13 @@
 | 时间机制 | 动画按台本句子编号定时，不写死帧号 | `docs/workflow/README.md`「一期视频」 |
 | 包管理、媒体 | pnpm；媒体和渲染结果不进 git | `AGENTS.md` |
 | 远程仓库 | `github.com/JinhaoFang/video-studio`（私有） | — |
-| 开发流程 | Claude Code 当设计负责人，Codex 当工程负责人，用 `run-spec` 执行 spec；DispatchDock 只用两个技能，不用监控软件；版本 `workflow-v1` | `AGENTS.md`、`docs/roles/`、`docs/workflow/README.md`、`docs/agents/` |
+| 开发流程 | Claude Code 当设计负责人，Codex 当工程负责人，用 `run-spec` 执行 spec；DispatchDock 只用两个技能，不用监控软件；版本 `workflow-v2` | `AGENTS.md`、`docs/roles/`、`docs/workflow/README.md`、`docs/agents/` |
 
 ## 进度
 
 - [x] 建仓、复盘与流程改进：见 Release `workflow-v1`（https://github.com/JinhaoFang/video-studio/releases/tag/workflow-v1），汇报和复盘记录的链接都在那里
 - [x] 第一阶段：复刻开场 0:00～0:46：spec #60，PR #73，成片 47.9 秒，汇报 `docs/reports/spec-60-nasa-punk-opening.html`；用户审片后返工 #74，已合并
+- [x] `workflow-v2`：`setup-run-spec` 读懂目标仓库后按模板生成角色文档，设计负责人定为顶层设计与统筹，增加独占资源；起因是迁移 PathJX-01，记录见 `docs/research/run-spec-migration.md`「第二次迁移：PathJX-01」
 - [ ] 第二阶段：新选题完整一期
 
 ## 下一步
@@ -48,4 +49,5 @@
 
 ## 待定
 
+- **本仓库的角色文档要不要按 v2 的模板改写**：`setup-run-spec` 的模板把设计负责人定为顶层设计与统筹，本仓库的 `docs/roles/design.md` 仍按镜头动画、风格亲手做来写，`dual-role-workflow` 也还装着。第二阶段收尾复盘时，对照模板和第一阶段的用量再定。
 - **方法层要不要拆成单独的仓库**：两个技能和工作流文档，拆法见 `docs/workflow/README.md`「以后拆分」。等第三个仓库也要用，或者做视频期间技能改得频繁时再定。

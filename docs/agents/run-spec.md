@@ -25,6 +25,7 @@
 - **按批审查**：审查不走 `dispatch`，用 `dispatchScript` 指向的派发脚本直接派发，`--sandbox` 填 `codexSandbox`。
 - **汇报目录**：`docs/reports/`。HTML 汇报的范例是 `docs/reports/spec-17-run-spec.html`；spec #1 的是改版前的 Markdown 汇报。
 - **实测用时**：一张工程工单派发后 5～10 分钟结束，一次按批审查约 4 分钟。告诉用户粗略用时就按这个估。
+- **独占资源**：无。
 - **常见的共享登记处**：`pnpm qa` 的子命令登记表、工单脚本的子命令登记表。并行的工单都要往里加一项时，派发的补充说明写"只加自己那一项"。
 
 ## 装到别的仓库
@@ -32,11 +33,11 @@
 `run-spec` 和初始化技能 `setup-run-spec` 的来源是本仓库，两个都在 `.claude/skills/` 下进 git。别的仓库从版本 tag 安装：在根目录运行安装命令，再由用户输入 `/setup-run-spec`：它查看仓库、讲清步骤，写执行配置和工单约定，建标签，设合并方式，最后自检和冒烟测试。
 
 ```bash
-npx skills add JinhaoFang/video-studio#workflow-v1 --skill run-spec --skill setup-run-spec -a claude-code -y
+npx skills add JinhaoFang/video-studio#workflow-v2 --skill run-spec --skill setup-run-spec -a claude-code -y
 ```
 
 - 装进去的两个技能只在 `.claude/skills/`，不进 git，Codex 看不到。
-- `#` 后面是版本，也就是本仓库的 tag，当前是 `workflow-v1`。安装工具用 `git clone --branch` 取这个版本，所以别的仓库固定在这个版本上，不会跟着本仓库的 `main` 变。
+- `#` 后面是版本，也就是本仓库的 tag，当前是 `workflow-v2`。安装工具用 `git clone --branch` 取这个版本，所以别的仓库固定在这个版本上，不会跟着本仓库的 `main` 变。
 - 升级就是把命令里的版本换成新 tag 再运行。`npx skills update` 和按锁文件恢复的 `npx skills experimental_install` 都会把它们装进 `.agents/skills/`，Codex 就能看到了（2026-10-12 实测）。在那些仓库里用 `update` 更新别的技能时点名技能，更新完运行 `node .claude/skills/run-spec/scripts/tickets.ts doctor`。
 - 本仓库改了这两个技能，攒成一个版本后打新 tag（`workflow-v2`……），同时把本节、`setup-run-spec` 第 5 步和它的配置模板里命令的版本号改掉；各仓库换成新版本号再运行安装命令才拿到。重装会改那边 `skills-lock.json` 里两项的哈希，要提交：design-system 重装后没提交，主工作区一直不干净，`land` 会拒绝合并。
 - 早期手工迁移、`run-spec` 进过 git 的仓库，`/setup-run-spec` 会把它换成安装版本。那个 PR 合并后更新本地 `main`，先 `git fetch origin main:main` 再切过去；先切到还停在旧提交的本地 `main` 再拉取，git 会把 `run-spec` 从磁盘上删掉（design-system 实际碰到过），删了就重新运行安装命令。
