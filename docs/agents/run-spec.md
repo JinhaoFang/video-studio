@@ -7,22 +7,25 @@
 
 ## 脚本读取的配置
 
-`run-spec.json` 的每一项都必填。缺文件或缺项时，脚本以 2 退出，并说明缺了什么。命令一律写成参数数组。
+`run-spec.json` 的前六项必填，缺文件或缺项时脚本以 2 退出，并说明缺了什么。`codexConcurrency` 和 `prCheckCommand` 可选，不写就取默认值，格式错误同样以 2 退出；`doctor` 报告它们的实际取值和来源（配置、环境变量或默认）。命令一律写成参数数组。
 
 `symlinkDirectories` 在读取配置时统一规范化：去掉末尾斜杠、`./` 和重复斜杠，转成相对仓库根目录的形式，再按首次出现的顺序去重。派发、合并和自检共用这个结果。这里只做路径的词法规范化，不解析软链接的真实目标；目录不能使用绝对路径或 `..`，也不能在规范化后为空（指向仓库根目录）。无效项以 2 退出，报错写明数组下标（从 0 开始）和原值。
 
 | 配置项 | 本仓库的值 | 含义 |
 |---|---|---|
 | `verificationCommand` | `["pnpm", "verify"]` | 验证命令。`land` 在 worktree 里合并前运行它；派发指令也让 Codex 用它验证。 |
-| `installCommand` | `["pnpm", "install", "--frozen-lockfile"]` | 安装命令。`dispatch` 新建 worktree 后运行，失败以 2 退出，重跑时补完安装；`land` 每次 rebase 之后、验证之前再运行一次，前面合并的工单加了依赖也不会让验证失败，失败按需返工处理。成功都只打印一行，失败回放完整输出。 |
+| `installCommand` | `["pnpm", "install", "--frozen-lockfile"]` | 安装命令。`dispatch` 新建 worktree 后运行，失败以 2 退出，重跑时补完安装；`land` 每次 rebase 之后、验证之前再运行一次，前面合并的工单加了依赖也不会让验证失败，失败按需返工处理。成功都只打印一行，失败回放完整输出。每次安装后记下 worktree 里已有的被忽略文件（安装产物快照），`land` 删除 worktree 前，快照外的被忽略文件移到保留目录。 |
 | `symlinkDirectories` | `["references", ".agents"]` | 不进 git、但 Codex 要读的目录。`dispatch` 把它们从主工作区软链接进 worktree，派发指令要求只读使用。本仓库是参考资料和第三方技能（Matt 的技能、Remotion 技能）。 |
-| `acceptanceRoot` | `"out/qa"` | 验收产物根目录。每张工单写到下面的 `spec-<S>/<T>/`；`land` 把它复制回主工作区，`cleanup` 整个删掉 `spec-<S>/`。 |
+| `acceptanceRoot` | `"out/qa"` | 验收产物根目录。每张工单写到下面的 `spec-<S>/<T>/`；`land` 把它复制回主工作区，`cleanup` 整个删掉 `spec-<S>/`。其余被忽略的工单产物在 `<仓库目录>.worktrees/.kept/<T>/`，`cleanup` 列出后删除。 |
 | `codexSandbox` | `"danger-full-access"` | 派发时 Codex 的权限。用户要求完全权限，让 Codex 能联网、能用 `gh` 读 issue。 |
 | `dispatchScript` | `".claude/skills/codex-dispatch/codex-task.mjs"` | DispatchDock 的派发脚本，路径相对主工作区。 |
+| `codexConcurrency` | 不写（默认 `2`） | 可选。同时运行的 Codex 派发上限，`dispatch` 到上限时排队。它是 Codex 账号的属性，环境变量 `RUN_SPEC_CODEX_CONCURRENCY` 优先于配置，账号上限不同的机器各自设。 |
+| `prCheckCommand` | 不写（默认 `["gh", "pr", "checks", "{pr}", "--watch"]`） | 可选。`pr-check` 运行的 PR 检查命令，每个参数里的 `{pr}` 换成 PR 号。仓库的 CI 不能用时改成本机 CI，例如 `["make", "ci-local", "PR={pr}"]`。 |
 
 ## 执行时要知道的其他值
 
-- **按批审查**：审查不走 `dispatch`，用 `dispatchScript` 指向的派发脚本直接派发，`--sandbox` 填 `codexSandbox`。
+- **按批审查**：审查不走 `dispatch`，不会排队：先用 `tickets.ts slots` 看名额，再用 `dispatchScript` 指向的派发脚本直接派发，`--sandbox` 填 `codexSandbox`。
+- **`claude` CLI**：`watch`（小模型巡检）和 `review-spec`（派发前的独立审查）调用 `claude -p`，`doctor` 检查它可用。它们用的是 Claude 的额度。
 - **汇报目录**：`docs/reports/`。HTML 汇报的范例是 `docs/reports/spec-17-run-spec.html`；spec #1 的是改版前的 Markdown 汇报。
 - **实测用时**：一张工程工单派发后 5～10 分钟结束，一次按批审查约 4 分钟。告诉用户粗略用时就按这个估。
 - **独占资源**：无。
@@ -33,11 +36,21 @@
 `run-spec` 和初始化技能 `setup-run-spec` 的来源是本仓库，两个都在 `.claude/skills/` 下进 git。别的仓库从版本 tag 安装：在根目录运行安装命令，再由用户输入 `/setup-run-spec`：它查看仓库、讲清步骤，写执行配置和工单约定，建标签，设合并方式，最后自检和冒烟测试。
 
 ```bash
-npx skills add JinhaoFang/video-studio#workflow-v2 --skill run-spec --skill setup-run-spec -a claude-code -y
+npx skills add JinhaoFang/video-studio#workflow-v3 --skill run-spec --skill setup-run-spec -a claude-code -y
 ```
 
 - 装进去的两个技能只在 `.claude/skills/`，不进 git，Codex 看不到。
-- `#` 后面是版本，也就是本仓库的 tag，当前是 `workflow-v2`。安装工具用 `git clone --branch` 取这个版本，所以别的仓库固定在这个版本上，不会跟着本仓库的 `main` 变。
+- `#` 后面是版本，也就是本仓库的 tag，当前是 `workflow-v3`。安装工具用 `git clone --branch` 取这个版本，所以别的仓库固定在这个版本上，不会跟着本仓库的 `main` 变。
 - 升级就是把命令里的版本换成新 tag 再运行。`npx skills update` 和按锁文件恢复的 `npx skills experimental_install` 都会把它们装进 `.agents/skills/`，Codex 就能看到了（2026-10-12 实测）。在那些仓库里用 `update` 更新别的技能时点名技能，更新完运行 `node .claude/skills/run-spec/scripts/tickets.ts doctor`。
-- 本仓库改了这两个技能，攒成一个版本后打新 tag（`workflow-v2`……），同时把本节、`setup-run-spec` 第 5 步和它的配置模板里命令的版本号改掉；各仓库换成新版本号再运行安装命令才拿到。重装会改那边 `skills-lock.json` 里两项的哈希，要提交：design-system 重装后没提交，主工作区一直不干净，`land` 会拒绝合并。
+- 本仓库改了这两个技能，攒成一个版本后打新 tag（`workflow-v3`……），同时把本节、`setup-run-spec` 第 5 步和它的配置模板里命令的版本号改掉；各仓库换成新版本号再运行安装命令才拿到。重装会改那边 `skills-lock.json` 里两项的哈希，要提交：design-system 重装后没提交，主工作区一直不干净，`land` 会拒绝合并。
 - 早期手工迁移、`run-spec` 进过 git 的仓库，`/setup-run-spec` 会把它换成安装版本。那个 PR 合并后更新本地 `main`，先 `git fetch origin main:main` 再切过去；先切到还停在旧提交的本地 `main` 再拉取，git 会把 `run-spec` 从磁盘上删掉（design-system 实际碰到过），删了就重新运行安装命令。
+
+## 升级须知
+
+从 `workflow-v2` 升到 `workflow-v3`，配置不用改就能跑，新配置项都有默认值。升级前后注意三件事：
+
+- **进行中 spec 的修订先并进正文**：v3 派发时 Codex 只读父 spec 的正文，不读评论。升级前把进行中 spec 评论里的设计修订改写进正文，末尾加「修订记录」。
+- **v2 建的 worktree**：没有安装产物快照，`land` 合并它时，除配置的软链接外，被忽略的文件全部移到 `<仓库目录>.worktrees/.kept/<T>/`（包括依赖目录），输出里写明原因。要用的拷回主工作区，其余由 `cleanup` 删除。
+- **并发默认 2**：`dispatch` 按 2 个同时运行的 Codex 排队。账号上限不同的机器设环境变量 `RUN_SPEC_CODEX_CONCURRENCY`，或在配置里写 `codexConcurrency`。本机只看得到本机的运行记录，另一台机器占着名额时，Codex 会报并发超限，`dispatch` 退回排队。
+
+升级后运行 `node .claude/skills/run-spec/scripts/tickets.ts doctor`，确认新增的三项（`claude` CLI、`codexConcurrency`、`prCheckCommand`）的取值和来源。
