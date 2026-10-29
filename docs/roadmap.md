@@ -23,9 +23,7 @@
 
 ## 下一步
 
-**打 `workflow-v3` tag**：spec #77 的 PR 合并后，在合并提交上打 tag，推送前先问用户。推上去之前，配置说明和 `setup-run-spec` 里 `#workflow-v3` 的安装命令装不了。
-
-**PathJX 升级到 `workflow-v3`**：在 PathJX 另开 spec。输入是 `docs/research/pathjx-rule-layers.md`：现有规则逐条归到三层的表，以及用 v3 模板为它重新生成的草稿；升级前先按 `docs/agents/run-spec.md`「升级须知」把进行中 spec 的修订并进正文。
+**PathJX 按 v3 重排规则**：10-29 已在合并提交 `ac8be1a` 上打 `workflow-v3` tag，PathJX 和 design-system 重装了 v3 的两个技能。规则按三层重排还没做，在 PathJX 另开 spec。输入是 `docs/research/pathjx-rule-layers.md`：现有规则逐条归到三层的表，以及用 v3 模板为它重新生成的草稿；升级前先按 `docs/agents/run-spec.md`「升级须知」把进行中 spec 的修订并进正文。
 
 **方法层拆成单独的仓库**：v3 发布后紧接着做（用户 10-29 同意），拆法见 `docs/workflow/README.md`「以后拆分」。
 
