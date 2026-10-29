@@ -9,7 +9,7 @@
 | 想清楚     | 用户                                            | `/grill-with-docs`                             | 术语进 `GLOSSARY.md`，难回头的决定进 `docs/adr/`                     |
 | 写 spec    | 用户                                            | `/to-spec`                                     | GitHub issue                                                         |
 | 拆工单     | 用户                                            | `/to-tickets`                                  | spec 的 sub-issue，带阻塞关系；格式见 `docs/agents/issue-tracker.md` |
-| 执行与验收 | 用户在新会话里说"执行 spec #号"，设计负责人照做 | `run-spec`（内部用 `codex-dispatch`）          | 集成分支上的提交、工单下的验收评论、`docs/reports/` 的汇报           |
+| 执行与验收 | 用户在新会话里说"执行 spec #号"，设计负责人照做（会话可以放在后台，见下文） | `run-spec`（内部用 `codex-dispatch`）          | 集成分支上的提交、工单下的验收评论、`docs/reports/` 的汇报           |
 | 合并       | 用户                                            | PR（正文用 `/pr` 的格式），只能用 merge commit | `main`                                                               |
 | 复盘       | 用户                                            | `/retro`                                       | 规则文档、检查脚本、文档指针                                         |
 
@@ -17,14 +17,16 @@
 
 ```
 GitHub                        设计负责人（Claude Code）                      工程负责人（Codex）
-spec #S
+spec #S     ─ 确认基线（verify）；工程类 spec 先做独立审查（review-spec）
  └ 工单 #T  ─ 选出前置都已关闭的工单
    role:design      → 自己做、验收、提交
-   role:engineering → 按 issue 号派发 ───────────────────────────→ 读 #T 和 #S，做完、提交（Refs: #T）、写汇报
+   role:engineering → 按 issue 号派发，到并发上限排队 ───────────→ 读 #T 的正文和评论、#S 的正文，做完、提交（Refs: #T）、写汇报
                      ← 看汇报（TODO(design)、推断清单）、实测验收产物 ←──────────┘
    ready-for-human  → 告诉用户要做什么
- └ 合并、评论验收结论、关闭 #T；每批合并后派 Codex 审查；全部关闭后再审一次、开 PR "Closes #S"、写汇报、清理
+ └ 合并、评论验收结论、关闭 #T；每批合并后派 Codex 审查；全部关闭后再审一次、开 PR "Closes #S"、查 PR（pr-check）、写汇报、清理
 ```
+
+执行会话可以放在后台跑（可选）：`claude --bg -n <名字> --permission-mode <和平时相同的模式> "<开场白>"` 启动，`claude attach <名字>` 进入；在里面按 ← 回到会话列表、按 Ctrl+Z 回到 shell，会话都继续运行。`claude agents` 看有哪些会话，`claude logs <名字>` 看最近的输出，`claude stop <id>` 停下。好处是执行会话不依附终端，关掉终端不会中断派发出去的 Codex；权限模式要和平时一致，不一致时碰到确认就停下等人。命令和 `setup-run-spec` 第 6 步一致。
 
 ## 什么放在哪里
 
@@ -36,9 +38,9 @@ spec #S
 
 能机械判断的规则交给护栏，不靠自觉：
 
-- `pnpm verify`：步骤见 `tools/verify.ts`，运行时每步先打印 `[verify]` 标签。完成标准都以它通过为准。
+- `pnpm verify`：步骤见 `tools/verify.ts`，运行时每步先打印 `[verify]` 标签。完成标准都以它通过为准。设计负责人用工单脚本的 `verify` 子命令跑它：屏幕只看尾部和一行结论，完整输出进日志，退出码照实，不用 `| tail` 这种会吞掉退出码的写法。
 - commit-msg 钩子：按 `AGENTS.md` 的格式检查提交信息。
-- CI：开 PR、推送 `ticket/**` 和手动触发时跑 `pnpm verify`，并逐条检查分支上的提交信息，兜住绕过本地钩子的提交。工单分支只有派发时加了 `--allow-push` 才会被推上去。集成分支 `spec/**` 推送时不跑：`land` 合并每张工单前已在本机跑过同样的验证。同一个 PR 的新运行会取消还没跑完的旧运行。本地复现：`pnpm verify`，再 `pnpm check:commits origin/main <分支>`。
+- CI：开 PR、推送 `ticket/**` 和手动触发时跑 `pnpm verify`，并逐条检查分支上的提交信息，兜住绕过本地钩子的提交。工单分支只有派发时加了 `--allow-push` 才会被推上去。集成分支 `spec/**` 推送时不跑：`land` 合并每张工单前已在本机跑过同样的验证。同一个 PR 的新运行会取消还没跑完的旧运行。本地复现：`pnpm verify`，再 `pnpm check:commits origin/main <分支>`。收尾时工单脚本的 `pr-check` 等 PR 的检查跑完；CI 不能用时，在配置里把 PR 检查命令换成本机 CI。
 
 pnpm 的版本由 `package.json` 的 `packageManager` 固定，本机装的 pnpm 会自动切换到这个版本，本地和 CI 一致。文档命令护栏会检查内置命令白名单版本是否一致；升级时按 `tools/check-doc-commands.ts` 文件头的方法更新白名单和版本。
 
@@ -79,6 +81,6 @@ NASA 开场的配乐、音效与混音：`node tools/mix-opening.ts --help`。�
 
 ## 注意
 
-- Codex 运行期间不要关掉 Claude Code 会话。只用技能时没有托管模式，关掉会话可能连带中断 Codex。
+- 前台的 Claude Code 会话在 Codex 运行期间要一直开着：只用技能时没有托管模式，关掉会话可能连带中断 Codex。后台会话（`claude --bg`）不依附终端，关掉终端不会中断。
 - 派发、合并、验收、审查、收尾的具体步骤只写在执行技能 `run-spec` 里，本仓库特有的值见 `docs/agents/run-spec.md`。
 - `code-review` 重名：用 Skill 工具调用 `code-review`，加载的是仓库里 Matt 的版本（Standards、Spec 两条线并行的子代理审查）。用户在输入框直接打 `/code-review` 时调用哪个，没有实测。
