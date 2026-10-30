@@ -26,13 +26,14 @@ spec #S     ─ 确认基线（verify）；工程类 spec 先做独立审查（r
  └ 合并、评论验收结论、关闭 #T；每批合并后派 Codex 审查；全部关闭后再审一次、开 PR "Closes #S"、查 PR（pr-check）、写汇报、清理
 ```
 
-执行会话可以放在后台跑（可选）：`claude --bg -n <名字> --permission-mode <和平时相同的模式> "<开场白>"` 启动，`claude attach <名字>` 进入；在里面按 ← 回到会话列表、按 Ctrl+Z 回到 shell，会话都继续运行。`claude agents` 看有哪些会话，`claude logs <名字>` 看最近的输出，`claude stop <id>` 停下。好处是执行会话不依附终端，关掉终端不会中断派发出去的 Codex；权限模式要和平时一致，不一致时碰到确认就停下等人。命令和 `setup-run-spec` 第 6 步一致。
+执行会话可以放在后台跑（可选）：`claude --bg -n <名字> --permission-mode <和平时相同的模式> "<开场白>"` 启动，`claude attach <名字>` 进入；在里面按 ← 回到会话列表、按 Ctrl+Z 回到 shell，会话都继续运行。`claude agents` 看有哪些会话，`claude logs <名字>` 看最近的输出，`claude stop <id>` 停下。后台会话不依附终端，关掉终端不会中断派发出去的 Codex；前台会话在 Codex 运行期间要一直开着。权限模式要和平时一致，不一致时碰到确认就停下等人。
 
 ## 什么放在哪里
 
 - **GitHub**：spec、工单、验收评论、PR。它们是过程记录，只存这一份。
 - **仓库**：长期有效的东西，包括规则（`AGENTS.md`、角色文档、本文件）、术语与 ADR、研究、每期的台本和镜头剧本、代码和工具。工单要用仓库里的文件时写路径，不复制内容。
 - **只在本机**：`.codex-runs/`（派发记录、进度、原始日志）；媒体放 `public/episodes/`，渲染输出放 `out/`。
+- **各类文档的职责**：路线图只放目标、已定（索引）、下一步和待定；汇报一个 spec 一份；研究目录放调研和证据，结论数字只写在一处，别处链接。草稿、工作表、回执、核验记录是工单的验收产物，放 `out/qa/`，不进 `docs/`；要留的结论并进现有文档。新增文档前先找能并入的；被链接不是保留的理由。
 
 ## 护栏
 
@@ -54,15 +55,13 @@ pnpm 的版本由 `package.json` 的 `packageManager` 固定，本机装的 pnpm
 
 时间机制：台本每句一个编号（`L001`、`L002`……）和句后停顿，以每句音频的实测时长累计生成时间轴，记录每句的起止帧和配音来源。镜头代码按"某句开始后多少帧"定时，不写死帧号。改稿或重配音后重新生成时间轴，动画会跟着走。当前格式、生成工具和 `pnpm qa sentence` 按句取点用法见 [NASA 朋克开场说明](../../episodes/nasa-punk-opening/README.md)。
 
-逐句配音：`pnpm tts --help`。输入参考转写的起止时间/旁白表格，按行编号为 `L001` 起；指定音色、模型、编号范围、素材目录和累计 credits 账本，每句生成 MP3 与含上下文、哈希和实际计费的 JSON。试听各组和重配共用账本，默认累计预算 300 credits；`--from` 与 `--to` 相同即可单独合成一句，覆盖已有文件需 `--replace`。`--speed` 在官方 API 的 0.7～1.2 范围内发送合成语速设置，是否生效取决于模型；`eleven_v4` 不支持 Speed（见 [API 研究](../research/nasa-ep04/elevenlabs-api.md)），不能以请求成功判定生效。`--overrides` 读取按句子编号索引的 JSON：`text` 改写合成文本，`previous_text` / `next_text` 设为 `null` 可省略上下文，相邻请求也使用改写后的文本，台本和字幕保持原文。凭据只从环境变量 `elevenlabs_apikey` 或 `--env` 指定的文件读取，允许等号两侧空格，不复制凭据。正式台本格式改变时需适配输入，不能直接把其他表格当参考转写使用。
+配音和成片的工具先看 `--help`：逐句配音 `pnpm tts`、等比变速 `node tools/stretch-voice.ts`、配音打分 `pnpm qa voice`、配乐与混音 `node tools/mix-opening.ts`、运动自检 `pnpm qa motion`。本期的复现命令见 [NASA 朋克开场说明](../../episodes/nasa-punk-opening/README.md)。`--help` 里没有的几条：
 
-后期等比变速：`node tools/stretch-voice.ts --help`。输入原始逐句 MP3 目录、`--tempo` 默认倍率和不存在的 `--out` 目录，用 ffmpeg `rubberband` 变速、`pitch=1` 保持音高；可重复传入 `--tempo-override L008=1.15` 覆盖不同句子的倍率，重复或不存在的编号、无效倍率会报错。输出 44.1kHz/128kbps MP3 及兼容配音打分的 JSON，逐句记录实际倍率、原始哈希和处理参数，不覆盖原始文件。调整倍率仍从原始目录生成到新目录，再跑同一套 `pnpm qa voice` 评分；时间轴读取变速后的实测时长，来源说明写明默认倍率和例外。NASA 开场的复现命令见该期说明。
-
-配音打分：`pnpm qa voice --help`。读取试听素材目录、原台本和账本，校验音频与上下文后，以本机缓存 faster-whisper large-v3（CUDA/float16，无台本提示词）逐句转写，输出 CER、语速、真峰值、截断风险和句中超过 0.4 秒的静音，以及原始识别和 ffmpeg 证据；`--python` 可指定已安装 faster-whisper 的解释器。有合成改写时传入与 tts 相同的 `--overrides`；仍按原台本评分，年月数字和 NASA／纳萨／娜萨／娜莎按读法等价计分，另列严格 CER。截断标记是风险筛查，仍需结合原始转写核对。来源与授权记入该期 `sources.md`，音频放在不进 git 的 `public/episodes/<期>/`。
-
-NASA 开场的配乐、音效与混音：`node tools/mix-opening.ts --help`。传入正式时间轴、含 `motion` / `proposal.clock` 的风格令牌和 `out/` 输出目录，生成分轨与两遍归一化混音；`--video` 校验帧率和帧数后复制视频码流、替换音轨。改时间轴后重跑，最终 AAC 成片仍须用 `pnpm qa loudness` 带目标 -16 LUFS、容差 1 LU、真峰值上限 -1 dBTP 验收；LRA 只报告。#67 并行令牌的只读路径、合并后的切换和完整命令见 [本期说明](../../episodes/nasa-punk-opening/README.md#配乐嘀嗒与混音70)。
-
-渲染后用 `pnpm qa motion <视频>` 自检长时间静止和短暂闪现，报告默认写入 `out/qa/motion/<视频名>/motion.json`。`--keyframes <目录>` 可输出每个区间的三张关键帧，检出时退出 1，由设计负责人结合画面复核。范围、阈值与默认值见 `pnpm qa motion --help`。
+- 凭据只从环境变量或 `--env` 指定的文件读，不复制进仓库和日志。
+- `eleven_v4` 不支持 Speed，请求成功不代表生效（[API 研究](../research/nasa-ep04/elevenlabs-api.md)）。
+- 变速总是从原始目录生成到新目录；时间轴读变速后的实测时长，来源说明写明默认倍率和例外。
+- 成片响度用 `pnpm qa loudness` 验收：目标 -16 LUFS、容差 1 LU、真峰值不超过 -1 dBTP，LRA 只报告。
+- 配音打分的截断标记和运动自检的检出都是复核线索，结合原始转写或画面再下结论。
 
 ## 复利
 
@@ -81,6 +80,5 @@ NASA 开场的配乐、音效与混音：`node tools/mix-opening.ts --help`。�
 
 ## 注意
 
-- 前台的 Claude Code 会话在 Codex 运行期间要一直开着：只用技能时没有托管模式，关掉会话可能连带中断 Codex。后台会话（`claude --bg`）不依附终端，关掉终端不会中断。
 - 派发、合并、验收、审查、收尾的具体步骤只写在执行技能 `run-spec` 里，本仓库特有的值见 `docs/agents/run-spec.md`。
 - `code-review` 重名：用 Skill 工具调用 `code-review`，加载的是仓库里 Matt 的版本（Standards、Spec 两条线并行的子代理审查）。用户在输入框直接打 `/code-review` 时调用哪个，没有实测。
