@@ -14,8 +14,9 @@
 | `research/nasa-ep04/` | 参考视频拆解：`pipeline.md` 流程、`shots.md` 镜头表、`style.md` 视觉与声音、`transcript.md` 旁白时间轴 |
 | `research/table-videosop.md` | 对照：另一位作者的 Table-Video SOP，以及可以借用的做法 |
 | `research/dispatchdock-notes.md` | 使用 DispatchDock 的实测记录 |
-| `research/run-spec-migration.md` | `run-spec` 第一次迁移（design-system）、那边的彩排和真实 spec #1 的过程与问题，`run-spec` 和初始化技能改进的输入 |
-| `research/pathjx-rule-layers.md` | PathJX 第一阶段结束时的规则逐条归到三层（仓库规则、本机说明、个人偏好、可删除），以及用 v3 模板为它重新生成的草稿；PathJX 升级时读 |
+| `research/run-spec-migration.md` | 流程每个版本的问题记录（design-system 迁移、PathJX 第一阶段、v3 的实测），`run-spec` 和初始化技能改进的输入 |
+| `research/pathjx-rule-review/` | 规则归类的判定标准第二版（`criteria.md`）和 PathJX 规则复核明细；归类规则时读 |
+| `research/pathjx-rule-layers.md` | 已被判定标准第二版取代的三层归类表，只作记录 |
 | `research/rehearsal-findings.md` | 彩排发现：Matt 技能与 DispatchDock 结合的问题和已定的调整，spec #1 完成后复盘用 |
 | `reports/` | 每个 spec 完成后，设计负责人给用户的工作汇报：从 spec #17 起是 HTML 可视化页面，spec #1 是 Markdown；`bootstrap-retro.md` 是建仓过程的复盘记录，`bootstrap-retro.html` 是它的可视化版本 |
 
