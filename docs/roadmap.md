@@ -23,9 +23,15 @@
 
 ## 下一步
 
-**PathJX 按 v3 重排规则**：10-29 已在合并提交 `ac8be1a` 上打 `workflow-v3` tag，PathJX 和 design-system 重装了 v3 的两个技能。规则按三层重排还没做，在 PathJX 另开 spec。输入是 `docs/research/pathjx-rule-layers.md`：现有规则逐条归到三层的表，以及用 v3 模板为它重新生成的草稿；升级前先按 `docs/agents/run-spec.md`「升级须知」把进行中 spec 的修订并进正文。
+**PathJX 规则与文档整理**：`workflow-v3` 已发布（tag 在 `ac8be1a`），PathJX 和 design-system 已重装。10-30 复核发现 v3 的归类有误，结果和判定标准第二版在 `docs/research/pathjx-rule-review/`，据此在 PathJX 开了 spec #208（规则与文档整理）和 #209（推理代码去重），由用户在 PathJX 执行。#208 会实测「待定」里的"验证副产物进保留清单"，并给出产品线机器要补的个人偏好文本；产品线机器还要重装 v3。
 
-**方法层拆成单独的仓库**：v3 发布后紧接着做（用户 10-29 同意），拆法见 `docs/workflow/README.md`「以后拆分」。
+**`workflow-v3.1`**：PathJX 两个 spec 完成后，在本仓库新会话里做。把判定标准第二版写回 `setup-run-spec` 的模板（迁移记录第 76～78 条），同时按它重排本仓库自己的规则（下文「待定」第一条），卸掉 video-studio 和 design-system 里的 `dual-role-workflow`。
+
+**方法层拆成单独的仓库**：排在 `workflow-v3.1` 之后，拆出去的是修正过的版本（用户 10-29 同意 v3 发布后做），拆法见 `docs/workflow/README.md`「以后拆分」。
+
+**design-system 的规则**：从 v1 直接升到 v3，规则文档没按新模板重新生成，没核查过，`workflow-v3.1` 之后按第二版标准检查一次。
+
+**GitHub Actions**：10-29 起因账号计费所有仓库的 Actions 都启动不了，PR 检查显示失败，需要用户在 Billing 页面处理。
 
 **第二阶段**：在新会话里跑 `/grill-with-docs` 定新选题，再 `/to-spec`、`/to-tickets`，开新会话执行。开工前先过下面的待定项。
 
@@ -50,5 +56,5 @@
 
 ## 待定
 
-- **本仓库的规则要不要按 v3 重排**：`setup-run-spec` 的模板把设计负责人定为顶层设计与统筹、规则分三层，本仓库的 `docs/roles/design.md` 仍按镜头动画、风格亲手做来写（spec #77 只补了 `run-spec` 会指向的几条），"记进仓库"还没按三层分流，`AGENTS.md` 里"和用户交流用中文"属于个人偏好，`dual-role-workflow` 也还装着。第二阶段收尾复盘时，对照模板和第一阶段的用量一起改。
+- **本仓库的规则按 v3 重排**（排进 `workflow-v3.1`，用判定标准第二版）：`setup-run-spec` 的模板把设计负责人定为顶层设计与统筹、规则分三层，本仓库的 `docs/roles/design.md` 仍按镜头动画、风格亲手做来写（spec #77 只补了 `run-spec` 会指向的几条），"记进仓库"还没按三层分流，`AGENTS.md` 里"和用户交流用中文"属于个人偏好，`dual-role-workflow` 也还装着。第二阶段收尾复盘时，对照模板和第一阶段的用量一起改。
 - **验证副产物会进 `land` 的保留清单**：`land` 在安装后记快照、再跑验证，验证写出的被忽略文件（例如 Python 的 `__pycache__`、`.pytest_cache`）不在快照里，每次合并都会被列出。本仓库的 `pnpm verify` 不写这类文件，PathJX 很可能会。PathJX 升级时实测；需要的话加一个可选配置，列出可以直接删除的被忽略路径模式。
