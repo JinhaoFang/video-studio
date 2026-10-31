@@ -5,7 +5,7 @@
 1. **用 AI 做视频**：先复刻《设计风格小课 04：NASA 朋克》的开场 0:00～0:46，再用新选题做完整一期。
 2. **复利**：以仓库的形式沉淀规则、工具、组件和风格，下一期视频从这里起步。
 
-开发流程固定在 `workflow-v3.1`，它从 2026-10-31 起在 `JinhaoFang/agent-workflow` 单独维护。做视频时发现的流程问题，记进那边的观察记录 `docs/research/run-spec-migration.md`，按那边 `AGENTS.md`「怎么改方法层」处理。
+开发流程用 `workflow-v4`，从 `JinhaoFang/agent-workflow` 安装；它从 2026-10-31 起在那边单独维护。做视频时发现的流程问题，记进那边的观察记录 `docs/research/run-spec-migration.md`，按那边 `AGENTS.md`「怎么改方法层」处理。
 
 ## 已定
 
@@ -15,9 +15,9 @@
 | 时间机制 | 动画按台本句子编号定时，不写死帧号 | `docs/workflow/README.md`「一期视频」 |
 | 包管理、媒体 | pnpm；媒体和渲染结果不进 git | `AGENTS.md` |
 | 远程仓库 | `github.com/JinhaoFang/video-studio`（私有） | — |
-| 开发流程 | Claude Code 当设计负责人，Codex 当工程负责人，用 `run-spec` 执行 spec；DispatchDock 只用两个技能，不用监控软件；版本 `workflow-v3.1`（spec #77 的派发排队与续做、`verify` `pr-check` `watch` `review-spec` 子命令；spec #94 的判定标准第二版、验证环境与验证排队、可直接删除的被忽略文件、`accept` 核对提交、收尾目标核对、以 PathJX spec #27 为底的汇报模板） | `AGENTS.md`、`docs/roles/`、`docs/workflow/README.md`、`docs/agents/` |
+| 开发流程 | Claude Code 当设计负责人，Codex 当工程负责人，用 `run-spec` 执行 spec；DispatchDock 只用两个技能，不用监控软件；版本 `workflow-v4`，各版本内容见 `JinhaoFang/agent-workflow` 的 README「版本」 | `AGENTS.md`、`docs/roles/`、`docs/workflow/README.md`、`docs/agents/` |
 | 流程的版本 | `workflow-v1`～`workflow-v3.1` 从本仓库发布；之后的版本从 `JinhaoFang/agent-workflow` 发布 | `JinhaoFang/agent-workflow` 的 README |
-| 方法层仓库 | 开发流程带着历史拆到 `JinhaoFang/agent-workflow`（私有）；视频的组件、风格、工具、规则和护栏留在本仓库；本仓库进 git 的两个技能冻结，`workflow-v4` 发布后换成安装版本（用户 10-31） | `docs/workflow/README.md`「方法层仓库」 |
+| 方法层仓库 | 开发流程带着历史拆到 `JinhaoFang/agent-workflow`（私有）；视频的组件、风格、工具、规则和护栏留在本仓库；本仓库的两个技能从 `workflow-v4` 起换成安装版本，不进 git（用户 10-31） | `docs/workflow/README.md`「方法层仓库」 |
 | 方法层怎么改 | 放方法和思路，不放写死的规范；遇到的问题先记成观察，经过分析和评估再决定加不加、用什么形式；"汇报给人"由用户打分（用户 10-31） | `JinhaoFang/agent-workflow` 的 `AGENTS.md`「怎么改方法层」 |
 | CI | GitHub Actions 的设定不动；启动不了时改为本机验证（用户 10-31） | `docs/workflow/README.md`「护栏」 |
 | 第一阶段 | 复刻开场 0:00～0:46：spec #60，PR #73，成片 47.9 秒；用户审片后返工 #74 | `docs/reports/spec-60-nasa-punk-opening.html` |
@@ -25,8 +25,6 @@
 进行中的工作以 GitHub 上打开的 spec 为准，不写进本文。
 
 ## 下一步
-
-**方法层收拢**：在 `JinhaoFang/agent-workflow` 按 v3.1 效果评估的清单收拢，落地按影响分层的测试、评分表和按用户打分重做的汇报模板，发布 `workflow-v4`。发布后本仓库把两个技能换成安装版本，design-system、PathJX 跟着升级。
 
 **design-system 的规则**：从 v1 直接升到 v3，规则文档没按新模板重新生成，没核查过，按判定标准第二版检查一次。
 
