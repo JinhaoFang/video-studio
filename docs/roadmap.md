@@ -5,7 +5,7 @@
 1. **用 AI 做视频**：先复刻《设计风格小课 04：NASA 朋克》的开场 0:00～0:46，再用新选题做完整一期。
 2. **复利**：以仓库的形式沉淀规则、工具、组件和风格，下一期视频从这里起步。
 
-开发流程固定在 `workflow-v3.1`。做视频时发现的流程问题，记进本文的「待定」或 `docs/research/run-spec-migration.md`，攒够了再出下一个版本。
+开发流程固定在 `workflow-v3.1`，它从 2026-10-31 起在 `JinhaoFang/agent-workflow` 单独维护。做视频时发现的流程问题，记进那边的观察记录 `docs/research/run-spec-migration.md`，按那边 `AGENTS.md`「怎么改方法层」处理。
 
 ## 已定
 
@@ -16,8 +16,9 @@
 | 包管理、媒体 | pnpm；媒体和渲染结果不进 git | `AGENTS.md` |
 | 远程仓库 | `github.com/JinhaoFang/video-studio`（私有） | — |
 | 开发流程 | Claude Code 当设计负责人，Codex 当工程负责人，用 `run-spec` 执行 spec；DispatchDock 只用两个技能，不用监控软件；版本 `workflow-v3.1`（spec #77 的派发排队与续做、`verify` `pr-check` `watch` `review-spec` 子命令；spec #94 的判定标准第二版、验证环境与验证排队、可直接删除的被忽略文件、`accept` 核对提交、收尾目标核对、以 PathJX spec #27 为底的汇报模板） | `AGENTS.md`、`docs/roles/`、`docs/workflow/README.md`、`docs/agents/` |
-| 流程的版本 | `workflow-v1`：建仓、复盘与流程改进；`workflow-v2`：`setup-run-spec` 读懂目标仓库后按模板生成角色文档，设计负责人定为顶层设计与统筹，增加独占资源；`workflow-v3`：按 PathJX 第一阶段的真实使用改进（spec #77）；`workflow-v3.1`：按 PathJX #208、#209 的实测改进（spec #94），在 PathJX spec #233 实测（PR #243，10-31） | Release `workflow-v1`（https://github.com/JinhaoFang/video-studio/releases/tag/workflow-v1），`docs/research/run-spec-migration.md`，汇报 `docs/reports/spec-77-workflow-v3.html`、`docs/reports/spec-94-workflow-v3-1.html`，和 PathJX 第一阶段所用 v2 的差异及 PathJX 现状见 `docs/reports/workflow-v3-1-and-pathjx.html` |
-| 方法层怎么改 | 放方法和思路，不放写死的规范；遇到的问题先记成观察，经过分析和评估再决定加不加、用什么形式；"汇报给人"由用户打分；先评估再拆（用户 10-31） | `docs/research/run-spec-migration.md`「v3.1 效果评估」 |
+| 流程的版本 | `workflow-v1`～`workflow-v3.1` 从本仓库发布；之后的版本从 `JinhaoFang/agent-workflow` 发布 | `JinhaoFang/agent-workflow` 的 README |
+| 方法层仓库 | 开发流程带着历史拆到 `JinhaoFang/agent-workflow`（私有）；视频的组件、风格、工具、规则和护栏留在本仓库；本仓库进 git 的两个技能冻结，`workflow-v4` 发布后换成安装版本（用户 10-31） | `docs/workflow/README.md`「方法层仓库」 |
+| 方法层怎么改 | 放方法和思路，不放写死的规范；遇到的问题先记成观察，经过分析和评估再决定加不加、用什么形式；"汇报给人"由用户打分（用户 10-31） | `JinhaoFang/agent-workflow` 的 `AGENTS.md`「怎么改方法层」 |
 | CI | GitHub Actions 的设定不动；启动不了时改为本机验证（用户 10-31） | `docs/workflow/README.md`「护栏」 |
 | 第一阶段 | 复刻开场 0:00～0:46：spec #60，PR #73，成片 47.9 秒；用户审片后返工 #74 | `docs/reports/spec-60-nasa-punk-opening.html` |
 
@@ -25,7 +26,7 @@
 
 ## 下一步
 
-**方法层拆成单独的仓库**：v3.1 效果评估已完成（10-31，`docs/reports/workflow-v3-1-evaluation.html`）：目标仓库一侧有效，方法层自身变复杂。拆的时候按评估的清单收拢成五条思路和一组机制，同时落地按影响分层的测试、评分表采集和按用户打分重做的汇报模板，清单用户 10-31 已确认（含没用上或无法判断的 17 项：10 项脚本留着、说明移出必读，7 项移到按需说明或删掉），见 `docs/research/run-spec-migration.md`「v3.1 效果评估」。拆法见 `docs/workflow/README.md`「以后拆分」。
+**方法层收拢**：在 `JinhaoFang/agent-workflow` 按 v3.1 效果评估的清单收拢，落地按影响分层的测试、评分表和按用户打分重做的汇报模板，发布 `workflow-v4`。发布后本仓库把两个技能换成安装版本，design-system、PathJX 跟着升级。
 
 **design-system 的规则**：从 v1 直接升到 v3，规则文档没按新模板重新生成，没核查过，按判定标准第二版检查一次。
 
