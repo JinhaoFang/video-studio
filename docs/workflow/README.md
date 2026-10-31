@@ -39,7 +39,7 @@ spec #S     ─ 确认基线（verify）；工程类 spec 先做独立审查（r
 
 能机械判断的规则交给护栏，不靠自觉：
 
-- `pnpm verify`：步骤见 `tools/verify.ts`，运行时每步先打印 `[verify]` 标签。完成标准都以它通过为准。设计负责人用工单脚本的 `verify` 子命令跑它：屏幕只看尾部和一行结论，完整输出进日志，退出码照实，不用 `| tail` 这种会吞掉退出码的写法。
+- `pnpm verify`：步骤见 `tools/verify.ts`，运行时每步先打印 `[verify]` 标签；`pnpm verify --static` 跑除测试以外的全部步骤。合并前跑哪一层由工单脚本按改动路径选，配置见 `docs/agents/run-spec.md`。设计负责人用工单脚本的 `verify` 子命令跑它：屏幕只看尾部和一行结论，完整输出进日志，退出码照实，不用 `| tail` 这种会吞掉退出码的写法。
 - commit-msg 钩子：按 `AGENTS.md` 的格式检查提交信息。
 - CI：开 PR、推送 `ticket/**` 和手动触发时跑 `pnpm verify`，并逐条检查分支上的提交信息，兜住绕过本地钩子的提交。工单分支只有派发时加了 `--allow-push` 才会被推上去。集成分支 `spec/**` 推送时不跑：`land` 合并每张工单前已在本机跑过同样的验证。同一个 PR 的新运行会取消还没跑完的旧运行。本地复现：`pnpm verify`，再 `pnpm check:commits origin/main <分支>`。收尾时工单脚本的 `pr-check` 等 PR 的检查跑完。CI 启动不了时（用户 10-31）：GitHub Actions 的设定不动，改为本机验证。判断办法：`gh run view <运行号>` 里作业一步都没跑就失败，注解写 `The job was not started`（例如 10-29 起的账号计费问题）。在 PR 分支上跑上面两条本地复现命令，把结论评论到 PR，代替这次的 CI 结果。
 
@@ -73,7 +73,7 @@ pnpm 的版本由 `package.json` 的 `packageManager` 固定，本机装的 pnpm
 
 开发流程（`run-spec`、`setup-run-spec`，以及它们的观察记录、规则判定标准、开局步骤和各版本汇报）2026-10-31 用 `git filter-repo` 带着历史拆到 `JinhaoFang/agent-workflow`，提交尾注改成了 `Refs: JinhaoFang/video-studio#号`，链接仍指向本仓库的 issue。
 
-- 本仓库 `.claude/skills/run-spec/`、`.claude/skills/setup-run-spec/` 从拆分起冻结，改动去新仓库做；新仓库发布 `workflow-v4` 后换成安装版本，和别的仓库一样。
+- 本仓库的这两个技能和别的仓库一样从新仓库安装，不进 git，版本记在 `skills-lock.json`；改动去新仓库做。
 - 视频的组件和风格（`src/kit/`、`src/styles/`）、工具（`tools/`）、规则文档和护栏留在本仓库。拆分前曾设想把它们也算作方法层；实际用方法层的是 PathJX 和 design-system，它们用不上视频组件，规则和护栏也是每个仓库按自己的工具链写。
 
 ## 注意
