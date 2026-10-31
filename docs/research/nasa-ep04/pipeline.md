@@ -55,7 +55,7 @@ dual-role-workflow 的 `setup` 会在项目里建这几样东西（DispatchDock 
 ### 3.3 在本机能不能用
 
 - DispatchDock v0.1 官方只支持 Windows；派发脚本本身没有写死 Windows，只有"弹出只读进度窗口"是 Windows 专用。
-- 本机实测（2026-10-11）：Linux + Node 22.23 下真实派发成功（官方要求 Node 24），详见 `docs/research/dispatchdock-notes.md`。
+- 本机实测（2026-10-11）：Linux + Node 22.23 下真实派发成功（官方要求 Node 24），详见 `JinhaoFang/agent-workflow` 的 `docs/research/dispatchdock-notes.md`。
 
 ## 4. 制作阶段（按依赖顺序）
 

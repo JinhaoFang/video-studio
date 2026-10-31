@@ -69,14 +69,12 @@ pnpm 的版本由 `package.json` 的 `packageManager` 固定，本机装的 pnpm
 - 第二次用到的代码提到 `src/kit/`，第二次用到的风格提到 `src/styles/`。
 - 满意的镜头记下来作为对标片，以后同类镜头照着它验收。
 
-## 以后拆分
+## 方法层仓库
 
-仓库按目录分成两层，拆分时按目录切开：
+开发流程（`run-spec`、`setup-run-spec`，以及它们的观察记录、规则判定标准、开局步骤和各版本汇报）2026-10-31 用 `git filter-repo` 带着历史拆到 `JinhaoFang/agent-workflow`，提交尾注改成了 `Refs: JinhaoFang/video-studio#号`，链接仍指向本仓库的 issue。
 
-- **方法层**：`AGENTS.md`、`docs/roles/`、`docs/workflow/`、`docs/agents/`、`.claude/skills/run-spec`、`.claude/skills/setup-run-spec`、`tools/`、`.githooks/`、`.github/`、`src/kit/`、`src/styles/`，加上 `skills-lock.json` 和 DispatchDock 的安装命令。
-- **产物层**：`episodes/`、`docs/research/`（里面有对他人作品的转写，不能公开）、本机的 `public/episodes/`。
-
-依赖只能从产物层指向方法层：每期可以用 `src/kit/`，`src/` 和 `tools/` 不能引用 `episodes/`。注册各期合成的 Remotion 入口（`episodes/index.ts`、`episodes/Root.tsx`）属于产物层，所以 `src/` 里没有入口；拆出去的方法层要用时，自己配一个入口。拆分时用 `git filter-repo --path …` 带着历史抽出需要的目录；提交信息尾注里的 `Refs: #号` 用 `--replace-message` 改成 `Refs: JinhaoFang/video-studio#号`，这样拆出去以后链接仍然指向原仓库的 issue。
+- 本仓库 `.claude/skills/run-spec/`、`.claude/skills/setup-run-spec/` 从拆分起冻结，改动去新仓库做；新仓库发布 `workflow-v4` 后换成安装版本，和别的仓库一样。
+- 视频的组件和风格（`src/kit/`、`src/styles/`）、工具（`tools/`）、规则文档和护栏留在本仓库。拆分前曾设想把它们也算作方法层；实际用方法层的是 PathJX 和 design-system，它们用不上视频组件，规则和护栏也是每个仓库按自己的工具链写。
 
 ## 注意
 

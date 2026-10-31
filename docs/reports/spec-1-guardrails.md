@@ -2,7 +2,7 @@
 
 2026-10-11 · 设计负责人 → 用户 · [spec #1](https://github.com/JinhaoFang/video-studio/issues/1) · [PR #14](https://github.com/JinhaoFang/video-studio/pull/14)（已合并）
 
-**一句话**：流程从讨论到合并完整走通了；要交付的护栏、验收工具和工单脚本都已经合进 `main`；过程中发现的流程问题记在 `docs/research/rehearsal-findings.md`，作为复盘的输入。
+**一句话**：流程从讨论到合并完整走通了；要交付的护栏、验收工具和工单脚本都已经合进 `main`；过程中发现的流程问题记在 `docs/research/rehearsal-findings.md`（现已移到 `JinhaoFang/agent-workflow`），作为复盘的输入。
 
 ## 任务
 
@@ -85,5 +85,5 @@
 
 ## 遗留与下一步
 
-1. 复盘：输入是 `docs/research/rehearsal-findings.md`，里面有 10 条已定的调整、1 条待判断，外加几条观察（合并方式就是其中之一）。
+1. 复盘：输入是 `docs/research/rehearsal-findings.md`（现已移到 `JinhaoFang/agent-workflow`），里面有 10 条已定的调整、1 条待判断，外加几条观察（合并方式就是其中之一）。
 2. 第一阶段：复刻开场 0:00～0:46。

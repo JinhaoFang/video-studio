@@ -34,33 +34,6 @@
 - **独占资源**：无。
 - **常见的共享登记处**：`pnpm qa` 的子命令登记表、工单脚本的子命令登记表。并行的工单都要往里加一项时，派发的补充说明写"只加自己那一项"。
 
-## 装到别的仓库
+## 来源与版本
 
-`run-spec` 和初始化技能 `setup-run-spec` 的来源是本仓库，两个都在 `.claude/skills/` 下进 git。别的仓库从版本 tag 安装：在根目录运行安装命令，再由用户输入 `/setup-run-spec`：它查看仓库、讲清步骤，写执行配置和工单约定，建标签，设合并方式，最后自检和冒烟测试。
-
-```bash
-npx skills add JinhaoFang/video-studio#workflow-v3.1 --skill run-spec --skill setup-run-spec -a claude-code -y
-```
-
-- 装进去的两个技能只在 `.claude/skills/`，不进 git，Codex 看不到。
-- `#` 后面是版本，也就是本仓库的 tag，当前是 `workflow-v3.1`。安装工具用 `git clone --branch` 取这个版本，所以别的仓库固定在这个版本上，不会跟着本仓库的 `main` 变。
-- 升级就是把命令里的版本换成新 tag 再运行。`npx skills update` 和按锁文件恢复的 `npx skills experimental_install` 都会把它们装进 `.agents/skills/`，Codex 就能看到了（2026-10-12 实测）。在那些仓库里用 `update` 更新别的技能时点名技能，更新完运行 `node .claude/skills/run-spec/scripts/tickets.ts doctor`。
-- 本仓库改了这两个技能，攒成一个版本后打新 tag（`workflow-v3.1`……），同时把本节、`setup-run-spec` 第 5 步和它的配置模板里命令的版本号改掉；各仓库换成新版本号再运行安装命令才拿到。重装会改那边 `skills-lock.json` 里两项的哈希，要提交：design-system 重装后没提交，主工作区一直不干净，`land` 会拒绝合并。
-- 早期手工迁移、`run-spec` 进过 git 的仓库，`/setup-run-spec` 会把它换成安装版本。那个 PR 合并后更新本地 `main`，先 `git fetch origin main:main` 再切过去；先切到还停在旧提交的本地 `main` 再拉取，git 会把 `run-spec` 从磁盘上删掉（design-system 实际碰到过），删了就重新运行安装命令。
-
-## 升级须知
-
-从 `workflow-v3` 升到 `workflow-v3.1`，配置不用改就能跑，三个新配置项不写时行为和 v3 相同。按仓库的情况决定开哪些：
-
-- **`verificationEnv`**：验证要靠环境变量才能跑通的仓库（浏览器目录、测试预算、并行度）写进来，Codex 和 `land` 就不必各自猜。不放密钥：实际值会写进派发记录。
-- **`exclusiveVerification`**：几个完整验证同时跑会互相拖慢、超时或抢端口的仓库开它。PathJX 的 #208、#209 就是并发的完整测试让 E2E 超时。
-- **`disposableIgnored`**：保留目录里堆满字节码、测试缓存、构建输出的仓库，把这些模式写进来，`land` 直接删掉，不再移到保留目录。
-
-两处行为变了，不用配置：
-
-- **`accept` 核对提交**：以通过关闭前，「提交」里的每个提交号都要在远端集成分支上。设计工单提交后先推送集成分支再验收；没有提交的只读工单加 `--no-commits`。
-- **收尾先核对目标**：开 PR 前按问题陈述的口径重测现状，结果写进汇报的「目标核对」。
-
-升级后运行 `node .claude/skills/run-spec/scripts/tickets.ts doctor`，确认三个新配置项的取值和来源。
-
-还在 `workflow-v2` 的仓库，先按 `workflow-v3` tag 里本节的三件事处理，再装 v3.1。
+`run-spec` 和 `setup-run-spec` 从 2026-10-31 起在 `JinhaoFang/agent-workflow` 维护，安装、版本和升级见那边的 README。本仓库 `.claude/skills/` 下的这两个目录是拆分时的 `workflow-v3.1`，冻结不改；那边发布 `workflow-v4` 后换成安装版本。
