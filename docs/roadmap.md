@@ -16,20 +16,17 @@
 | 包管理、媒体 | pnpm；媒体和渲染结果不进 git | `AGENTS.md` |
 | 远程仓库 | `github.com/JinhaoFang/video-studio`（私有） | — |
 | 开发流程 | Claude Code 当设计负责人，Codex 当工程负责人，用 `run-spec` 执行 spec；DispatchDock 只用两个技能，不用监控软件；版本 `workflow-v3.1`（spec #77 的派发排队与续做、`verify` `pr-check` `watch` `review-spec` 子命令；spec #94 的判定标准第二版、验证环境与验证排队、可直接删除的被忽略文件、`accept` 核对提交、收尾目标核对、以 PathJX spec #27 为底的汇报模板） | `AGENTS.md`、`docs/roles/`、`docs/workflow/README.md`、`docs/agents/` |
-| 流程的版本 | `workflow-v1`：建仓、复盘与流程改进；`workflow-v2`：`setup-run-spec` 读懂目标仓库后按模板生成角色文档，设计负责人定为顶层设计与统筹，增加独占资源；`workflow-v3`：按 PathJX 第一阶段的真实使用改进（spec #77）；`workflow-v3.1`：按 PathJX #208、#209 的实测改进（spec #94） | Release `workflow-v1`（https://github.com/JinhaoFang/video-studio/releases/tag/workflow-v1），`docs/research/run-spec-migration.md`，汇报 `docs/reports/spec-77-workflow-v3.html`、`docs/reports/spec-94-workflow-v3-1.html` |
+| 流程的版本 | `workflow-v1`：建仓、复盘与流程改进；`workflow-v2`：`setup-run-spec` 读懂目标仓库后按模板生成角色文档，设计负责人定为顶层设计与统筹，增加独占资源；`workflow-v3`：按 PathJX 第一阶段的真实使用改进（spec #77）；`workflow-v3.1`：按 PathJX #208、#209 的实测改进（spec #94），在 PathJX spec #233 实测（PR #243，10-31） | Release `workflow-v1`（https://github.com/JinhaoFang/video-studio/releases/tag/workflow-v1），`docs/research/run-spec-migration.md`，汇报 `docs/reports/spec-77-workflow-v3.html`、`docs/reports/spec-94-workflow-v3-1.html`，和 PathJX 第一阶段所用 v2 的差异及 PathJX 现状见 `docs/reports/workflow-v3-1-and-pathjx.html` |
+| CI | GitHub Actions 的设定不动；启动不了时改为本机验证（用户 10-31） | `docs/workflow/README.md`「护栏」 |
 | 第一阶段 | 复刻开场 0:00～0:46：spec #60，PR #73，成片 47.9 秒；用户审片后返工 #74 | `docs/reports/spec-60-nasa-punk-opening.html` |
 
 进行中的工作以 GitHub 上打开的 spec 为准，不写进本文。
 
 ## 下一步
 
-**PathJX 实测 v3.1**：spec #94 合并后打 `workflow-v3.1` tag，PathJX 和 design-system 重装。PathJX spec #233 在 PathJX 的独立后台会话里执行：配置三个新配置项，收掉 #208 合并后重测剩下的错误入口和分散（#208 的目标只部分达到），新 worktree 复用本机已校验的工具链，本机 CI 不再堆积失败现场，查清端到端测试在负载下超时，用新模板重写 #208、#209 的汇报。产品线机器要重装 v3.1，并在用户级配置里补语言偏好。
-
-**方法层拆成单独的仓库**：排在 PathJX 实测 v3.1 之后，拆出去的是修正过的版本（用户 10-29 同意 v3 发布后做），拆法见 `docs/workflow/README.md`「以后拆分」。
+**方法层拆成单独的仓库**：PathJX 实测 v3.1 已完成（spec #233，10-31），拆出去的是修正过的版本（用户 10-29 同意 v3 发布后做），拆法见 `docs/workflow/README.md`「以后拆分」。
 
 **design-system 的规则**：从 v1 直接升到 v3，规则文档没按新模板重新生成，没核查过，按判定标准第二版检查一次。
-
-**GitHub Actions**：10-29 起因账号计费所有仓库的 Actions 都启动不了，PR 检查显示失败，需要用户在 Billing 页面处理。
 
 **第二阶段**：在新会话里跑 `/grill-with-docs` 定新选题，再 `/to-spec`、`/to-tickets`，开新会话执行。开工前先过下面的待定项。
 
