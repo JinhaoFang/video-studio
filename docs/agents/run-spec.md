@@ -20,7 +20,7 @@
 | `codexSandbox` | `"danger-full-access"` | 派发时 Codex 的权限。用户要求完全权限，让 Codex 能联网、能用 `gh` 读 issue。 |
 | `dispatchScript` | `".claude/skills/codex-dispatch/codex-task.mjs"` | DispatchDock 的派发脚本，路径相对主工作区。 |
 | `codexConcurrency` | 不写（默认 `2`） | 可选。同时运行的 Codex 派发上限，`dispatch` 到上限时排队。它是 Codex 账号的属性，环境变量 `RUN_SPEC_CODEX_CONCURRENCY` 优先于配置，账号上限不同的机器各自设。 |
-| `prCheckCommand` | 不写（默认 `["gh", "pr", "checks", "{pr}", "--watch"]`） | 可选。`pr-check` 运行的 PR 检查命令，每个参数里的 `{pr}` 换成 PR 号。仓库的 CI 不能用时改成本机 CI，例如 `["make", "ci-local", "PR={pr}"]`。 |
+| `prCheckCommand` | 不写（默认 `["gh", "pr", "checks", "{pr}", "--watch"]`） | 可选。`pr-check` 运行的 PR 检查命令，每个参数里的 `{pr}` 换成 PR 号。CI 启动不了时不改这一项，按 `docs/workflow/README.md`「护栏」改为本机验证。 |
 | `verificationEnv` | 不写（默认 `{}`） | 可选。验证要用的环境变量，字符串到字符串的对象；值里的 `{mainRoot}` 换成主工作区路径，进程里已有的同名变量优先。`verify`、`land`、`pr-check` 和 `dispatch` 的安装与 Codex 进程都带上它，实际值写进派发指令和派发记录，所以不放密钥。本仓库的验证不依赖环境变量。 |
 | `exclusiveVerification` | 不写（默认 `false`） | 可选。开启后完整验证在全仓库排队，一次只跑一个：锁在 git 公共目录，`verify`、`land` 的验证和非默认的 PR 检查命令共用；持锁进程被杀后，等验证作业的整个进程组都退出才回收（Windows 只看持锁进程）；持锁期间嵌套调用的 `verify` 沿用同一把锁，不会死锁；派发指令要求 Codex 用主工作区的 `tickets.ts verify <T>` 做完整验证。验证吃满 CPU、内存或独占端口、数据库的仓库开它；本仓库的验证一分钟内跑完，并发不互相干扰，不开。 |
 | `disposableIgnored` | 不写（默认 `[]`） | 可选。`land` 删除 worktree 前可以直接删掉的被忽略文件，gitignore 写法的模式数组，例如 `**/__pycache__/`、`.pytest_cache/`、`apps/*/dist/`。匹配的文件直接删除、输出删了多少，其余照旧移到保留目录；`.codex-runs/` 和本 spec 的验收产物目录（`<acceptanceRoot>/spec-<S>/`）永远不按它删，验收产物根目录下别的路径（例如测试输出）照样按模式处理；`--dry-run` 列出将删的数量。本仓库合并后的保留目录是空的，不写。 |
