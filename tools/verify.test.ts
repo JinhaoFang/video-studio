@@ -1,8 +1,9 @@
 /**
  * Exercise ESLint's directory defaults and verify's explicit Git file scope in
- * temporary repositories, including owned skill scripts/tests and Node types.
+ * temporary repositories; installed skills stay out of ESLint and Node types.
  * Real CLI runs prove ignored tracked files are checked
- * without making direct `eslint .` traverse generated or third-party code.
+ * without making direct `eslint .` traverse generated or third-party code,
+ * that `--static` stops before tests, and that bad arguments exit 2.
  * Run with `node --test tools/verify.test.ts` or `pnpm verify`.
  */
 import assert from "node:assert/strict";
@@ -31,7 +32,8 @@ const ignored = [
   ".codex-runs/ignored.ts",
   ".agents/ignored.ts",
   ".claude/skills/third-party/ignored.ts",
-  ".claude/skills/studio-fixture/ignored.ts",
+  ".claude/skills/run-spec/scripts/ignored.ts",
+  ".claude/skills/setup-run-spec/scripts/ignored.ts",
   "vendor/node_modules/ignored.ts",
 ];
 
@@ -54,7 +56,7 @@ const fixture = (context: TestContext): string => {
   return root;
 };
 
-test("direct eslint ignores generated and third-party directories but checks run-spec scripts and tests", (context) => {
+test("direct eslint ignores generated, third-party and installed skill directories", (context) => {
   const root = fixture(context);
   const clean = spawnSync(process.execPath, [eslint, "."], {
     cwd: root,
@@ -63,36 +65,15 @@ test("direct eslint ignores generated and third-party directories but checks run
   });
   assert.equal(clean.error, undefined);
   assert.equal(clean.status, 0, clean.stdout + clean.stderr);
-  const paths = [
-    ".claude/skills/run-spec/scripts/script.ts",
-    ".claude/skills/run-spec/scripts/script.test.ts",
-  ];
-  for (const path of paths) {
-    mkdirSync(dirname(join(root, path)), { recursive: true });
-    writeFileSync(join(root, path), "export const = ;");
-  }
-  const invalid = spawnSync(process.execPath, [eslint, "."], {
-    cwd: root,
-    encoding: "utf8",
-    timeout: 15000,
-  });
-  assert.equal(invalid.error, undefined);
-  assert.equal(invalid.status, 1);
-  for (const path of paths)
-    assert.ok(invalid.stdout.includes(path), invalid.stdout);
-  assert.match(invalid.stdout, /Parsing error/);
 });
 
-test("Node type checking includes run-spec scripts and tests while excluding other skills", (context) => {
+test("Node type checking covers tools and their tests but not installed skills", (context) => {
   const root = fixture(context);
   mkdirSync(join(root, "tools"));
   for (const path of ["tsconfig.json", "tools/tsconfig.json"]) {
     copyFileSync(join(repository, path), join(root, path));
   }
-  const paths = [
-    ".claude/skills/run-spec/scripts/script.ts",
-    ".claude/skills/run-spec/scripts/script.test.ts",
-  ];
+  const paths = ["tools/script.ts", "tools/script.test.ts"];
   for (const path of paths) {
     mkdirSync(dirname(join(root, path)), { recursive: true });
     writeFileSync(join(root, path), "export const invalid: string = 1;");
@@ -146,4 +127,82 @@ test("verify checks tracked ignored code through eslint without scanning ignored
     result.stdout + result.stderr,
     /ignored\.ts|\[verify\] tsc/,
   );
+});
+
+const staticFixture = (context: TestContext) => {
+  const { root } = gitRepository(context);
+  symlinkSync(
+    join(repository, "node_modules"),
+    join(root, "node_modules"),
+    "dir",
+  );
+  for (const path of [
+    ".gitignore",
+    "package.json",
+    "tsconfig.json",
+    "eslint.config.mjs",
+    "tools/tsconfig.json",
+    "tools/verify.ts",
+    "tools/code-files.ts",
+    "tools/cli.ts",
+    "tools/check-guardrails.ts",
+    "tools/check-doc-commands.ts",
+  ]) {
+    mkdirSync(dirname(join(root, path)), { recursive: true });
+    copyFileSync(join(repository, path), join(root, path));
+  }
+  mkdirSync(join(root, "src"));
+  writeFileSync(join(root, "src/probe.ts"), "export const probe = 1;\n");
+  const env = { ...process.env };
+  delete env.NODE_TEST_CONTEXT;
+  const run = (args: string[]) =>
+    spawnSync(process.execPath, ["tools/verify.ts", ...args], {
+      cwd: root,
+      encoding: "utf8",
+      env,
+      timeout: 60000,
+    });
+  return { root, run };
+};
+
+test("static verification runs every check but never executes tests", (context) => {
+  const { root, run } = staticFixture(context);
+  writeFileSync(
+    join(root, "tools/probe.test.ts"),
+    "throw new Error('测试不应运行');\n",
+  );
+  const result = run(["--static"]);
+  assert.equal(result.error, undefined);
+  assert.equal(result.status, 0, result.stdout + result.stderr);
+  for (const step of [
+    "eslint",
+    "tsc (browser)",
+    "tsc (Node)",
+    "comment position",
+    "dependency direction",
+    "规则文档命令存在性",
+    "静态检查通过",
+  ])
+    assert.ok(result.stdout.includes(`[verify] ${step}`), result.stdout);
+  assert.doesNotMatch(result.stdout + result.stderr, /node:test|测试不应运行/);
+  writeFileSync(
+    join(root, "tools/probe.test.ts"),
+    "export const invalid: string = 1;\n",
+  );
+  const invalid = run(["--static"]);
+  assert.equal(invalid.status, 2, invalid.stdout + invalid.stderr);
+  assert.match(invalid.stdout, /TS2322/);
+});
+
+test("verification help and invalid arguments exit before any check", (context) => {
+  const { run } = staticFixture(context);
+  const help = run(["--help"]);
+  assert.equal(help.status, 0, help.stderr);
+  assert.match(help.stdout, /用法：pnpm verify.*--static/);
+  for (const args of [["--unknown"], ["extra"]]) {
+    const result = run(args);
+    assert.equal(result.status, 2, result.stderr);
+    assert.match(result.stderr, /^出错：/);
+    assert.doesNotMatch(result.stdout, /\[verify\]/);
+  }
 });

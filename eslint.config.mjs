@@ -1,6 +1,6 @@
 /**
  * Keep Remotion's recommended rules on browser code, and use its shared JS/TS
- * rules on Node tools, repository-owned skill scripts, and root configuration files.
+ * rules on Node tools and root configuration files.
  * tools/code-files.ts determines the verification input independently of ESLint.
  * Browser code may not use SVG <image>: Remotion does not wait for it to load, so
  * parallel renders drop frames (#74); use Remotion <Img> inside a sized container.
@@ -14,7 +14,6 @@ const browser = [
 ];
 const node = [
   "tools/**/*.{ts,js,mjs,cjs}",
-  ".claude/skills/run-spec/**/*.{ts,js,mjs,cjs}",
   "*.{ts,js,mjs,cjs}",
 ];
 const nodeGlobals = Object.fromEntries(
@@ -31,8 +30,7 @@ export default [
       "references/**",
       ".codex-runs/**",
       ".agents/**",
-      ".claude/skills/*/**",
-      "!.claude/skills/run-spec/**",
+      ".claude/**",
     ],
   },
   ...config
