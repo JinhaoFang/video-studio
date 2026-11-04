@@ -96,9 +96,17 @@ export const runMedia = (
       );
     throw new Error(`${program} 无法启动，请检查运行环境。`);
   }
-  if (result.status !== 0)
+  if (result.status !== 0) {
+    const detail = result.stderr
+      ?.trim()
+      .split(/\r?\n/)
+      .map((line) => line.trim())
+      .filter(Boolean)
+      .slice(-3)
+      .join(" | ");
     throw new Error(
-      `${program} 运行失败（退出码 ${result.status ?? "未知"}），请检查输入媒体和参数。`,
+      `${program} 运行失败（退出码 ${result.status ?? result.signal ?? "未知"}），请检查输入媒体和参数。${detail ? `详情：${detail}` : ""}`,
     );
+  }
   return result[output];
 };

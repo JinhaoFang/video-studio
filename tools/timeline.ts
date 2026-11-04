@@ -56,10 +56,10 @@ export const generateTimeline = (
 ): Timeline => {
   validateScript(script, fps);
   if (
-    !["temporary", "elevenlabs"].includes(source.kind) ||
+    !["temporary", "elevenlabs", "local"].includes(source.kind) ||
     !source.description?.trim()
   )
-    throw new Error("请提供临时音轨或 ElevenLabs 配音来源及说明。");
+    throw new Error("请提供临时音轨、本机合成或 ElevenLabs 配音来源及说明。");
   const durations = new Map<string, AudioDuration>();
   for (const clip of audio) {
     if (durations.has(clip.id)) throw new Error(`音频编号重复：${clip.id}`);

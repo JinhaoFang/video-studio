@@ -10,7 +10,15 @@ import type {
   ExecFileSyncOptionsWithStringEncoding,
   SpawnSyncOptionsWithStringEncoding,
 } from "node:child_process";
-import { mkdirSync, mkdtempSync, rmSync, writeFileSync } from "node:fs";
+import {
+  copyFileSync,
+  linkSync,
+  mkdirSync,
+  mkdtempSync,
+  rmSync,
+  symlinkSync,
+  writeFileSync,
+} from "node:fs";
 import { tmpdir } from "node:os";
 import { dirname, join } from "node:path";
 import type { TestContext } from "node:test";
@@ -172,6 +180,25 @@ export const image = (path: string) => {
     "pipe:1",
   ]);
   return { width, height, at: (x: number, y: number) => pixels[y * width + x] };
+};
+
+export const exposeProgram = (
+  name: "ffmpeg" | "ffprobe",
+  directory: string,
+): void => {
+  if (process.platform === "win32") {
+    const target = commandOutput("where.exe", [name])
+      .trim()
+      .split(/\r?\n/)[0]!;
+    const destination = join(directory, `${name}.exe`);
+    try {
+      linkSync(target, destination);
+    } catch {
+      copyFileSync(target, destination);
+    }
+    return;
+  }
+  symlinkSync(commandOutput("which", [name]).trim(), join(directory, name));
 };
 
 export const frameIs = (value: number, frame: number, step = 7): void => {
