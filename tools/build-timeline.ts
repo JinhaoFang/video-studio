@@ -12,7 +12,7 @@ import { generateTimeline } from "./timeline.ts";
 import type { AudioDuration, TimelineSource } from "./timeline.ts";
 
 const usage =
-  "node tools/build-timeline.ts <台本.md> --durations <时长清单.json> --source <temporary|elevenlabs|local> --label <来源说明> --leading-silence <秒> --out <时间轴.json>";
+  "node tools/build-timeline.ts <台本.md> --durations <时长清单.json> --source <temporary|elevenlabs> --label <来源说明> --leading-silence <秒> --out <时间轴.json>";
 
 try {
   const { positional, options, help } = parseOptions(

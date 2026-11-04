@@ -77,7 +77,7 @@ const main = async (): Promise<void> => {
   const l008 = sentencePoint(timeline, "L008").frame;
   const l009 = sentencePoint(timeline, "L009").frame;
   const l010 = sentencePoint(timeline, "L010").frame;
-  if (timeline.source.kind === "temporary")
+  if (timeline.source.kind !== "elevenlabs")
     throw new Error("混音需要正式配音时间轴，不能使用含原片配乐的临时音轨。");
   const tokens = await import(pathToFileURL(tokenPath).href);
   const motion = tokens.motion;

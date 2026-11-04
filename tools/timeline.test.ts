@@ -161,14 +161,6 @@ test("temporary and ElevenLabs audio produce identical schema and timing, retain
   );
   assert.deepEqual({ ...formal, source }, temporary);
   assert.equal(formal.source.kind, "elevenlabs");
-  const local = generateTimeline(
-    script,
-    audio,
-    { kind: "local", description: "Microsoft Huihui Desktop" },
-    0.37,
-  );
-  assert.deepEqual({ ...local, source }, temporary);
-  assert.equal(local.source.kind, "local");
   assert.equal(formal.lines[0].text, "第一句");
   assert.equal(formal.lines[0].pauseAfterSeconds, 0.08);
 });

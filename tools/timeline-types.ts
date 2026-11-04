@@ -12,7 +12,7 @@ export type AudioDuration = {
 };
 
 export type TimelineSource = {
-  kind: "temporary" | "elevenlabs" | "local";
+  kind: "temporary" | "elevenlabs";
   description: string;
 };
 
