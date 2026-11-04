@@ -42,7 +42,7 @@ const fixture = (context: TestContext): string => {
   symlinkSync(
     join(repository, "node_modules"),
     join(root, "node_modules"),
-    "dir",
+    "junction",
   );
   copyFileSync(
     join(repository, "eslint.config.mjs"),
@@ -121,7 +121,7 @@ test("verify checks tracked ignored code through eslint without scanning ignored
   assert.equal(result.error, undefined);
   assert.equal(result.status, 1);
   assert.match(result.stdout, /\[verify\] eslint/);
-  assert.match(result.stdout, /src\/kit\/build\/tracked\.ts/);
+  assert.match(result.stdout, /src[\\/]kit[\\/]build[\\/]tracked\.ts/);
   assert.match(result.stdout, /Parsing error/);
   assert.doesNotMatch(
     result.stdout + result.stderr,
@@ -134,7 +134,7 @@ const staticFixture = (context: TestContext) => {
   symlinkSync(
     join(repository, "node_modules"),
     join(root, "node_modules"),
-    "dir",
+    "junction",
   );
   for (const path of [
     ".gitignore",

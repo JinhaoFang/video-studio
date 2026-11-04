@@ -7,11 +7,11 @@
  * Run with `node --test tools/qa-motion.test.ts` or `pnpm verify`.
  */
 import assert from "node:assert/strict";
-import { readFileSync, readdirSync, symlinkSync, writeFileSync } from "node:fs";
+import { readFileSync, readdirSync, writeFileSync } from "node:fs";
 import { join, resolve } from "node:path";
 import { test } from "node:test";
 import {
-  commandOutput,
+  exposeProgram,
   image,
   media,
   runCommand,
@@ -388,10 +388,7 @@ test("missing media programs fail without reports and explain installation", (co
   const noFfmpeg = run(root, [input], isolated);
   assert.equal(noFfmpeg.status, 2);
   assert.match(noFfmpeg.stderr, /^出错：未安装 ffmpeg .*请安装 ffmpeg/);
-  symlinkSync(
-    commandOutput("which", ["ffmpeg"]).trim(),
-    join(isolated, "ffmpeg"),
-  );
+  exposeProgram("ffmpeg", isolated);
   const noFfprobe = run(root, [input], isolated);
   assert.equal(noFfprobe.status, 2);
   assert.match(noFfprobe.stderr, /^出错：未安装 ffprobe .*请安装 ffmpeg/);

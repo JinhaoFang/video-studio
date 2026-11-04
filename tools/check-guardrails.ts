@@ -138,7 +138,7 @@ const main = (): void => {
   };
 
   const compilerOptions = (file: string): ts.CompilerOptions => {
-    let directory = dirname(file);
+    let directory = dirname(resolve(file));
     let config: string | undefined;
     while (directory === root || directory.startsWith(root + sep)) {
       const candidate = resolve(directory, "tsconfig.json");

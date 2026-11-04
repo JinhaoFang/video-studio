@@ -13,13 +13,13 @@
  */
 import assert from "node:assert/strict";
 import {
-  commandOutput as execFileSync,
+  exposeProgram,
   runCommand as spawnSync,
   temporaryDirectory as fixture,
   media,
   tone,
 } from "./test-support.ts";
-import { readFileSync, readdirSync, symlinkSync, writeFileSync } from "node:fs";
+import { readFileSync, readdirSync, writeFileSync } from "node:fs";
 import { join, resolve } from "node:path";
 import { test } from "node:test";
 
@@ -332,10 +332,7 @@ test("missing ffmpeg and ffprobe explain how to install them", (context) => {
   const noFfprobe = run(root, [input], isolated);
   assert.equal(noFfprobe.status, 2);
   assert.match(noFfprobe.stderr, /ffprobe .*请安装 ffmpeg/);
-  const ffprobe = execFileSync("which", ["ffprobe"], {
-    encoding: "utf8",
-  }).trim();
-  symlinkSync(ffprobe, join(isolated, "ffprobe"));
+  exposeProgram("ffprobe", isolated);
   const noFfmpeg = run(root, [input], isolated);
   assert.equal(noFfmpeg.status, 2);
   assert.match(noFfmpeg.stderr, /ffmpeg .*请安装 ffmpeg/);

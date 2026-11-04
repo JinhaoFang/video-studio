@@ -8,12 +8,13 @@
 import assert from "node:assert/strict";
 import {
   commandOutput as execFileSync,
+  exposeProgram,
   runCommand as spawnSync,
   temporaryDirectory as fixture,
   media,
   numberedVideo as makeVideo,
 } from "./test-support.ts";
-import { readFileSync, readdirSync, symlinkSync, writeFileSync } from "node:fs";
+import { readFileSync, readdirSync, writeFileSync } from "node:fs";
 import { dirname, join, resolve } from "node:path";
 import { test } from "node:test";
 
@@ -201,8 +202,7 @@ test("frames explains installation when ffmpeg or ffprobe is missing", (context)
   const noFfmpeg = run(root, ["frames", video, "0"], isolated);
   assert.equal(noFfmpeg.status, 2);
   assert.match(noFfmpeg.stderr, /未安装 ffmpeg.*请安装 ffmpeg/);
-  const ffmpeg = execFileSync("which", ["ffmpeg"], { encoding: "utf8" }).trim();
-  symlinkSync(ffmpeg, join(isolated, "ffmpeg"));
+  exposeProgram("ffmpeg", isolated);
   const noFfprobe = run(root, ["frames", video, "0"], isolated);
   assert.equal(noFfprobe.status, 2);
   assert.match(noFfprobe.stderr, /未安装 ffprobe.*请安装 ffmpeg/);
