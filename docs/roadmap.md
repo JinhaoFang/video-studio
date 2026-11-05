@@ -27,8 +27,6 @@
 
 ## 下一步
 
-**design-system 的规则**：核查已完成、修复 PR 待合并，见 `JinhaoFang/design-system#90`。
-
 **第二阶段**：在新会话里跑 `/grill-with-docs` 定新选题，再 `/to-spec`、`/to-tickets`，开新会话执行。开工前先过下面的待定项。
 
 ## 第一阶段留下的（spec #60）
