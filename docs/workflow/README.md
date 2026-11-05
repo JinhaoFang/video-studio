@@ -17,7 +17,7 @@
 
 ```
 GitHub                        设计负责人（Claude Code）                      工程负责人（Codex）
-spec #S     ─ 确认基线（verify）；工程类 spec 先做独立审查（review-spec）
+spec #S     ─ 确认基线（verify）；由用户决定是否启动派发前独立审查，选择后按 run-spec 做（review-spec）
  └ 工单 #T  ─ 选出前置都已关闭的工单
    role:design      → 自己做、验收、提交
    role:engineering → 按 issue 号派发，到并发上限排队 ───────────→ 读 #T 的正文和评论、#S 的正文，做完、提交（Refs: #T）、写汇报
