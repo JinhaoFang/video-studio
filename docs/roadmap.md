@@ -19,14 +19,13 @@
 | 流程的版本 | `workflow-v1`～`workflow-v3.1` 从本仓库发布；之后的版本从 `JinhaoFang/agent-workflow` 发布 | `JinhaoFang/agent-workflow` 的 README |
 | 方法层仓库 | 开发流程带着历史拆到 `JinhaoFang/agent-workflow`（私有）；视频的组件、风格、工具、规则和护栏留在本仓库；本仓库的两个技能从 `workflow-v4` 起换成安装版本，不进 git（用户 10-31） | `docs/workflow/README.md`「方法层仓库」 |
 | 方法层怎么改 | 放方法和思路，不放写死的规范；遇到的问题先记成观察，经过分析和评估再决定加不加、用什么形式；"汇报给人"由用户打分（用户 10-31） | `JinhaoFang/agent-workflow` 的 `AGENTS.md`「怎么改方法层」 |
+| 协作边界 | 派发前独立审查由用户选择；工单准确定位参照、定稿、契约和验收产物，实现位置由执行者决定；工程推送仅限派发明确授权的本工单分支。规则边界已同步（用户 11-05） | `docs/agents/issue-tracker.md`、`docs/roles/`、`docs/workflow/README.md` |
 | CI | GitHub Actions 的设定不动；启动不了时改为本机验证（用户 10-31） | `docs/workflow/README.md`「护栏」 |
 | 第一阶段 | 复刻开场 0:00～0:46：spec #60，PR #73，成片 47.9 秒；用户审片后返工 #74 | `docs/reports/spec-60-nasa-punk-opening.html` |
 
 进行中的工作以 GitHub 上打开的 spec 为准，不写进本文。
 
 ## 下一步
-
-**design-system 的规则**：从 v1 直接升到 v3，规则文档没按新模板重新生成，没核查过，按判定标准第二版检查一次。
 
 **第二阶段**：在新会话里跑 `/grill-with-docs` 定新选题，再 `/to-spec`、`/to-tickets`，开新会话执行。开工前先过下面的待定项。
 
@@ -49,4 +48,4 @@
 
 ## 待定
 
-无。
+- 方法层 `workflow-v5` 尚未发 tag，待唯一一次发布后再升级；当前仍安装 `workflow-v4`，本轮只同步仓库自有规则文档（用户 11-05），见 `JinhaoFang/agent-workflow#16`。
