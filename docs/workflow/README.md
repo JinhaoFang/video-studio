@@ -9,24 +9,24 @@
 | 想清楚     | 用户                                            | `/grill-with-docs`                             | 术语进 `GLOSSARY.md`，难回头的决定进 `docs/adr/`                     |
 | 写 spec    | 用户                                            | `/to-spec`                                     | GitHub issue                                                         |
 | 拆工单     | 用户                                            | `/to-tickets`                                  | spec 的 sub-issue，带阻塞关系；格式见 `docs/agents/issue-tracker.md` |
-| 执行与验收 | 用户在新会话里说"执行 spec #号"，设计负责人照做（会话可以放在后台，见下文） | `run-spec`（内部用 `codex-dispatch`）          | 集成分支上的提交、工单下的验收评论、`docs/reports/` 的汇报           |
+| 执行与验收 | 用户在新会话里说"执行 spec #号"，设计负责人照做（会话可以放在后台，见下文） | `run-spec`（自带派发层，按席位选框架和模型）   | 集成分支上的提交、工单下的验收评论、`docs/reports/` 的汇报           |
 | 合并       | 用户                                            | PR（正文用 `/pr` 的格式），只能用 merge commit | `main`                                                               |
 | 复盘       | 用户                                            | `/retro`                                       | 规则文档、检查脚本、文档指针                                         |
 
 执行阶段的回路：
 
 ```
-GitHub                        设计负责人（Claude Code）                      工程负责人（Codex）
+GitHub                        设计负责人（主会话）                           工程负责人（按席位派发的 agent）
 spec #S     ─ 确认基线（verify）；由用户决定是否启动派发前独立审查，选择后按 run-spec 做（review-spec）
  └ 工单 #T  ─ 选出前置都已关闭的工单
    role:design      → 自己做、验收、提交
    role:engineering → 按 issue 号派发，到并发上限排队 ───────────→ 读 #T 的正文和评论、#S 的正文，做完、提交（Refs: #T）、写汇报
                      ← 看汇报（TODO(design)、推断清单）、实测验收产物 ←──────────┘
    ready-for-human  → 告诉用户要做什么
- └ 合并、评论验收结论、关闭 #T；每批合并后派 Codex 审查；全部关闭后再审一次、开 PR "Closes #S"、查 PR（pr-check）、写汇报、清理
+ └ 合并、评论验收结论、关闭 #T；每批合并后派审查席位审查；全部关闭后再审一次、开 PR "Closes #S"、查 PR（pr-check）、写汇报、清理
 ```
 
-执行会话可以放在后台跑（可选）：`claude --bg -n <名字> --permission-mode <和平时相同的模式> "<开场白>"` 启动，`claude attach <名字>` 进入；在里面按 ← 回到会话列表、按 Ctrl+Z 回到 shell，会话都继续运行。`claude agents` 看有哪些会话，`claude logs <名字>` 看最近的输出，`claude stop <id>` 停下。后台会话不依附终端，关掉终端不会中断派发出去的 Codex；前台会话在 Codex 运行期间要一直开着。权限模式要和平时一致，不一致时碰到确认就停下等人。
+执行会话可以放在后台跑（可选）：`claude --bg -n <名字> --permission-mode <和平时相同的模式> "<开场白>"` 启动，`claude attach <名字>` 进入；在里面按 ← 回到会话列表、按 Ctrl+Z 回到 shell，会话都继续运行。`claude agents` 看有哪些会话，`claude logs <名字>` 看最近的输出，`claude stop <id>` 停下。后台会话不依附终端，关掉终端不会中断派发出去的执行者；前台会话在派发运行期间要一直开着。权限模式要和平时一致，不一致时碰到确认就停下等人。
 
 ## 什么放在哪里
 
