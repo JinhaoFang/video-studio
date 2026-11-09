@@ -1,6 +1,6 @@
 # 声音
 
-对应「一期视频」清单的 ⑧ 声音（旁白、配乐、音效）和 ⑫ 混音与响度。条目沿用 [A 工单的定稿格式](https://github.com/JinhaoFang/video-studio/blob/1953d4fca11d2f7ec55ec0f4af0ec4966a7ce4e6/docs/video/visual-style.md#条目格式)，只写选项、含义、适用情况和依据；制作约定见[「一期视频」](https://github.com/JinhaoFang/video-studio/blob/1953d4fca11d2f7ec55ec0f4af0ec4966a7ce4e6/docs/workflow/README.md#一期视频)。
+对应「一期视频」清单的 ⑧ 声音（旁白、配乐、音效）和 ⑫ 混音与响度。只写知识：有哪些选项、各是什么意思、适合什么情况、样片和出处；不写先做什么、后做什么，制作步骤见 `docs/workflow/README.md`「一期视频」。条目格式见 [visual-style.md](visual-style.md)「条目格式」。
 
 下文的「适合」是根据来源描述归纳的用途，不表示某种声音只能用于某类视频，也不替具体一期定方向。声音的性别感、年龄感、音色、语速和情绪是不同维度，可以组合；音色描述不等于对说话人真实身份的判断。依据是 ElevenLabs 官方 [Voice Design](https://elevenlabs.io/docs/eleven-creative/voices/voice-design.md) 对这些维度的分别定义。
 
@@ -85,14 +85,14 @@
 - **一句话**：仓库已经用 ElevenLabs 做过中文正式旁白，声线是否合适、具体模型能控制什么，都有独立的实测记录。
 - **适合**：了解 NASA 朋克开场的声音选择与发音、变速限制；这份单期记录不能代表其他声线、模型或账号。
 - **素材来源**：已用服务；不是本次工单新增的素材。模型能力、默认声线可用性和使用许可均有上下文限制。
-- **出处**：[NASA 朋克开场 README「正式配音」](https://github.com/JinhaoFang/video-studio/blob/5e0f5d50b1b2a4b5af94432abc10e4b1f548712d/episodes/nasa-punk-opening/README.md#正式配音69)、[ElevenLabs API 研究](https://github.com/JinhaoFang/video-studio/blob/5e0f5d50b1b2a4b5af94432abc10e4b1f548712d/docs/research/nasa-ep04/elevenlabs-api.md)、[该期 sources.md 的配音与许可记录](https://github.com/JinhaoFang/video-studio/blob/5e0f5d50b1b2a4b5af94432abc10e4b1f548712d/episodes/nasa-punk-opening/sources.md)：引用既有经验，不把历史参数写成当前通用能力。
+- **出处**：[NASA 朋克开场 README「正式配音」](../../episodes/nasa-punk-opening/README.md#正式配音69)、[ElevenLabs API 研究](../research/nasa-ep04/elevenlabs-api.md)、[该期 sources.md 的配音与许可记录](../../episodes/nasa-punk-opening/sources.md)：引用既有经验，不把历史参数写成当前通用能力。
 
 ### 本仓库来源：MiniMax
 
 - **一句话**：ClinMesh 最终旁白用的是 MiniMax Audio「沉稳高管」，相关经验记录在本期说明里。
 - **适合**：了解已有产品宣传片的声音来源与实际处理边界；「沉稳高管」是本期使用的声线名，不是全部企业片的固定答案。
 - **素材来源**：已用服务；本期生成、切句属于未入库的本机步骤，配音也没有经过现有配音工具的错字率评分，不能与另一服务直接作质量排名。
-- **出处**：[ClinMesh README「制作步骤」「复现」「已知偏离」「与首期的差异」](https://github.com/JinhaoFang/video-studio/blob/5e0f5d50b1b2a4b5af94432abc10e4b1f548712d/episodes/clinmesh-promo/README.md)、[该期 sources.md 的未登记项](https://github.com/JinhaoFang/video-studio/blob/5e0f5d50b1b2a4b5af94432abc10e4b1f548712d/episodes/clinmesh-promo/sources.md)：账号、模型及商用条款尚未补齐，不由知识文档补作授权结论。
+- **出处**：[ClinMesh README「制作步骤」「复现」「已知偏离」「与首期的差异」](../../episodes/clinmesh-promo/README.md)、[该期 sources.md 的未登记项](../../episodes/clinmesh-promo/sources.md)：账号、模型及商用条款尚未补齐，不由知识文档补作授权结论。
 
 ## ⑧ 配乐
 
@@ -204,7 +204,7 @@
 - **适合**：以讲清内容为主的视频；无旁白的音乐片段可由音乐或音效承担注意力中心，不必套同一种人声优先关系。
 - **标志特征**：对白、音乐、音效和环境声可分别控制；压低背景音（ducking）表现为说话时背景变小，结束后平滑恢复。整片响度合格不能证明每个字都没被音乐盖住。
 - **关键技法**：分轨增益和音量包络控制相对平衡；ducking 控制让位量和过渡快慢，没有所有曲目通用的固定电平差。
-- **出处**：[Adobe Essential Sound](https://helpx.adobe.com/premiere/desktop/add-audio-effects/adjust-volume-and-levels/audio-editing-with-essential-sound-panel.html) 区分 Dialogue、Music、SFX、Ambience；[Adobe 自动压低背景音](https://helpx.adobe.com/premiere/desktop/add-audio-effects/adjust-volume-and-levels/automatically-duck-audio.html) 说明让位量、触发和淡变。[NASA 混音经验](https://github.com/JinhaoFang/video-studio/blob/5e0f5d50b1b2a4b5af94432abc10e4b1f548712d/episodes/nasa-punk-opening/README.md#配乐嘀嗒与混音70) 只作为单期实现引用，其占位音色及平衡并非通用定稿。
+- **出处**：[Adobe Essential Sound](https://helpx.adobe.com/premiere/desktop/add-audio-effects/adjust-volume-and-levels/audio-editing-with-essential-sound-panel.html) 区分 Dialogue、Music、SFX、Ambience；[Adobe 自动压低背景音](https://helpx.adobe.com/premiere/desktop/add-audio-effects/adjust-volume-and-levels/automatically-duck-audio.html) 说明让位量、触发和淡变。[NASA 混音经验](../../episodes/nasa-punk-opening/README.md#配乐嘀嗒与混音70) 只作为单期实现引用，其占位音色及平衡并非通用定稿。
 
 ### 对白清理、均衡与动态控制
 
@@ -235,7 +235,7 @@
 - **一句话**：工作室已有统一的成片响度目标、容差和真峰值上限，数字只保留在制作工作流中。
 - **适合**：本仓库一般成片验收；平台或委托方另有交付规格时，其适用对象和测量口径需要单独区分。
 - **标志特征**：目标、容差、真峰值上限及 LRA 的处理均引用同一处约定；本页不另立数字，也不把某期内部混音参数当作整仓标准。
-- **出处**：[制作工作流「一期视频」的成片响度条目](https://github.com/JinhaoFang/video-studio/blob/1953d4fca11d2f7ec55ec0f4af0ec4966a7ce4e6/docs/workflow/README.md#一期视频)；[NASA README 的混音与成片实测](https://github.com/JinhaoFang/video-studio/blob/5e0f5d50b1b2a4b5af94432abc10e4b1f548712d/episodes/nasa-punk-opening/README.md#配乐嘀嗒与混音70) 只引用，不重复抄录响度数字。
+- **出处**：[制作工作流「一期视频」的成片响度条目](../workflow/README.md#一期视频)；[NASA README 的混音与成片实测](../../episodes/nasa-punk-opening/README.md#配乐嘀嗒与混音70) 只引用，不重复抄录响度数字。
 
 ### 广播与广播内容流媒体：EBU R 128 系列
 
