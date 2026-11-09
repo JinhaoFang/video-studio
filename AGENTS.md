@@ -1,6 +1,6 @@
 # 视频工作室
 
-用 agent 制作讲解视频的工作室仓库：多期视频共用规则、工具、组件和风格，每期一个目录。Remotion 4 + React 19，包管理用 pnpm。文档地图见 `docs/README.md`。
+用 agent 制作视频的工作室仓库，视频类型不限。它帮用户做出自己满意的视频（从 `/grill-with-docs` 开始），把制作经验沉淀进仓库（`/retro`）；做出来的视频，用户愿意的话可以对外交付。多期视频共用规则、工具、组件和风格（工作室层），每期一个目录。Remotion 4 + React 19，包管理用 pnpm。文档地图见 `docs/README.md`。
 
 ## 角色
 
@@ -36,6 +36,7 @@
 - 媒体（配音、音乐、图片、视频素材、渲染结果）不进 git：素材放 `public/episodes/<期>/`，渲染输出放 `out/`，来源和授权记在该期的 `sources.md`。
 - `references/` 是参考资料，只读。
 - 调用外部程序时参数用数组传，不拼 shell 字符串。
+- 一期做完后的复盘与沉淀、改工作室层的 PR 怎么审，按 `docs/workflow/README.md`「复利」。
 - 验证命令：`pnpm verify`，步骤见 `tools/verify.ts`。CI 什么时候跑见 `docs/workflow/README.md`「护栏」。
 
 ## 目录与归属
