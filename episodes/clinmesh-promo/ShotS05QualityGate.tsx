@@ -1,7 +1,6 @@
 /**
- * Scene S05 (L009) in ClinMeshPromoLightPro: syllable-locked Light-Theme
- * verbatim consultation provenance and real-time quality control blocking
- * contradiction and penicillin allergy omission risks.
+ * S05（L009）：按逐音节时间点展示浅色工作站的问诊原话溯源与实时质控，
+ * 阻断前后矛盾和青霉素过敏遗漏风险。
  */
 import { useCurrentFrame } from "remotion";
 import type { Timeline } from "../../tools/timeline-types";
@@ -120,7 +119,7 @@ const CURSOR_STOPS: LightCursorStop[] = [
   { frame: 176, x: 890, y: 520 },
 ];
 
-export const ShotS05LightProQualityGate: React.FC<{ timeline: Timeline }> = ({
+export const ShotS05QualityGate: React.FC<{ timeline: Timeline }> = ({
   timeline,
 }) => {
   void timeline;

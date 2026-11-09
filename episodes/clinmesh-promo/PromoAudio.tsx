@@ -1,8 +1,6 @@
 /**
- * Timeline-level audio bus for ClinMesh promo: sentence voiceover clips with full
- * natural tail decay, dual-offset compensated Freesound CC0 foley/impacts, and
- * Clinical AI Underscore.wav balanced across its four musical movements without
- * speech-triggered ducking (smooth opening fade-in and continuous S08 curve fade-out).
+ * ClinMeshPromo 的音频总线：播放逐句配音、经峰值与输出延迟补偿的交互音效，
+ * 以及按原有四段音量曲线平衡的 clinical-neutral-underscore.wav 配乐。
  */
 import { useMemo } from "react";
 import { Audio } from "@remotion/media";
@@ -10,30 +8,31 @@ import { Sequence, interpolate, staticFile, useVideoConfig } from "remotion";
 import { sentenceFrame } from "../../src/kit/sentence-timing";
 import type { Timeline } from "../../tools/timeline-types";
 import { clamp01 } from "./motion-utils";
-import { buildSfxSchedule } from "./sfx-schedule";
+import { type SfxCue, buildSfxSchedule } from "./sfx-schedule";
 import { BGM_FADE_IN_F, BGM_FADE_OUT_F, BGM_STEADY_VOLUME } from "./tokens";
 
 const cosineRamp = (t: number): number =>
   0.5 * (1 - Math.cos(Math.PI * clamp01(t)));
 
 const bgmScoreBalance = (sec: number): number => {
-  const r11 = cosineRamp((sec - 10.2) / 2.2);
-  const r35 = cosineRamp((sec - 34.2) / 2.4);
-  const r60 = cosineRamp((sec - 59.4) / 2.4);
+  const r19 = cosineRamp((sec - 18.2) / 2.4);
+  const r48 = cosineRamp((sec - 47.0) / 2.6);
+  const r80 = cosineRamp((sec - 79.4) / 2.6);
   return (
-    1.48 * (1 - r11) +
-    0.84 * r11 * (1 - r35) +
-    0.53 * r35 * (1 - r60) +
-    1.62 * r60
+    0.78 * (1 - r19) +
+    0.66 * r19 * (1 - r48) +
+    0.62 * r48 * (1 - r80) +
+    0.8 * r80
   );
 };
 
 export const PromoAudio: React.FC<{
   timeline: Timeline;
   bgm: boolean;
-}> = ({ timeline, bgm }) => {
+  sfxBuilder?: (timeline: Timeline) => SfxCue[];
+}> = ({ timeline, bgm, sfxBuilder = buildSfxSchedule }) => {
   const { fps } = useVideoConfig();
-  const sfxCues = useMemo(() => buildSfxSchedule(timeline), [timeline]);
+  const sfxCues = useMemo(() => sfxBuilder(timeline), [sfxBuilder, timeline]);
 
   const bgmVolumeAt = (f: number): number => {
     const scoreBalance = bgmScoreBalance(f / fps);
@@ -48,9 +47,9 @@ export const PromoAudio: React.FC<{
     <>
       {bgm ? (
         <Audio
-          name="BGM Clinical AI Underscore"
+          name="BGM Clinical Neutral Underscore"
           src={staticFile(
-            "episodes/clinmesh-promo/music/Clinical AI Underscore.wav",
+            "episodes/clinmesh-promo/music/clinical-neutral-underscore.wav",
           )}
           volume={bgmVolumeAt}
           premountFor={fps}

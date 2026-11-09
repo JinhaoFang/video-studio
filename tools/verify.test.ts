@@ -4,6 +4,8 @@
  * Real CLI runs prove ignored tracked files are checked
  * without making direct `eslint .` traverse generated or third-party code,
  * that `--static` stops before tests, and that bad arguments exit 2.
+ * Isolated test repositories also cover suite, assertion and import failures,
+ * while successful, skipped and TODO tests retain Node's normal semantics.
  * Run with `node --test tools/verify.test.ts` or `pnpm verify`.
  */
 import assert from "node:assert/strict";
@@ -192,6 +194,63 @@ test("static verification runs every check but never executes tests", (context) 
   const invalid = run(["--static"]);
   assert.equal(invalid.status, 2, invalid.stdout + invalid.stderr);
   assert.match(invalid.stdout, /TS2322/);
+});
+
+for (const scenario of [
+  {
+    name: "suite callback throws synchronously without registering tests",
+    source:
+      'import { describe } from "node:test";\ndescribe("suite-sync-throw", () => { throw new Error("suite callback failed"); });\n',
+    diagnostics: [/suite-sync-throw/, /suite callback failed/],
+  },
+  {
+    name: "an assertion fails inside it",
+    source:
+      'import assert from "node:assert/strict";\nimport { describe, it } from "node:test";\ndescribe("assertion-suite", () => { it("assertion-failure", () => { assert.equal(1, 2); }); });\n',
+    diagnostics: [/assertion-suite/, /assertion-failure/, /ERR_ASSERTION/],
+  },
+  {
+    name: "a top-level import cannot resolve its module",
+    source: 'import "./missing-module.js";\n',
+    diagnostics: [/ERR_MODULE_NOT_FOUND/, /missing-module\.js/],
+  },
+]) {
+  test(`verification fails when ${scenario.name}`, (context) => {
+    const { root, run } = staticFixture(context);
+    writeFileSync(join(root, "tools/failure.test.ts"), scenario.source);
+    const result = run([]);
+    const output = result.stdout + result.stderr;
+    assert.equal(result.error, undefined);
+    assert.equal(result.status, 1, output);
+    assert.match(output, /\[verify\] node:test \(1 files\)/);
+    assert.match(output, /failure\.test\.ts/);
+    for (const diagnostic of scenario.diagnostics)
+      assert.match(output, diagnostic);
+  });
+}
+
+test("verification runs every selected test and accepts skips and TODO failures", (context) => {
+  const { root, run } = staticFixture(context);
+  writeFileSync(
+    join(root, "tools/passing.test.ts"),
+    'import { describe, it } from "node:test";\ndescribe("passing-suite", () => { it("passes", () => { console.log("not ok 1 - ordinary test output"); }); it.skip("skipped", () => { throw new Error("must not run"); }); it("pending", { todo: "not implemented" }, () => { throw new Error("expected TODO failure"); }); });\n',
+  );
+  writeFileSync(
+    join(root, "tools/another.test.ts"),
+    'import { it } from "node:test";\nit("another file runs", () => {});\n',
+  );
+  const result = run([]);
+  const output = result.stdout + result.stderr;
+  assert.equal(result.error, undefined);
+  assert.equal(result.status, 0, output);
+  assert.match(output, /\[verify\] node:test \(2 files\)/);
+  assert.match(output, /another file runs/);
+  assert.match(output, /passing-suite/);
+  assert.match(output, /# tests 4/);
+  assert.match(output, /# pass 2/);
+  assert.match(output, /# fail 0/);
+  assert.match(output, /# skipped 1/);
+  assert.match(output, /# todo 1/);
 });
 
 test("verification help and invalid arguments exit before any check", (context) => {

@@ -1,7 +1,6 @@
 /**
- * Scene S06 (L010) in ClinMeshPromoLightPro: syllable-locked Light-Theme
- * licensed physician manual approval across diagnosis confirmation, prescription
- * issuance, and structured EMR signing with >=1.2s emerald signed hold.
+ * S06（L010）：按逐音节时间点展示执业医师人工核准诊断、开具处方与签署病历，
+ * 保留不少于 1.2 秒的绿色已签署状态。
  */
 import { useCurrentFrame } from "remotion";
 import type { Timeline } from "../../tools/timeline-types";
@@ -14,7 +13,7 @@ import {
 } from "./light-stage";
 import { EASE, ramp } from "./motion-utils";
 
-export const S06_LIGHT_PRO_SIGN_CLICK_OFFSET_F = 180;
+export const S06_SIGN_CLICK_OFFSET_F = 180;
 
 const BASE = "episodes/clinmesh-promo/captures/light-s06";
 
@@ -116,7 +115,7 @@ const CURSOR_STOPS: LightCursorStop[] = [
   { frame: 194, x: 822.5, y: 857.75 },
 ];
 
-export const ShotS06LightProSignoff: React.FC<{ timeline: Timeline }> = ({
+export const ShotS06Signoff: React.FC<{ timeline: Timeline }> = ({
   timeline,
 }) => {
   void timeline;

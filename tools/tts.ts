@@ -6,6 +6,8 @@
  * back to public voice lookup and conservative 1-credit reservation while still
  * requiring exact `character-cost` headers on every synthesis response.
  * API keys stay in memory; only allowlisted response metadata is persisted.
+ * Seed 0 is a best-effort reproduction aid, not a guarantee of identical audio.
+ * Optional speed and text overrides affect synthesis only, not captions.
  * No automatic retries; pending reservations block reuse after interruption
  * until the ledger is reconciled against the account.
  */

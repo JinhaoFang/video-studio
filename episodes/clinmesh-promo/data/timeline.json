@@ -3,136 +3,136 @@
   "fps": 30,
   "source": {
     "kind": "elevenlabs",
-    "description": "ElevenLabs Brian (nPczCjzI2devNBz1zQrb) / eleven_v4 (zh, rubberband tempo=1.10)"
+    "description": "MiniMax Audio 沉稳高管 (48kHz PCM WAV, 1.00x 原速精剪)"
   },
   "leadingSilenceSeconds": 0.9,
-  "durationInFrames": 2911,
+  "durationInFrames": 3114,
   "lines": [
     {
       "id": "L001",
-      "text": "人工智能，已经学会在屏幕里回答医学问题",
+      "text": "人工智能，已能在屏幕之内解答医学问题",
       "pauseAfterSeconds": 0.45,
       "startFrame": 27,
-      "endFrame": 136,
-      "audioDurationSeconds": 3.636372,
-      "audioSrc": "episodes/clinmesh-promo/voiceover-brian-a1-110/L001.mp3"
+      "endFrame": 133,
+      "audioDurationSeconds": 3.53,
+      "audioSrc": "episodes/clinmesh-promo/voiceover-minimax-exec/L001.wav"
     },
     {
       "id": "L002",
-      "text": "但旧系统只记录过去，孤立的对话框，也走不进真实的诊疗现场",
+      "text": "然而传统系统止于事后记录，孤立的对话窗口，始终游离于诊疗现场之外",
       "pauseAfterSeconds": 0.55,
-      "startFrame": 150,
-      "endFrame": 330,
-      "audioDurationSeconds": 6.016375,
-      "audioSrc": "episodes/clinmesh-promo/voiceover-brian-a1-110/L002.mp3"
+      "startFrame": 146,
+      "endFrame": 336,
+      "audioDurationSeconds": 6.33,
+      "audioSrc": "episodes/clinmesh-promo/voiceover-minimax-exec/L002.wav"
     },
     {
       "id": "L003",
-      "text": "下一步，是让智能体真正走进临床——这是 ClinMesh",
+      "text": "医疗智能的下一程，是真正深入临床一线——ClinMesh，应运而生",
       "pauseAfterSeconds": 1.35,
-      "startFrame": 347,
-      "endFrame": 482,
-      "audioDurationSeconds": 4.509093,
-      "audioSrc": "episodes/clinmesh-promo/voiceover-brian-a1-110/L003.mp3"
+      "startFrame": 353,
+      "endFrame": 521,
+      "audioDurationSeconds": 5.61,
+      "audioSrc": "episodes/clinmesh-promo/voiceover-minimax-exec/L003.wav"
     },
     {
       "id": "L004",
-      "text": "它生长于贯通门诊、医技、住院、手术介入到病案结算的完整医院知识基底之上",
+      "text": "贯通门诊、医技、住院、手术介入与病案结算，构筑全院统一的临床知识基底",
       "pauseAfterSeconds": 0.22,
-      "startFrame": 522,
-      "endFrame": 730,
-      "audioDurationSeconds": 6.909093,
-      "audioSrc": "episodes/clinmesh-promo/voiceover-brian-a1-110/L004.mp3"
+      "startFrame": 562,
+      "endFrame": 797,
+      "audioDurationSeconds": 7.84,
+      "audioSrc": "episodes/clinmesh-promo/voiceover-minimax-exec/L004.wav"
     },
     {
       "id": "L005",
-      "text": "每个智能体与专科模型都能独立解耦，即插即用地接入医院现有系统",
+      "text": "智能体与专科模型标准解耦，支持按需独立接入、即插即用",
       "pauseAfterSeconds": 1.9,
-      "startFrame": 736,
-      "endFrame": 909,
-      "audioDurationSeconds": 5.745465,
-      "audioSrc": "episodes/clinmesh-promo/voiceover-brian-a1-110/L005.mp3"
+      "startFrame": 803,
+      "endFrame": 976,
+      "audioDurationSeconds": 5.76,
+      "audioSrc": "episodes/clinmesh-promo/voiceover-minimax-exec/L005.wav"
     },
     {
       "id": "L006",
-      "text": "在诊室后台，无感伴随智能无需提示词，随问诊与报告事件静默运转",
+      "text": "接诊全程，无感伴随智能无需指令唤醒，随医患问诊静默整理病史",
       "pauseAfterSeconds": 0.22,
-      "startFrame": 966,
-      "endFrame": 1162,
-      "audioDurationSeconds": 6.545465,
-      "audioSrc": "episodes/clinmesh-promo/voiceover-brian-a1-110/L006.mp3"
+      "startFrame": 1033,
+      "endFrame": 1222,
+      "audioDurationSeconds": 6.28,
+      "audioSrc": "episodes/clinmesh-promo/voiceover-minimax-exec/L006.wav"
     },
     {
       "id": "L007",
-      "text": "结构化病历实时成文，关联权威指南的检验、影像与处方候选已同步就绪",
+      "text": "结构化病历实时成稿，循证关联的检验检查与处方候选，同步就绪",
       "pauseAfterSeconds": 0.32,
-      "startFrame": 1169,
-      "endFrame": 1367,
-      "audioDurationSeconds": 6.618186,
-      "audioSrc": "episodes/clinmesh-promo/voiceover-brian-a1-110/L007.mp3"
+      "startFrame": 1228,
+      "endFrame": 1421,
+      "audioDurationSeconds": 6.43,
+      "audioSrc": "episodes/clinmesh-promo/voiceover-minimax-exec/L007.wav"
     },
     {
       "id": "L008",
-      "text": "进入住院冠脉介入，耗材预留、病组支付空间精算与术后三岗核查一气呵成",
+      "text": "冠脉介入全流程，高值耗材预留、病组支付精算与三岗核查，一体闭环",
       "pauseAfterSeconds": 1.9,
-      "startFrame": 1377,
-      "endFrame": 1577,
-      "audioDurationSeconds": 6.690907,
-      "audioSrc": "episodes/clinmesh-promo/voiceover-brian-a1-110/L008.mp3"
+      "startFrame": 1431,
+      "endFrame": 1643,
+      "audioDurationSeconds": 7.09,
+      "audioSrc": "episodes/clinmesh-promo/voiceover-minimax-exec/L008.wav"
     },
     {
       "id": "L009",
-      "text": "每一笔病历与医嘱候选，都强制绑定问诊原话与指南依据，实时拦截前后矛盾与过敏风险",
+      "text": "病历成文与医嘱候选，逐句锚定问诊原话与权威指南，实时阻断前后矛盾与过敏隐患",
       "pauseAfterSeconds": 0.28,
-      "startFrame": 1634,
-      "endFrame": 1861,
-      "audioDurationSeconds": 7.563628,
-      "audioSrc": "episodes/clinmesh-promo/voiceover-brian-a1-110/L009.mp3"
+      "startFrame": 1700,
+      "endFrame": 1952,
+      "audioDurationSeconds": 8.37,
+      "audioSrc": "episodes/clinmesh-promo/voiceover-minimax-exec/L009.wav"
     },
     {
       "id": "L010",
-      "text": "而所有正式医嘱与文书签署，必须经医生人工核对拍板才生效留痕",
-      "pauseAfterSeconds": 1.9,
-      "startFrame": 1870,
-      "endFrame": 2049,
-      "audioDurationSeconds": 5.963628,
-      "audioSrc": "episodes/clinmesh-promo/voiceover-brian-a1-110/L010.mp3"
+      "text": "诊断确认、处方开具与病历签署，均须执业医师人工核准，方能正式生效",
+      "pauseAfterSeconds": 2.2,
+      "startFrame": 1960,
+      "endFrame": 2176,
+      "audioDurationSeconds": 7.2,
+      "audioSrc": "episodes/clinmesh-promo/voiceover-minimax-exec/L010.wav"
     },
     {
       "id": "L011",
-      "text": "依托可解耦底座，自研病理切片识别模型可精准定位病灶特征、辅助组织学判读",
+      "text": "自研数字病理识别模型，精准定位病灶特征，辅助临床组织学判读",
       "pauseAfterSeconds": 0.25,
-      "startFrame": 2106,
-      "endFrame": 2319,
-      "audioDurationSeconds": 7.127279,
-      "audioSrc": "episodes/clinmesh-promo/voiceover-brian-a1-110/L011.mp3"
+      "startFrame": 2242,
+      "endFrame": 2428,
+      "audioDurationSeconds": 6.19,
+      "audioSrc": "episodes/clinmesh-promo/voiceover-minimax-exec/L011.wav"
     },
     {
       "id": "L012",
-      "text": "正与胸痛介入、肝病诊疗、肿瘤会诊一道，将多病种智能体持续接入临床",
+      "text": "胸痛介入、肝病诊疗与肿瘤会诊等多病种智能体，正沿统一底座持续接入临床",
       "pauseAfterSeconds": 0.32,
-      "startFrame": 2327,
-      "endFrame": 2521,
-      "audioDurationSeconds": 6.472721,
-      "audioSrc": "episodes/clinmesh-promo/voiceover-brian-a1-110/L012.mp3"
+      "startFrame": 2435,
+      "endFrame": 2674,
+      "audioDurationSeconds": 7.96,
+      "audioSrc": "episodes/clinmesh-promo/voiceover-minimax-exec/L012.wav"
     },
     {
       "id": "L013",
-      "text": "医生、护士、药师、医技、医保与病案智能体各司其职，围绕同一位患者跨岗交接",
+      "text": "从临床、护理、药学，到医技、医保与病案，六岗智能体同源协同，围绕患者无缝流转",
       "pauseAfterSeconds": 0.6,
-      "startFrame": 2531,
-      "endFrame": 2749,
-      "audioDurationSeconds": 7.272721,
-      "audioSrc": "episodes/clinmesh-promo/voiceover-brian-a1-110/L013.mp3"
+      "startFrame": 2684,
+      "endFrame": 2952,
+      "audioDurationSeconds": 8.96,
+      "audioSrc": "episodes/clinmesh-promo/voiceover-minimax-exec/L013.wav"
     },
     {
       "id": "L014",
       "text": "ClinMesh，让智能体深度融入医疗每一步",
       "pauseAfterSeconds": 1.1,
-      "startFrame": 2767,
-      "endFrame": 2878,
-      "audioDurationSeconds": 3.709093,
-      "audioSrc": "episodes/clinmesh-promo/voiceover-brian-a1-110/L014.mp3"
+      "startFrame": 2970,
+      "endFrame": 3081,
+      "audioDurationSeconds": 3.7,
+      "audioSrc": "episodes/clinmesh-promo/voiceover-minimax-exec/L014.wav"
     }
   ]
 }

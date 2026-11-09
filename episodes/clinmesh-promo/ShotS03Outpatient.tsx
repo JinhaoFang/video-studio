@@ -1,8 +1,6 @@
 /**
- * Scene S03 (L006-L007) in ClinMeshPromoLight: showcases real Light-Theme
- * ClinMesh outpatient ambient consultation auto-recording, structured EMR
- * population, and guideline-backed laboratory/prescription candidate cards
- * with the authentic provenance & package-insert drawer.
+ * S03（L006-L007）：按逐音节时间点展示浅色门诊工作站的无感成稿、
+ * 结构化病历、检验与处方候选，以及指南证据抽屉。
  */
 import { useCurrentFrame } from "remotion";
 import type { Timeline } from "../../tools/timeline-types";
@@ -19,14 +17,16 @@ import { EASE, ramp } from "./motion-utils";
 const BASE = "episodes/clinmesh-promo/captures/light-s03-s05";
 
 const CAM_KEYS: LightViewCamKey[] = [
-  { frame: 0, cx: 840, cy: 422, zoom: 1.05 },
-  { frame: 92, cx: 840, cy: 422, zoom: 1.05 },
-  { frame: 168, cx: 840, cy: 424, zoom: 1.05 },
-  { frame: 236, cx: 840, cy: 422, zoom: 1.05 },
-  { frame: 286, cx: 840, cy: 422, zoom: 1.05 },
-  { frame: 326, cx: 840, cy: 422, zoom: 1.05 },
-  { frame: 344, cx: 720, cy: 412, zoom: 1.078 },
-  { frame: 413, cx: 720, cy: 416, zoom: 1.082 },
+  { frame: 0, cx: 840, cy: 422, zoom: 1.045 },
+  { frame: 54, cx: 618, cy: 448, zoom: 1.095 },
+  { frame: 106, cx: 840, cy: 422, zoom: 1.05 },
+  { frame: 156, cx: 920, cy: 382, zoom: 1.082 },
+  { frame: 204, cx: 840, cy: 420, zoom: 1.05 },
+  { frame: 284, cx: 840, cy: 422, zoom: 1.05 },
+  { frame: 324, cx: 840, cy: 422, zoom: 1.05 },
+  { frame: 353, cx: 840, cy: 422, zoom: 1.05 },
+  { frame: 370, cx: 720, cy: 412, zoom: 1.078 },
+  { frame: 400, cx: 720, cy: 416, zoom: 1.082 },
 ];
 
 const LAYERS: LightCaptureLayer[] = [
@@ -37,15 +37,15 @@ const LAYERS: LightCaptureLayer[] = [
   },
   {
     src: `${BASE}/s03-02-emr-auto-recorded.png`,
-    fadeInStart: 93,
+    fadeInStart: 109,
     fadeInDur: 6,
   },
-  { src: `${BASE}/s03-03-emr-prepared.png`, fadeInStart: 162, fadeInDur: 8 },
-  { src: `${BASE}/s03-04-lab-candidates.png`, fadeInStart: 237, fadeInDur: 6 },
-  { src: `${BASE}/s03-05-rx-candidates.png`, fadeInStart: 287, fadeInDur: 6 },
+  { src: `${BASE}/s03-03-emr-prepared.png`, fadeInStart: 204, fadeInDur: 8 },
+  { src: `${BASE}/s03-04-lab-candidates.png`, fadeInStart: 285, fadeInDur: 6 },
+  { src: `${BASE}/s03-05-rx-candidates.png`, fadeInStart: 325, fadeInDur: 6 },
   {
     src: `${BASE}/s03-06-rx-evidence-drawer.png`,
-    fadeInStart: 325,
+    fadeInStart: 353,
     fadeInDur: 6,
   },
 ];
@@ -53,8 +53,8 @@ const LAYERS: LightCaptureLayer[] = [
 const CALLOUTS: LightCalloutBox[] = [
   {
     id: "auto-record-pill",
-    startFrame: 22,
-    endFrame: 86,
+    startFrame: 18,
+    endFrame: 100,
     rect: { left: 1308, top: 166, width: 224, height: 34 },
     label: "静默整理病史",
     labelAlign: "bottom-right",
@@ -63,8 +63,8 @@ const CALLOUTS: LightCalloutBox[] = [
   },
   {
     id: "hpi-iridescent-update",
-    startFrame: 102,
-    endFrame: 156,
+    startFrame: 118,
+    endFrame: 196,
     rect: { left: 848, top: 300, width: 794, height: 104 },
     label: "问诊原话自动入病历",
     labelAlign: "bottom-right",
@@ -73,8 +73,8 @@ const CALLOUTS: LightCalloutBox[] = [
   },
   {
     id: "assistant-prepared-strip",
-    startFrame: 174,
-    endFrame: 230,
+    startFrame: 214,
+    endFrame: 276,
     rect: { left: 42, top: 114, width: 1598, height: 40 },
     label: "候选同步就绪",
     labelAlign: "top-right",
@@ -85,28 +85,28 @@ const CALLOUTS: LightCalloutBox[] = [
 
 const CLICKS: LightClickAction[] = [
   {
-    frame: 92,
+    frame: 108,
     cx: 210.33,
     cy: 184.38,
     rect: { left: 141, top: 168.25, width: 138.66, height: 32.25 },
     tone: "blue",
   },
   {
-    frame: 236,
+    frame: 284,
     cx: 369.88,
     cy: 184.38,
     rect: { left: 283.66, top: 168.25, width: 172.45, height: 32.25 },
     tone: "blue",
   },
   {
-    frame: 286,
+    frame: 324,
     cx: 711.94,
     cy: 184.38,
     rect: { left: 629.33, top: 168.25, width: 165.22, height: 32.25 },
     tone: "blue",
   },
   {
-    frame: 324,
+    frame: 352,
     cx: 1573.5,
     cy: 379.75,
     rect: { left: 1519, top: 365.75, width: 109, height: 28 },
@@ -116,24 +116,24 @@ const CLICKS: LightClickAction[] = [
 
 const CURSOR_STOPS: LightCursorStop[] = [
   { frame: 0, x: 480, y: 420 },
-  { frame: 64, x: 460, y: 390 },
-  { frame: 89, x: 210.33, y: 184.38 },
-  { frame: 108, x: 240, y: 210 },
-  { frame: 208, x: 320, y: 210 },
-  { frame: 233, x: 369.88, y: 184.38 },
-  { frame: 258, x: 540, y: 240 },
-  { frame: 283, x: 711.94, y: 184.38 },
-  { frame: 296, x: 1120, y: 310 },
-  { frame: 321, x: 1573.5, y: 379.75 },
-  { frame: 344, x: 960, y: 460 },
+  { frame: 78, x: 460, y: 390 },
+  { frame: 105, x: 210.33, y: 184.38 },
+  { frame: 126, x: 240, y: 210 },
+  { frame: 256, x: 320, y: 210 },
+  { frame: 281, x: 369.88, y: 184.38 },
+  { frame: 300, x: 540, y: 240 },
+  { frame: 321, x: 711.94, y: 184.38 },
+  { frame: 334, x: 1120, y: 310 },
+  { frame: 349, x: 1573.5, y: 379.75 },
+  { frame: 370, x: 960, y: 460 },
 ];
 
-export const ShotS03LightOutpatient: React.FC<{ timeline: Timeline }> = ({
+export const ShotS03Outpatient: React.FC<{ timeline: Timeline }> = ({
   timeline,
 }) => {
   void timeline;
   const f = useCurrentFrame();
-  const readyGlow = ramp(f, 325, 16, EASE.snappy);
+  const readyGlow = ramp(f, 353, 16, EASE.snappy);
 
   return (
     <LightWorkstationStage
@@ -143,24 +143,24 @@ export const ShotS03LightOutpatient: React.FC<{ timeline: Timeline }> = ({
           num: "01",
           idleLabel: "问诊自记",
           doneLabel: "问诊已整理",
-          active: f < 93,
-          done: f >= 93,
+          active: f < 109,
+          done: f >= 109,
           tone: "emerald",
         },
         {
           num: "02",
-          idleLabel: "病历成文",
-          doneLabel: "病历已成文",
-          active: f >= 93 && f < 236,
-          done: f >= 166,
+          idleLabel: "病历成稿",
+          doneLabel: "病历已成稿",
+          active: f >= 109 && f < 284,
+          done: f >= 206,
           tone: "emerald",
         },
         {
           num: "03",
           idleLabel: "指南候选",
           doneLabel: "候选已就绪",
-          active: f >= 236 && f < 326,
-          done: f >= 326,
+          active: f >= 284 && f < 353,
+          done: f >= 353,
           tone: "emerald",
         },
       ]}
@@ -169,7 +169,7 @@ export const ShotS03LightOutpatient: React.FC<{ timeline: Timeline }> = ({
       callouts={CALLOUTS}
       clicks={CLICKS}
       cursorStops={CURSOR_STOPS}
-      cursorSpan={[68, 336]}
+      cursorSpan={[82, 364]}
       finalTone={{ progress: readyGlow, kind: "blue" }}
     />
   );

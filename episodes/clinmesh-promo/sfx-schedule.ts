@@ -1,10 +1,10 @@
 /**
- * Central sentence-anchored SFX schedule and dual-offset compensation math.
- * Peak offsets come from 10ms RMS measurements in sfx/audio-manifest.json; every
- * event is derived from timeline sentence anchors so pause edits shift cleanly.
+ * ClinMeshPromo 的音效调度与章节呼吸区间：按 timeline.json 的句子锚点
+ * 安排交互提示，使用音频清单实测峰值和输出延迟补偿计算起始帧。
  */
 import { sentence, sentenceFrame } from "../../src/kit/sentence-timing";
 import type { Timeline } from "../../tools/timeline-types";
+import { S06_SIGN_CLICK_OFFSET_F } from "./ShotS06Signoff";
 import { BREATHER_DURATION_F, OUTPUT_AUDIO_OFFSET_F } from "./tokens";
 
 export const MEASURED_PEAK_F: Record<string, number> = {
@@ -45,12 +45,37 @@ export const sfxFrom = (
 export const breatherStartFrame = (
   timeline: Timeline,
   afterLineId: "L005" | "L008" | "L010",
-): number => sentence(timeline, afterLineId).endFrame + 3;
+): number =>
+  afterLineId === "L010"
+    ? sentence(timeline, "L010").endFrame + 12
+    : sentence(timeline, afterLineId).endFrame + 3;
 
-export const s06ClickOffset = (timeline: Timeline): number => {
-  const l010 = sentence(timeline, "L010");
-  return Math.max(108, l010.endFrame - l010.startFrame - 52);
-};
+export const breatherSpans = (timeline: Timeline) => [
+  {
+    id: "B01",
+    chapterNo: "01",
+    titlePrefix: "无感伴随智能 ·",
+    accentWord: "静默运转",
+    from: breatherStartFrame(timeline, "L005"),
+    durationInFrames: BREATHER_DURATION_F,
+  },
+  {
+    id: "B02",
+    chapterNo: "02",
+    titlePrefix: "溯源质控 ·",
+    accentWord: "人工把关",
+    from: breatherStartFrame(timeline, "L008"),
+    durationInFrames: BREATHER_DURATION_F,
+  },
+  {
+    id: "B03",
+    chapterNo: "03",
+    titlePrefix: "多病种智能体 ·",
+    accentWord: "即插即用",
+    from: breatherStartFrame(timeline, "L010"),
+    durationInFrames: BREATHER_DURATION_F,
+  },
+];
 
 export const buildSfxSchedule = (
   timeline: Timeline,
@@ -60,6 +85,11 @@ export const buildSfxSchedule = (
   const b01 = breatherStartFrame(timeline, "L005");
   const b02 = breatherStartFrame(timeline, "L008");
   const b03 = breatherStartFrame(timeline, "L010");
+  const s03Start = b01 + BREATHER_DURATION_F;
+  const s04Start = at("L008");
+  const s05Start = b02 + BREATHER_DURATION_F;
+  const s06Start = at("L010");
+
   const raw: Array<{
     id: string;
     src: string;
@@ -77,7 +107,7 @@ export const buildSfxSchedule = (
     {
       id: "s01-brand-settle",
       src: "fs-671375.mp3",
-      targetPeakFrame: at("L003", 52),
+      targetPeakFrame: at("L003", 104),
       volume: 0.2,
     },
     {
@@ -89,7 +119,7 @@ export const buildSfxSchedule = (
     {
       id: "s02-snap-thud",
       src: "fs-671375.mp3",
-      targetPeakFrame: at("L005", 136),
+      targetPeakFrame: at("L005", 138),
       volume: 0.24,
     },
     {
@@ -99,24 +129,54 @@ export const buildSfxSchedule = (
       volume: 0.28,
     },
     {
-      id: "s03-emr-typing",
-      src: "fs-331656.mp3",
-      targetPeakFrame: at("L006", 18),
+      id: "s03-auto-record-tab",
+      src: "fs-278205.mp3",
+      targetPeakFrame: s03Start + 108,
       volume: 0.2,
-      durationInFrames: 72,
+    },
+    {
+      id: "s03-emr-populate",
+      src: "fs-331656.mp3",
+      targetPeakFrame: s03Start + 204,
+      volume: 0.18,
+      durationInFrames: 36,
       fadeOutFrames: 8,
     },
     {
-      id: "s03-portal-wipe",
-      src: "fs-71852.mp3",
-      targetPeakFrame: at("L007", -2),
-      volume: 0.32,
+      id: "s03-lab-candidates-open",
+      src: "fs-278205.mp3",
+      targetPeakFrame: s03Start + 284,
+      volume: 0.2,
     },
     {
-      id: "s04-drg-freeze-shutter",
+      id: "s03-rx-candidates-open",
+      src: "fs-278205.mp3",
+      targetPeakFrame: s03Start + 324,
+      volume: 0.18,
+    },
+    {
+      id: "s03-guideline-drawer",
+      src: "fs-629979.mp3",
+      targetPeakFrame: s03Start + 352,
+      volume: 0.24,
+    },
+    {
+      id: "s04-drg-tab-switch",
+      src: "fs-278205.mp3",
+      targetPeakFrame: s04Start + 86,
+      volume: 0.2,
+    },
+    {
+      id: "s04-drg-headroom-lock",
       src: "fs-520684.mp3",
-      targetPeakFrame: at("L008", 112),
-      volume: 0.4,
+      targetPeakFrame: s04Start + 116,
+      volume: 0.34,
+    },
+    {
+      id: "s04-postop-check",
+      src: "fs-629979.mp3",
+      targetPeakFrame: s04Start + 172,
+      volume: 0.24,
     },
     {
       id: "b02-whoosh",
@@ -125,22 +185,52 @@ export const buildSfxSchedule = (
       volume: 0.28,
     },
     {
-      id: "s05-pan-slide",
-      src: "fs-464302.mp3",
-      targetPeakFrame: at("L009", 148),
-      volume: 0.34,
+      id: "s05-emr-tab-switch",
+      src: "fs-278205.mp3",
+      targetPeakFrame: s05Start + 102,
+      volume: 0.2,
     },
     {
-      id: "s05-allergy-intercept",
+      id: "s05-quality-drawer",
       src: "fs-629979.mp3",
-      targetPeakFrame: at("L009", 168),
+      targetPeakFrame: s05Start + 158,
+      volume: 0.26,
+    },
+    {
+      id: "s05-allergy-resolved",
+      src: "fs-671375.mp3",
+      targetPeakFrame: s05Start + 218,
       volume: 0.22,
     },
     {
-      id: "s06-human-latch",
+      id: "s06-diag-confirm",
+      src: "fs-629979.mp3",
+      targetPeakFrame: s06Start + 18,
+      volume: 0.24,
+    },
+    {
+      id: "s06-rx-open-adjust",
+      src: "fs-278205.mp3",
+      targetPeakFrame: s06Start + 58,
+      volume: 0.2,
+    },
+    {
+      id: "s06-rx-keep-adjust",
+      src: "fs-671375.mp3",
+      targetPeakFrame: s06Start + 92,
+      volume: 0.22,
+    },
+    {
+      id: "s06-rx-issue",
+      src: "fs-629979.mp3",
+      targetPeakFrame: s06Start + 116,
+      volume: 0.26,
+    },
+    {
+      id: "s06-emr-sign-latch",
       src: "fs-815493.mp3",
-      targetPeakFrame: at("L010", s06ClickOffset(timeline)),
-      volume: 0.46,
+      targetPeakFrame: s06Start + S06_SIGN_CLICK_OFFSET_F,
+      volume: 0.44,
     },
     {
       id: "b03-whoosh",
@@ -181,35 +271,9 @@ export const buildSfxSchedule = (
       volume: 0.24,
     },
   ];
+
   return raw.map((cue) => ({
     ...cue,
     from: sfxFrom(cue.targetPeakFrame, cue.src, outputOffsetF),
   }));
 };
-
-export const breatherSpans = (timeline: Timeline) => [
-  {
-    id: "B01",
-    chapterNo: "01",
-    titlePrefix: "无感伴随智能 ·",
-    accentWord: "静默运转",
-    from: breatherStartFrame(timeline, "L005"),
-    durationInFrames: BREATHER_DURATION_F,
-  },
-  {
-    id: "B02",
-    chapterNo: "02",
-    titlePrefix: "溯源质控 ·",
-    accentWord: "人工把关",
-    from: breatherStartFrame(timeline, "L008"),
-    durationInFrames: BREATHER_DURATION_F,
-  },
-  {
-    id: "B03",
-    chapterNo: "03",
-    titlePrefix: "多病种智能体 ·",
-    accentWord: "即插即用",
-    from: breatherStartFrame(timeline, "L010"),
-    durationInFrames: BREATHER_DURATION_F,
-  },
-];

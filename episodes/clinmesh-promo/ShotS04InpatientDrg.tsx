@@ -1,400 +1,143 @@
 /**
- * Scene S04 (L008): Inpatient coronary PCI stent reservation and DRG FM59->FM39
- * payment headroom calculation with tabular DigitRoll, locking into a crisp
- * shutter freeze-annotate frame at L008+112 with three-role verification banner.
+ * S04（L008）：按逐音节时间点展示浅色住院工作站的冠脉支架耗材预留、
+ * DRG FM59→FM39 支付结余测算、手术完成与三岗核查闭环。
  */
-import {
-  AbsoluteFill,
-  Img,
-  interpolate,
-  staticFile,
-  useCurrentFrame,
-} from "remotion";
-import { sentence } from "../../src/kit/sentence-timing";
+import { useCurrentFrame } from "remotion";
 import type { Timeline } from "../../tools/timeline-types";
-import { promoFont } from "./fonts";
-import { EASE, lerp, ramp } from "./motion-utils";
-import { DigitRoll, StatusBadge } from "./primitives";
-import { promoColor, promoRadius } from "./tokens";
+import {
+  type LightCalloutBox,
+  type LightCaptureLayer,
+  type LightClickAction,
+  type LightCursorStop,
+  type LightViewCamKey,
+  LightWorkstationStage,
+} from "./light-stage";
+import { EASE, ramp } from "./motion-utils";
+
+const BASE = "episodes/clinmesh-promo/captures/light-s03-s05";
+
+const CAM_KEYS: LightViewCamKey[] = [
+  { frame: 0, cx: 840, cy: 422, zoom: 1.05 },
+  { frame: 82, cx: 840, cy: 422, zoom: 1.05 },
+  { frame: 102, cx: 840, cy: 424, zoom: 1.05 },
+  { frame: 142, cx: 840, cy: 424, zoom: 1.05 },
+  { frame: 158, cx: 840, cy: 422, zoom: 1.05 },
+  { frame: 176, cx: 840, cy: 424, zoom: 1.05 },
+  { frame: 215, cx: 840, cy: 424, zoom: 1.05 },
+];
+
+const LAYERS: LightCaptureLayer[] = [
+  {
+    src: `${BASE}/s04-01-pci-surgery-reserved.png`,
+    fadeInStart: 0,
+    fadeInDur: 0,
+  },
+  { src: `${BASE}/s04-02-pci-drg-pregroup.png`, fadeInStart: 87, fadeInDur: 6 },
+  {
+    src: `${BASE}/s04-04-pci-surgery-completed.png`,
+    fadeInStart: 144,
+    fadeInDur: 6,
+  },
+  {
+    src: `${BASE}/s04-05-pci-drg-fm39-final.png`,
+    fadeInStart: 172,
+    fadeInDur: 6,
+  },
+];
+
+const CALLOUTS: LightCalloutBox[] = [
+  {
+    id: "pci-reserved-consumables",
+    startFrame: 14,
+    endFrame: 80,
+    rect: { left: 32, top: 248, width: 1620, height: 112 },
+    label: "支架与导管耗材已预留",
+    labelAlign: "top-right",
+    tone: "blue",
+  },
+  {
+    id: "drg-fm39-headroom",
+    startFrame: 96,
+    endFrame: 139,
+    rect: { left: 45, top: 500, width: 1594, height: 105 },
+    label: "预计 FM39 · 空间充足",
+    labelAlign: "bottom-right",
+    labelOutset: -14,
+    tone: "emerald",
+  },
+  {
+    id: "drg-fm39-final-aligned",
+    startFrame: 178,
+    endFrame: 212,
+    rect: { left: 32, top: 287, width: 1620, height: 218 },
+    label: "临床 · 收费 · 病案一致",
+    labelAlign: "top-right",
+    labelOutset: -24,
+    tone: "emerald",
+  },
+];
+
+const CLICKS: LightClickAction[] = [
+  {
+    frame: 86,
+    cx: 343.42,
+    cy: 152.73,
+    rect: { left: 290.05, top: 136.61, width: 106.75, height: 32.25 },
+    tone: "blue",
+  },
+];
+
+const CURSOR_STOPS: LightCursorStop[] = [
+  { frame: 0, x: 640, y: 315 },
+  { frame: 58, x: 580, y: 295 },
+  { frame: 83, x: 343.42, y: 152.73 },
+  { frame: 104, x: 560, y: 540 },
+  { frame: 136, x: 590, y: 548 },
+];
 
 export const ShotS04InpatientDrg: React.FC<{ timeline: Timeline }> = ({
   timeline,
 }) => {
+  void timeline;
   const f = useCurrentFrame();
-  const l008 = sentence(timeline, "L008");
-  void l008;
-
-  const freezeFrame = 112;
-  const preGlide = ramp(f, 0, freezeFrame, EASE.snappy);
-  const cardIn = ramp(f, 0, 22, EASE.snappy);
-  const groupShift = ramp(f, 28, 22, EASE.snappy);
-
-  const shutterFlash = interpolate(
-    f,
-    [freezeFrame - 1, freezeFrame + 1, freezeFrame + 8],
-    [0, 0.22, 0],
-    { extrapolateLeft: "clamp", extrapolateRight: "clamp" },
-  );
-  const bracketPop = ramp(f, freezeFrame, 12, EASE.pop);
-  const circleDraw = ramp(f, freezeFrame + 4, 18, EASE.snappy);
-  const threeRoleIn = ramp(f, freezeFrame + 8, 16, EASE.snappy);
+  const finalEmeraldT = ramp(f, 172, 14, EASE.snappy);
 
   return (
-    <AbsoluteFill
-      style={{
-        backgroundColor: promoColor.stageBg,
-        overflow: "hidden",
-      }}
-    >
-      <AbsoluteFill
-        style={{
-          transform: `translateX(${lerp(28, 0, preGlide)}px) scale(1.03)`,
-          opacity: 0.22,
-        }}
-      >
-        <Img
-          src={staticFile(
-            "episodes/clinmesh-promo/captures/C03-pci-drg-workspace.png",
-          )}
-          style={{
-            width: "100%",
-            height: "100%",
-            objectFit: "cover",
-          }}
-        />
-      </AbsoluteFill>
-
-      <AbsoluteFill
-        style={{
-          background:
-            "radial-gradient(1240px 800px at 50% 48%, rgba(21,21,23,0.62), rgba(18,18,16,0.96) 82%)",
-        }}
-      />
-
-      <div
-        style={{
-          position: "absolute",
-          left: 92,
-          right: 92,
-          top: 94,
-          display: "flex",
-          justifyContent: "space-between",
-          alignItems: "center",
-          opacity: cardIn,
-        }}
-      >
-        <div
-          style={{
-            fontFamily: promoFont.sans,
-            fontSize: 58,
-            fontWeight: 700,
-            color: promoColor.fg,
-          }}
-        >
-          住院冠脉介入 · 耗材预留与 DRG 病组精算
-        </div>
-        <StatusBadge tone="info">患者B · 介入术后联动</StatusBadge>
-      </div>
-
-      <div
-        style={{
-          position: "absolute",
-          left: 92,
-          right: 92,
-          top: 224,
-          opacity: cardIn,
-          transform: `translateX(${lerp(-24, 0, preGlide)}px)`,
-          display: "flex",
-          flexDirection: "column",
-          gap: 26,
-        }}
-      >
-        <div
-          style={{
-            backgroundColor: promoColor.cardBg,
-            borderRadius: promoRadius.card,
-            border: `1px solid ${promoColor.borderStrong}`,
-            padding: "24px 36px",
-            display: "flex",
-            justifyContent: "space-between",
-            alignItems: "center",
-            boxShadow: promoColor.cardShadow,
-          }}
-        >
-          <div style={{ display: "flex", alignItems: "center", gap: 22 }}>
-            <StatusBadge tone="info">高值耗材预留</StatusBadge>
-            <span
-              style={{
-                fontFamily: promoFont.sans,
-                fontSize: 40,
-                fontWeight: 700,
-                color: promoColor.fg,
-              }}
-            >
-              药物洗脱冠脉支架 × 1
-            </span>
-            <span
-              style={{
-                fontFamily: promoFont.mono,
-                fontSize: 30,
-                color: promoColor.fgMuted,
-              }}
-            >
-              经皮冠状动脉支架置入术（PCI）
-            </span>
-          </div>
-          <StatusBadge tone="success">✓ 主操作与导管室台账已同步</StatusBadge>
-        </div>
-
-        <div
-          style={{
-            position: "relative",
-            backgroundColor: promoColor.cardBg,
-            borderRadius: promoRadius.card,
-            border: `1.5px solid ${promoColor.borderStrong}`,
-            padding: "38px 44px",
-            boxShadow: promoColor.cardShadow,
-            display: "grid",
-            gridTemplateColumns: "1.05fr 1fr 1fr",
-            gap: 36,
-            alignItems: "center",
-          }}
-        >
-          <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
-            <span
-              style={{
-                fontFamily: promoFont.sans,
-                fontSize: 30,
-                fontWeight: 600,
-                color: promoColor.fgMuted,
-              }}
-            >
-              DRG 病组实时重算
-            </span>
-            <div style={{ display: "flex", alignItems: "center", gap: 20 }}>
-              <span
-                style={{
-                  fontFamily: promoFont.mono,
-                  fontSize: 48,
-                  fontWeight: 600,
-                  color: promoColor.fgDim,
-                  textDecoration: groupShift > 0.5 ? "line-through" : "none",
-                }}
-              >
-                FM59
-              </span>
-              <span
-                style={{
-                  fontFamily: promoFont.mono,
-                  fontSize: 44,
-                  color: promoColor.stageAccent,
-                }}
-              >
-                →
-              </span>
-              <span
-                style={{
-                  fontFamily: promoFont.mono,
-                  fontSize: 78,
-                  fontWeight: 700,
-                  color: promoColor.info,
-                  opacity: 0.25 + 0.75 * groupShift,
-                  transform: `scale(${0.9 + 0.1 * groupShift})`,
-                }}
-              >
-                FM39
-              </span>
-            </div>
-            <span
-              style={{
-                fontFamily: promoFont.sans,
-                fontSize: 28,
-                color: promoColor.fgMuted,
-              }}
-            >
-              经皮心血管介入治疗病组
-            </span>
-          </div>
-
-          <div
-            style={{
-              display: "flex",
-              flexDirection: "column",
-              gap: 12,
-              paddingLeft: 28,
-              borderLeft: `1px solid ${promoColor.border}`,
-            }}
-          >
-            <span
-              style={{
-                fontFamily: promoFont.sans,
-                fontSize: 30,
-                fontWeight: 600,
-                color: promoColor.fgMuted,
-              }}
-            >
-              预计医院支付参考
-            </span>
-            <DigitRoll
-              value="¥12,000"
-              delay={20}
-              fontSize={64}
-              color={promoColor.fg}
-            />
-            <span
-              style={{
-                fontFamily: promoFont.sans,
-                fontSize: 28,
-                color: promoColor.fgDim,
-              }}
-            >
-              做完计划手术后 · 预计费用 ¥3,943
-            </span>
-          </div>
-
-          <div
-            style={{
-              position: "relative",
-              display: "flex",
-              flexDirection: "column",
-              gap: 12,
-              paddingLeft: 28,
-              borderLeft: `1px solid ${promoColor.border}`,
-            }}
-          >
-            <span
-              style={{
-                fontFamily: promoFont.sans,
-                fontSize: 30,
-                fontWeight: 600,
-                color: promoColor.fgMuted,
-              }}
-            >
-              预计剩余支付空间
-            </span>
-            <DigitRoll
-              value="¥8,057"
-              delay={30}
-              fontSize={68}
-              color={promoColor.success}
-            />
-            <span
-              style={{
-                fontFamily: promoFont.sans,
-                fontSize: 28,
-                color: promoColor.success,
-              }}
-            >
-              含手术费 ¥1,800 + 预留耗材 ¥1,266
-            </span>
-
-            {circleDraw > 0.01 ? (
-              <svg
-                width={470}
-                height={190}
-                viewBox="0 0 470 190"
-                style={{
-                  position: "absolute",
-                  left: -8,
-                  top: -12,
-                  pointerEvents: "none",
-                }}
-              >
-                <path
-                  d="M 38 96 C 34 32, 132 14, 248 16 C 378 18, 452 42, 448 98 C 444 154, 356 176, 228 174 C 104 172, 36 146, 48 86"
-                  fill="none"
-                  stroke={promoColor.stageAccent}
-                  strokeWidth={4.5}
-                  strokeLinecap="round"
-                  pathLength={1}
-                  strokeDasharray={1}
-                  strokeDashoffset={1 - circleDraw}
-                />
-              </svg>
-            ) : null}
-          </div>
-
-          {bracketPop > 0.01 ? (
-            <div
-              style={{
-                position: "absolute",
-                inset: -14,
-                pointerEvents: "none",
-                opacity: Math.min(1, bracketPop),
-                transform: `scale(${1.04 - 0.04 * bracketPop})`,
-              }}
-            >
-              {[
-                { top: 0, left: 0, bw: "4px 0 0 4px" },
-                { top: 0, right: 0, bw: "4px 4px 0 0" },
-                { bottom: 0, left: 0, bw: "0 0 4px 4px" },
-                { bottom: 0, right: 0, bw: "0 4px 4px 0" },
-              ].map((pos, idx) => (
-                <div
-                  key={idx}
-                  style={{
-                    position: "absolute",
-                    top: pos.top,
-                    bottom: pos.bottom,
-                    left: pos.left,
-                    right: pos.right,
-                    width: 34,
-                    height: 34,
-                    borderColor: promoColor.stageAccent,
-                    borderStyle: "solid",
-                    borderWidth: pos.bw,
-                  }}
-                />
-              ))}
-            </div>
-          ) : null}
-        </div>
-
-        <div
-          style={{
-            opacity: threeRoleIn,
-            transform: `translateY(${(1 - threeRoleIn) * 16}px)`,
-            backgroundColor: "rgba(125, 219, 164, 0.12)",
-            border: "1.5px solid rgba(125, 219, 164, 0.45)",
-            borderRadius: promoRadius.card,
-            padding: "22px 36px",
-            display: "flex",
-            justifyContent: "space-between",
-            alignItems: "center",
-          }}
-        >
-          <span
-            style={{
-              fontFamily: promoFont.sans,
-              fontSize: 38,
-              fontWeight: 700,
-              color: promoColor.success,
-            }}
-          >
-            ✓ 临床 · 收费 · 病案三岗核对一致
-          </span>
-          <span
-            style={{
-              fontFamily: promoFont.sans,
-              fontSize: 30,
-              fontWeight: 600,
-              color: promoColor.fg,
-            }}
-          >
-            手术计划 · 实际耗材 · 病案首页主操作同源校验通过
-          </span>
-        </div>
-      </div>
-
-      {shutterFlash > 0.005 ? (
-        <AbsoluteFill
-          style={{
-            backgroundColor: "#FFFFFF",
-            opacity: shutterFlash,
-            pointerEvents: "none",
-          }}
-        />
-      ) : null}
-    </AbsoluteFill>
+    <LightWorkstationStage
+      title="冠脉介入 · 病组精算"
+      steps={[
+        {
+          num: "01",
+          idleLabel: "耗材预留",
+          doneLabel: "耗材已预留",
+          active: f < 87,
+          done: f >= 68,
+          tone: "emerald",
+        },
+        {
+          num: "02",
+          idleLabel: "空间精算",
+          doneLabel: "FM39 精算",
+          active: f >= 87 && f < 144,
+          done: f >= 116,
+          tone: "emerald",
+        },
+        {
+          num: "03",
+          idleLabel: "三岗核查",
+          doneLabel: "一体闭环",
+          active: f >= 144 && f < 174,
+          done: f >= 174,
+          tone: "emerald",
+        },
+      ]}
+      camKeys={CAM_KEYS}
+      layers={LAYERS}
+      callouts={CALLOUTS}
+      clicks={CLICKS}
+      cursorStops={CURSOR_STOPS}
+      cursorSpan={[54, 138]}
+      finalTone={{ progress: finalEmeraldT, kind: "emerald" }}
+    />
   );
 };

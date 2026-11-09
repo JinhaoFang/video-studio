@@ -1,9 +1,13 @@
 /**
- * Master Remotion composition for the 90-second ClinMesh promo: sequences scenes
- * S01-S08 and chapter breathers B01-B03 from measured sentence anchors, layered
- * with PromoFinish, PromoSubtitles, and PromoAudio (bgm toggleable via props).
+ * ClinMeshPromo 的最终版：按 timeline.json 的 14 句实测配音安排 S01-S08、
+ * 章节呼吸字卡、字幕与音频总线，保留逐音节对齐的镜头提示。
  */
-import { AbsoluteFill, Sequence, useVideoConfig } from "remotion";
+import {
+  AbsoluteFill,
+  Sequence,
+  useCurrentFrame,
+  useVideoConfig,
+} from "remotion";
 import { sentenceFrame } from "../../src/kit/sentence-timing";
 import type { Timeline } from "../../tools/timeline-types";
 import { PromoAudio } from "./PromoAudio";
@@ -11,14 +15,18 @@ import { PromoFinish } from "./PromoFinish";
 import { PromoSubtitles } from "./PromoSubtitles";
 import { ShotS01Opening } from "./ShotS01Opening";
 import { ShotS02Architecture } from "./ShotS02Architecture";
-import { ShotS03AmbientOutpatient } from "./ShotS03AmbientOutpatient";
+import { ShotS03Outpatient } from "./ShotS03Outpatient";
 import { ShotS04InpatientDrg } from "./ShotS04InpatientDrg";
-import { ShotS05ExplicitAssistant } from "./ShotS05ExplicitAssistant";
-import { ShotS06SafetyGate } from "./ShotS06SafetyGate";
+import { ShotS05QualityGate } from "./ShotS05QualityGate";
+import { ShotS06Signoff } from "./ShotS06Signoff";
 import { ShotS07PathologyMultimodal } from "./ShotS07PathologyMultimodal";
 import { ShotS08SynergyFinale } from "./ShotS08SynergyFinale";
 import { BreatherCard } from "./primitives";
-import { breatherSpans, breatherStartFrame } from "./sfx-schedule";
+import {
+  buildSfxSchedule,
+  breatherSpans,
+  breatherStartFrame,
+} from "./sfx-schedule";
 import { BREATHER_DURATION_F, promoColor } from "./tokens";
 
 export type ClinMeshPromoProps = {
@@ -26,10 +34,19 @@ export type ClinMeshPromoProps = {
   bgm?: boolean;
 };
 
+const S02_PRO_DOMAIN_CUES = [9, 25, 44, 67, 112] as const;
+const S07_PRO_TAIL_CAM = [
+  { frame: 336, cx: 960, cy: 540, zoom: 1.02 },
+  { frame: 390, cx: 1038, cy: 576, zoom: 1.13 },
+  { frame: 444, cx: 976, cy: 546, zoom: 1.06 },
+] as const;
+const S08_PRO_ROLE_CUES = [5, 23, 44, 75, 95, 127] as const;
+
 export const ClinMeshPromo: React.FC<ClinMeshPromoProps> = ({
   timeline,
   bgm = true,
 }) => {
+  const f = useCurrentFrame();
   const { fps } = useVideoConfig();
   const s02From = sentenceFrame(timeline, "L004");
   const b01From = breatherStartFrame(timeline, "L005");
@@ -42,6 +59,8 @@ export const ClinMeshPromo: React.FC<ClinMeshPromoProps> = ({
   const s07From = b03From + BREATHER_DURATION_F;
   const s08From = sentenceFrame(timeline, "L013");
   const breathers = breatherSpans(timeline);
+  const isLightScene =
+    (f >= s03From && f < b02From) || (f >= s05From && f < b03From);
 
   return (
     <AbsoluteFill style={{ backgroundColor: promoColor.stageBg }}>
@@ -50,7 +69,13 @@ export const ClinMeshPromo: React.FC<ClinMeshPromoProps> = ({
         durationInFrames={s02From}
         premountFor={fps}
       >
-        <ShotS01Opening timeline={timeline} />
+        <ShotS01Opening
+          timeline={timeline}
+          mid2OffsetF={71}
+          lockupOffsetF={100}
+          ruleOffsetF={120}
+          subtitleOffsetF={130}
+        />
       </Sequence>
 
       <Sequence
@@ -59,20 +84,27 @@ export const ClinMeshPromo: React.FC<ClinMeshPromoProps> = ({
         durationInFrames={b01From - s02From}
         premountFor={fps}
       >
-        <ShotS02Architecture timeline={timeline} />
+        <ShotS02Architecture
+          timeline={timeline}
+          domainCueFrames={S02_PRO_DOMAIN_CUES}
+          foundationSweepStartF={138}
+          plugBaseOffsetF={88}
+          plugStaggerF={11}
+          snapDoneOffsetF={138}
+        />
       </Sequence>
 
       <Sequence
-        name="S03 门诊无感成文与指南候选"
+        name="S03 浅色门诊无感成稿与指南候选"
         from={s03From}
         durationInFrames={s04From - s03From}
         premountFor={fps}
       >
-        <ShotS03AmbientOutpatient timeline={timeline} />
+        <ShotS03Outpatient timeline={timeline} />
       </Sequence>
 
       <Sequence
-        name="S04 住院冠脉耗材与 DRG 精算"
+        name="S04 浅色住院冠脉耗材与病组精算"
         from={s04From}
         durationInFrames={b02From - s04From}
         premountFor={fps}
@@ -81,21 +113,21 @@ export const ClinMeshPromo: React.FC<ClinMeshPromoProps> = ({
       </Sequence>
 
       <Sequence
-        name="S05 逐句原话溯源与临床质控拦截"
+        name="S05 浅色逐句原话锚定与质控阻断"
         from={s05From}
         durationInFrames={s06From - s05From}
         premountFor={fps}
       >
-        <ShotS05ExplicitAssistant timeline={timeline} />
+        <ShotS05QualityGate timeline={timeline} />
       </Sequence>
 
       <Sequence
-        name="S06 医生终审与拍板留痕"
+        name="S06 浅色执业医师人工核准与签署生效"
         from={s06From}
         durationInFrames={b03From - s06From}
         premountFor={fps}
       >
-        <ShotS06SafetyGate timeline={timeline} />
+        <ShotS06Signoff timeline={timeline} />
       </Sequence>
 
       <Sequence
@@ -104,7 +136,10 @@ export const ClinMeshPromo: React.FC<ClinMeshPromoProps> = ({
         durationInFrames={s08From - s07From}
         premountFor={fps}
       >
-        <ShotS07PathologyMultimodal timeline={timeline} />
+        <ShotS07PathologyMultimodal
+          timeline={timeline}
+          tailCamKeys={S07_PRO_TAIL_CAM}
+        />
       </Sequence>
 
       <Sequence
@@ -113,7 +148,11 @@ export const ClinMeshPromo: React.FC<ClinMeshPromoProps> = ({
         durationInFrames={timeline.durationInFrames - s08From}
         premountFor={fps}
       >
-        <ShotS08SynergyFinale timeline={timeline} />
+        <ShotS08SynergyFinale
+          timeline={timeline}
+          roleCueFrames={S08_PRO_ROLE_CUES}
+          stepBaseFrame={152}
+        />
       </Sequence>
 
       {breathers.map((b) => (
@@ -133,9 +172,13 @@ export const ClinMeshPromo: React.FC<ClinMeshPromoProps> = ({
         </Sequence>
       ))}
 
-      <PromoFinish />
+      {!isLightScene ? <PromoFinish /> : null}
       <PromoSubtitles timeline={timeline} />
-      <PromoAudio timeline={timeline} bgm={bgm} />
+      <PromoAudio
+        timeline={timeline}
+        bgm={bgm}
+        sfxBuilder={buildSfxSchedule}
+      />
     </AbsoluteFill>
   );
 };

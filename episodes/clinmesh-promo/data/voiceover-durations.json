@@ -1,72 +1,72 @@
 [
   {
     "id": "L001",
-    "durationSeconds": 3.636372,
-    "src": "episodes/clinmesh-promo/voiceover-brian-a1-110/L001.mp3"
+    "durationSeconds": 3.53,
+    "src": "episodes/clinmesh-promo/voiceover-minimax-exec/L001.wav"
   },
   {
     "id": "L002",
-    "durationSeconds": 6.016375,
-    "src": "episodes/clinmesh-promo/voiceover-brian-a1-110/L002.mp3"
+    "durationSeconds": 6.33,
+    "src": "episodes/clinmesh-promo/voiceover-minimax-exec/L002.wav"
   },
   {
     "id": "L003",
-    "durationSeconds": 4.509093,
-    "src": "episodes/clinmesh-promo/voiceover-brian-a1-110/L003.mp3"
+    "durationSeconds": 5.61,
+    "src": "episodes/clinmesh-promo/voiceover-minimax-exec/L003.wav"
   },
   {
     "id": "L004",
-    "durationSeconds": 6.909093,
-    "src": "episodes/clinmesh-promo/voiceover-brian-a1-110/L004.mp3"
+    "durationSeconds": 7.84,
+    "src": "episodes/clinmesh-promo/voiceover-minimax-exec/L004.wav"
   },
   {
     "id": "L005",
-    "durationSeconds": 5.745465,
-    "src": "episodes/clinmesh-promo/voiceover-brian-a1-110/L005.mp3"
+    "durationSeconds": 5.76,
+    "src": "episodes/clinmesh-promo/voiceover-minimax-exec/L005.wav"
   },
   {
     "id": "L006",
-    "durationSeconds": 6.545465,
-    "src": "episodes/clinmesh-promo/voiceover-brian-a1-110/L006.mp3"
+    "durationSeconds": 6.28,
+    "src": "episodes/clinmesh-promo/voiceover-minimax-exec/L006.wav"
   },
   {
     "id": "L007",
-    "durationSeconds": 6.618186,
-    "src": "episodes/clinmesh-promo/voiceover-brian-a1-110/L007.mp3"
+    "durationSeconds": 6.43,
+    "src": "episodes/clinmesh-promo/voiceover-minimax-exec/L007.wav"
   },
   {
     "id": "L008",
-    "durationSeconds": 6.690907,
-    "src": "episodes/clinmesh-promo/voiceover-brian-a1-110/L008.mp3"
+    "durationSeconds": 7.09,
+    "src": "episodes/clinmesh-promo/voiceover-minimax-exec/L008.wav"
   },
   {
     "id": "L009",
-    "durationSeconds": 7.563628,
-    "src": "episodes/clinmesh-promo/voiceover-brian-a1-110/L009.mp3"
+    "durationSeconds": 8.37,
+    "src": "episodes/clinmesh-promo/voiceover-minimax-exec/L009.wav"
   },
   {
     "id": "L010",
-    "durationSeconds": 5.963628,
-    "src": "episodes/clinmesh-promo/voiceover-brian-a1-110/L010.mp3"
+    "durationSeconds": 7.2,
+    "src": "episodes/clinmesh-promo/voiceover-minimax-exec/L010.wav"
   },
   {
     "id": "L011",
-    "durationSeconds": 7.127279,
-    "src": "episodes/clinmesh-promo/voiceover-brian-a1-110/L011.mp3"
+    "durationSeconds": 6.19,
+    "src": "episodes/clinmesh-promo/voiceover-minimax-exec/L011.wav"
   },
   {
     "id": "L012",
-    "durationSeconds": 6.472721,
-    "src": "episodes/clinmesh-promo/voiceover-brian-a1-110/L012.mp3"
+    "durationSeconds": 7.96,
+    "src": "episodes/clinmesh-promo/voiceover-minimax-exec/L012.wav"
   },
   {
     "id": "L013",
-    "durationSeconds": 7.272721,
-    "src": "episodes/clinmesh-promo/voiceover-brian-a1-110/L013.mp3"
+    "durationSeconds": 8.96,
+    "src": "episodes/clinmesh-promo/voiceover-minimax-exec/L013.wav"
   },
   {
     "id": "L014",
-    "durationSeconds": 3.709093,
-    "src": "episodes/clinmesh-promo/voiceover-brian-a1-110/L014.mp3"
+    "durationSeconds": 3.7,
+    "src": "episodes/clinmesh-promo/voiceover-minimax-exec/L014.wav"
   }
 ]
