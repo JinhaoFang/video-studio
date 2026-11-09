@@ -166,6 +166,13 @@
       "computedHash": "6149bbefbabab8300498806829099ce5e3ef23c78ce4178100d3b53a01b77415",
       "installMode": "copy"
     },
+    "srt-whiteboard-animation": {
+      "source": "geeklee/srt-whiteboard-animation",
+      "sourceType": "github",
+      "skillPath": "SKILL.md",
+      "computedHash": "c8775017881381cec6080a7c5e613bd7446b246607662edda43ff1d85c50057f",
+      "installMode": "copy"
+    },
     "teach": {
       "source": "mattpocock/skills",
       "sourceType": "github",
