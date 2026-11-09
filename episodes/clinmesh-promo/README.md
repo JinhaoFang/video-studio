@@ -1,6 +1,6 @@
 # ClinMesh 宣传片（`clinmesh-promo`）
 
-**实验旁支**（用户 11-09）：协作者在本机做的一条医疗智能体产品宣传片，经 PR #121 入库，spec #122 清理成只剩最终版。它不算路线图的第二阶段。旧的深色版、浅色版和预览合成可以在合并提交 `2746dcd` 里找到。
+一期医疗智能体产品宣传片：协作者在本机制作，经 PR #121 入库，spec #122 清理成只剩最终版。旧的深色版、浅色版和预览合成可以在合并提交 `2746dcd` 里找到。
 
 合成 `ClinMeshPromo`：3114 帧（103.80 秒），1920×1080，30fps，14 句旁白，8 个镜头加 3 张章节呼吸字卡。台本见 [script.md](script.md)，镜头剧本见 [storyboard.md](storyboard.md)，素材来源见 [sources.md](sources.md)，动效与声音约定见 [motion-sound-tokens.md](motion-sound-tokens.md)。
 
@@ -67,7 +67,7 @@ pnpm qa loudness out/clinmesh-promo/clinmesh-promo-raw.mp4 --target-lufs -16 --t
 
 | 方面 | `nasa-punk-opening` | `clinmesh-promo` |
 |---|---|---|
-| 性质 | 复刻参考视频开场，只在本机学习，不公开发布 | 原创产品宣传片，实验旁支；`sources.md` 的未登记项补齐前不对外发布 |
+| 性质 | 复刻参考视频开场，只在本机学习，不公开发布 | 原创产品宣传片；`sources.md` 的未登记项补齐前不对外发布 |
 | 镜头依据 | 逐句对照参考视频，用 `pnpm qa compare` 并排验收 | 没有参考片；用下面的参考站定方向，套用 `video-shotcraft` 的镜头卡 |
 | 画面素材 | NASA 公有领域照片，加上生成的桌面和纸张纹理 | 产品界面截图、生成的意象图和示意图、TCGA 病理图 |
 | 声音 | 程序合成的 80 Hz 铺底和 2300 Hz 嘀嗒，是待定的占位（`tools/mix-opening.ts` 文件头的 `TODO(design)`）；渲染后用 `tools/mix-opening.ts` 替换音轨 | Freesound 音效和 Mixkit 配乐，在合成里直接混音，Studio 预览就能听到 |

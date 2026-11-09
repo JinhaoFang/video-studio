@@ -19,7 +19,7 @@ pnpm qa --help
 pnpm check:commits origin/main ticket/12-review-rework
 ```
 
-`pnpm dev` 启动 Remotion Studio；入口为 `episodes/index.ts`，在 `episodes/Root.tsx` 按文件夹注册各期合成。当前合成 `NasaPunkOpening` 的生成、渲染和按句定时约定见 [本期说明](episodes/nasa-punk-opening/README.md)。实验旁支 `ClinMeshPromo` 见 [ClinMesh 宣传片说明](episodes/clinmesh-promo/README.md)。
+`pnpm dev` 启动 Remotion Studio；入口为 `episodes/index.ts`，在 `episodes/Root.tsx` 按文件夹注册各期合成。各期合成的生成、渲染和按句定时约定见各期说明：[NASA 朋克开场](episodes/nasa-punk-opening/README.md)、[ClinMesh 宣传片](episodes/clinmesh-promo/README.md)。
 
 `pnpm verify` 按 `tools/verify.ts` 的步骤依次执行检查和单元测试，任一步失败立即停止。它检查 Git 跟踪文件及未被忽略的未跟踪代码，包含工作室自有技能脚本，排除参考资料、第三方技能和输出目录。文档命令检查的范围和规则见 [工作流的护栏说明](docs/workflow/README.md#护栏)。
 
