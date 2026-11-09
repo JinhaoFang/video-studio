@@ -174,6 +174,115 @@
 - **样片**：[mg-styles-15「线条动画」](https://vincentwei1021.github.io/mg-styles-15/?lang=zh#02-line-art)（MIT，字体等第三方内容另按各自许可，只用来看以线条和留白为主的一种极简表达）。
 - **出处**：[Nielsen Norman Group「Aesthetic and Minimalist Design」](https://www.nngroup.com/articles/aesthetic-minimalist-design/)解释减少无关信息与保留必要信息的关系，原文针对界面，本文将其用于信息取舍的建议，不把它当作动画规范；[固定版本的线条样例](https://github.com/Vincentwei1021/mg-styles-15/blob/49052d80bfaf9fa8412cc9710530e5e95a3b8d8c/prompts/02-line-art.md)提供上述可核对的线宽、留白和路径技法。
 
+### 色彩
+
+配色可以叠加使用：单色、类似色、互补色说的是色相之间的关系；品牌色加中性色说的是颜色的角色；高对比、低饱和说的是不同的视觉属性。「适合」延续上文的选用建议，不是题材与颜色的固定对应，也不是当期色板定稿。
+
+可读性与色弱友好的共同依据是 W3C 原文：[WCAG 2.2「1.4.3 Contrast (Minimum)」](https://www.w3.org/TR/WCAG22/#contrast-minimum)规定普通文字及文字图像的对比度至少 **4.5:1**，大字至少 **3:1**，装饰性文字、标识等例外见原文。[大字定义](https://www.w3.org/TR/WCAG22/#dfn-large-scale)是至少 18 pt 常规或 14 pt 粗体，中文等采用等效的大字尺寸；这是网页显示语境，不能把成片中的像素字号直接当作观看时的大字。[1.4.11 Non-text Contrast](https://www.w3.org/TR/WCAG22/#non-text-contrast)对理解内容所必需的图形部分，要求与相邻颜色至少 **3:1**，例外见原文。这些数值在这里作为视频文字和信息图的可读性参照，不等于仅满足配色就满足全部 WCAG。
+
+[1.4.1 Use of Color](https://www.w3.org/TR/WCAG22/#use-of-color)要求信息不能只靠颜色传达；[官方释义](https://www.w3.org/WAI/WCAG22/Understanding/use-of-color.html)说明文字、形状、图案和明暗差别都能提供额外线索。例如「成功／失败」有文字和不同图标，折线有不同线型和直接标签，红绿、蓝黄等色相差别就不是唯一线索。动态底图上的文字对比取决于当时紧邻文字的合成背景，单看色板里的两个色值不足以说明整段都清楚；描边、光晕或底条的作用见 [W3C 技法 G18](https://www.w3.org/WAI/WCAG22/Techniques/general/G18)。
+
+#### 单色
+
+- **一句话**：围绕一种颜色，用深浅和灰度变化分出前后层次，像同一种墨画出的画面。
+- **适合**：单一概念讲解、产品展示、简短品牌片；基调偏统一、克制。大量并列类别需要额外标签，不能只靠一串近似色区分。
+- **标志特征**：主体色相保持一致，背景、主体和强调部分主要靠明暗或饱和度区别；黑、白、灰可承担文字与留白。
+- **关键技法**：同一色相加白、加黑或加灰，分别形成浅色、深色和灰调；文字与底色仍满足本节的对比度参照，图表类别同时有名称或不同形状，浅深渐变不自动代表可读。
+- **出处**：设计师 Cameron Chapman 的 [Color Theory for Designers, Part 3「Monochromatic」](https://www.smashingmagazine.com/2010/02/color-theory-for-designer-part-3-creating-your-own-color-palettes/)解释同一色相的深浅与灰调以及中性色的作用；可读性与非颜色线索依据上述 WCAG 原文。
+
+#### 类似色
+
+- **一句话**：让色轮上挨着的几种颜色同框，像蓝、蓝绿、绿这样自然接在一起。
+- **适合**：自然、生活方式、抒情叙事与连续过程说明；基调偏连贯、平和。需要迅速分辨对立双方或警示状态时，色相差别可能不够明显。
+- **标志特征**：主色集中在色轮相邻的一段，色相过渡连续；文字与信息层级另有清楚的明暗差别。
+- **关键技法**：传统例子取 12 色轮上相邻的 **3 色**，再用深浅与饱和度变化分层；邻近色不保证彼此有足够的亮度对比，线条、区域仍依靠轮廓、线型或标签保持可辨认。
+- **出处**：Cameron Chapman 的 [Part 3「Analogous」](https://www.smashingmagazine.com/2010/02/color-theory-for-designer-part-3-creating-your-own-color-palettes/)列出相邻三色，并对照未经调整与调整明暗、彩度后的可用性；可读性依据上述 WCAG 原文。
+
+#### 互补色
+
+- **一句话**：把色轮上相对的两种颜色放在一起，让主次或双方关系显眼。
+- **适合**：观点对照、体育、游戏、活动宣传与需要突出重点的短片；基调偏鲜明、有张力。长段小字和需要平静阅读的画面不宜依赖两种强色相互挤压。
+- **标志特征**：两个主色相位于色轮相对位置；主体与强调色能区分，大面积底色与局部重点的角色明确。
+- **关键技法**：两色各有深浅、灰调变化；同样明亮、同样鲜艳的互补色紧贴时可能产生边缘「振动」感，中性色间隔或明暗差别可缓解。互补关系不保证 WCAG 对比度；红绿双方同时有文字或形状标识，色弱观众也有其他判断依据。
+- **出处**：Cameron Chapman 的 [Part 3「Complementary」](https://www.smashingmagazine.com/2010/02/color-theory-for-designer-part-3-creating-your-own-color-palettes/)解释相对色相、深浅扩展与边缘振动；非颜色线索依据 [W3C Use of Color 释义](https://www.w3.org/WAI/WCAG22/Understanding/use-of-color.html)。
+
+#### 品牌色加中性色
+
+- **一句话**：让品牌最有辨识度的颜色负责重点，黑白灰或接近灰的底色承载大部分信息。
+- **适合**：产品介绍、企业说明、界面演示与跨镜头保持识别的系列片；基调偏有秩序、明确。多个品牌共同出现时，颜色的归属需要文字说明。
+- **标志特征**：背景和信息区域以中性色为主；品牌色在标题、关键对象或强调处重复，含义稳定；警示与状态有自己的文字或图标。
+- **关键技法**：背景、正文、强调、状态分别承担固定角色；中性色的明暗形成区域层次，品牌色的面积与位置服从强调作用。品牌色若与底色对比不足，可以保留在标识或装饰上，承载信息的文字另有可读的前景与底条；品牌识别和信息可读性分别成立。
+- **出处**：[IBM Carbon 官方色彩说明](https://www.carbondesignsystem.com/building-blocks/foundations/color/overview)以中性灰为主、蓝色承担主要强调，并说明按角色分配颜色；原文面向界面，这里借鉴其信息分工，不把 IBM 色值当成工作室令牌。文字对比依据上述 WCAG 原文。
+
+#### 高对比
+
+- **一句话**：让文字、主体与背景在明暗上拉开，观众容易看清重点。
+- **适合**：知识讲解、数据图、标题卡和小屏观看；基调可以明确、利落，也可紧张。整屏所有细节都同样强烈时，重点反而不清楚。
+- **标志特征**：关键信息与相邻背景有明显的亮度差；即使去掉色相线索，文字和主要图形仍可辨认。鲜艳本身不是高对比的判据。
+- **关键技法**：普通文字可参考 WCAG AAA 的 **7:1**、大字 **4.5:1** 增强对比；这是比 AA 更高的参照，不是所有视频都必须达到的档位。复杂底图上的暗底条、文字周围的轮廓或光晕能稳定局部对比，透明底条的实际对比取决于合成后的颜色；状态依旧配文字或图形线索。
+- **出处**：[WCAG 2.2「1.4.6 Contrast (Enhanced)」原文](https://www.w3.org/TR/WCAG22/#contrast-enhanced)给出增强对比数值；[W3C G18](https://www.w3.org/WAI/WCAG22/Techniques/general/G18)说明复杂底图、描边和光晕与局部对比的关系。
+
+#### 低饱和
+
+- **一句话**：让颜色少一些鲜艳、多一些灰调，画面像褪色纸张或柔和的颜料。
+- **适合**：人物回忆、历史文化、生活观察与抒情片；基调偏安静、含蓄，也可表现疏离。急迫警示和多类别信息需要额外的明暗、形状与文字区分。
+- **标志特征**：大部分色块接近灰调，鲜艳色少；主体和文字仍有明确的明暗层级，低饱和不等于整体发白或低对比。
+- **关键技法**：色相的灰调变化与明暗变化分别控制；灰调底色配较深文字、局部强调色能维持层级。不同模型里的饱和度百分比没有通用的风格分界，本条不规定一个统一阈值；浅灰文字叠浅灰背景仍可能低于 4.5:1，图表类别也不能只靠几种近似灰色。
+- **出处**：Cameron Chapman 的 [Part 2「Saturation」「Value」「Tones」](https://www.smashingmagazine.com/2010/02/color-theory-for-designers-part-2-understanding-concepts-and-terminology/)区分颜色强弱、明暗与加灰后的灰调；可读性与非颜色线索依据上述 WCAG 原文。
+
+### 字体
+
+中文的黑体、宋体与英文的 sans-serif、serif 可以按笔画特征对应；楷体与英文 handwriting／script 都有手写感，但不是同一种书写结构；圆体通常属于圆角化的无衬线；等宽说的是字宽安排，能与其他类别交叉。[W3C CSS Fonts「Generic font families」](https://www.w3.org/TR/css-fonts-4/#generic-font-families)说明这些类别的字形特征及中西文名称，不保证某个通用字体名在所有设备上都指向同一款字体。
+
+**字号、字重和行距的共同阅读条件**：同一字号不保证不同字体看起来同样大，观看尺寸、距离和字形都影响视频可读性。作为有出处的数值参照，[BBC 字幕指南「9 Typography」](https://www.bbc.co.uk/accessibility/forproducts/guides/subtitles/)把在线闭合字幕的创作行框高度设在有效画面高度的 **7%–8%**（16:9、4:3、1:1）或 **3.9%–4.5%**（9:16），字号须容纳在行框内；这是行框高度，不是字形高度或直接可用的中文字号。[Netflix 简体中文字幕规范「6 Font Information」](https://partnerhelp.netflixstudios.com/hc/en-us/articles/215986007-Chinese-Simplified-Timed-Text-Style-Guide)同样把字号与画面分辨率、每行容纳 16 字联系起来，不给统一像素值。以下各类的阅读提醒是基于字形的选用建议；具体字号、字重、行距仍归当期设计定稿，多行文字的字形和标点需要互不碰撞，粗体需要保留字腔。描边或底条与局部对比的关系沿用上文 [W3C G18](https://www.w3.org/WAI/WCAG22/Techniques/general/G18)，不能以加粗或描边代替足够的字号和对比。
+
+**授权的共同边界**：下列示例字体的官方许可均为 SIL Open Font License 1.1（OFL）。[OFL 官方原文](https://openfontlicense.org/open-font-license-official-text/)及 [FAQ 1.1–1.1.2](https://openfontlicense.org/ofl-faq/)允许用字体制作商业视频标题等设计，成片不因此必须按 OFL 发布，也不要求在画面里署名字体作者。随可编辑工程再分发字体文件时，版权声明与许可随附；字体文件不得单独售卖，修改后的字体仍受 OFL 与保留名称条款约束，具体附加许可见各官方文件。类别名、系统自带或能下载都不能代替某一字体的许可；英文搭配若换成另一款字体，其许可也单独成立。
+
+#### 黑体／无衬线（sans-serif）
+
+- **一句话**：笔画粗细比较接近、末端少装饰，像清楚的路牌和界面文字。
+- **适合**：科普、产品说明、字幕、图表和面向广泛受众的信息片；基调可中性、现代，也可随字重变得强烈。
+- **标志特征**：中文笔画粗细相对均匀，英文笔画末端没有明显衬线；标题、说明文字可通过同一家族的真实字重形成层级。
+- **关键技法**：常规或中等字重是连续阅读的保守候选，粗体可承担短标题；细字在小屏缩放后容易丢笔画，过粗也会挤闭字腔。字号与多行行距服从上述实际观看条件，底图变化时有稳定的底条或对比轮廓。
+- **素材来源**：思源黑体（Source Han Sans）包含中西文，官方按 OFL 1.1 发布；地区字形与字符覆盖随所选版本变化，不把「黑体」当成字体文件的名称或授权。
+- **出处**：[W3C 的 sans-serif 定义](https://www.w3.org/TR/css-fonts-4/#generic-font-families)；Adobe [思源黑体官方说明](https://github.com/adobe-fonts/source-han-sans/blob/0b993716f6910f0c8e00f957c767ab3cf5cb7602/README.md)与 [LICENSE.txt](https://github.com/adobe-fonts/source-han-sans/blob/0b993716f6910f0c8e00f957c767ab3cf5cb7602/LICENSE.txt)；视频阅读条件见上述 BBC 与 Netflix 规范。
+
+#### 宋体／衬线（serif）
+
+- **一句话**：笔画有粗细变化，末端像印刷书页一样带收笔或小装饰。
+- **适合**：历史、文学、文化介绍、引语与具有书刊气质的品牌片；基调偏庄重、传统或精致。细笔画密集的小字叠在复杂画面上，阅读负担较大。
+- **标志特征**：中文宋体常见横细竖粗与三角形收笔，英文 serif 在笔画端部带衬线；并非只要有衬线就一定复古。
+- **关键技法**：较大、停留清楚的标题与引语更容易保留笔画细节；字重需兼顾细横画和字腔，行距容纳收笔与标点。底条能提供完整的阅读底面，过厚描边会吞掉细节；字号不能因为选了宋体就沿用另一字体的视觉大小。
+- **素材来源**：思源宋体（Source Han Serif）包含中西文，官方按 OFL 1.1 发布；保留名称与随文件再分发的条件以其许可为准。
+- **出处**：[W3C 的 serif 与 Song 对应说明](https://www.w3.org/TR/css-fonts-4/#generic-font-families)；Adobe [思源宋体官方说明](https://github.com/adobe-fonts/source-han-serif/blob/4356704ff7c68e9a84bf2bd489c9ebe186a9e2ef/README.md)与 [LICENSE.txt](https://github.com/adobe-fonts/source-han-serif/blob/4356704ff7c68e9a84bf2bd489c9ebe186a9e2ef/LICENSE.txt)；字号和背景对比参照上述共同阅读条件。
+
+#### 楷体等手写感（handwriting／script）
+
+- **一句话**：保留像人用笔写字的起落和笔势，让文字本身有手写的痕迹。
+- **适合**：诗词、书信、个人故事、注释与文化讲述；基调偏亲近、文艺。快速长字幕或密集数据需要更克制的字形，不能只凭「手写」就认定适合儿童阅读。
+- **标志特征**：中文楷体有可辨认的书写笔势；英文手写类别可能连写，也可能不连写。两者可按表达作用搭配，不以是否连笔作统一标准。
+- **关键技法**：清楚、较大的短句比装满画面的长段落更容易保留笔势；字重需要保住细笔画，行距容纳伸出的笔画和英文上下伸部。稳定底条可以保留原始轮廓，粗描边或人为压缩字宽容易破坏字形。
+- **素材来源**：霞鹜文楷（LXGW WenKai）是基于 Klee One 的开源中文字体，官方说明兼有仿宋与楷体特点，按 OFL 1.1 发布；作者明确更适合诗词等中等长度文本或注释，不能据名称推断适合所有长正文。其保留名称另有附加许可说明。
+- **出处**：[W3C 对 cursive 与 Kai 特征的说明](https://www.w3.org/TR/css-fonts-4/#generic-font-families)；[霞鹜文楷官方说明与适用提醒](https://github.com/lxgw/LxgwWenKai/blob/8afc526476c2811e2e90e765444e7a6e4a7ecf77/README.md)及 [OFL.txt](https://github.com/lxgw/LxgwWenKai/blob/8afc526476c2811e2e90e765444e7a6e4a7ecf77/OFL.txt)；视频阅读条件见本节共同参照。
+
+#### 圆体（rounded sans-serif）
+
+- **一句话**：把笔画端点和转角变圆，文字像少了尖角的黑体。
+- **适合**：生活、亲子、轻松科普和亲近的品牌表达；基调偏柔和、友善。它也能用于一般信息设计，不只属于儿童内容；严肃或紧张的内容需要确认文字气质是否相容。
+- **标志特征**：端点、转角有圆弧，基本字骨仍清楚；英文对应 rounded sans-serif，圆角程度和字宽是两个不同属性。
+- **关键技法**：字号与行距仍需容纳完整笔画，不能因为外观圆润就缩小文字；较粗字重和额外粗描边叠加时，字腔更容易粘连，稳定底条可以保留原有端点。圆角本身不保证更易读。
+- **素材来源**：资源圆体（Resource Han Rounded）由思源黑体衍生，官方提供不同字重、圆角程度与地区字形。**字体文件是 OFL 1.1，代码是 MIT**，项目中的其他资源另有声明，不能用代码许可概括字体或预览图片。
+- **出处**：[资源圆体官方说明与圆角预览](https://github.com/CyanoHao/Resource-Han-Rounded/blob/be90fee7a031c1297da5a260ccfb91756088d51c/README.md)及 [分项许可「The Fonts: SIL OFL」](https://github.com/CyanoHao/Resource-Han-Rounded/blob/be90fee7a031c1297da5a260ccfb91756088d51c/LICENSE.md)；[W3C 的 ui-rounded 定义](https://www.w3.org/TR/css-fonts-4/#generic-font-families)提供圆角类别的参照，不表示使用系统通用名就会得到这款字体。
+
+#### 等宽（monospace）
+
+- **一句话**：让字落在固定宽度的格子里，代码、数字和字符列容易对齐。
+- **适合**：编程、终端、仪表、航天科技和需要固定列宽的数字展示；基调偏技术、规整。普通叙事长字幕不一定需要这种字宽安排。
+- **标志特征**：英文字符按固定宽度排列；中西文混排的中文等宽字体通常让一个全角汉字占两个半角字符格，不能理解为汉字和英文字母必然一样宽。数字位数不变时，内容变化不使列宽来回跳动。
+- **关键技法**：字号须让 `0/O`、`1/l/I` 等易混字符可分辨，所用字重保留字腔；多行代码的行距兼顾标点与英文上下伸部，底条或清楚轮廓维持局部对比。仅数字需要对齐时，比例字体的等宽数字也可能适用，无须把整段文字都换成等宽体。
+- **素材来源**：更纱黑体（Sarasa Gothic）的 **Mono／Term／Fixed** 是等宽分支，SC 表示简体地区字形；同家族的 Gothic／UI 不因此自动等宽。官方按 OFL 1.1 发布，中西文混排与连字选择以实际分支为准。
+- **出处**：[W3C 的 monospace 定义](https://www.w3.org/TR/css-fonts-4/#generic-font-families)与 [OpenType `tnum` 等宽数字说明](https://learn.microsoft.com/en-us/typography/opentype/spec/features_pt#tag-tnum)；[更纱黑体官方分支说明](https://github.com/be5invis/Sarasa-Gothic/blob/61e74fda253a1bec0c6f5b09d32a0944bb96b814/README.md)及 [LICENSE](https://github.com/be5invis/Sarasa-Gothic/blob/61e74fda253a1bec0c6f5b09d32a0944bb96b814/LICENSE)。
+
 ## ⑥ 素材来源
 
 成本包括寻找与核准许可、绘制或处理、保持多镜头一致、后续修改和必要的渲染；「免费」只说明可能没有购买费。下表是相对成本的工程归纳，不是服务报价。一个片子可以混用多种来源，例如代码画关系图、截图说明产品、授权照片提供环境。
