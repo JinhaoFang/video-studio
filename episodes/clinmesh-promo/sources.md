@@ -19,7 +19,7 @@
 
 - 画面、旁白和字幕不出现内部工程代号。医院业务链路统一写作「医院业务与临床知识基底」。
 - 产品截图在隔离的临时数据库和合成数据下采集，患者都是合成演示数据，不含真实身份、医保或支付凭证、平台密钥。
-- 病理图像 `images/病理.png` 用的是 TCGA-BRCA 公开去标识切片，画面上保留 CC BY 3.0 署名：Clunie, D., et al. (2024). DICOM converted Slide Microscopy images for the TCGA-BRCA collection [Data set]. Zenodo. https://doi.org/10.5281/zenodo.[redact:phone]。
+- 病理图像 `images/病理.png` 用的是 TCGA-BRCA 公开去标识切片，画面上保留 CC BY 3.0 署名：Clunie, D., et al. (2024). DICOM converted Slide Microscopy images for the TCGA-BRCA collection [Data set]. Zenodo. https://doi.org/10.5281/zenodo.12689962。
 - 协作者约定：开发和自动抽帧质检时，agent 不读取病理切片像素；核对 S07 其余象限只看不含 `SLOT 01` 的区域，或者用几何占位。
 
 ## 产品截图（`captures/`）
