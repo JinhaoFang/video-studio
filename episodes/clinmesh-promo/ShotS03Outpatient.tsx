@@ -1,7 +1,6 @@
 /**
- * Scene S03 (L006-L007) in ClinMeshPromoLightPro: syllable-locked Light-Theme
- * outpatient ambient consultation auto-recording, structured EMR drafting, and
- * guideline-backed lab/prescription candidate tabs & evidence drawer.
+ * S03（L006-L007）：按逐音节时间点展示浅色门诊工作站的无感成稿、
+ * 结构化病历、检验与处方候选，以及指南证据抽屉。
  */
 import { useCurrentFrame } from "remotion";
 import type { Timeline } from "../../tools/timeline-types";
@@ -129,7 +128,7 @@ const CURSOR_STOPS: LightCursorStop[] = [
   { frame: 370, x: 960, y: 460 },
 ];
 
-export const ShotS03LightProOutpatient: React.FC<{ timeline: Timeline }> = ({
+export const ShotS03Outpatient: React.FC<{ timeline: Timeline }> = ({
   timeline,
 }) => {
   void timeline;

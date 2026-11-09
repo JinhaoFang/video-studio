@@ -4,7 +4,7 @@
  */
 import { sentence, sentenceFrame } from "../../src/kit/sentence-timing";
 import type { Timeline } from "../../tools/timeline-types";
-import { S06_LIGHT_PRO_SIGN_CLICK_OFFSET_F } from "./ShotS06LightProSignoff";
+import { S06_SIGN_CLICK_OFFSET_F } from "./ShotS06Signoff";
 import { BREATHER_DURATION_F, OUTPUT_AUDIO_OFFSET_F } from "./tokens";
 
 export const MEASURED_PEAK_F: Record<string, number> = {
@@ -42,7 +42,7 @@ export const sfxFrom = (
     Math.round(targetPeakF - (MEASURED_PEAK_F[src] ?? 0) - outputOffsetF),
   );
 
-export const lightBreatherStartFrame = (
+export const breatherStartFrame = (
   timeline: Timeline,
   afterLineId: "L005" | "L008" | "L010",
 ): number =>
@@ -50,13 +50,13 @@ export const lightBreatherStartFrame = (
     ? sentence(timeline, "L010").endFrame + 12
     : sentence(timeline, afterLineId).endFrame + 3;
 
-export const lightBreatherSpans = (timeline: Timeline) => [
+export const breatherSpans = (timeline: Timeline) => [
   {
     id: "B01",
     chapterNo: "01",
     titlePrefix: "无感伴随智能 ·",
     accentWord: "静默运转",
-    from: lightBreatherStartFrame(timeline, "L005"),
+    from: breatherStartFrame(timeline, "L005"),
     durationInFrames: BREATHER_DURATION_F,
   },
   {
@@ -64,7 +64,7 @@ export const lightBreatherSpans = (timeline: Timeline) => [
     chapterNo: "02",
     titlePrefix: "溯源质控 ·",
     accentWord: "人工把关",
-    from: lightBreatherStartFrame(timeline, "L008"),
+    from: breatherStartFrame(timeline, "L008"),
     durationInFrames: BREATHER_DURATION_F,
   },
   {
@@ -72,19 +72,19 @@ export const lightBreatherSpans = (timeline: Timeline) => [
     chapterNo: "03",
     titlePrefix: "多病种智能体 ·",
     accentWord: "即插即用",
-    from: lightBreatherStartFrame(timeline, "L010"),
+    from: breatherStartFrame(timeline, "L010"),
     durationInFrames: BREATHER_DURATION_F,
   },
 ];
 
-export const buildLightProSfxSchedule = (
+export const buildSfxSchedule = (
   timeline: Timeline,
   outputOffsetF = OUTPUT_AUDIO_OFFSET_F,
 ): SfxCue[] => {
   const at = (id: string, offset = 0) => sentenceFrame(timeline, id, offset);
-  const b01 = lightBreatherStartFrame(timeline, "L005");
-  const b02 = lightBreatherStartFrame(timeline, "L008");
-  const b03 = lightBreatherStartFrame(timeline, "L010");
+  const b01 = breatherStartFrame(timeline, "L005");
+  const b02 = breatherStartFrame(timeline, "L008");
+  const b03 = breatherStartFrame(timeline, "L010");
   const s03Start = b01 + BREATHER_DURATION_F;
   const s04Start = at("L008");
   const s05Start = b02 + BREATHER_DURATION_F;
@@ -229,7 +229,7 @@ export const buildLightProSfxSchedule = (
     {
       id: "s06-emr-sign-latch",
       src: "fs-815493.mp3",
-      targetPeakFrame: s06Start + S06_LIGHT_PRO_SIGN_CLICK_OFFSET_F,
+      targetPeakFrame: s06Start + S06_SIGN_CLICK_OFFSET_F,
       volume: 0.44,
     },
     {

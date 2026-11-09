@@ -14,7 +14,7 @@ const studioRoot = join(epDir, "../..");
 
 const readTimeline = (): Timeline =>
   JSON.parse(
-    readFileSync(join(epDir, "data/timeline-light-pro.json"), "utf8"),
+    readFileSync(join(epDir, "data/timeline.json"), "utf8"),
   ) as Timeline;
 
 const readMedia = (t: TestContext, path: string): Buffer | undefined => {
@@ -39,7 +39,7 @@ describe("clinmesh-promo 最终版配音与音效契约", () => {
     const totalSec = tl.durationInFrames / tl.fps;
     assert.ok(
       totalSec >= 85 && totalSec <= 105,
-      `Expected total duration in 85..105s, got ${totalSec.toFixed(2)}s`,
+      `总时长应为 85..105 秒，实际为 ${totalSec.toFixed(2)} 秒`,
     );
     for (const line of tl.lines) {
       assert.equal(line.text.includes("拍板"), false);
@@ -69,7 +69,7 @@ describe("clinmesh-promo 最终版配音与音效契约", () => {
       const bEnd = bStart + breatherDurationF;
       assert.ok(
         bEnd <= tl.lines[idx + 1].startFrame,
-        `Breather after ${id} (${bStart}..${bEnd}) overlaps ${tl.lines[idx + 1].id} (${tl.lines[idx + 1].startFrame})`,
+        `${id} 后的呼吸区间（${bStart}..${bEnd}）与 ${tl.lines[idx + 1].id}（${tl.lines[idx + 1].startFrame}）重叠`,
       );
     }
   });

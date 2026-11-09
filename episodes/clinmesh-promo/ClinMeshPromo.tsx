@@ -10,23 +10,23 @@ import {
 } from "remotion";
 import { sentenceFrame } from "../../src/kit/sentence-timing";
 import type { Timeline } from "../../tools/timeline-types";
-import { PromoAudioLight } from "./PromoAudioLight";
+import { PromoAudio } from "./PromoAudio";
 import { PromoFinish } from "./PromoFinish";
 import { PromoSubtitles } from "./PromoSubtitles";
 import { ShotS01Opening } from "./ShotS01Opening";
 import { ShotS02Architecture } from "./ShotS02Architecture";
-import { ShotS03LightProOutpatient } from "./ShotS03LightProOutpatient";
-import { ShotS04LightProInpatientDrg } from "./ShotS04LightProInpatientDrg";
-import { ShotS05LightProQualityGate } from "./ShotS05LightProQualityGate";
-import { ShotS06LightProSignoff } from "./ShotS06LightProSignoff";
+import { ShotS03Outpatient } from "./ShotS03Outpatient";
+import { ShotS04InpatientDrg } from "./ShotS04InpatientDrg";
+import { ShotS05QualityGate } from "./ShotS05QualityGate";
+import { ShotS06Signoff } from "./ShotS06Signoff";
 import { ShotS07PathologyMultimodal } from "./ShotS07PathologyMultimodal";
 import { ShotS08SynergyFinale } from "./ShotS08SynergyFinale";
 import { BreatherCard } from "./primitives";
 import {
-  buildLightProSfxSchedule,
-  lightBreatherSpans,
-  lightBreatherStartFrame,
-} from "./sfx-schedule-light-pro";
+  buildSfxSchedule,
+  breatherSpans,
+  breatherStartFrame,
+} from "./sfx-schedule";
 import { BREATHER_DURATION_F, promoColor } from "./tokens";
 
 export type ClinMeshPromoProps = {
@@ -42,23 +42,23 @@ const S07_PRO_TAIL_CAM = [
 ] as const;
 const S08_PRO_ROLE_CUES = [5, 23, 44, 75, 95, 127] as const;
 
-export const ClinMeshPromoLightPro: React.FC<ClinMeshPromoProps> = ({
+export const ClinMeshPromo: React.FC<ClinMeshPromoProps> = ({
   timeline,
   bgm = true,
 }) => {
   const f = useCurrentFrame();
   const { fps } = useVideoConfig();
   const s02From = sentenceFrame(timeline, "L004");
-  const b01From = lightBreatherStartFrame(timeline, "L005");
+  const b01From = breatherStartFrame(timeline, "L005");
   const s03From = b01From + BREATHER_DURATION_F;
   const s04From = sentenceFrame(timeline, "L008");
-  const b02From = lightBreatherStartFrame(timeline, "L008");
+  const b02From = breatherStartFrame(timeline, "L008");
   const s05From = b02From + BREATHER_DURATION_F;
   const s06From = sentenceFrame(timeline, "L010");
-  const b03From = lightBreatherStartFrame(timeline, "L010");
+  const b03From = breatherStartFrame(timeline, "L010");
   const s07From = b03From + BREATHER_DURATION_F;
   const s08From = sentenceFrame(timeline, "L013");
-  const breathers = lightBreatherSpans(timeline);
+  const breathers = breatherSpans(timeline);
   const isLightScene =
     (f >= s03From && f < b02From) || (f >= s05From && f < b03From);
 
@@ -100,7 +100,7 @@ export const ClinMeshPromoLightPro: React.FC<ClinMeshPromoProps> = ({
         durationInFrames={s04From - s03From}
         premountFor={fps}
       >
-        <ShotS03LightProOutpatient timeline={timeline} />
+        <ShotS03Outpatient timeline={timeline} />
       </Sequence>
 
       <Sequence
@@ -109,7 +109,7 @@ export const ClinMeshPromoLightPro: React.FC<ClinMeshPromoProps> = ({
         durationInFrames={b02From - s04From}
         premountFor={fps}
       >
-        <ShotS04LightProInpatientDrg timeline={timeline} />
+        <ShotS04InpatientDrg timeline={timeline} />
       </Sequence>
 
       <Sequence
@@ -118,7 +118,7 @@ export const ClinMeshPromoLightPro: React.FC<ClinMeshPromoProps> = ({
         durationInFrames={s06From - s05From}
         premountFor={fps}
       >
-        <ShotS05LightProQualityGate timeline={timeline} />
+        <ShotS05QualityGate timeline={timeline} />
       </Sequence>
 
       <Sequence
@@ -127,7 +127,7 @@ export const ClinMeshPromoLightPro: React.FC<ClinMeshPromoProps> = ({
         durationInFrames={b03From - s06From}
         premountFor={fps}
       >
-        <ShotS06LightProSignoff timeline={timeline} />
+        <ShotS06Signoff timeline={timeline} />
       </Sequence>
 
       <Sequence
@@ -174,10 +174,10 @@ export const ClinMeshPromoLightPro: React.FC<ClinMeshPromoProps> = ({
 
       {!isLightScene ? <PromoFinish /> : null}
       <PromoSubtitles timeline={timeline} />
-      <PromoAudioLight
+      <PromoAudio
         timeline={timeline}
         bgm={bgm}
-        sfxBuilder={buildLightProSfxSchedule}
+        sfxBuilder={buildSfxSchedule}
       />
     </AbsoluteFill>
   );

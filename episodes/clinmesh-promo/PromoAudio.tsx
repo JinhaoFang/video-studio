@@ -8,7 +8,7 @@ import { Sequence, interpolate, staticFile, useVideoConfig } from "remotion";
 import { sentenceFrame } from "../../src/kit/sentence-timing";
 import type { Timeline } from "../../tools/timeline-types";
 import { clamp01 } from "./motion-utils";
-import { type SfxCue, buildLightProSfxSchedule } from "./sfx-schedule-light-pro";
+import { type SfxCue, buildSfxSchedule } from "./sfx-schedule";
 import { BGM_FADE_IN_F, BGM_FADE_OUT_F, BGM_STEADY_VOLUME } from "./tokens";
 
 const cosineRamp = (t: number): number =>
@@ -26,11 +26,11 @@ const bgmScoreBalance = (sec: number): number => {
   );
 };
 
-export const PromoAudioLight: React.FC<{
+export const PromoAudio: React.FC<{
   timeline: Timeline;
   bgm: boolean;
   sfxBuilder?: (timeline: Timeline) => SfxCue[];
-}> = ({ timeline, bgm, sfxBuilder = buildLightProSfxSchedule }) => {
+}> = ({ timeline, bgm, sfxBuilder = buildSfxSchedule }) => {
   const { fps } = useVideoConfig();
   const sfxCues = useMemo(() => sfxBuilder(timeline), [sfxBuilder, timeline]);
 

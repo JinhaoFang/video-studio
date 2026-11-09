@@ -1,10 +1,10 @@
 /** 按期注册 Remotion 合成，时长与帧率使用对应时间轴的入库数据。 */
 import { Composition, Folder } from "remotion";
 import {
-  ClinMeshPromoLightPro,
+  ClinMeshPromo,
   type ClinMeshPromoProps,
-} from "./clinmesh-promo/ClinMeshPromoLightPro";
-import promoTimeline from "./clinmesh-promo/data/timeline-light-pro.json";
+} from "./clinmesh-promo/ClinMeshPromo";
+import promoTimeline from "./clinmesh-promo/data/timeline.json";
 import { Opening } from "./nasa-punk-opening/Opening";
 import timeline from "./nasa-punk-opening/data/timeline.json";
 import type { Timeline } from "../tools/timeline-types";
@@ -28,8 +28,8 @@ export const RemotionRoot: React.FC = () => (
     </Folder>
     <Folder name="clinmesh-promo">
       <Composition
-        id="ClinMeshPromoLightPro"
-        component={ClinMeshPromoLightPro}
+        id="ClinMeshPromo"
+        component={ClinMeshPromo}
         durationInFrames={promoTimeline.durationInFrames}
         fps={30}
         width={1920}

@@ -1,7 +1,6 @@
 /**
- * Scene S04 (L008) in ClinMeshPromoLightPro: syllable-locked Light-Theme
- * coronary PCI stent consumable reservation, DRG FM59->FM39 payment headroom
- * calculation, procedure completion, and three-role verification closure.
+ * S04（L008）：按逐音节时间点展示浅色住院工作站的冠脉支架耗材预留、
+ * DRG FM59→FM39 支付结余测算、手术完成与三岗核查闭环。
  */
 import { useCurrentFrame } from "remotion";
 import type { Timeline } from "../../tools/timeline-types";
@@ -96,7 +95,7 @@ const CURSOR_STOPS: LightCursorStop[] = [
   { frame: 136, x: 590, y: 548 },
 ];
 
-export const ShotS04LightProInpatientDrg: React.FC<{ timeline: Timeline }> = ({
+export const ShotS04InpatientDrg: React.FC<{ timeline: Timeline }> = ({
   timeline,
 }) => {
   void timeline;
