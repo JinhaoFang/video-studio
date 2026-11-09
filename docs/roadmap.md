@@ -2,8 +2,13 @@
 
 ## 目标
 
-1. **用 AI 做视频**：先复刻《设计风格小课 04：NASA 朋克》的开场 0:00～0:46，再用新选题做完整一期。
-2. **复利**：以仓库的形式沉淀规则、工具、组件和风格，下一期视频从这里起步。
+本仓库是用 agent 做视频的工作室，视频类型不限，被邀请进来的人都是用户。它有三个目的：
+
+1. **做出满意的视频**：任何用户从 `/grill-with-docs` 开始，用仓库做出自己满意的一期。
+2. **沉淀**：把制作中得到的经验写进工作室层（规则、工具、组件、风格、术语），下一期从这里起步；入口和标准见 `docs/workflow/README.md`「复利」。
+3. **可以对外交付**：用户愿意的话，做出来的视频可以对外发布；仓库不默认保证，某一期要发布时，由它自己满足条件（`sources.md` 没有未登记项）。
+
+本文只写工作室层的方向、已定和待定；每期的计划写在各自的 spec 或期目录里。
 
 开发流程用 `workflow-v5`，从 `JinhaoFang/agent-workflow` 安装；它从 2026-10-31 起在那边单独维护。做视频时发现的流程问题，记进那边的观察记录 `docs/research/run-spec-migration.md`，按那边 `AGENTS.md`「怎么改方法层」处理。
 
@@ -23,12 +28,14 @@
 | CI | GitHub Actions 的设定不动；启动不了时改为本机验证（用户 10-31） | `docs/workflow/README.md`「护栏」 |
 | 第一阶段 | 复刻开场 0:00～0:46：spec #60，PR #73，成片 47.9 秒；用户审片后返工 #74 | `docs/reports/spec-60-nasa-punk-opening.html` |
 | ClinMesh 宣传片 | 协作者在本机制作、经 PR #121 入库的一期产品宣传片；spec #122 收敛为只剩最终版 `ClinMeshPromo`，文档按事实重写，verify 能拦住 suite 层的测试失败（用户 11-09） | `episodes/clinmesh-promo/README.md`、`docs/reports/spec-122-clinmesh-cleanup.html` |
+| 仓库定位 | 视频类型不限；目的是做出满意的视频、沉淀、可以对外交付；被邀请进来的人都是用户，不分主次（用户 11-09） | `AGENTS.md`、`GLOSSARY.md` |
+| 工作室层的沉淀 | 本仓库跨期共享的部分叫工作室层，"方法层"只指 `agent-workflow`；沉淀只从新会话的 `/retro` 进入，满足四条标准；推翻已定事项时请当初定的人确认；改了工作室层的 PR 合并前在新会话里用 `code-review` 审一次；不设人工把关（用户 11-09） | `docs/workflow/README.md`「复利」、`docs/adr/0001-studio-layer-without-gatekeeper.md` |
 
 进行中的工作以 GitHub 上打开的 spec 为准，不写进本文。
 
 ## 下一步
 
-**第二阶段**：在新会话里跑 `/grill-with-docs` 定新选题，再 `/to-spec`、`/to-tickets`，开新会话执行。开工前先过下面的待定项。
+任何用户都可以开一期：在新会话里跑 `/grill-with-docs` 定选题，要拆工单的再 `/to-spec`、`/to-tickets`，开新会话执行；走不走 spec 由用户决定。做完后按「复利」开新会话跑 `/retro`。开工前先看下面的待定项。
 
 ## 第一阶段留下的（spec #60）
 
@@ -38,16 +45,11 @@
 - 实测的量没有上限：#67 为逐帧证明跑了约 3.3 小时，其他镜头工单约 1 小时。工单的验收产物要写明到什么程度就够。
 - 派发前先核对外部 API 的能力：#69 按不支持的 speed 参数合成，多花约 250 credits。仓库里的 `docs/research/nasa-ep04/elevenlabs-api.md` 早有记录。
 - 审片返工 #74：开场同一张照片的推拉被做成溶解换页，根源是小样把镜头内换景别定成溶解、参考拆解用 2 秒联系表、验收只看静态对比图。已沉淀：`docs/roles/design.md`「镜头运动」和运镜验收要求，镜头剧本的“运镜”列（`docs/workflow/README.md`），桌子 SOP 经验要点（`docs/research/table-videosop.md` 第 4 节），lint 禁止镜头代码用 SVG `<image>`。
-- 可以提进 `src/kit/` 的：字幕条、按句定时、颗粒暗角、红色手绘批注。第二期再用时提。
-
-## 第二阶段：新选题
-
-待定：
-
-- kit 组件要写测试时，测试的运行环境怎么定：现在 `.test.ts` 都按 Node 环境检查和运行，测不了 JSX。
-- 配音：ElevenLabs Alice × eleven_v4 在第一阶段实测可用（错字率 0%，后期变速收语速）。新选题照用，还是重新试听。
+- 可以提进 `src/kit/` 的：字幕条、按句定时、颗粒暗角、红色手绘批注。第二期再用时提（按句定时和字幕调度已在 #114 提出）。
+- 配音：Alice × eleven_v4 在第一阶段实测可用（错字率 0%，后期变速收语速）；ClinMesh 用的是 MiniMax 原速。每期自己选。
 
 ## 待定
 
+- kit 组件要写测试时，测试的运行环境怎么定：现在 `.test.ts` 都按 Node 环境检查和运行，测不了 JSX。
 - kit 复用欠账：ClinMesh 是中英文加空格（首期 `text-spacing.ts`）和颗粒暗角（首期 `FilmFinish.tsx`）的第二次使用，但两处都各写了一份，没有提进 `src/kit/`。
 - 时间轴来源类型：`tools/build-timeline.ts` 只认 `temporary` 和 `elevenlabs`，非 ElevenLabs 的正式配音（如 ClinMesh 的 MiniMax）只能记成 `elevenlabs`。#114 曾加过 `local`，后来按审阅撤回；要不要加，再定。

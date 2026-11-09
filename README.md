@@ -1,6 +1,6 @@
 # 视频工作室
 
-用 Remotion 4 和 React 19 制作讲解视频。多期共用工具、组件与风格，每期的内容放在 `episodes/`。规则与工作流见 [文档地图](docs/README.md)。
+用 Remotion 4 和 React 19 制作视频，类型不限。多期共用工具、组件与风格，每期的内容放在 `episodes/`。规则与工作流见 [文档地图](docs/README.md)。
 
 ## 环境要求
 
