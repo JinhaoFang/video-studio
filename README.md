@@ -19,7 +19,7 @@ pnpm qa --help
 pnpm check:commits origin/main ticket/12-review-rework
 ```
 
-`pnpm dev` 启动 Remotion Studio；入口为 `episodes/index.ts`，在 `episodes/Root.tsx` 按文件夹注册各期合成。各期合成的生成、渲染和按句定时约定见 [NASA 朋克开场说明](episodes/nasa-punk-opening/README.md) 与 [ClinMesh 宣传片说明](episodes/clinmesh-promo/README.md)。
+`pnpm dev` 启动 Remotion Studio；入口为 `episodes/index.ts`，在 `episodes/Root.tsx` 按文件夹注册各期合成。当前合成 `NasaPunkOpening` 的生成、渲染和按句定时约定见 [本期说明](episodes/nasa-punk-opening/README.md)。实验旁支 `ClinMeshPromo` 见 [ClinMesh 宣传片说明](episodes/clinmesh-promo/README.md)。
 
 `pnpm verify` 按 `tools/verify.ts` 的步骤依次执行检查和单元测试，任一步失败立即停止。它检查 Git 跟踪文件及未被忽略的未跟踪代码，包含工作室自有技能脚本，排除参考资料、第三方技能和输出目录。文档命令检查的范围和规则见 [工作流的护栏说明](docs/workflow/README.md#护栏)。
 
@@ -35,24 +35,3 @@ npx remotion compositions
 `pnpm build` 打包项目；`npx remotion compositions` 列出各期合成和规格。
 
 媒体素材放在 `public/episodes/<期>/`，渲染输出放在 `out/`，不提交到 Git。
-
-## 产品宣传片参考与扩展技能
-
-制作产品宣传片（对标样板见 [ClinMesh 宣传片说明](episodes/clinmesh-promo/README.md)）时，在构思分镜与实现阶段配合以下参考站与外部技能使用：
-
-### 灵感与分镜参考站
-
-- [ShipScenes](https://shipscenes.com/)：科技与 SaaS 产品发布片拆解，用于确定整片叙事节奏、界面 `@2x` 局部裁剪特写构图与鼠标交互规格。
-- [Motion Reference](https://motionreference.com/)：按转场、字效、版式与缓动分类的营销视频及 UI 动效库，用于挑选多焦点编排与镜头衔接手法。
-- [Inspo.zone](https://www.inspo.zone/)：高审美视觉与动态设计灵感画廊，用于寻找开场氛围、暗场三维与多模态画面的视觉记忆点。
-
-### 制作与声音技能
-
-两个扩展技能记录在 `skills-lock.json` 中（本地安装目录 `.agents/` 与 `.claude/` 不提交到 Git），新环境可一键安装（加 `-g` 可安装到本机全局）：
-
-```console
-npx skills add vibe-motion/sound Vincentwei1021/video-shotcraft
-```
-
-- [`video-shotcraft`](https://github.com/Vincentwei1021/video-shotcraft)：提供 124 张调校参数的 Remotion 镜头配方卡（[在线样片画廊](https://vincentwei1021.github.io/video-shotcraft/library.html)）、`PageCam` 相机原语、产品片审美准则及 Freesound 音效拉取测峰脚本。
-- [`sound`](https://github.com/vibe-motion/sound)：基于 Freesound 下载量、评分人数、录音设备描述与 CC0 许可筛选真实物理拟音，避免电子合成提示音。

@@ -1,45 +1,92 @@
 # ClinMesh 宣传片（`clinmesh-promo`）
 
-本期宣传片以 **1 分 35.93 秒（`2878` 帧，`1920×1080 @ 30fps`）** 的紧凑篇幅，呈现 **ClinMesh 已落地的临床智能体核心能力**、**已完成研发的自研数字病理切片识别模型**、**持续接入临床的多病种智能体矩阵**，以及 **生长于医院知识基底之上、可独立解耦接入既有系统的全院六岗协同架构**。
+**实验旁支**（用户 11-09）：协作者在本机做的一条医疗智能体产品宣传片，经 PR #121 入库，spec #122 清理成只剩最终版。它不算路线图的第二阶段。旧的深色版、浅色版和预览合成可以在合并提交 `2746dcd` 里找到。
 
-## 核心设计约束
+合成 `ClinMeshPromo`：3114 帧（103.80 秒），1920×1080，30fps，14 句旁白，8 个镜头加 3 张章节呼吸字卡。台本见 [script.md](script.md)，镜头剧本见 [storyboard.md](storyboard.md)，素材来源见 [sources.md](sources.md)，动效与声音约定见 [motion-sound-tokens.md](motion-sound-tokens.md)。
 
-- **视觉母体与产品原生语义统一**：外层舞台采用深色编辑室克制美学——暖炭黑画布（`#121210` / `#151517`）、细边暗色面板、衬线与无衬线混排及克制靛蓝/信息蓝强调色（舞台 `#7C86FF` ↔ 产品深色 `--info: #8DBBFF`）。内部产品卡片严格复用 ClinMesh 原生 UI Token（`6px–8px` 圆角、等宽数字 `tabular-nums`、`.clinmesh-glow` 蓝色环绕柔光与虚线溯源标记；人工审阅确认栏保持完全静态无发光）。
-- **聚焦阅读减负与局部高分裁剪**：正片镜头（`S02`–`S07`）与章节呼吸字卡（`B01`–`B03`）统一去除左上角英文眉标及章节英文副标题，减少密集画面下的视线抢占，仅在终章收尾定格保留双语副标题。实机部分采用 **`2x` 整页纹理 + 核心业务卡片高清切片**，配合 `PageCam` 布局级 CSS `zoom` 聚焦「触发动作 → 结构化结果」，确保 1080p 下主字幕与核心字卡清晰易读。
-- **自研病理切片识别与多病种智能体矩阵（视重均衡）**：第三章（`B03` `03 多病种智能体 · 即插即用` → `S07`）将 `SLOT 01` **自研数字病理切片识别模型**（`images/病理.png`，右上角绿色 `自研多模态模型` 状态签，保留 TCGA-BRCA 公开去标识切片集 CC BY 3.0 署名，扫描线触发双病灶 ROI 准星咬合）与 `SLOT 02` **胸痛冠脉介入智能体**、`SLOT 03` **肝病专病诊疗智能体**、`SLOT 04` **肿瘤多学科会诊 (MDT) 智能体** 排布为 `2×2` 等重矩阵；`SLOT 02`–`04` 均配备统一暗场三维医学示意视窗、等宽遥测角标与双列要点条，平衡四象限视觉重心。
-- **动效与声音定调（`video-shotcraft` × `sound`）**：
-  - 一镜一主运动语法，开场与终章品牌字标落定 **真静止 `>= 1.0s`（开场 `2.53s`，片尾纯净定格 `1.83s`）**，批量元素落定静止 `>= 0.5s`，严禁手持随机抖动与群发廉价扫光。
-  - 旁白采用浑厚沉稳普通话男中低音（ElevenLabs `Brian` × `eleven_v4`，`language_code: "zh"`，`rubberband` 等高 `1.10x` 变速）；音效全部采用 Freesound 实测筛选的 CC0 真实物理拟音与电影重音，启用音源峰值滞后与编码器输出偏移双补偿；配乐执行稳态无闪避（No Ducking）混音。
-- **命名与隐私合规**：全片严禁出现任何内部工程代号，医院业务链路统一表述为 **医院业务与临床知识基底**；100% 采用脱敏代号与合成临床数据，不出现任何患者真实身份；Agent 开发与自动化帧检阶段绝不读取真实医学影像或病理切片像素。
+## 章节
 
-## 章节结构（14 句 · 8 镜 + 3 处视觉呼吸字卡）
+| 段落 | 镜头 | 句子 | 帧（时长） |
+|---|---|---|---|
+| 序章：痛点与底座 | S01、S02、B01 | L001–L005 | 0–1031（34.37 秒） |
+| 第一章：无感伴随智能 | S03、S04、B02 | L006–L008 | 1031–1698（22.23 秒） |
+| 第二章：溯源质控与人工把关 | S05、S06、B03 | L009–L010 | 1698–2240（18.07 秒） |
+| 第三章：多病种智能体与终章 | S07、S08 | L011–L014 | 2240–3114（29.13 秒） |
 
-| 段落                               | 镜头                | 句子          | 实测时长 | 核心内容                                                                                                                                                                                                                                                                                                                                                    |
-| ---------------------------------- | ------------------- | ------------- | -------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **序章：意象破局与可解耦底座**     | `S01`–`S02` + `B01` | `L001`–`L005` | `32.13s` | 炭黑桌面听诊器与屏幕端通用问答开篇，在同一暮色医院工作站实景底图上从容递进「旧系统只记录过去 / 孤立对话框走不进诊疗现场」两重痛点，随即溶入暮色诊室，立起满铺圆角标识 + `ClinMesh` 主标与「深度融入诊疗每一步的医疗智能体体系」副标题；`S02` 采用无英文两段式插槽架构——先居中点亮「门诊 → 医技 → 住院 → 手术介入 → 病案结算」五域贯通横轴，再下沉为四插槽标准母板，上方四枚独立竖卡（无感伴随、循证质控、医保精算、专科模型）依次垂直插入点亮，接 `1.70s` 呼吸字卡 `01 无感伴随智能 · 静默运转` |
-| **第一章：无感伴随智能**           | `S03`–`S04` + `B02` | `L006`–`L008` | `22.30s` | 局部高分裁剪呈现：门诊问诊后台静默成文 + 穿窗切入权威指南循证候选逐行嵌入；住院冠脉介入支架耗材预留、`FM59 → FM39` 病组支付空间滚动精算与三岗核查定格标注，接 `1.70s` 呼吸字卡 `02 溯源质控 · 人工把关`                                                                                                                                                     |
-| **第二章：溯源质控与人工把关**     | `S05`–`S06` + `B03` | `L009`–`L010` | `15.70s` | 每一笔病历成文与医嘱候选逐句强绑定问诊原话与指南依据，实时拦截前后病史矛盾与青霉素过敏用药红线；对比越权直写请求自动阻断，正式医嘱与文书签署必须经医生人工终审拍板留痕，接 `1.70s` 呼吸字卡 `03 多病种智能体 · 即插即用`                                                                                                                                    |
-| **第三章：多病种智能体与全院终章** | `S07`–`S08`         | `L011`–`L014` | `26.90s` | 自研病理切片识别模型扫描准星精准咬合两处病灶 ROI 并输出组织学辅助判读（绿色 `自研多模态模型` 标签），后拉揭示胸痛冠脉介入、肝病专病诊疗、肿瘤多学科会诊四格视重均衡的多病种智能体矩阵；`S08` 六岗智能体沿贝塞尔曲线汇入同一患者病例中枢，6 张代表卡四方飞入围合引出 `ClinMesh` 压印后错峰向外虚化消散，深色聚光舞台仅留 `ClinMesh` 与双语副标题纯净定格收束 |
+帧号是当前时间轴下的结果；镜头起点由 `ClinMeshPromo.tsx` 按句子算出。
 
-## 目录说明
+## 目录
 
-- `ClinMeshPromo.tsx` 及 `ShotS01Opening.tsx`–`ShotS08SynergyFinale.tsx`：基于 `data/timeline.json` 句锚点驱动的 Remotion 主合成与八镜源码。
-- `script.md`：14 句旁白台本（严格遵循 `tools/timeline-input.ts` 三列契约）。
-- `storyboard.md`：逐镜裁剪构图、`video-shotcraft` 镜头卡映射、运镜与音效钉点剧本。
-- `sources.md`：局部实机裁剪切片、病理模型与多病种智能体视窗素材、Freesound 实测音效、定制配乐及合规清单。
-- `motion-sound-tokens.md`：基于 ClinMesh 视觉合同、`video-shotcraft` 与 `sound` 提炼的动效及稳态无闪避混音规范。
-- `production-workflow-and-comparison.md`：Remotion 逐帧渲染机制、六步制作全流程及与首期 `nasa-punk-opening` 的六大制作差异对比复盘。
-- `data/transcript.md`、`data/synthesis-overrides.json`、`data/voiceover-durations.json` 与 `data/timeline.json`：14 句配音转写、防吞音覆写与实测帧级时间轴（`2911f / 97.03s`）。
+- `ClinMeshPromo.tsx`：总合成，按句子安排各镜头、呼吸字卡、字幕（`PromoSubtitles.tsx`）、颗粒暗角（`PromoFinish.tsx`）和音频（`PromoAudio.tsx`）。属性 `bgm` 控制有没有配乐。
+- `ShotS01Opening.tsx`～`ShotS08SynergyFinale.tsx`：八个镜头。S03–S06 共用 `light-stage.tsx` 的浅色工作台。
+- `primitives.tsx`、`motion-utils.ts`、`tokens.ts`、`fonts.ts`：相机（`PageCam`）、呼吸字卡等基础组件、缓动、令牌和字体。
+- `sfx-schedule.ts`：音效钉帧清单、峰值补偿和呼吸字卡区间；`sfx-schedule.test.ts` 是对应的契约测试，依赖本机媒体的断言在没有媒体时跳过。
+- `data/voiceover-durations.json`：14 句配音的实测时长。`data/timeline.json`：由台本和时长生成的时间轴。`data/props-nobgm.json`：渲染无配乐版本用的属性。`data/synthesis-overrides.json`：用 `pnpm tts` 合成这份台本时的文本改写；最终配音不经过 `pnpm tts`，没有用到它。
 
-## 复现与验收命令
+本期代码复用 `src/kit/` 的按句定时和字幕调度。
+
+## 制作步骤
+
+1. **台本与约束**：写 14 句台本，在 `L005`、`L008`、`L010` 后留出呼吸字卡的停顿；定下合规约束（见 `sources.md`）。
+2. **配音**：用 MiniMax Audio 录整段旁白，在句间 -60 dB 的静音处切成 `L001.wav`～`L014.wav`，原速不变速。时长写进 `data/voiceover-durations.json`，再生成时间轴。
+3. **截图**：在隔离数据库和合成数据下启动 ClinMesh 本地服务，用 Playwright 按 2 倍像素采集界面状态。
+4. **镜头**：按镜头剧本写镜头代码，相机推拉用 CSS `zoom`。
+5. **声音**：用 `video-shotcraft` 的 `sfx-source.py` 从 Freesound 拉取 CC0 音效，在 `sfx-schedule.ts` 里钉帧；配乐在合成里直接混。
+6. **交付**：渲染有配乐和无配乐两版，校准响度，写入封面。
+
+## 复现
+
+在仓库里能复现的部分：
 
 ```sh
-pnpm verify
-pnpm qa voice public/episodes/clinmesh-promo/voiceover-brian-a1-110 --transcript episodes/clinmesh-promo/data/transcript.md --overrides episodes/clinmesh-promo/data/synthesis-overrides.json --ledger out/qa/clinmesh-promo/voiceover-credits.json --out out/qa/clinmesh-promo/voice-brian-a1-stretched --from L001 --to L014
+node tools/build-timeline.ts episodes/clinmesh-promo/script.md --durations episodes/clinmesh-promo/data/voiceover-durations.json --source elevenlabs --label "MiniMax Audio 沉稳高管 (48kHz PCM WAV, 1.00x 原速精剪)" --leading-silence 0.9 --out episodes/clinmesh-promo/data/timeline.json
 pnpm exec remotion render ClinMeshPromo out/clinmesh-promo/clinmesh-promo-raw.mp4
-pnpm exec remotion render ClinMeshPromo out/clinmesh-promo/clinmesh-promo-nobgm-audio.wav --codec=wav --props=episodes/clinmesh-promo/data/props-nobgm.json
-pnpm qa sheet out/clinmesh-promo/clinmesh-promo.mp4 --every 2 --out out/qa/clinmesh-promo/sheets
-pnpm qa motion out/clinmesh-promo/clinmesh-promo.mp4 --out out/qa/clinmesh-promo/motion
-pnpm qa loudness out/clinmesh-promo/clinmesh-promo.mp4 --target-lufs -16 --tolerance 1 --max-true-peak -1 --out out/qa/clinmesh-promo/loudness
-pnpm qa loudness out/clinmesh-promo/clinmesh-promo-nobgm.mp4 --target-lufs -16 --tolerance 1 --max-true-peak -1 --out out/qa/clinmesh-promo/loudness-nobgm
+pnpm exec remotion render ClinMeshPromo out/clinmesh-promo/clinmesh-promo-nobgm-raw.mp4 --props=episodes/clinmesh-promo/data/props-nobgm.json
+pnpm qa sheet out/clinmesh-promo/clinmesh-promo-raw.mp4 --every 2 --out out/qa/clinmesh-promo/sheets
+pnpm qa motion out/clinmesh-promo/clinmesh-promo-raw.mp4 --out out/qa/clinmesh-promo/motion
+pnpm qa loudness out/clinmesh-promo/clinmesh-promo-raw.mp4 --target-lufs -16 --tolerance 1 --max-true-peak -1 --out out/qa/clinmesh-promo/loudness
 ```
+
+第一条用现有数据生成的时间轴与仓库里的 `data/timeline.json` 逐字节相同（spec #122 实测）。渲染需要 `public/episodes/clinmesh-promo/` 下的全部媒体，这些媒体只在协作者本机。
+
+**不在仓库里的本机步骤**（没有命令或工具入库，只能照上面的「制作步骤」手工重做）：
+
+- MiniMax 配音的生成，以及按静音切句；
+- 产品截图的采集脚本（在 ClinMesh 产品仓库那边）；
+- 配乐的母带处理（高通、衰减、响度归一）；
+- 成片的响度校准，以及封面写入（视频首帧和 MP4 `attached_pic`）。
+
+## 已知偏离
+
+- **时间机制**：S03–S06 镜头内的动作按镜头起点加偏移定时，不按句子定时；S03 和 S05 的起点是呼吸字卡结束的那一刻，不是句子的开始。S03 横跨 `L006`–`L007`，改了 `L006` 的时长后，S03 里配合 `L007` 的动作不会跟着移动，要手工调整偏移。仓库规则见 `docs/workflow/README.md`「一期视频」。
+- **时间轴来源类型**：`data/timeline.json` 的 `source.kind` 记为 `elevenlabs`，因为 `tools/build-timeline.ts` 只接受 `temporary` 和 `elevenlabs`；实际是 MiniMax 配音，写在 `source.description` 里。
+- **S07 内部起点**：S07 按"句尾 +3 帧"推算自己的起点，实际起点是"句尾 +12 帧"（B03 的位置），镜头内动画因此比本意晚 9 帧。spec #122 为保持画面不变没有修，要看过渲染再决定。
+- **配音质检**：`pnpm qa voice` 读的是 `pnpm tts` 生成的 MP3 和配套 JSON，MiniMax 的 WAV 没有这些，最终配音没有经过它的错字率评分。
+
+## 与首期的差异
+
+| 方面 | `nasa-punk-opening` | `clinmesh-promo` |
+|---|---|---|
+| 性质 | 复刻参考视频开场，只在本机学习，不公开发布 | 原创产品宣传片，实验旁支；`sources.md` 的未登记项补齐前不对外发布 |
+| 镜头依据 | 逐句对照参考视频，用 `pnpm qa compare` 并排验收 | 没有参考片；用下面的参考站定方向，套用 `video-shotcraft` 的镜头卡 |
+| 画面素材 | NASA 公有领域照片，加上生成的桌面和纸张纹理 | 产品界面截图、生成的意象图和示意图、TCGA 病理图 |
+| 声音 | 程序合成的 80 Hz 铺底和 2300 Hz 嘀嗒，是待定的占位（`tools/mix-opening.ts` 文件头的 `TODO(design)`）；渲染后用 `tools/mix-opening.ts` 替换音轨 | Freesound 音效和 Mixkit 配乐，在合成里直接混音，Studio 预览就能听到 |
+| 配音 | ElevenLabs Alice × `eleven_v4`，rubberband 变速（默认 1.257143 倍，L008 为 1.15 倍），使时长接近参考片 | MiniMax「沉稳高管」声线，原速 |
+| 流程 | spec #60 拆成工单，用 `run-spec` 执行 | 协作者在本机制作后，经 #120、#121 入库 |
+
+## 参考与外部技能
+
+做这类产品片时协作者用过的参考站：
+
+- [ShipScenes](https://shipscenes.com/)：科技和 SaaS 产品发布片的拆解，用来看整片节奏、界面局部特写和鼠标交互。
+- [Motion Reference](https://motionreference.com/)：按转场、字效、版式、缓动分类的营销视频和界面动效。
+- [Inspo.zone](https://www.inspo.zone/)：视觉与动态设计的灵感画廊。
+
+两个外部技能登记在 `skills-lock.json`，装在不进 git 的 `.agents/`、`.claude/` 下：
+
+```console
+npx skills add vibe-motion/sound Vincentwei1021/video-shotcraft
+```
+
+- [`video-shotcraft`](https://github.com/Vincentwei1021/video-shotcraft)（Apache-2.0）：Remotion 镜头卡、`PageCam` 相机、产品片审美准则和 Freesound 音效拉取脚本 `sfx-source.py`。
+- [`sound`](https://github.com/vibe-motion/sound)：按下载量、评分、录音设备和 CC0 许可筛选真实拟音的方法。仓库里没有许可证文件，作者明确表示免费版可以使用；我们只用免费版，不用付费版（用户 11-09）。
