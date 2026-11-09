@@ -30,6 +30,7 @@
 | ClinMesh 宣传片 | 协作者在本机制作、经 PR #121 入库的一期产品宣传片；spec #122 收敛为只剩最终版 `ClinMeshPromo`，文档按事实重写，verify 能拦住 suite 层的测试失败（用户 11-09） | `episodes/clinmesh-promo/README.md`、`docs/reports/spec-122-clinmesh-cleanup.html` |
 | 仓库定位 | 视频类型不限；目的是做出满意的视频、沉淀、可以对外交付；被邀请进来的人都是用户，不分主次（用户 11-09） | `AGENTS.md`、`GLOSSARY.md` |
 | 工作室层的沉淀 | 本仓库跨期共享的部分叫工作室层，"方法层"只指 `agent-workflow`；沉淀只从新会话的 `/retro` 进入，满足四条标准；推翻已定事项时请当初定的人确认；改了工作室层的 PR 合并前在新会话里用 `code-review` 审一次；不设人工把关（用户 11-09） | `docs/workflow/README.md`「复利」、`docs/adr/0001-studio-layer-without-gatekeeper.md` |
+| 帮不懂视频的用户 | 核心是在必要的时候请用户参与（只有用户知道的、之后改起来代价大的、满不满意），问新手给样片、说大白话；一期 13 项决定是设计负责人的检查清单；视频知识放 `docs/video/`，只写知识不写步骤；不加新流程、技能或简报文件，入口不变；白板技能按实测收纳，mg-styles 的评审打分不纳入（用户 11-09，spec #132） | `docs/workflow/README.md`「一期视频」、`docs/roles/design.md`「工作流」、`docs/video/`、`docs/reports/spec-132-video-novice.html` |
 
 进行中的工作以 GitHub 上打开的 spec 为准，不写进本文。
 
@@ -53,3 +54,4 @@
 - kit 组件要写测试时，测试的运行环境怎么定：现在 `.test.ts` 都按 Node 环境检查和运行，测不了 JSX。
 - kit 复用欠账：ClinMesh 是中英文加空格（首期 `text-spacing.ts`）和颗粒暗角（首期 `FilmFinish.tsx`）的第二次使用，但两处都各写了一份，没有提进 `src/kit/`。
 - 时间轴来源类型：`tools/build-timeline.ts` 只认 `temporary` 和 `elevenlabs`，非 ElevenLabs 的正式配音（如 ClinMesh 的 MiniMax）只能记成 `elevenlabs`。#114 曾加过 `local`，后来按审阅撤回；要不要加，再定。
+- 视频知识的维护：`docs/video/` 的「适合」是保守建议，出处里有会改版的平台规格页；第一次照 13 项清单做完一期后，看 `/retro` 怎么补充和更新它们。
