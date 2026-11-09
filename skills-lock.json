@@ -159,6 +159,13 @@
       "skillPath": ".claude/skills/setup-run-spec/SKILL.md",
       "computedHash": "ee90cff9a1c0872d030a1de8105fa2cd6ca7663d79b29b0efc018c540200e2c3"
     },
+    "sound": {
+      "source": "vibe-motion/sound",
+      "sourceType": "github",
+      "skillPath": "SKILL.md",
+      "computedHash": "6149bbefbabab8300498806829099ce5e3ef23c78ce4178100d3b53a01b77415",
+      "installMode": "copy"
+    },
     "teach": {
       "source": "mattpocock/skills",
       "sourceType": "github",
@@ -182,6 +189,13 @@
       "sourceType": "github",
       "skillPath": "skills/engineering/triage/SKILL.md",
       "computedHash": "a683e69163e23630f39c05a50fb9d83a3795a6a6fbd317357669e082cd43a158"
+    },
+    "video-shotcraft": {
+      "source": "Vincentwei1021/video-shotcraft",
+      "sourceType": "github",
+      "skillPath": "SKILL.md",
+      "computedHash": "8d74a58688e0bd3c8fcd7cb69c60cb932063fab619ac6bcd5ece23ea5e4550c3",
+      "installMode": "copy"
     },
     "wait-what": {
       "source": "mattpocock/skills",

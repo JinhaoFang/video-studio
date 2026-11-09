@@ -34,7 +34,7 @@ class ChineseParser(argparse.ArgumentParser):
 
 
 def run_media(args):
-    result = subprocess.run(args, capture_output=True, text=True)
+    result = subprocess.run(args, capture_output=True, text=True, encoding="utf-8", errors="replace")
     if result.returncode:
         raise ValueError(f"{args[0]} 运行失败，请检查输入音频。")
     return result
@@ -42,7 +42,7 @@ def run_media(args):
 
 def write_json(path, value):
     path.write_text(
-        json.dumps(value, ensure_ascii=False, indent=2, allow_nan=False) + "\n"
+        json.dumps(value, ensure_ascii=False, indent=2, allow_nan=False) + "\n", encoding="utf-8"
     )
 
 
@@ -156,7 +156,7 @@ def measure(audio, evidence):
             "-",
         ]
     )
-    evidence.write_text(result.stderr)
+    evidence.write_text(result.stderr, encoding="utf-8")
     summary = result.stderr[result.stderr.rfind("Summary:") :]
     peak = re.search(r"Peak:\s*(-inf|[-\d.]+)\s+dBFS", summary)
     if not peak:
@@ -218,7 +218,7 @@ def main():
     model = WhisperModel(
         args.whisper_model, device="cuda", compute_type="float16", local_files_only=True
     )
-    job = json.loads(Path(args.job).read_text())
+    job = json.loads(Path(args.job).read_text(encoding="utf-8"))
     out = Path(job["out"])
     environment = {
         "python": sys.version,
@@ -348,7 +348,7 @@ def main():
         (out / f"{safe_name}-whisper.md").write_text(
             f"# {name}：Whisper 原始转写\n\n"
             + "\n\n".join(f"{t['id']}：{t['text']}" for t in transcripts)
-            + "\n"
+            + "\n", encoding="utf-8"
         )
     ranked = sorted(
         groups,
@@ -433,7 +433,7 @@ def main():
             "",
         ]
     )
-    (out / "comparison.md").write_text("\n".join(lines))
+    (out / "comparison.md").write_text("\n".join(lines), encoding="utf-8")
     print(f"推荐候选：{ranked[0]['name']}；总消耗 {total} credits；剩余 {remaining}。")
     print(out / "comparison.md")
     has_risks = any(g["risks"] for g in groups)

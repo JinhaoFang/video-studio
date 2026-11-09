@@ -1,11 +1,13 @@
 /**
  * Synthesize individual ElevenLabs MP3s with adjacent transcript text.
- * `pnpm tts --help` documents inputs, single-line replacement and a shared
- * cumulative credit ledger. API keys stay in memory; only allowlisted response
- * metadata is persisted. No automatic retries; pending reservations block reuse
- * after interruption until the ledger is reconciled against the account.
- * Seed 0 is best-effort reproducibility, not a waveform equality guarantee.
- * Optional speed and text/context overrides affect synthesis only, never captions.
+ * `pnpm tts --help` documents inputs, single-line replacement, optional
+ * `--language-code` / `--stitch-requests`, and a shared cumulative credit ledger.
+ * Scoped TTS-only keys without `user_read` / `models_read` / `voices_read` fall
+ * back to public voice lookup and conservative 1-credit reservation while still
+ * requiring exact `character-cost` headers on every synthesis response.
+ * API keys stay in memory; only allowlisted response metadata is persisted.
+ * No automatic retries; pending reservations block reuse after interruption
+ * until the ledger is reconciled against the account.
  */
 import { createHash } from "node:crypto";
 import {
@@ -29,7 +31,7 @@ import {
 } from "./tts-input.ts";
 
 const usage =
-  "pnpm tts --voice <Daniel|Alice|音色ID> --model <模型ID> --from <L001> --to <L022> --transcript <台本.md> --out <素材目录> --ledger <账本.json> [--env <.env>] [--budget <credits>] [--speed <0.7～1.2>] [--overrides <改写.json>] [--replace]";
+  "pnpm tts --voice <Daniel|Alice|音色ID> --model <模型ID> --from <L001> --to <L022> --transcript <台本.md> --out <素材目录> --ledger <账本.json> [--env <.env>] [--budget <credits>] [--speed <0.7～1.2>] [--language-code <zh>] [--stitch-requests] [--overrides <改写.json>] [--replace]";
 type Subscription = {
   character_count: number;
   character_limit: number;
@@ -74,8 +76,9 @@ const save = (path: string, data: unknown) => {
 const main = async () => {
   const args = process.argv.slice(2);
   const replace = args.includes("--replace");
+  const stitchRequests = args.includes("--stitch-requests");
   const { options, positional, help } = parseOptions(
-    args.filter((arg) => arg !== "--replace"),
+    args.filter((arg) => arg !== "--replace" && arg !== "--stitch-requests"),
     [
       "--voice",
       "--model",
@@ -87,17 +90,22 @@ const main = async () => {
       "--budget",
       "--ledger",
       "--speed",
+      "--language-code",
       "--overrides",
     ],
     usage,
   );
   if (help) {
     console.log(
-      `用法：${usage}\n每句生成 MP3 和同名 JSON，带前后各一句原文；边界句省略不存在的上下文。\n默认预算 300 credits，四组试听及重配必须共用同一账本；不自动重试。\n已有文件默认拒绝覆盖；--replace 可单独重配同一句。\n--speed 显式设置 voice_settings.speed，省略时使用服务默认值。\n--overrides 格式：{"L005":{"text":"纳萨自己废过一次"},"L006":{"text":"后来，","previous_text":null,"next_text":null}}；相邻上下文同步使用改写文本，null 表示省略。台本与字幕不变。\nkey 从 elevenlabs_apikey 环境变量或 --env（默认 .env）读取，允许等号两侧空格。\n音频格式 mp3_44100_128，seed=0，其他语音设置使用服务默认值。`,
+      `用法：${usage}\n每句生成 MP3 和同名 JSON，带前后各一句原文；边界句省略不存在的上下文。\n默认预算 300 credits，四组试听及重配必须共用同一账本；不自动重试。\n已有文件默认拒绝覆盖；--replace 可单独重配同一句。\n--speed 显式设置 voice_settings.speed，省略时使用服务默认值。\n--language-code 显式锁定合成语言代码（如 zh），--stitch-requests 在连续段落内串接最近 3 个 request-id。\n--overrides 格式：{"L005":{"text":"纳萨自己废过一次"},"L006":{"text":"后来，","previous_text":null,"next_text":null}}；相邻上下文同步使用改写文本，null 表示省略。台本与字幕不变。\nkey 从 elevenlabs_apikey 环境变量或 --env（默认 .env）读取，允许等号两侧空格。\n音频格式 mp3_44100_128，seed=0，其他语音设置使用服务默认值。`,
     );
     return;
   }
-  if (positional.length || args.filter((arg) => arg === "--replace").length > 1)
+  if (
+    positional.length ||
+    args.filter((arg) => arg === "--replace").length > 1 ||
+    args.filter((arg) => arg === "--stitch-requests").length > 1
+  )
     throw usageError("参数重复或存在多余位置参数。", usage);
   const required = (name: string) => {
     const value = options.get(name);
@@ -108,6 +116,12 @@ const main = async () => {
   const model = required("--model");
   if (!/^[a-zA-Z0-9_-]+$/.test(voice) || !/^[a-zA-Z0-9_-]+$/.test(model))
     throw new Error("音色和模型只能包含英文字母、数字、下划线或连字符。");
+  const languageCode = options.get("--language-code");
+  if (
+    languageCode !== undefined &&
+    !/^[a-z]{2,3}(?:-[A-Za-z0-9]{2,8})?$/.test(languageCode)
+  )
+    throw usageError("--language-code 必须是有效的语言代码（如 zh）。", usage);
   const rows = readTranscript(resolve(required("--transcript")));
   const overrides = readSynthesisOverrides(options.get("--overrides"), rows);
   const speed = options.has("--speed")
@@ -146,12 +160,15 @@ const main = async () => {
   }
   if (!key)
     throw new Error("没有找到 elevenlabs_apikey，请检查 --env 或环境变量。");
-  const request = async (path: string, body?: unknown) => {
+  const request = async (path: string, body?: unknown, useAuth = true) => {
     let response: Response;
+    const headers: Record<string, string> = {};
+    if (useAuth) headers["xi-api-key"] = key;
+    if (body) headers["Content-Type"] = "application/json";
     try {
       response = await fetch(`https://api.elevenlabs.io${path}`, {
         method: body ? "POST" : "GET",
-        headers: { "xi-api-key": key, "Content-Type": "application/json" },
+        headers,
         body: body ? JSON.stringify(body) : undefined,
         signal: AbortSignal.timeout(120000),
       });
@@ -160,27 +177,54 @@ const main = async () => {
         "ElevenLabs 请求失败或超时；请先核对账本和账户消耗，再决定是否重试。",
       );
     }
-    if (!response.ok)
+    if (!response.ok) {
+      let permissionMissing = false;
+      if (response.status === 401) {
+        const payload = (await response.clone().json().catch(() => null)) as {
+          detail?: { status?: string };
+        } | null;
+        permissionMissing = payload?.detail?.status === "missing_permissions";
+      }
       throw Object.assign(
         new Error(`ElevenLabs 返回 HTTP ${response.status}；未自动重试。`),
-        { httpStatus: response.status },
+        { httpStatus: response.status, permissionMissing },
       );
+    }
     return response;
   };
-  const subscription = async (): Promise<Subscription> => {
-    const data = (await (
-      await request(`/v1/user/subscription?audit=${Date.now()}`)
-    ).json()) as Subscription;
-    if (
-      !Number.isFinite(data.character_count) ||
-      !Number.isFinite(data.character_limit)
-    )
-      throw new Error("账户额度返回格式无效。");
-    return {
-      character_count: data.character_count,
-      character_limit: data.character_limit,
-      tier: data.tier,
-    };
+  const subscription = async (
+    fallbackUsed: number,
+  ): Promise<{ value: Subscription; scoped: boolean }> => {
+    try {
+      const data = (await (
+        await request(`/v1/user/subscription?audit=${Date.now()}`)
+      ).json()) as Subscription;
+      if (
+        !Number.isFinite(data.character_count) ||
+        !Number.isFinite(data.character_limit)
+      )
+        throw new Error("账户额度返回格式无效。");
+      return {
+        value: {
+          character_count: data.character_count,
+          character_limit: data.character_limit,
+          tier: data.tier,
+        },
+        scoped: false,
+      };
+    } catch (error) {
+      if ((error as { permissionMissing?: boolean }).permissionMissing) {
+        return {
+          value: {
+            character_count: fallbackUsed,
+            character_limit: budget,
+            tier: "scoped-key",
+          },
+          scoped: true,
+        };
+      }
+      throw error;
+    }
   };
   mkdirSync(dirname(ledgerPath), { recursive: true });
   const lockPath = `${ledgerPath}.lock`;
@@ -193,10 +237,26 @@ const main = async () => {
     );
   }
   try {
-    const account = await subscription();
-    const ledger: Ledger = existsSync(ledgerPath)
+    const existingLedger: Ledger | null = existsSync(ledgerPath)
       ? JSON.parse(readFileSync(ledgerPath, "utf8"))
-      : { version: 1, initial: account, latest: account, budget, entries: [] };
+      : null;
+    const priorSpent = existingLedger
+      ? existingLedger.entries.reduce(
+          (sum, entry) => sum + (entry.credits ?? entry.reserved),
+          0,
+        )
+      : 0;
+    const accountCheck = await subscription(priorSpent);
+    const account = accountCheck.value;
+    const ledger: Ledger = existingLedger ?? {
+      version: 1,
+      initial: accountCheck.scoped
+        ? { character_count: 0, character_limit: budget, tier: "scoped-key" }
+        : account,
+      latest: account,
+      budget,
+      entries: [],
+    };
     if (
       ledger.version !== 1 ||
       !Array.isArray(ledger.entries) ||
@@ -209,10 +269,26 @@ const main = async () => {
       );
     ledger.latest = account;
     save(ledgerPath, ledger);
-    const models = (await (await request("/v1/models")).json()) as Model[];
-    const selected = models.find(
-      (item: { model_id: string }) => item.model_id === model,
-    );
+    let selected: Model | undefined;
+    try {
+      const models = (await (await request("/v1/models")).json()) as Model[];
+      selected = models.find(
+        (item: { model_id: string }) => item.model_id === model,
+      );
+    } catch (error) {
+      if ((error as { permissionMissing?: boolean }).permissionMissing) {
+        selected = {
+          model_id: model,
+          can_do_text_to_speech: true,
+          model_rates: {
+            character_cost_multiplier: 1,
+            cost_discount_multiplier: 1,
+          },
+        };
+      } else {
+        throw error;
+      }
+    }
     const multiplier = selected?.model_rates?.character_cost_multiplier;
     if (
       !selected?.can_do_text_to_speech ||
@@ -221,20 +297,39 @@ const main = async () => {
       multiplier <= 0
     )
       throw new Error("指定模型不可合成或无法取得 credits 倍率。");
-    const voices = (
-      (await (await request("/v1/voices")).json()) as { voices: Voice[] }
-    ).voices;
-    const selectedVoice = voices.find(
-      (item: { voice_id: string; name: string }) =>
-        item.voice_id === voice || item.name.split(" - ")[0] === voice,
-    );
+    let voices: Voice[];
+    try {
+      voices = (
+        (await (await request("/v1/voices")).json()) as { voices: Voice[] }
+      ).voices;
+    } catch (error) {
+      if ((error as { permissionMissing?: boolean }).permissionMissing) {
+        voices = (
+          (await (await request("/v1/voices", undefined, false)).json()) as {
+            voices: Voice[];
+          }
+        ).voices;
+      } else {
+        throw error;
+      }
+    }
+    const selectedVoice =
+      voices.find(
+        (item: { voice_id: string; name: string }) =>
+          item.voice_id === voice || item.name.split(" - ")[0] === voice,
+      ) ??
+      (/^[a-zA-Z0-9]{20,}$/.test(voice)
+        ? { voice_id: voice, name: voice }
+        : undefined);
     if (!selectedVoice) throw new Error("账户中没有找到指定音色。");
+    const entrySpent = () =>
+      ledger.entries.reduce(
+        (sum, entry) => sum + (entry.credits ?? entry.reserved),
+        0,
+      );
     const spent = () =>
       Math.max(
-        ledger.entries.reduce(
-          (sum, entry) => sum + (entry.credits ?? entry.reserved),
-          0,
-        ),
+        entrySpent(),
         ledger.latest.character_count - ledger.initial.character_count,
       );
     const estimate = (text: string) =>
@@ -248,19 +343,28 @@ const main = async () => {
       );
     if (
       spent() + batchCost > budget ||
-      batchCost > account.character_limit - account.character_count
+      (!accountCheck.scoped &&
+        batchCost > account.character_limit - account.character_count)
     )
       throw new Error(
         `预计 ${batchCost} credits，超过累计预算或账户剩余额度。`,
       );
     mkdirSync(directory, { recursive: true });
+    const recentRequestIds: string[] = [];
     for (let index = start; index <= end; index++) {
       const row = rows[index];
+      if (overrides[row.id]?.previous_text === null) {
+        recentRequestIds.length = 0;
+      }
       const output = join(directory, `${row.id}.mp3`);
       const body = {
         ...synthesisText(rows, index, overrides),
         model_id: model,
         seed: 0,
+        ...(languageCode === undefined ? {} : { language_code: languageCode }),
+        ...(stitchRequests && recentRequestIds.length > 0
+          ? { previous_request_ids: recentRequestIds.slice(-3) }
+          : {}),
         ...(speed === undefined ? {} : { voice_settings: { speed } }),
       };
       const before = ledger.latest;
@@ -291,6 +395,12 @@ const main = async () => {
           Number(cost) >= 0
         ) {
           entry.credits = Number(cost);
+          if (accountCheck.scoped) {
+            ledger.latest = {
+              ...ledger.latest,
+              character_count: entrySpent(),
+            };
+          }
           save(ledgerPath, ledger);
         }
         const bytes = Buffer.from(await response.arrayBuffer());
@@ -324,6 +434,12 @@ const main = async () => {
             "音频已保存但缺少实际计费响应头，请先核对账户历史记录与账本。",
           );
         entry.status = "complete";
+        if (entry.requestId) {
+          recentRequestIds.push(entry.requestId);
+        }
+        if (overrides[row.id]?.next_text === null) {
+          recentRequestIds.length = 0;
+        }
         save(ledgerPath, ledger);
         console.log(
           `${voice} / ${model} / ${row.id}：${entry.credits} credits，${output}`,
@@ -339,7 +455,7 @@ const main = async () => {
       }
     }
     try {
-      ledger.latest = await subscription();
+      ledger.latest = (await subscription(entrySpent())).value;
       save(ledgerPath, ledger);
     } catch {
       console.log(
