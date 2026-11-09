@@ -10,6 +10,7 @@
 | `agents/issue-tracker.md` | GitHub 工单的操作方法和本仓库的工单约定 |
 | `agents/run-spec.md`、`agents/run-spec.json` | 执行技能的本仓库配置：脚本读取的值、其他本仓库特有的值、迁移方法 |
 | `agents/triage-labels.md`、`agents/domain.md` | Matt 技能的标签表、术语文档布局 |
+| `video/` | 视频知识：13 项决定（见 `workflow/README.md`「一期视频」）各有哪些选项、各是什么意思、适合什么情况、样片和出处；只写知识，不写步骤 |
 | `research/nasa-ep04/` | 参考视频拆解：`pipeline.md` 流程、`shots.md` 镜头表、`style.md` 视觉与声音、`transcript.md` 旁白时间轴 |
 | `research/table-videosop.md` | 对照：另一位作者的 Table-Video SOP，以及可以借用的做法 |
 | `reports/` | 每个视频 spec 完成后，设计负责人给用户的工作汇报：spec #60 是 HTML 可视化页面，spec #1 是 Markdown |
