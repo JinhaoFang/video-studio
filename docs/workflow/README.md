@@ -76,10 +76,10 @@ pnpm 的版本由 `package.json` 的 `packageManager` 固定，本机装的 pnpm
 
 白板手绘段落可以用外部技能 `srt-whiteboard-animation`（MIT，登记在 `skills-lock.json`）：它把一张线稿按字幕分区，用连续笔迹画成 MP4，作为视频素材放进 Remotion 合成。几点约定：
 
-- 线稿和渲染出的 MP4 放 `public/episodes/<期>/`，渲染脚本的输出路径是参数。成片画幅等于线稿的像素尺寸，要 1920×1080 就给 1920×1080 的图。
+- 线稿和渲染出的 MP4 放 `public/episodes/<期>/`，渲染脚本的输出路径是参数。输出尺寸默认把长边缩到 1080，宽高再向下对齐到网格边长（默认 10）的倍数，1920×1080 的线稿默认会出 1080×600；要 1920×1080，给 1920×1080 的线稿并加 `--cap-long-edge 1920`。
 - 线稿由用户提供，或另配生图工具；本仓库的 agent 不生成图片。
 - 内置的手部图带作者标识，正式使用时换成自己的手部图，或用 `--bare-tip` 不画手。
-- 它自带的「每步等用户确认」不代替本仓库请用户参与的时机（`docs/roles/design.md`「工作流」）。
+- 只用它的渲染工具和方法，不执行它自带的七步确认；什么时候请用户参与，按 `docs/roles/design.md`「工作流」。
 - Python 依赖装在技能自己的虚拟环境里，不进 `package.json`；本机缺 `ensurepip` 时的绕法和实测见 [白板技能研究](../research/srt-whiteboard-animation.md)。
 
 ## 复利
