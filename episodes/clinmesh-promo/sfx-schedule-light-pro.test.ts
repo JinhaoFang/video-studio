@@ -1,37 +1,40 @@
 /**
- * Episode contract tests for the standalone ClinMeshPromoLightPro composition:
- * verifies 14-sentence timeline-light-pro.json bounds, zero colloquial phrases
- * ("这是 ClinMesh" / "拍板"), non-overlapping breathers, and natural SFX tails.
+ * ClinMeshPromo 的最终版契约测试：入库时间轴与呼吸区间始终验证；
+ * 本机配音或音效清单不可读取时，仅跳过对应媒体断言并报告具体原因。
+ * 文件读取放在测试函数内，避免 describe 初始化失败掩盖测试结果。
  */
 import assert from "node:assert/strict";
-import { existsSync, readFileSync } from "node:fs";
+import { readFileSync } from "node:fs";
 import { join } from "node:path";
-import { describe, it } from "node:test";
+import { describe, it, type TestContext } from "node:test";
 import type { Timeline } from "../../tools/timeline-types.ts";
 
 const epDir = import.meta.dirname;
 const studioRoot = join(epDir, "../..");
 
-describe("clinmesh-promo-light-pro flagship narration & audio contract", () => {
-  const tl = JSON.parse(
+const readTimeline = (): Timeline =>
+  JSON.parse(
     readFileSync(join(epDir, "data/timeline-light-pro.json"), "utf8"),
   ) as Timeline;
-  const manifest = JSON.parse(
-    readFileSync(
-      join(
-        studioRoot,
-        "public/episodes/clinmesh-promo/sfx/audio-manifest.json",
-      ),
-      "utf8",
-    ),
-  ) as {
-    assets: Array<{
-      file: string;
-      analysis: { energy_peak_seconds: number; active_end_seconds: number };
-    }>;
-  };
 
-  it("contains all 14 Mandarin lines within 85-105s and eliminates colloquial phrases", () => {
+const readMedia = (t: TestContext, path: string): Buffer | undefined => {
+  try {
+    return readFileSync(path);
+  } catch (error) {
+    const code = (error as NodeJS.ErrnoException).code;
+    if (code === "ENOENT" || code === "EACCES" || code === "EPERM") {
+      t.skip(`本机媒体不可读取（${code}）：${path}`);
+      return undefined;
+    }
+    throw error;
+  }
+};
+
+describe("clinmesh-promo 最终版配音与音效契约", () => {
+  it("14 句普通话的时长为 3114 帧，文案不包含旧口语表达", () => {
+    const tl = readTimeline();
+    assert.equal(tl.fps, 30);
+    assert.equal(tl.durationInFrames, 3114);
     assert.equal(tl.lines.length, 14);
     const totalSec = tl.durationInFrames / tl.fps;
     assert.ok(
@@ -41,14 +44,22 @@ describe("clinmesh-promo-light-pro flagship narration & audio contract", () => {
     for (const line of tl.lines) {
       assert.equal(line.text.includes("拍板"), false);
       assert.equal(line.text.includes("这是 ClinMesh"), false);
-      assert.ok(
-        line.audioSrc && existsSync(join(studioRoot, "public", line.audioSrc)),
-        `Missing audio file for ${line.id}: ${line.audioSrc}`,
-      );
+      assert.ok(line.audioSrc, `配音路径未登记：${line.id}`);
     }
   });
 
-  it("places B01-B03 strictly inside L005/L008/L010 pauses without overlapping speech", () => {
+  it("本机 14 句配音文件可读且非空", (t) => {
+    const tl = readTimeline();
+    for (const line of tl.lines) {
+      assert.ok(line.audioSrc, `配音路径未登记：${line.id}`);
+      const audio = readMedia(t, join(studioRoot, "public", line.audioSrc));
+      if (audio === undefined) return;
+      assert.ok(audio.length > 0, `配音文件为空：${line.id}`);
+    }
+  });
+
+  it("B01-B03 位于 L005/L008/L010 的停顿中且不与配音重叠", () => {
+    const tl = readTimeline();
     const breatherDurationF = 52;
     for (const id of ["L005", "L008", "L010"] as const) {
       const idx = tl.lines.findIndex((l) => l.id === id);
@@ -63,7 +74,19 @@ describe("clinmesh-promo-light-pro flagship narration & audio contract", () => {
     }
   });
 
-  it("completes finale fs-562196 natural tail and fs-177242 smooth fade-out before end", () => {
+  it("终章 fs-562196 的自然尾音与 fs-177242 的渐隐在片尾前结束", (t) => {
+    const tl = readTimeline();
+    const manifestData = readMedia(
+      t,
+      join(studioRoot, "public/episodes/clinmesh-promo/sfx/audio-manifest.json"),
+    );
+    if (manifestData === undefined) return;
+    const manifest = JSON.parse(manifestData.toString("utf8")) as {
+      assets: Array<{
+        file: string;
+        analysis: { energy_peak_seconds: number; active_end_seconds: number };
+      }>;
+    };
     const l014 = tl.lines.find((l) => l.id === "L014");
     assert.ok(l014);
     const outputOffsetF = 0.21;

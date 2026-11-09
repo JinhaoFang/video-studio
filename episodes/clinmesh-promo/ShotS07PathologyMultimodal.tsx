@@ -1,8 +1,7 @@
 /**
- * Scene S07 (L011-L012): Self-developed digital pathology recognition model
- * (images/病理.png, with TCGA-BRCA CC BY 3.0 attribution) featuring a linear 3px
- * scanline triggering two overshoot reticle-lock-on ROIs and pulling back to a
- * visually balanced 2x2 multi-disease specialty agent matrix (SLOTS 01-04).
+ * S07：以数字病理图像、扫描线和两处 ROI 展示自研识别模型，再拉远到专病插槽。
+ * 病理图像使用 TCGA-BRCA CC BY 3.0 素材；保留原有 2×2 专病布局。
+ * 局部动画沿用句尾 +3 帧的定位，与主时间线 B03 的 +12 帧分别计算。
  */
 import {
   AbsoluteFill,
@@ -17,7 +16,6 @@ import type { Timeline } from "../../tools/timeline-types";
 import { promoFont } from "./fonts";
 import { EASE, clamp01, ramp } from "./motion-utils";
 import { PageCam, StatusBadge, type CamKey } from "./primitives";
-import { breatherStartFrame } from "./sfx-schedule";
 import { BREATHER_DURATION_F, promoColor, promoRadius } from "./tokens";
 
 const reticleScaleAt = (f: number, lockFrame: number): number =>
@@ -75,7 +73,7 @@ export const ShotS07PathologyMultimodal: React.FC<{
   tailCamKeys?: readonly CamKey[];
 }> = ({ timeline, tailCamKeys }) => {
   const f = useCurrentFrame();
-  const shotStart = breatherStartFrame(timeline, "L010") + BREATHER_DURATION_F;
+  const shotStart = sentence(timeline, "L010").endFrame + 3 + BREATHER_DURATION_F;
   const l011 = sentence(timeline, "L011");
   const l012 = sentence(timeline, "L012");
   const l011Local = l011.startFrame - shotStart;

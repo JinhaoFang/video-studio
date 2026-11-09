@@ -1,6 +1,6 @@
 /**
  * Shared Light-Theme workstation stage primitive for Scenes S03-S06 in the
- * standalone ClinMeshPromoLight composition: pairs a concise Chinese top header
+ * ClinMeshPromo composition: pairs a concise Chinese top header
  * and live step pills with a pure-white 1764x890 workstation frame, clamped
  * CSS-zoom camera, capture layer stack, focus callouts, tactile click ripples,
  * and a high-contrast dark pointer.

@@ -1,8 +1,6 @@
 /**
- * Standalone flagship narration edition (ClinMeshPromoLightPro) built on top of
- * ClinMeshPromoLight without modifying clinmesh-promo-light outputs: pairs the
- * upgraded 14-line promotional voiceover (timeline-light-pro.json) with
- * Whisper-measured syllable-locked visual cues across S01-S08.
+ * ClinMeshPromo 的最终版：按 timeline.json 的 14 句实测配音安排 S01-S08、
+ * 章节呼吸字卡、字幕与音频总线，保留逐音节对齐的镜头提示。
  */
 import {
   AbsoluteFill,
@@ -11,7 +9,7 @@ import {
   useVideoConfig,
 } from "remotion";
 import { sentenceFrame } from "../../src/kit/sentence-timing";
-import type { ClinMeshPromoProps } from "./ClinMeshPromo";
+import type { Timeline } from "../../tools/timeline-types";
 import { PromoAudioLight } from "./PromoAudioLight";
 import { PromoFinish } from "./PromoFinish";
 import { PromoSubtitles } from "./PromoSubtitles";
@@ -30,6 +28,11 @@ import {
   lightBreatherStartFrame,
 } from "./sfx-schedule-light-pro";
 import { BREATHER_DURATION_F, promoColor } from "./tokens";
+
+export type ClinMeshPromoProps = {
+  timeline: Timeline;
+  bgm?: boolean;
+};
 
 const S02_PRO_DOMAIN_CUES = [9, 25, 44, 67, 112] as const;
 const S07_PRO_TAIL_CAM = [

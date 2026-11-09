@@ -1,8 +1,6 @@
 /**
- * Timeline-level audio bus for ClinMeshPromoLight and ClinMeshPromoLightPro:
- * renders sentence voiceover clips, dual-offset compensated Light-Theme UI
- * foley/impacts, and the calm, neutral medical underscore
- * clinical-neutral-underscore.wav balanced across its four macro movements.
+ * ClinMeshPromo 的音频总线：播放逐句配音、经峰值与输出延迟补偿的交互音效，
+ * 以及按原有四段音量曲线平衡的 clinical-neutral-underscore.wav 配乐。
  */
 import { useMemo } from "react";
 import { Audio } from "@remotion/media";
@@ -10,8 +8,7 @@ import { Sequence, interpolate, staticFile, useVideoConfig } from "remotion";
 import { sentenceFrame } from "../../src/kit/sentence-timing";
 import type { Timeline } from "../../tools/timeline-types";
 import { clamp01 } from "./motion-utils";
-import { type SfxCue } from "./sfx-schedule";
-import { buildLightSfxSchedule } from "./sfx-schedule-light";
+import { type SfxCue, buildLightProSfxSchedule } from "./sfx-schedule-light-pro";
 import { BGM_FADE_IN_F, BGM_FADE_OUT_F, BGM_STEADY_VOLUME } from "./tokens";
 
 const cosineRamp = (t: number): number =>
@@ -33,7 +30,7 @@ export const PromoAudioLight: React.FC<{
   timeline: Timeline;
   bgm: boolean;
   sfxBuilder?: (timeline: Timeline) => SfxCue[];
-}> = ({ timeline, bgm, sfxBuilder = buildLightSfxSchedule }) => {
+}> = ({ timeline, bgm, sfxBuilder = buildLightProSfxSchedule }) => {
   const { fps } = useVideoConfig();
   const sfxCues = useMemo(() => sfxBuilder(timeline), [sfxBuilder, timeline]);
 
