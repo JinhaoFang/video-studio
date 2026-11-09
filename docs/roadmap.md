@@ -22,6 +22,7 @@
 | 协作边界 | 派发前独立审查由用户选择；工单准确定位参照、定稿、契约和验收产物，实现位置由执行者决定；工程推送仅限派发明确授权的本工单分支。规则边界已同步（用户 11-05） | `docs/agents/issue-tracker.md`、`docs/roles/`、`docs/workflow/README.md` |
 | CI | GitHub Actions 的设定不动；启动不了时改为本机验证（用户 10-31） | `docs/workflow/README.md`「护栏」 |
 | 第一阶段 | 复刻开场 0:00～0:46：spec #60，PR #73，成片 47.9 秒；用户审片后返工 #74 | `docs/reports/spec-60-nasa-punk-opening.html` |
+| ClinMesh 宣传片 | 协作者在本机制作、经 PR #121 入库的一期产品宣传片；spec #122 收敛为只剩最终版 `ClinMeshPromo`，文档按事实重写，verify 能拦住 suite 层的测试失败（用户 11-09） | `episodes/clinmesh-promo/README.md`、`docs/reports/spec-122-clinmesh-cleanup.html` |
 
 进行中的工作以 GitHub 上打开的 spec 为准，不写进本文。
 
@@ -48,4 +49,5 @@
 
 ## 待定
 
-- 无。
+- kit 复用欠账：ClinMesh 是中英文加空格（首期 `text-spacing.ts`）和颗粒暗角（首期 `FilmFinish.tsx`）的第二次使用，但两处都各写了一份，没有提进 `src/kit/`。
+- 时间轴来源类型：`tools/build-timeline.ts` 只认 `temporary` 和 `elevenlabs`，非 ElevenLabs 的正式配音（如 ClinMesh 的 MiniMax）只能记成 `elevenlabs`。#114 曾加过 `local`，后来按审阅撤回；要不要加，再定。
