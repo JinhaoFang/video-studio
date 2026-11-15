@@ -30,11 +30,11 @@
 ## 执行时要知道的其他值
 
 - **框架**：各席位用到的 agent 命令行要装好并登录，`doctor` 逐个检查，并列出每个席位实际用的框架、模型和来源。
-- **汇报目录**：`docs/reports/`。写法见 `run-spec` 技能的 `report.md`，从同目录的 `report-template.html` 复制；切换到 `workflow-v4` 之前写的汇报用的是旧模板。
+- **汇报目录**：`docs/reports/`。新汇报用 `workflow-v6` 的目录加页签模板，写法见 `run-spec` 技能的 `report.md`，从同目录的 `report-template.html` 复制；已有汇报保留为独立快照，不重做，`report-check` 仍能检查旧汇报。
 - **实测用时**：一张工程工单派发后 5～10 分钟结束，一次按批审查约 4 分钟。告诉用户粗略用时就按这个估。
 - **独占资源**：无。
 - **常见的共享登记处**：`pnpm qa` 的子命令登记表、工单脚本的子命令登记表。并行的工单都要往里加一项时，派发的补充说明写"只加自己那一项"。
 
 ## 来源与版本
 
-`run-spec` 和 `setup-run-spec` 从 `JinhaoFang/agent-workflow` 安装，当前是 `workflow-v5`，记在 `skills-lock.json`；安装、版本和升级见那边的 README。两个技能装在本机的 `.claude/skills/` 和 `.agents/skills/`，不进 git，每台跑执行会话的机器各自安装；派发层会对派出去的 agent 屏蔽它们。
+`run-spec` 和 `setup-run-spec` 从 `JinhaoFang/agent-workflow` 安装，当前是 `workflow-v6`，记在 `skills-lock.json`；安装、版本和升级见那边的 README。两个技能装在本机的 `.claude/skills/` 和 `.agents/skills/`，不进 git，每台跑执行会话的机器各自安装；派发层会对派出去的 agent 屏蔽它们。
