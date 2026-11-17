@@ -37,4 +37,4 @@
 
 ## 来源与版本
 
-`run-spec` 和 `setup-run-spec` 从 `JinhaoFang/agent-workflow` 安装，当前是 `workflow-v6`，记在 `skills-lock.json`；安装、版本和升级见那边的 README。两个技能装在本机的 `.claude/skills/` 和 `.agents/skills/`，不进 git，每台跑执行会话的机器各自安装；派发层会对派出去的 agent 屏蔽它们。
+`run-spec` 和 `setup-run-spec` 从 `JinhaoFang/agent-workflow` 安装，当前是 `workflow-v7`，记在 `skills-lock.json`；安装、版本和升级见那边的 README。两个技能装在本机的 `.claude/skills/` 和 `.agents/skills/`，不进 git，每台跑执行会话的机器各自安装；派发层会对派出去的 agent 屏蔽它们。
