@@ -10,7 +10,7 @@
 
 本文只写工作室层的方向、已定和待定；每期的计划写在各自的 spec 或期目录里。
 
-开发流程用 `workflow-v6`，从 `JinhaoFang/agent-workflow` 安装；它从 2026-10-31 起在那边单独维护。做视频时发现的流程问题，记进那边的观察记录 `docs/research/run-spec-migration.md`，按那边 `AGENTS.md`「怎么改方法层」处理。
+开发流程用 `workflow-v7`，从 `JinhaoFang/agent-workflow` 安装；它从 2026-10-31 起在那边单独维护。做视频时发现的流程问题，记进那边的观察记录 `docs/research/run-spec-migration.md`，按那边 `AGENTS.md`「怎么改方法层」处理。
 
 ## 已定
 
@@ -20,7 +20,7 @@
 | 时间机制 | 动画按台本句子编号定时，不写死帧号 | `docs/workflow/README.md`「一期视频」 |
 | 包管理、媒体 | pnpm；媒体和渲染结果不进 git | `AGENTS.md` |
 | 远程仓库 | `github.com/JinhaoFang/video-studio`（私有） | — |
-| 开发流程 | 设计负责人是和用户对话的主会话，工程负责人由它按席位派发，用 `run-spec` 执行 spec；用哪个框架和模型写在个人席位配置里，仓库只登记工作类型 `前端`；派发层随 `run-spec` 自带，不再需要 DispatchDock；版本 `workflow-v6`（11-15），各版本内容见 `JinhaoFang/agent-workflow` 的 README「版本」 | `AGENTS.md`、`docs/roles/`、`docs/workflow/README.md`、`docs/agents/` |
+| 开发流程 | 设计负责人是和用户对话的主会话，工程负责人由它按席位派发，用 `run-spec` 执行 spec；用哪个框架和模型写在个人席位配置里，仓库只登记工作类型 `前端`；派发层随 `run-spec` 自带，不再需要 DispatchDock；版本 `workflow-v7`（11-17），各版本内容见 `JinhaoFang/agent-workflow` 的 README「版本」 | `AGENTS.md`、`docs/roles/`、`docs/workflow/README.md`、`docs/agents/` |
 | 流程的版本 | `workflow-v1`～`workflow-v3.1` 从本仓库发布；之后的版本从 `JinhaoFang/agent-workflow` 发布 | `JinhaoFang/agent-workflow` 的 README |
 | 方法层仓库 | 开发流程带着历史拆到 `JinhaoFang/agent-workflow`（私有）；视频的组件、风格、工具、规则和护栏留在本仓库；本仓库的两个技能从 `workflow-v4` 起换成安装版本，不进 git（用户 10-31） | `docs/workflow/README.md`「方法层仓库」 |
 | 方法层怎么改 | 放方法和思路，不放写死的规范；遇到的问题先记成观察，经过分析和评估再决定加不加、用什么形式；"汇报给人"由用户打分（用户 10-31） | `JinhaoFang/agent-workflow` 的 `AGENTS.md`「怎么改方法层」 |
