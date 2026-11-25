@@ -9,8 +9,8 @@ export const DURATION = 168;
 
 export const rainAmount = (frame: number) => 1 - ease(progress(frame, 0, 88), 1, 1.8);
 
-const FRONT_START = 38;
-const FRONT_END = 126;
+const FRONT_START = 26;
+const FRONT_END = 118;
 const FAR = Math.log(2600);
 const NEAR = Math.log(0.6);
 
