@@ -1,32 +1,77 @@
-# 纯代码管线占位小样
+# 纯代码小样《雨后》（`pure-code-sample`）
 
-工单 #149，父 spec #147。合成 `PureCodeSample`：1920×1080、24 fps、240 帧（10 秒），一个占位镜头。只验收管线，不作为美术或风格定稿。
+spec #147：吸收参照片的方法（[研究记录](../../docs/research/noroi-iwai.md)），在 Remotion 里做一段 13 秒、两个镜头的剧场级日式动画小样，画面、配乐、音效全部纯代码。合成 `PureCodeSample`，1920×1080，24 帧。
 
-先运行 `node episodes/pure-code-sample/generate.ts`，再运行 `pnpm exec remotion render PureCodeSample out/qa/spec-147/149/PureCodeSample.mp4 --gl=swangle --concurrency=2`。素材写进本 worktree 的 `public/episodes/pure-code-sample/`，不会进入 Git；事件表和生成清单进入 `data/`。
+| 文档 | 内容 |
+|---|---|
+| [简报](brief.md) | 观众此刻的感受、品质标准、"绝不能像"清单 |
+| [镜头剧本](storyboard.md) | 两个镜头的画面、运镜、锚点、感受和声音 |
+| [本期约定](contract.md) | 时间表、模块归属、镜头接口、画面事件种类、外观和动作规则、色彩剧本、每帧预算、资源上限、自查、汇报 |
+| [sources.md](sources.md) | 每个生成物由哪条命令生成 |
 
-## 镜头与事件
+## 决定
 
-`model.ts` 的 `Shot<Surface>` 只有 spec 规定的四项：编号与时长、后期参数、画面事件、按镜头内帧号绘制。`shotTable` 记录编号、起点和时长；`collectEvents` 生成保留局部帧号的全片事件表。动画只使用镜头内帧号。
+| 项 | 结论 | 理由 |
+|---|---|---|
+| ① 目的与受众 | 第一部原创的纯代码动画，以建立能力为主；做成后可以发布到用户自己的账号，给喜欢日式动画短片的观众看 | 用户在 `/grill-with-docs` 里定的（2026-11-25） |
+| ② 渠道与规格 | 横屏 16:9，1920×1080，24 帧，13 秒；开头靠雨后透出的光抓人 | 规格是用户定的；小样限 10–15 秒，13 秒放得下两个镜头的起承 |
+| ③ 类型与基调 | 叙事短片，抒情里带一点幽默；安静、温暖 | 抖水的喜感和看光的抒情能在两个镜头里都出现 |
+| ④ 叙事结构与文案 | 两个镜头，没有对白和字幕：雨停光来 → 最后一滴打中 → 抖水起飞 | 一个主角、一个场景、两个镜头的限制下，一次小转折加一次释放最完整 |
+| ⑤ 画面风格 | 剧场级日式动画：赛璐璐角色加水粉底图；色彩剧本见本期约定 | spec #147 定的方向（走 the-last-page 的路子） |
+| ⑥ 素材来源 | 纯代码 | spec #147 的硬约束，由 verify 里的纯代码护栏检查 |
+| ⑦ 镜头语言 | S1 中远景缓慢推近，S2 近景、起飞后上摇跟随；相机每帧都动，角色一拍二 | 先给环境和光，再给角色的表演 |
+| ⑧ 声音 | 没有人声；器乐配乐加音效，音效跟着画面事件走 | spec #147 定的；乐谱和声音设计见 #154 |
+| ⑨ 剪辑 | 一次硬切，切在动作上（S1 闭眼 → S2 一缩） | 切在动作上能把两个景别接成一个连续的反应 |
+| ⑩ 画面文字 | 没有 | 小样不需要；纯代码下的字要一笔笔写，留给正片 |
+| ⑪ 调色与质感 | 固定顺序的摄影后期；柔和、略低对比；颗粒按亮度 | 参照片的做法，见研究记录「摄影」 |
+| ⑫ 混音与响度 | −16 LUFS ±1 LU，真峰值不超过 −1 dBTP；配乐在大响动处让位；檐下和院子各有混响 | 沿用仓库的成片标准；让位和分场景混响是参照片的做法 |
+| ⑬ 封面、多版本、授权 | 不做封面和竖屏；纯代码，`sources.md` 记录生成命令；发不发布由用户看完小样定 | 封面、竖屏、发布在 spec #147 的范围之外 |
 
-`shot.ts` 实现占位镜头：Canvas 2D 读取烘焙底图并画圆块，交给 WebGL 1 着色器做暗角和颗粒。圆块在镜头内第 48 帧触地，音效的内部对齐点放在全片对应的采样位置。`PureCodeSample.tsx` 等待底图载入和绘制完成后才释放 Remotion 的渲染等待句柄；不依赖时钟、CSS 动画或随机运行状态。入口按需加载其他期，避免它们的字体初始化进入本期渲染。
+## 故事
 
-## 生成、混音与缓存
+设计负责人构思了三个原创梗概（用户授权由设计负责人定），限制是一个原创主角、一个场景、两个镜头、器乐。
 
-生成器用 Node 计算 RGB 底图，再用 FFmpeg 编码 PNG；Node 用固定种子的噪声与衰减振荡器合成 48 kHz PCM16 撞击声。音效内部的第 480 个采样是对齐点，混音起点为 `round(事件帧 × 采样率 / fps) - 480`。本例第 48 帧的对齐点是第 96000 个采样；文件头部的 10 ms 是预备声。
+- **甲《雨后》（选定）**：夏日傍晚雷阵雨刚过，乡下老屋檐下的晾衣竹竿上缩着一只湿透的小麻雀。雨停光来，檐口最后一滴打在它头顶；它抖干羽毛，抬头看光，蹬离竹竿飞走，空竹竿弹几下。
+- **乙《风铃》**：盛夏午后的檐廊，一只胖三花猫盯着风铃下摆动的纸条，扭身扑出，扑空翻倒，风铃"叮"一声，它若无其事地舔爪。
+- **丙《萤》**：初夏入夜，稻田边水渠里的荷叶上坐着一只小青蛙。第一只萤火虫亮起，它伸舌去够没够着，萤火虫越来越多，它看呆了。
 
-混音先排成完整的 10 秒双声道 PCM，再用 FFmpeg `loudnorm` 的输入响度测量计算固定增益，由 Node 写出最终 WAV。这里只应用常量增益，不做会改变对齐点的时域处理。先转双声道再测量，避免将单声道测量值直接用于双声道成片时多出约 3 LU。最后仍需对 AAC 成片运行 `pnpm qa loudness` 验收。
+选甲的理由：
 
-`data/generated.json` 记录生成命令、输入源码哈希、FFmpeg 版本、媒体哈希和混音参数。`generate.ts`、`model.ts`、`audio.ts`、所用令牌或 FFmpeg 版本改变，以及产物缺失、哈希不匹配、事件表变化，都会使缓存失效。`--force` 强制重建；`--help` 显示帮助。缓存只覆盖生成物，修改镜头或着色器后要重新渲染。
+- 麻雀的轮廓圆而简单，多个角度保持造型一致的风险最小，这是设定（#152）最大的风险；乙的扑击和翻倒身体姿势复杂。
+- 一个场景就能检验这类片子的核心外观：水粉的天空、云、树篱、木头和稻田，从冷的雨色到暖的夕光，带颜色的阴影，湿面上的高光；丙是夜景，用不上这些。
+- 镜头 2 的动作链清楚、能逐项核对（预备 → 抖水拖影 → 停住 → 预备 → 起飞拖影 → 竹竿跟随），适合给两个模型做对比（#155、#156）。
+- 画面事件清楚，声音有落点，还有一处故意不出声。
+- 避开名作的标志画面：不用公交站、雨伞、站台这类组合。
 
-## 检查与实测
+## 管线
 
-- 相关测试：`node --test episodes/pure-code-sample/pipeline.test.ts tools/check-guardrails.test.ts tools/verify.test.ts`。
-- 静态检查：`pnpm verify --static`，包含 `node tools/check-guardrails.ts pure-code`。
-- 纯代码护栏检查本期入口的源码依赖，以及 `episodes/index.ts` 的即时加载依赖；只允许通过静态 `staticFile` 使用清单中的生成媒体，拒绝字体包、文字栅格化、外部资源和无法静态确认的媒体路径。本地媒体存在时核对内容哈希，干净 checkout 可在未生成媒体时检查声明；渲染前必须生成媒体。清单或生成源码过期会失败。
-- 关键帧：使用现有 `pnpm qa frames`；不修改验收工具的子命令登记表。
-- 响度：`pnpm qa loudness out/qa/spec-147/149/PureCodeSample.mp4 --target-lufs -16 --tolerance 1 --max-true-peak -1 --out out/qa/spec-147/149/loudness`。
-- GPU、耗时和像素确定性不放入日常验证；本次原始日志与报告在 `/root/project/video-studio.worktrees/149/out/qa/spec-147/149/`。本机 `angle` 因缺少 `VK_EXT_headless_surface` 无法创建 WebGL 上下文，实际渲染使用 `swangle`（SwiftShader）。跨后端、跨驱动的像素一致性未作承诺。
+#149 打通的管线，后面的引擎、镜头和声音都长在它上面。
 
-## 待设计定稿
+- `model.ts`：时间表 `shotTable`、镜头接口 `Shot<Surface>`、全片事件汇总 `collectEvents`、帧到采样的换算。
+- `shot.ts`：占位镜头。Canvas 2D 读取烘焙底图画圆块，交给 WebGL 1 着色器加暗角和颗粒。#152、#153 换成本期的引擎和镜头。
+- `PureCodeSample.tsx`：合成。等底图载入、画完之后才释放 Remotion 的渲染等待句柄，不依赖时钟、CSS 动画或随机运行状态。
+- `generate.ts`、`audio.ts`：生成器。Node 计算底图的 RGB 像素、用 FFmpeg 编码成 PNG；用固定种子的噪声和衰减振荡器合成 48 kHz PCM16 的音效；按事件表把音效的对齐点放到事件帧对应的采样上，混成双声道。混音起点是 `round(事件帧 × 采样率 / fps) - 对齐点采样号`；只施加常量增益，不做会移动对齐点的时域处理。
+- `data/events.json`：全片事件表。`data/generated.json`：生成命令、输入源码哈希、FFmpeg 版本、媒体哈希和混音参数，供缓存和护栏检查。
+- 缓存：`generate.ts`、`model.ts`、`audio.ts`、所用令牌或 FFmpeg 版本改变，以及产物缺失、哈希不匹配、事件表变化，都会让缓存失效；`--force` 强制重建。缓存只管生成物，改了镜头或着色器要重新渲染。
+- 入口 `episodes/Root.tsx` 按需加载另外两期，免得它们的字体初始化进入本期的渲染。
 
-`TODO(design)`：后续工单替换占位圆块、地面、10 秒时长、触地听点及合成撞击声。颜色、尺寸、暗角和颗粒取自已有 NASA-punk 令牌，仅用于占位管线，不据此确定本期风格。
+从仓库根目录运行：
+
+```sh
+node episodes/pure-code-sample/generate.ts
+pnpm exec remotion render PureCodeSample out/pure-code-sample/pure-code-sample.mp4 --gl=swangle --concurrency=2
+pnpm qa loudness out/pure-code-sample/pure-code-sample.mp4 --target-lufs -16 --tolerance 1 --max-true-peak -1 --out out/qa/pure-code-sample/loudness
+```
+
+媒体写进 `public/episodes/pure-code-sample/`，不进 git，渲染前先运行生成器。相关测试：`node --test episodes/pure-code-sample/pipeline.test.ts tools/check-guardrails.test.ts`；纯代码护栏在 `pnpm verify --static` 里。
+
+## 实测
+
+本机（WSL2，RTX 3090）的结论，只在这台机器上成立：
+
+- **GPU 用不上**：无头 Chrome 的 `angle` 建不起 WebGL 上下文，日志是 `Extension not supported: VK_EXT_headless_surface`（#149）；`egl`、`angle-egl`、`vulkan`，以及给 EGL 指定 WSL 的 Mesa `d3d12` 驱动（`GALLIUM_DRIVER=d3d12`），也都建不起（2026-11-25 设计负责人补测）。
+- **只能用 `swangle`**（SwiftShader），WebGL 报告的渲染器是 `ANGLE (Google, Vulkan 1.3.0 (SwiftShader Device (Subzero)), SwiftShader driver)`；占位画面渲一帧 0.8–1.0 秒（#149）。
+- **像素确定性**：同一帧在两个独立浏览器进程里各渲一次，RGBA 逐字节相同（#149）；跨后端、跨驱动不保证。
+- 生成器在两个工作目录各跑一次，底图、音效、混音的哈希相同。
+
+ADR 0002 的前提之一是 GPU 能否使用：结论是不能，但参照片本来就是纯 CPU 渲染，所以不推翻，改为盯每帧耗时，预算见本期约定第 7 节。
