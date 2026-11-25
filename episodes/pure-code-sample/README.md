@@ -7,6 +7,7 @@ spec #147：吸收参照片的方法（[研究记录](../../docs/research/noroi-
 | [简报](brief.md) | 观众此刻的感受、品质标准、"绝不能像"清单 |
 | [镜头剧本](storyboard.md) | 两个镜头的画面、运镜、锚点、感受和声音 |
 | [本期约定](contract.md) | 时间表、模块归属、镜头接口、画面事件种类、外观和动作规则、色彩剧本、每帧预算、资源上限、自查、汇报 |
+| [乐谱与声音设计](sound-design.md) | 配乐思路、听点表、音效安排；数据在 [score.json](score.json) 和 [sound.json](sound.json) |
 | [sources.md](sources.md) | 每个生成物由哪条命令生成 |
 
 ## 决定
