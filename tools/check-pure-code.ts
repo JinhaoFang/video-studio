@@ -1,4 +1,10 @@
-/** 纯代码护栏：递归检查合成与启动依赖；仅豁免直接返回 JSX 中其他合成独占的 lazyComponent 加载器。媒体（含 srcSet 和 Audio 构造参数）只接受已登记的 staticFile 字面量及其 const 别名；拒绝无法证明来源的 staticFile 调用、媒体属性、展开属性和加载器用途。 */
+/**
+ * 纯代码护栏：递归检查合成与启动依赖；仅豁免直接返回 JSX 中其他合成独占、
+ * 且返回函数只用于安全 JSX 返回链或 Remotion registerRoot 的 lazyComponent 加载器。
+ * 按声明节点归并跨文件具名引用，避免类型推导产生的临时符号漏检；函数调用、
+ * 逃逸及无法证明用途的模块引用均取消豁免。媒体（含 srcSet 和 Audio 构造参数）
+ * 只接受已登记的 staticFile 字面量及其 const 别名。
+ */
 import { createHash } from "node:crypto";
 import { existsSync, readFileSync } from "node:fs";
 import { basename, dirname, relative, resolve, sep } from "node:path";
@@ -83,28 +89,91 @@ export const checkPureCode = (
     "remotion",
     "@remotion/media",
   ]);
-  const inspect = (file: string, followDynamic = true): void => {
-    const key = `${file}:${followDynamic}`;
-    if (visited.has(key)) return;
-    visited.add(key);
-    const program = ts.createProgram([resolve(root, file)], {
+  const program = ts.createProgram(
+    [...code].map((file) => resolve(root, file)),
+    {
       noResolve: true,
       noLib: true,
       allowJs: true,
       target: ts.ScriptTarget.Latest,
+    },
+  );
+  const checker = program.getTypeChecker();
+  const visit = (node: ts.Node, callback: (node: ts.Node) => void): void => {
+    callback(node);
+    ts.forEachChild(node, (child) => visit(child, callback));
+  };
+  const symbolAt = (node: ts.Node) => {
+    if (ts.isShorthandPropertyAssignment(node.parent))
+      return checker.getShorthandAssignmentValueSymbol(node.parent);
+    if (ts.isExportSpecifier(node.parent))
+      return checker.getExportSpecifierLocalTargetSymbol(node.parent);
+    return checker.getSymbolAtLocation(node);
+  };
+  const targetSymbol = (node: ts.Node) => {
+    const symbol = symbolAt(node);
+    return symbol && (symbol.flags & ts.SymbolFlags.Alias) !== 0
+      ? checker.getAliasedSymbol(symbol)
+      : symbol;
+  };
+  const references = new Map<ts.Declaration, ts.Identifier[]>();
+  const opaqueModules = new Set<string>();
+  for (const source of program.getSourceFiles()) {
+    visit(source, (node) => {
+      if (ts.isIdentifier(node)) {
+        const declaration = targetSymbol(node)?.valueDeclaration;
+        if (declaration) {
+          const uses = references.get(declaration) ?? [];
+          uses.push(node);
+          references.set(declaration, uses);
+        }
+      }
+      let path: ts.Node | undefined;
+      if (ts.isImportDeclaration(node)) {
+        const clause = node.importClause;
+        if (
+          clause?.name ||
+          (clause?.namedBindings &&
+            ts.isNamespaceImport(clause.namedBindings))
+        )
+          path = node.moduleSpecifier;
+      } else if (ts.isExportDeclaration(node)) {
+        path = node.moduleSpecifier;
+      } else if (
+        ts.isImportEqualsDeclaration(node) &&
+        ts.isExternalModuleReference(node.moduleReference)
+      ) {
+        path = node.moduleReference.expression;
+      } else if (
+        ts.isCallExpression(node) &&
+        (node.expression.kind === ts.SyntaxKind.ImportKeyword ||
+          (ts.isIdentifier(node.expression) &&
+            node.expression.text === "require"))
+      ) {
+        path = node.arguments[0];
+      }
+      if (path && ts.isStringLiteralLike(path)) {
+        const resolved = ts.resolveModuleName(
+          path.text,
+          source.fileName,
+          options,
+          ts.sys,
+        ).resolvedModule;
+        if (resolved) opaqueModules.add(resolved.resolvedFileName);
+      }
     });
+  }
+  const inspect = (file: string, followDynamic = true): void => {
+    const key = `${file}:${followDynamic}`;
+    if (visited.has(key)) return;
+    visited.add(key);
     const source = program.getSourceFile(resolve(root, file))!;
-    const checker = program.getTypeChecker();
     const fail = (node: ts.Node, message: string) =>
       report(
         file,
         source.getLineAndCharacterOfPosition(node.getStart(source)).line + 1,
         message,
       );
-    const visit = (node: ts.Node, callback: (node: ts.Node) => void): void => {
-      callback(node);
-      ts.forEachChild(node, (child) => visit(child, callback));
-    };
     const unwrap = (node: ts.Node): ts.Node => {
       while (
         ts.isParenthesizedExpression(node) ||
@@ -126,13 +195,6 @@ export const checkPureCode = (
               ts.isStringLiteralLike(node.argumentExpression)
             ? node.argumentExpression.text
             : "";
-    };
-    const symbolAt = (node: ts.Node) => {
-      if (ts.isShorthandPropertyAssignment(node.parent))
-        return checker.getShorthandAssignmentValueSymbol(node.parent);
-      if (ts.isExportSpecifier(node.parent))
-        return checker.getExportSpecifierLocalTargetSymbol(node.parent);
-      return checker.getSymbolAtLocation(node);
     };
     const constant = (node: ts.Node): ts.VariableDeclaration | undefined => {
       if (!ts.isIdentifier(node)) return;
@@ -209,9 +271,9 @@ export const checkPureCode = (
       );
     };
     const mediaProperties = new Set(["src", "srcSet", "href", "poster"]);
-    const directRegistration = (
+    const registrationFunction = (
       node: ts.JsxOpeningElement | ts.JsxSelfClosingElement,
-    ): boolean => {
+    ): ts.Node | undefined => {
       let element: ts.Node = ts.isJsxOpeningElement(node) ? node.parent : node;
       while (element.parent) {
         const parent = element.parent;
@@ -223,28 +285,101 @@ export const checkPureCode = (
           element = parent;
           continue;
         }
-        return (
-          (ts.isArrowFunction(parent) && parent.body === element) ||
-          (ts.isReturnStatement(parent) && parent.expression === element)
-        );
+        if (ts.isArrowFunction(parent) && parent.body === element)
+          return parent;
+        if (ts.isReturnStatement(parent) && parent.expression === element)
+          return ts.findAncestor(parent, ts.isFunctionLike);
+        return;
       }
-      return false;
     };
-    const references = new Map<ts.Symbol, ts.Identifier[]>();
+    const componentOnly = (
+      fn: ts.Node | undefined,
+      seen = new Set<ts.Node>(),
+    ): boolean => {
+      if (
+        !fn ||
+        seen.has(fn) ||
+        !(
+          ts.isArrowFunction(fn) ||
+          ts.isFunctionExpression(fn) ||
+          ts.isFunctionDeclaration(fn)
+        ) ||
+        fn.asteriskToken ||
+        fn.modifiers?.some(
+          (modifier) =>
+            modifier.kind === ts.SyntaxKind.AsyncKeyword ||
+            modifier.kind === ts.SyntaxKind.DefaultKeyword,
+        )
+      )
+        return false;
+      seen = new Set(seen).add(fn);
+      let value: ts.Node = fn;
+      while (value.parent && unwrap(value.parent) === fn)
+        value = value.parent;
+      const parent = value.parent;
+      const name = ts.isFunctionDeclaration(fn)
+        ? fn.name
+        : ts.isVariableDeclaration(parent) &&
+            parent.initializer === value &&
+            ts.isIdentifier(parent.name) &&
+            constant(parent.name) === parent
+          ? parent.name
+          : undefined;
+      const declaration = name && targetSymbol(name)?.valueDeclaration;
+      if (!declaration) return false;
+      const statement = ts.isVariableDeclaration(declaration)
+        ? declaration.parent.parent
+        : declaration;
+      if (
+        opaqueModules.has(fn.getSourceFile().fileName) &&
+        (ts.isVariableStatement(statement) ||
+          ts.isFunctionDeclaration(statement)) &&
+        statement.modifiers?.some(
+          (modifier) => modifier.kind === ts.SyntaxKind.ExportKeyword,
+        )
+      )
+        return false;
+      if (
+        ts.isFunctionExpression(fn) &&
+        fn.name &&
+        (references.get(fn)?.length ?? 0) > 1
+      )
+        return false;
+      return (references.get(declaration) ?? []).every((use) => {
+        if (use === name || ts.isImportSpecifier(use.parent)) return true;
+        let value: ts.Node = use;
+        while (value.parent && unwrap(value.parent) === use)
+          value = value.parent;
+        const parent = value.parent;
+        if (
+          ts.isCallExpression(parent) &&
+          parent.arguments.length === 1 &&
+          parent.arguments[0] === value &&
+          remotionMember(parent.expression, "registerRoot")
+        )
+          return true;
+        return (
+          (ts.isJsxOpeningElement(parent) ||
+            ts.isJsxClosingElement(parent) ||
+            ts.isJsxSelfClosingElement(parent)) &&
+          parent.tagName === value &&
+          componentOnly(
+            registrationFunction(
+              ts.isJsxClosingElement(parent)
+                ? parent.parent.openingElement
+                : parent,
+            ),
+            seen,
+          )
+        );
+      });
+    };
     const loaderAttributes = new Set<ts.JsxAttribute>();
     visit(source, (node) => {
-      if (ts.isIdentifier(node)) {
-        const symbol = symbolAt(node);
-        if (symbol) {
-          const uses = references.get(symbol) ?? [];
-          uses.push(node);
-          references.set(symbol, uses);
-        }
-      }
       if (
         (ts.isJsxOpeningElement(node) || ts.isJsxSelfClosingElement(node)) &&
         remotionMember(node.tagName, "Composition") &&
-        directRegistration(node) &&
+        componentOnly(registrationFunction(node)) &&
         !node.attributes.properties.some(ts.isJsxSpreadAttribute)
       ) {
         const id = node.attributes.properties.find(
@@ -277,7 +412,7 @@ export const checkPureCode = (
         const declaration = constant(loader);
         if (!declaration?.initializer) continue;
         if (exported(declaration)) continue;
-        const uses = references.get(symbolAt(loader)!) ?? [];
+        const uses = references.get(declaration) ?? [];
         if (
           uses.some(
             (use) =>
@@ -295,7 +430,7 @@ export const checkPureCode = (
       }
       if (ts.isArrowFunction(loader) || ts.isFunctionExpression(loader)) {
         const name = ts.isFunctionExpression(loader) ? loader.name : undefined;
-        if (name && (references.get(symbolAt(name)!)?.length ?? 0) > 1)
+        if (name && (references.get(loader)?.length ?? 0) > 1)
           continue;
         loaders.add(loader);
       }

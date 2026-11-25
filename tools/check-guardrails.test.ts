@@ -699,6 +699,27 @@ for (const [name, registration, expected] of [
   ],
   ["登记后立即调用", lazyRegistration + "\nvoid load();", 1],
   [
+    "登记元素经函数返回后调用 props 加载器",
+    lazyRegistration + "\nvoid Root().props.lazyComponent();",
+    1,
+  ],
+  [
+    "登记元素经箭头函数块体返回后取出加载器",
+    lazyRegistration.replace(
+      'const Root = () => <Composition id="Other" lazyComponent={load} />;',
+      'const Root = () => { return <Composition id="Other" lazyComponent={load} />; };',
+    ) + '\nconst { lazyComponent } = Root().props; void lazyComponent();',
+    1,
+  ],
+  [
+    "登记元素经普通函数返回后调用加载器",
+    lazyRegistration.replace(
+      'const Root = () => <Composition id="Other" lazyComponent={load} />;',
+      'function Root() { return <Composition id="Other" lazyComponent={load} />; }',
+    ) + '\nvoid Root()["props"]["lazyComponent"]();',
+    1,
+  ],
+  [
     "登记元素存入变量后调用 props 加载器",
     lazyRegistration.replace("const Root = () =>", "const view =") +
       "\nvoid view.props.lazyComponent();",
@@ -810,6 +831,265 @@ for (const [name, registration, expected] of [
     });
     const result = run(root, "pure-code");
     assert.equal(result.status, expected, result.stdout + result.stderr);
+  });
+}
+
+const lazyElement = '<Composition id="Other" lazyComponent={load} />';
+
+for (const [name, declaration, use, expected] of [
+  [
+    "函数表达式被直接调用",
+    `const Root = function View() { return ${lazyElement}; };`,
+    "void Root().props.lazyComponent();",
+    1,
+  ],
+  [
+    "具名函数表达式通过内部名称调用",
+    `const Root = function View() { void View().props.lazyComponent(); return ${lazyElement}; };`,
+    "",
+    1,
+  ],
+  [
+    "带类型断言的函数被调用",
+    `const Root = () => ${lazyElement};`,
+    "void (Root as () => any)().props.lazyComponent();",
+    1,
+  ],
+  [
+    "函数的别名被调用",
+    `const Root = () => ${lazyElement};`,
+    "const alias = Root; const view = alias(); void view.props.lazyComponent();",
+    1,
+  ],
+  [
+    "函数以缩写属性逃逸",
+    `const Root = () => ${lazyElement};`,
+    "const holder = { Root }; void holder.Root().props.lazyComponent();",
+    1,
+  ],
+  [
+    "函数作为回调传递",
+    `const Root = () => ${lazyElement};`,
+    "consume(Root);",
+    1,
+  ],
+  [
+    "函数通过 bind 调用",
+    `const Root = () => ${lazyElement};`,
+    "void Root.bind(null)().props.lazyComponent();",
+    1,
+  ],
+  [
+    "函数通过 export 列表逃逸",
+    `const Root = () => ${lazyElement};`,
+    "export { Root as Escaped };",
+    1,
+  ],
+  [
+    "可变函数绑定",
+    `let Root = () => ${lazyElement};`,
+    "",
+    1,
+  ],
+  [
+    "立即执行的匿名函数",
+    `void (() => ${lazyElement})().props.lazyComponent();`,
+    "",
+    1,
+  ],
+  [
+    "对象方法被调用",
+    `const holder = { Root() { return ${lazyElement}; } };`,
+    "void holder.Root().props.lazyComponent();",
+    1,
+  ],
+  [
+    "嵌套函数被返回后调用",
+    `const factory = () => () => ${lazyElement};`,
+    "void factory()().props.lazyComponent();",
+    1,
+  ],
+  [
+    "普通函数在声明前被调用",
+    `void Root().props.lazyComponent(); function Root() { return ${lazyElement}; }`,
+    "",
+    1,
+  ],
+  [
+    "JSX 中转后提取 type 调用",
+    `const Root = () => ${lazyElement};`,
+    "const view = <Root />; void view.type().props.lazyComponent();",
+    1,
+  ],
+  [
+    "JSX 返回链的外层被调用",
+    `const Root = () => ${lazyElement};`,
+    "const Wrapper = () => <Root />; void Wrapper().type().props.lazyComponent();",
+    1,
+  ],
+  [
+    "递归 JSX 无法证明独占",
+    `const Root = () => <Root>${lazyElement}</Root>;`,
+    "",
+    1,
+  ],
+  [
+    "冒充 registerRoot 的回调消费",
+    `const Root = () => ${lazyElement};`,
+    "function registerRoot(fn) { fn().props.lazyComponent(); } registerRoot(Root);",
+    1,
+  ],
+  [
+    "异步函数返回值",
+    `const Root = async () => ${lazyElement};`,
+    "",
+    1,
+  ],
+  [
+    "生成器返回值",
+    `function* Root() { return ${lazyElement}; }`,
+    "",
+    1,
+  ],
+  [
+    "箭头函数块体只用于登记",
+    `const Root = () => { return (${lazyElement}); };`,
+    "",
+    0,
+  ],
+  [
+    "具名函数表达式只用于登记",
+    `const Root = function View() { return ${lazyElement}; };`,
+    "",
+    0,
+  ],
+  [
+    "JSX 返回链只用于登记",
+    `const Root = () => ${lazyElement};`,
+    "const Wrapper = () => (<><Root></Root></>);",
+    0,
+  ],
+  [
+    "同名局部函数互不影响",
+    `const Root = () => ${lazyElement};`,
+    "function local(Root) { return Root().props.lazyComponent(); }",
+    0,
+  ],
+  [
+    "Remotion registerRoot 消费",
+    `const Root = () => ${lazyElement};`,
+    'import { registerRoot as register } from "remotion"; register((Root));',
+    0,
+  ],
+] as const) {
+  test(`pure-code 返回登记元素的${name}`, (context) => {
+    const root = pureFixture(context, pureImage, {
+      "episodes/index.ts": 'import "./Root";',
+      "episodes/Root.tsx": lazyRegistration.replace(
+        `const Root = () => ${lazyElement};`,
+        declaration + "\n" + use,
+      ),
+      "episodes/other.ts": 'import "@remotion/google-fonts/Inter";',
+    });
+    const result = run(root, "pure-code");
+    assert.equal(result.status, expected, result.stdout + result.stderr);
+    if (expected === 1)
+      assert.match(result.stderr, /episodes\/other.ts:1 pure-code/);
+  });
+}
+
+for (const [name, index, rootSource, extra, expected] of [
+  [
+    "具名导入后调用",
+    'import { Root } from "./Root"; void Root().props.lazyComponent();',
+    lazyRegistration.replace("const Root", "export const Root"),
+    {},
+    1,
+  ],
+  [
+    "具名导入别名后调用",
+    'import { Root as Entry } from "./Root"; const { lazyComponent } = Entry().props; void lazyComponent();',
+    lazyRegistration.replace("const Root", "export const Root"),
+    {},
+    1,
+  ],
+  [
+    "命名空间导入后调用",
+    'import * as roots from "./Root"; void roots.Root().props.lazyComponent();',
+    lazyRegistration.replace("const Root", "export const Root"),
+    {},
+    1,
+  ],
+  [
+    "默认导入后调用",
+    'import Root from "./Root"; void Root().props.lazyComponent();',
+    lazyRegistration.replace(
+      `const Root = () => ${lazyElement};`,
+      `export default function Root() { return ${lazyElement}; }`,
+    ),
+    {},
+    1,
+  ],
+  [
+    "动态导入后调用",
+    'void import("./Root").then(({ Root }) => Root().props.lazyComponent());',
+    lazyRegistration.replace("const Root", "export const Root"),
+    {},
+    1,
+  ],
+  [
+    "转导出后调用",
+    'import { Entry } from "./barrel"; void Entry().props.lazyComponent();',
+    lazyRegistration.replace("const Root", "export const Root"),
+    { "episodes/barrel.ts": 'export { Root as Entry } from "./Root";' },
+    1,
+  ],
+  [
+    "具名导入后交给 Remotion",
+    'import { registerRoot } from "remotion"; import { Root } from "./Root"; registerRoot(Root);',
+    lazyRegistration.replace("const Root", "export const Root"),
+    {},
+    0,
+  ],
+  [
+    "具名导入别名后交给 Remotion 命名空间",
+    'import * as Remotion from "remotion"; import { Root as Entry } from "./Root"; Remotion.registerRoot(Entry);',
+    lazyRegistration.replace("const Root", "export const Root"),
+    {},
+    0,
+  ],
+  [
+    "具名导入后通过 JSX 交给 Remotion",
+    'import { registerRoot } from "remotion"; import { Entry } from "./Entry"; registerRoot(Entry);',
+    lazyRegistration.replace("const Root", "export const Root"),
+    {
+      "episodes/Entry.tsx":
+        'import { Root } from "./Root"; export const Entry = () => <Root />;',
+    },
+    0,
+  ],
+  [
+    "安全登记同时存在另一处调用",
+    'import { registerRoot } from "remotion"; import { Root } from "./Root"; import "./consumer"; registerRoot(Root);',
+    lazyRegistration.replace("const Root", "export const Root"),
+    {
+      "episodes/consumer.ts":
+        'import { Root } from "./Root"; void Root().props.lazyComponent();',
+    },
+    1,
+  ],
+] as const) {
+  test(`pure-code 跨文件返回登记元素的函数${name}`, (context) => {
+    const root = pureFixture(context, pureImage, {
+      "episodes/index.ts": index,
+      "episodes/Root.tsx": rootSource,
+      "episodes/other.ts": 'import "@remotion/google-fonts/Inter";',
+      ...extra,
+    });
+    const result = run(root, "pure-code");
+    assert.equal(result.status, expected, result.stdout + result.stderr);
+    if (expected === 1)
+      assert.match(result.stderr, /episodes\/other.ts:1 pure-code/);
   });
 }
 
