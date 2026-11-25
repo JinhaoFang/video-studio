@@ -9,7 +9,8 @@ import {
   runCommand as spawnSync,
   gitRepository,
 } from "./test-support.ts";
-import { writeFileSync } from "node:fs";
+import { createHash } from "node:crypto";
+import { rmSync, writeFileSync } from "node:fs";
 import { join, resolve } from "node:path";
 import { test } from "node:test";
 import type { TestContext } from "node:test";
@@ -361,3 +362,129 @@ test("guardrails check tracked ignored paths and skip ignored untracked files", 
     /^出错：src\/kit\/build\/tracked\.ts:3 dependency-direction .+\n$/,
   );
 });
+
+const pureFixture = (
+  context: TestContext,
+  source: string,
+  extra: Record<string, string> = {},
+) => {
+  const entry = "episodes/pure-code-sample/PureCodeSample.tsx";
+  const generator = "episodes/pure-code-sample/generate.ts";
+  const path = "episodes/pure-code-sample/background.png";
+  const hash = (text: string) =>
+    createHash("sha256").update(text).digest("hex");
+  return fixture(context, {
+    [entry]: source,
+    [generator]: "export {};",
+    "episodes/pure-code-sample/data/generated.json": JSON.stringify({
+      entry,
+      generator,
+      inputs: [{ path: generator, sha256: hash("export {};") }],
+      files: [{ path, sha256: hash("生成的像素") }],
+    }),
+    [`public/${path}`]: "生成的像素",
+    ...extra,
+  });
+};
+
+const pureImage =
+  'import { staticFile } from "remotion"; const image = new Image(); image.src = staticFile("episodes/pure-code-sample/background.png");';
+
+test("pure-code 接受生成物、别名和无媒体的递归本地绘制模块", (context) => {
+  const root = pureFixture(
+    context,
+    pureImage +
+      '\nimport "./draw"; import { staticFile as asset } from "remotion"; asset("episodes/pure-code-sample/background.png");',
+    {
+      "episodes/pure-code-sample/draw.ts":
+        'import "../../shared"; export const draw = () => 1;',
+      "shared.ts": "export {};",
+    },
+  );
+  const result = run(root, "pure-code");
+  assert.equal(result.status, 0, result.stdout + result.stderr);
+  assert.match(result.stdout, /纯代码护栏通过/);
+});
+
+for (const [name, source] of [
+  [
+    "未登记素材",
+    'import { staticFile } from "remotion"; staticFile("episodes/pure-code-sample/photo.jpg");',
+  ],
+  ["动态素材路径", 'import { staticFile } from "remotion"; staticFile(path);'],
+  ["外部媒体", 'const image = <img src="https://example.test/photo.png" />;'],
+  ["无扩展名的媒体地址", "const image = new Image(); image.src = address;"],
+  ["动态 JSX 媒体", "const image = <img src={address} />;"],
+  [
+    "字体包",
+    'import { loadFont } from "@remotion/google-fonts/NotoSansSC"; loadFont();',
+  ],
+  [
+    "字体构造器",
+    'const font = new FontFace("x", "data:font/woff;base64,abc");',
+  ],
+  ["系统字体绘制", 'context.fillText("字", 0, 0);'],
+  ["CSS 字体", 'const style = { fontFamily: "sans-serif" };'],
+  ["DOM 文字", "const text = <div>文字</div>;"],
+  ["动态 DOM 文字", "const text = <div>{caption}</div>;"],
+  ["动态模块", "const module = import(path);"],
+  ["直接导入媒体", 'import "./photo.png";'],
+  ["网络加载别名", "const load = fetch; load(address);"],
+] as const) {
+  test(`pure-code 拒绝${name}`, (context) => {
+    const result = run(pureFixture(context, source), "pure-code");
+    assert.equal(result.status, 1, result.stdout + result.stderr);
+    assert.match(
+      result.stderr,
+      /^出错：episodes\/pure-code-sample\/PureCodeSample\.tsx:\d+ pure-code /m,
+    );
+  });
+}
+
+test("pure-code 拒绝间接依赖加载字体", (context) => {
+  const root = pureFixture(context, 'import "./draw";', {
+    "episodes/pure-code-sample/draw.ts": 'import "../../shared";',
+    "shared.ts": 'import "@remotion/google-fonts/Inter";',
+  });
+  const result = run(root, "pure-code");
+  assert.equal(result.status, 1, result.stderr);
+  assert.match(result.stderr, /shared.ts:1 pure-code/);
+});
+
+test("pure-code 拒绝被替换的媒体和过期的生成输入", (context) => {
+  const root = pureFixture(context, pureImage, {
+    "episodes/pure-code-sample/generate.ts": "export const changed = true;",
+    "public/episodes/pure-code-sample/background.png": "外部照片",
+  });
+  const result = run(root, "pure-code");
+  assert.equal(result.status, 1, result.stderr);
+  assert.match(result.stderr, /生成输入已变化/);
+  assert.match(result.stderr, /媒体与代码生成记录不一致/);
+});
+
+test("pure-code 在无本地媒体的干净 checkout 可检查声明，缺失清单则失败", (context) => {
+  const root = fixture(context, {
+    "episodes/pure-code-sample/PureCodeSample.tsx": pureImage,
+  });
+  assert.equal(run(root, "pure-code").status, 1);
+  const complete = pureFixture(context, pureImage);
+  rmSync(join(complete, "public/episodes/pure-code-sample/background.png"));
+  const result = run(complete, "pure-code");
+  assert.equal(result.status, 0, result.stderr);
+});
+
+for (const [name, registration, expected] of [
+  ["静态加载其他期字体", 'import "./other";', 1],
+  ["立即动态加载其他期字体", 'const value = import("./other");', 1],
+  ["延迟加载其他期字体", 'const load = () => import("./other");', 0],
+] as const) {
+  test(`pure-code 启动入口${name}`, (context) => {
+    const root = pureFixture(context, pureImage, {
+      "episodes/index.ts": 'import "./Root";',
+      "episodes/Root.tsx": registration,
+      "episodes/other.ts": 'import "@remotion/google-fonts/Inter";',
+    });
+    const result = run(root, "pure-code");
+    assert.equal(result.status, expected, result.stdout + result.stderr);
+  });
+}

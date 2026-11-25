@@ -1,0 +1,50 @@
+{
+  "entry": "episodes/pure-code-sample/PureCodeSample.tsx",
+  "generator": "episodes/pure-code-sample/generate.ts",
+  "command": [
+    "node",
+    "episodes/pure-code-sample/generate.ts"
+  ],
+  "cacheKey": "7c2f1f07a4a47ffffd0b2e36665bc1db4da280221d80687a84f393016650e417",
+  "inputs": [
+    {
+      "path": "episodes/pure-code-sample/generate.ts",
+      "sha256": "08d440d1358cb8e96de096ca365c135cab6aeac918a888fffcc578c1daccfefd"
+    },
+    {
+      "path": "episodes/pure-code-sample/model.ts",
+      "sha256": "45709e6616c2166228f1970974b93e427363563ebc45d609da8e735c7a02dbf4"
+    },
+    {
+      "path": "episodes/pure-code-sample/audio.ts",
+      "sha256": "d8c4d0df412036a0980c55d944fd90fb7f9ee5f76ae700a48497d4fab1338433"
+    },
+    {
+      "path": "src/styles/nasa-punk/tokens.ts",
+      "sha256": "c3c35d47b22531f0abf399bdbf19d276b53f7d0b286b617be7c2098c55769d15"
+    }
+  ],
+  "ffmpegVersion": "ffmpeg version 4.4.2-0ubuntu0.22.04.1 Copyright (c) 2000-2021 the FFmpeg developers",
+  "files": [
+    {
+      "path": "episodes/pure-code-sample/background.png",
+      "sha256": "70ed4a93191c39fca95bdc0fccc02287ad428d20a473f1aca717017a185223dc"
+    },
+    {
+      "path": "episodes/pure-code-sample/impact.wav",
+      "sha256": "4585011850ae29eda46465a5c1519b7e4432230ec920858f753d61ed183b4b07"
+    },
+    {
+      "path": "episodes/pure-code-sample/mix.wav",
+      "sha256": "5982183059746c0ff5dd91bcff0f7ed413de8e855942051c2da8ce04ef561e36"
+    }
+  ],
+  "audio": {
+    "sampleRate": 48000,
+    "channels": 2,
+    "alignmentSample": 480,
+    "gain": 0.6870684400142322,
+    "measuredInputLufs": -12.74,
+    "targetLufs": -16
+  }
+}

@@ -1,5 +1,5 @@
 /**
- * Run `node tools/check-guardrails.ts comments|dependencies [repository-root]`.
+ * Run `node tools/check-guardrails.ts comments|dependencies|pure-code [repository-root]`.
  * Check the shared Git file set and print `file:line rule explanation` on failure.
  * TypeScript syntax trees protect literal text from comment scanning and resolve
  * dependencies with the nearest repository tsconfig. Static template prefixes
@@ -11,25 +11,40 @@ import { readFileSync } from "node:fs";
 import { dirname, isAbsolute, relative, resolve, sep } from "node:path";
 import ts from "typescript";
 import { reportError, usageError } from "./cli.ts";
+import { checkPureCode } from "./check-pure-code.ts";
 import { listCodeFiles } from "./code-files.ts";
 
 const main = (): void => {
   const usage =
-    "node tools/check-guardrails.ts <comments|dependencies> [仓库根目录]";
+    "node tools/check-guardrails.ts <comments|dependencies|pure-code> [仓库根目录]";
   const [mode, rootArg, ...extra] = process.argv.slice(2);
   if (mode === "--help") {
     console.log(
-      `用法：${usage}\ncomments 检查注释位置；dependencies 检查依赖方向。`,
+      `用法：${usage}\ncomments 检查注释位置；dependencies 检查依赖方向；pure-code 检查纯代码合成的媒体与字体。`,
     );
     return;
   }
-  if ((mode !== "comments" && mode !== "dependencies") || extra.length)
+  if (
+    (mode !== "comments" && mode !== "dependencies" && mode !== "pure-code") ||
+    extra.length
+  )
     throw usageError(
-      "请选择 comments 或 dependencies，最多提供一个仓库根目录。",
+      "请选择 comments、dependencies 或 pure-code，最多提供一个仓库根目录。",
       usage,
     );
 
   const root = resolve(rootArg ?? process.cwd());
+  if (mode === "pure-code") {
+    const errors = checkPureCode(
+      root,
+      "episodes/pure-code-sample/PureCodeSample.tsx",
+      "episodes/pure-code-sample/data/generated.json",
+    );
+    errors.forEach((message) => console.error(`出错：${message}`));
+    if (errors.length) process.exitCode = 1;
+    else console.log("纯代码护栏通过。");
+    return;
+  }
   const configCache = new Map<string, ts.CompilerOptions>();
   let failures = 0;
 

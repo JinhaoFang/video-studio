@@ -108,6 +108,7 @@ test("verify checks tracked ignored code through eslint without scanning ignored
     "tools/verify.ts",
     "tools/code-files.ts",
     "tools/check-guardrails.ts",
+    "tools/check-pure-code.ts",
     "tools/cli.ts",
   ]) {
     copyFileSync(join(repository, path), join(root, path));
@@ -148,6 +149,7 @@ const staticFixture = (context: TestContext) => {
     "tools/code-files.ts",
     "tools/cli.ts",
     "tools/check-guardrails.ts",
+    "tools/check-pure-code.ts",
     "tools/check-doc-commands.ts",
   ]) {
     mkdirSync(dirname(join(root, path)), { recursive: true });
@@ -182,6 +184,7 @@ test("static verification runs every check but never executes tests", (context) 
     "tsc (Node)",
     "comment position",
     "dependency direction",
+    "pure code",
     "规则文档命令存在性",
     "静态检查通过",
   ])

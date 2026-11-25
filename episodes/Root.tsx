@@ -1,20 +1,37 @@
-/** 按期注册 Remotion 合成，时长与帧率使用对应时间轴的入库数据。 */
+/** 按期注册合成；按需加载各期，避免其他期的字体初始化进入纯代码渲染。 */
 import { Composition, Folder } from "remotion";
-import {
-  ClinMeshPromo,
-  type ClinMeshPromoProps,
-} from "./clinmesh-promo/ClinMeshPromo";
+import type { ClinMeshPromoProps } from "./clinmesh-promo/ClinMeshPromo";
 import promoTimeline from "./clinmesh-promo/data/timeline.json";
-import { Opening } from "./nasa-punk-opening/Opening";
+import { PureCodeSample } from "./pure-code-sample/PureCodeSample";
+import { durationInFrames as pureCodeDuration } from "./pure-code-sample/model";
 import timeline from "./nasa-punk-opening/data/timeline.json";
 import type { Timeline } from "../tools/timeline-types";
 
+const loadOpening = () =>
+  import("./nasa-punk-opening/Opening").then(({ Opening }) => ({
+    default: Opening,
+  }));
+const loadPromo = () =>
+  import("./clinmesh-promo/ClinMeshPromo").then(({ ClinMeshPromo }) => ({
+    default: ClinMeshPromo,
+  }));
+
 export const RemotionRoot: React.FC = () => (
   <>
+    <Folder name="pure-code-sample">
+      <Composition
+        id="PureCodeSample"
+        component={PureCodeSample}
+        durationInFrames={pureCodeDuration}
+        fps={24}
+        width={1920}
+        height={1080}
+      />
+    </Folder>
     <Folder name="nasa-punk-opening">
       <Composition
         id="NasaPunkOpening"
-        component={Opening}
+        lazyComponent={loadOpening}
         durationInFrames={timeline.durationInFrames}
         fps={30}
         width={1920}
@@ -29,7 +46,7 @@ export const RemotionRoot: React.FC = () => (
     <Folder name="clinmesh-promo">
       <Composition
         id="ClinMeshPromo"
-        component={ClinMeshPromo}
+        lazyComponent={loadPromo}
         durationInFrames={promoTimeline.durationInFrames}
         fps={30}
         width={1920}

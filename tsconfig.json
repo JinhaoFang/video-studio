@@ -14,5 +14,10 @@
     "noUnusedLocals": true
   },
   "include": ["src", "episodes"],
-  "exclude": ["remotion.config.ts", "**/*.test.ts"]
+  "exclude": [
+    "remotion.config.ts",
+    "**/*.test.ts",
+    "episodes/pure-code-sample/generate.ts",
+    "episodes/pure-code-sample/audio.ts"
+  ]
 }

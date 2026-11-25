@@ -14,6 +14,7 @@
     "./**/*.ts",
     "../src/**/*.test.ts",
     "../episodes/**/*.test.ts",
+    "../episodes/pure-code-sample/generate.ts",
     "../*.test.ts"
   ],
   "exclude": []
