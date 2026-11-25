@@ -1,4 +1,4 @@
-/** 纯代码护栏：递归检查合成与启动依赖；仅豁免其他合成独占的 lazyComponent 加载器。媒体只接受已登记的 staticFile 字面量及其 const 别名；拒绝无法证明来源的媒体属性、展开属性和加载器用途。 */
+/** 纯代码护栏：递归检查合成与启动依赖；仅豁免直接返回 JSX 中其他合成独占的 lazyComponent 加载器。媒体（含 srcSet 和 Audio 构造参数）只接受已登记的 staticFile 字面量及其 const 别名；拒绝无法证明来源的 staticFile 调用、媒体属性、展开属性和加载器用途。 */
 import { createHash } from "node:crypto";
 import { existsSync, readFileSync } from "node:fs";
 import { basename, dirname, relative, resolve, sep } from "node:path";
@@ -116,6 +116,17 @@ export const checkPureCode = (
         node = node.expression;
       return node;
     };
+    const memberName = (node: ts.Node): string => {
+      node = unwrap(node);
+      return ts.isIdentifier(node)
+        ? node.text
+        : ts.isPropertyAccessExpression(node)
+          ? node.name.text
+          : ts.isElementAccessExpression(node) &&
+              ts.isStringLiteralLike(node.argumentExpression)
+            ? node.argumentExpression.text
+            : "";
+    };
     const symbolAt = (node: ts.Node) => {
       if (ts.isShorthandPropertyAssignment(node.parent))
         return checker.getShorthandAssignmentValueSymbol(node.parent);
@@ -180,7 +191,7 @@ export const checkPureCode = (
       }
       return false;
     };
-    const staticCall = (node: ts.Node): node is ts.CallExpression =>
+    const staticCall = (node: ts.Node): boolean =>
       ts.isCallExpression(node) &&
       remotionMember(node.expression, "staticFile");
     const staticMedia = (node: ts.Node, seen = new Set<ts.Node>()): boolean => {
@@ -190,11 +201,34 @@ export const checkPureCode = (
       const initializer = constant(node)?.initializer;
       if (initializer) return staticMedia(initializer, seen);
       return (
+        ts.isCallExpression(node) &&
         staticCall(node) &&
         node.arguments.length === 1 &&
         ts.isStringLiteralLike(node.arguments[0]) &&
         allowed.has(node.arguments[0].text)
       );
+    };
+    const mediaProperties = new Set(["src", "srcSet", "href", "poster"]);
+    const directRegistration = (
+      node: ts.JsxOpeningElement | ts.JsxSelfClosingElement,
+    ): boolean => {
+      let element: ts.Node = ts.isJsxOpeningElement(node) ? node.parent : node;
+      while (element.parent) {
+        const parent = element.parent;
+        if (
+          unwrap(parent) === element ||
+          ts.isJsxElement(parent) ||
+          ts.isJsxFragment(parent)
+        ) {
+          element = parent;
+          continue;
+        }
+        return (
+          (ts.isArrowFunction(parent) && parent.body === element) ||
+          (ts.isReturnStatement(parent) && parent.expression === element)
+        );
+      }
+      return false;
     };
     const references = new Map<ts.Symbol, ts.Identifier[]>();
     const loaderAttributes = new Set<ts.JsxAttribute>();
@@ -210,6 +244,7 @@ export const checkPureCode = (
       if (
         (ts.isJsxOpeningElement(node) || ts.isJsxSelfClosingElement(node)) &&
         remotionMember(node.tagName, "Composition") &&
+        directRegistration(node) &&
         !node.attributes.properties.some(ts.isJsxSpreadAttribute)
       ) {
         const id = node.attributes.properties.find(
@@ -333,7 +368,7 @@ export const checkPureCode = (
           ts.isStringLiteralLike(property.name)
             ? property.name.text
             : "";
-        if (["src", "href", "poster"].includes(name)) {
+        if (mediaProperties.has(name)) {
           const value = ts.isPropertyAssignment(property)
             ? property.initializer
             : ts.isShorthandPropertyAssignment(property)
@@ -390,6 +425,8 @@ export const checkPureCode = (
         if (staticCall(node)) {
           if (!staticMedia(node))
             fail(node, "staticFile 只能引用生成物清单中的静态路径。");
+        } else if (memberName(node.expression) === "staticFile") {
+          fail(node, "无法静态确认 staticFile 来源，请直接从 remotion 导入。");
         }
         if (
           /\b(?:fetch|XMLHttpRequest|WebSocket|EventSource|FontFace|loadFont|fillText|strokeText|measureText|createImageBitmap)\b/.test(
@@ -397,13 +434,20 @@ export const checkPureCode = (
           )
         )
           fail(node, `不允许外部资源或字体 API：${name}`);
-      } else if (
-        ts.isNewExpression(node) &&
-        /(?:URL|FontFace|XMLHttpRequest|WebSocket|EventSource)$/.test(
-          node.expression.getText(source),
+      } else if (ts.isNewExpression(node)) {
+        const constructor = node.expression.getText(source);
+        if (
+          /(?:URL|FontFace|XMLHttpRequest|WebSocket|EventSource)$/.test(
+            constructor,
+          )
         )
-      ) {
-        fail(node, "不允许通过 URL、网络或字体构造器加载资源。");
+          fail(node, "不允许通过 URL、网络或字体构造器加载资源。");
+        if (
+          memberName(node.expression) === "Audio" &&
+          node.arguments?.length &&
+          (node.arguments.length !== 1 || !staticMedia(node.arguments[0]))
+        )
+          fail(node, "音频构造参数只能使用已登记的 staticFile 路径。");
       }
       if (
         ts.isIdentifier(node) &&
@@ -489,14 +533,14 @@ export const checkPureCode = (
             ? left.argumentExpression.text
             : "";
         if (
-          ["src", "href", "poster"].includes(property) &&
+          mediaProperties.has(property) &&
           !staticMedia(node.right)
         )
           fail(node, "媒体地址只能直接使用已登记的 staticFile 路径。");
       }
       if (
         ts.isJsxAttribute(node) &&
-        /^(?:src|href|poster)$/.test(node.name.getText(source))
+        mediaProperties.has(node.name.getText(source))
       ) {
         const value = node.initializer;
         if (

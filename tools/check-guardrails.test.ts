@@ -530,6 +530,59 @@ for (const [name, source] of [
   ["DOM 文字", "const text = <div>文字</div>;"],
   ["动态 DOM 文字", "const text = <div>{caption}</div>;"],
   ["动态模块", "const module = import(path);"],
+  [
+    "动态导入的 Remotion 命名空间",
+    'void import("remotion").then((api) => new Audio(api.staticFile("unregistered")));',
+  ],
+  [
+    "动态命名空间独立 staticFile 调用",
+    'void import("remotion").then((api) => api.staticFile("unregistered"));',
+  ],
+  [
+    "动态命名空间索引 staticFile 调用",
+    'void import("remotion").then((api) => api["staticFile"]("unregistered"));',
+  ],
+  [
+    "动态命名空间图片地址",
+    'void import("remotion").then((api) => { const image = new Image(); image.src = api.staticFile("unregistered"); });',
+  ],
+  ["动态音频构造参数", "const audio = new Audio(address);"],
+  ["全局音频构造参数", "const audio = new window.Audio(address);"],
+  ["索引音频构造参数", 'const audio = new window["Audio"](address);'],
+  ["括号音频构造参数", "const audio = new (Audio)(address);"],
+  ["展开音频构造参数", "const audio = new Audio(...paths);"],
+  [
+    "展开 srcSet",
+    'const image = <img {...{ srcSet: "/unregistered.png 1x" }} />;',
+  ],
+  [
+    "具名 srcSet 密度描述符",
+    'const image = <img srcSet="/unregistered.png 1x" />;',
+  ],
+  [
+    "展开 srcSet 宽度描述符",
+    'const image = <img {...{ srcSet: "/unregistered.png 480w" }} />;',
+  ],
+  [
+    "嵌套展开 srcSet 缩写属性",
+    'const srcSet = "/unregistered 1x, /other 2x"; const image = <img {...{ ...{ srcSet } }} />;',
+  ],
+  [
+    "展开 srcSet 访问器",
+    'const image = <img {...{ get srcSet() { return "/unregistered 1x"; } }} />;',
+  ],
+  [
+    "srcSet 混合已登记和未登记地址",
+    'import { staticFile } from "remotion"; const image = <img srcSet={`${staticFile("episodes/pure-code-sample/background.png")} 1x, /unregistered 2x`} />;',
+  ],
+  [
+    "srcSet 赋值",
+    'const image = new Image(); image.srcSet = "/unregistered 480w";',
+  ],
+  [
+    "srcSet 索引赋值",
+    'const image = new Image(); image["srcSet"] = "/unregistered 1x";',
+  ],
   ["直接导入媒体", 'import "./photo.png";'],
   ["网络加载别名", "const load = fetch; load(address);"],
 ] as const) {
@@ -600,10 +653,37 @@ test("pure-code 接受可追踪的媒体别名、内联展开和 Canvas 绘制",
   assert.equal(result.status, 0, result.stdout + result.stderr);
 });
 
+test("pure-code 接受已登记媒体构造、单地址 srcSet 和 WebGL 纹理绘制", (context) => {
+  const result = run(
+    pureFixture(
+      context,
+      [
+        'import { staticFile } from "remotion";',
+        'const src = staticFile("episodes/pure-code-sample/background.png");',
+        "const image = new Image(1920, 1080); image.src = src;",
+        "const audio = new Audio(src); const emptyAudio = new Audio();",
+        "const globalAudio = new window.Audio(src);",
+        "const indexedAudio = new window[\"Audio\"](src);",
+        "const wrappedAudio = new (Audio)(src);",
+        "const view = <img srcSet={src} />;",
+        "const spread = <img {...{ ...{ srcSet: src }, width: 1920 }} />;",
+        "image.srcSet = src; image[\"srcSet\"] = src;",
+        'const canvas = document.createElement("canvas");',
+        'const gl = canvas.getContext("webgl", { alpha: false, antialias: false, preserveDrawingBuffer: true });',
+        "const texture = gl.createTexture(); gl.bindTexture(gl.TEXTURE_2D, texture);",
+        "gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, image);",
+        "gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4); gl.finish();",
+      ].join("\n"),
+    ),
+    "pure-code",
+  );
+  assert.equal(result.status, 0, result.stdout + result.stderr);
+});
+
 const lazyRegistration = [
   'import { Composition } from "remotion";',
   'const load = () => import("./other").then(({ Other }) => ({ default: Other }));',
-  'const view = <Composition id="Other" lazyComponent={load} />;',
+  'const Root = () => <Composition id="Other" lazyComponent={load} />;',
 ].join("\n");
 
 for (const [name, registration, expected] of [
@@ -618,6 +698,41 @@ for (const [name, registration, expected] of [
     1,
   ],
   ["登记后立即调用", lazyRegistration + "\nvoid load();", 1],
+  [
+    "登记元素存入变量后调用 props 加载器",
+    lazyRegistration.replace("const Root = () =>", "const view =") +
+      "\nvoid view.props.lazyComponent();",
+    1,
+  ],
+  [
+    "登记元素存入变量",
+    lazyRegistration.replace("const Root = () =>", "const view ="),
+    1,
+  ],
+  [
+    "登记元素取出 props",
+    lazyRegistration.replace(
+      'const Root = () => <Composition id="Other" lazyComponent={load} />;',
+      'const Root = () => (<Composition id="Other" lazyComponent={load} />).props.lazyComponent();',
+    ),
+    1,
+  ],
+  [
+    "登记元素通过祖先 JSX 存入变量",
+    lazyRegistration.replace(
+      'const Root = () => <Composition id="Other" lazyComponent={load} />;',
+      'const view = <><Composition id="Other" lazyComponent={load} /></>;',
+    ),
+    1,
+  ],
+  [
+    "登记元素作为参数传递",
+    lazyRegistration.replace(
+      'const Root = () => <Composition id="Other" lazyComponent={load} />;',
+      'const Root = () => consume(<Composition id="Other" lazyComponent={load} />);',
+    ),
+    1,
+  ],
   [
     "登记后间接调用",
     lazyRegistration + "\nconst alias = load; void alias();",
@@ -667,7 +782,15 @@ for (const [name, registration, expected] of [
   ["其他合成专用的加载器", lazyRegistration, 0],
   [
     "内联加载器",
-    'import { Composition } from "remotion"; const view = <Composition id="Other" lazyComponent={() => import("./other")} />;',
+    'import { Composition } from "remotion"; const Root = () => <Composition id="Other" lazyComponent={() => import("./other")} />;',
+    0,
+  ],
+  [
+    "函数返回的嵌套 JSX 登记",
+    lazyRegistration.replace(
+      'const Root = () => <Composition id="Other" lazyComponent={load} />;',
+      'function Root() { return (<><Composition id="Other" lazyComponent={load}></Composition></>); }',
+    ),
     0,
   ],
   [
@@ -714,7 +837,7 @@ test("pure-code 接受两个独立的 lazyComponent 加载器，按符号区分�
     "episodes/Root.tsx": [
       lazyRegistration,
       'const loadPromo = () => import("./promo").then(({ Promo }) => ({ default: Promo }));',
-      'const promo = <Composition id="Promo" lazyComponent={loadPromo} />;',
+      'const PromoRoot = () => <Composition id="Promo" lazyComponent={loadPromo} />;',
       "function local() { const load = () => 1; return load(); }",
     ].join("\n"),
     "episodes/other.ts": 'import "@remotion/google-fonts/Inter";',
