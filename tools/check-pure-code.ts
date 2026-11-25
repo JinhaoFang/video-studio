@@ -1,7 +1,7 @@
-/** 纯代码护栏：递归检查本期合成及启动入口的即时依赖；只允许登记且哈希匹配的仓库生成媒体，拒绝字体、DOM 文字、远程资源和不可静态判断的加载。 */
+/** 纯代码护栏：递归检查合成与启动依赖；仅豁免其他合成独占的 lazyComponent 加载器。媒体只接受已登记的 staticFile 字面量及其 const 别名；拒绝无法证明来源的媒体属性、展开属性和加载器用途。 */
 import { createHash } from "node:crypto";
 import { existsSync, readFileSync } from "node:fs";
-import { dirname, relative, resolve, sep } from "node:path";
+import { basename, dirname, relative, resolve, sep } from "node:path";
 import ts from "typescript";
 import { listCodeFiles } from "./code-files.ts";
 
@@ -87,19 +87,203 @@ export const checkPureCode = (
     const key = `${file}:${followDynamic}`;
     if (visited.has(key)) return;
     visited.add(key);
-    const source = ts.createSourceFile(
-      resolve(root, file),
-      readFileSync(resolve(root, file), "utf8"),
-      ts.ScriptTarget.Latest,
-      true,
-    );
+    const program = ts.createProgram([resolve(root, file)], {
+      noResolve: true,
+      noLib: true,
+      allowJs: true,
+      target: ts.ScriptTarget.Latest,
+    });
+    const source = program.getSourceFile(resolve(root, file))!;
+    const checker = program.getTypeChecker();
     const fail = (node: ts.Node, message: string) =>
       report(
         file,
         source.getLineAndCharacterOfPosition(node.getStart(source)).line + 1,
         message,
       );
-    const staticNames = new Set(["staticFile"]);
+    const visit = (node: ts.Node, callback: (node: ts.Node) => void): void => {
+      callback(node);
+      ts.forEachChild(node, (child) => visit(child, callback));
+    };
+    const unwrap = (node: ts.Node): ts.Node => {
+      while (
+        ts.isParenthesizedExpression(node) ||
+        ts.isAsExpression(node) ||
+        ts.isTypeAssertionExpression(node) ||
+        ts.isSatisfiesExpression(node) ||
+        ts.isNonNullExpression(node)
+      )
+        node = node.expression;
+      return node;
+    };
+    const symbolAt = (node: ts.Node) => {
+      if (ts.isShorthandPropertyAssignment(node.parent))
+        return checker.getShorthandAssignmentValueSymbol(node.parent);
+      if (ts.isExportSpecifier(node.parent))
+        return checker.getExportSpecifierLocalTargetSymbol(node.parent);
+      return checker.getSymbolAtLocation(node);
+    };
+    const constant = (node: ts.Node): ts.VariableDeclaration | undefined => {
+      if (!ts.isIdentifier(node)) return;
+      const declaration = symbolAt(node)?.valueDeclaration;
+      if (
+        declaration &&
+        ts.isVariableDeclaration(declaration) &&
+        ts.isIdentifier(declaration.name) &&
+        ts.isVariableDeclarationList(declaration.parent) &&
+        (declaration.parent.flags & ts.NodeFlags.Const) !== 0
+      )
+        return declaration;
+    };
+    const exported = (declaration: ts.VariableDeclaration): boolean => {
+      const statement = declaration.parent.parent;
+      return (
+        ts.isVariableStatement(statement) &&
+        !!statement.modifiers?.some(
+          (modifier) => modifier.kind === ts.SyntaxKind.ExportKeyword,
+        )
+      );
+    };
+    const remotionMember = (
+      node: ts.Node,
+      member: string,
+      seen = new Set<ts.Node>(),
+    ): boolean => {
+      node = unwrap(node);
+      if (seen.has(node)) return false;
+      seen.add(node);
+      if (ts.isIdentifier(node)) {
+        const declaration = symbolAt(node)?.declarations?.[0];
+        if (declaration && ts.isImportSpecifier(declaration)) {
+          const clause = declaration.parent.parent;
+          return (
+            !declaration.isTypeOnly &&
+            !clause.isTypeOnly &&
+            (declaration.propertyName ?? declaration.name).text === member &&
+            ts.isStringLiteral(clause.parent.moduleSpecifier) &&
+            clause.parent.moduleSpecifier.text === "remotion"
+          );
+        }
+        const initializer = constant(node)?.initializer;
+        return !!initializer && remotionMember(initializer, member, seen);
+      }
+      if (ts.isPropertyAccessExpression(node)) {
+        const declaration = symbolAt(node.expression)?.declarations?.[0];
+        return (
+          node.name.text === member &&
+          !!declaration &&
+          ts.isNamespaceImport(declaration) &&
+          !declaration.parent.isTypeOnly &&
+          ts.isStringLiteral(declaration.parent.parent.moduleSpecifier) &&
+          declaration.parent.parent.moduleSpecifier.text === "remotion"
+        );
+      }
+      return false;
+    };
+    const staticCall = (node: ts.Node): node is ts.CallExpression =>
+      ts.isCallExpression(node) &&
+      remotionMember(node.expression, "staticFile");
+    const staticMedia = (node: ts.Node, seen = new Set<ts.Node>()): boolean => {
+      node = unwrap(node);
+      if (seen.has(node)) return false;
+      seen.add(node);
+      const initializer = constant(node)?.initializer;
+      if (initializer) return staticMedia(initializer, seen);
+      return (
+        staticCall(node) &&
+        node.arguments.length === 1 &&
+        ts.isStringLiteralLike(node.arguments[0]) &&
+        allowed.has(node.arguments[0].text)
+      );
+    };
+    const references = new Map<ts.Symbol, ts.Identifier[]>();
+    const loaderAttributes = new Set<ts.JsxAttribute>();
+    visit(source, (node) => {
+      if (ts.isIdentifier(node)) {
+        const symbol = symbolAt(node);
+        if (symbol) {
+          const uses = references.get(symbol) ?? [];
+          uses.push(node);
+          references.set(symbol, uses);
+        }
+      }
+      if (
+        (ts.isJsxOpeningElement(node) || ts.isJsxSelfClosingElement(node)) &&
+        remotionMember(node.tagName, "Composition") &&
+        !node.attributes.properties.some(ts.isJsxSpreadAttribute)
+      ) {
+        const id = node.attributes.properties.find(
+          (attribute) =>
+            ts.isJsxAttribute(attribute) &&
+            attribute.name.getText(source) === "id",
+        );
+        if (
+          !id ||
+          !ts.isJsxAttribute(id) ||
+          !id.initializer ||
+          !ts.isStringLiteral(id.initializer) ||
+          id.initializer.text === basename(entry).replace(/\.[^.]+$/, "")
+        )
+          return;
+        for (const attribute of node.attributes.properties)
+          if (
+            ts.isJsxAttribute(attribute) &&
+            attribute.name.getText(source) === "lazyComponent"
+          )
+            loaderAttributes.add(attribute);
+      }
+    });
+    const loaders = new Set<ts.Node>();
+    for (const attribute of loaderAttributes) {
+      const value = attribute.initializer;
+      if (!value || !ts.isJsxExpression(value) || !value.expression) continue;
+      let loader = unwrap(value.expression);
+      if (ts.isIdentifier(loader)) {
+        const declaration = constant(loader);
+        if (!declaration?.initializer) continue;
+        if (exported(declaration)) continue;
+        const uses = references.get(symbolAt(loader)!) ?? [];
+        if (
+          uses.some(
+            (use) =>
+              use !== declaration.name &&
+              !(
+                ts.isJsxExpression(use.parent) &&
+                use.parent.expression === use &&
+                ts.isJsxAttribute(use.parent.parent) &&
+                loaderAttributes.has(use.parent.parent)
+              ),
+          )
+        )
+          continue;
+        loader = unwrap(declaration.initializer);
+      }
+      if (ts.isArrowFunction(loader) || ts.isFunctionExpression(loader)) {
+        const name = ts.isFunctionExpression(loader) ? loader.name : undefined;
+        if (name && (references.get(symbolAt(name)!)?.length ?? 0) > 1)
+          continue;
+        loaders.add(loader);
+      }
+    }
+    const otherEpisode = (node: ts.Node | undefined): boolean => {
+      if (!node || !ts.isStringLiteralLike(node) || !node.text.startsWith("."))
+        return false;
+      const resolved = ts.resolveModuleName(
+        node.text,
+        source.fileName,
+        options,
+        ts.sys,
+      ).resolvedModule;
+      const path =
+        resolved &&
+        relative(root, resolved.resolvedFileName).split(sep).join("/");
+      return (
+        !!path &&
+        code.has(path) &&
+        path.startsWith("episodes/") &&
+        !path.startsWith(mediaPrefix)
+      );
+    };
     const dependency = (node: ts.Node | undefined) => {
       if (!node || !ts.isStringLiteralLike(node)) {
         if (node) fail(node, "模块路径必须是静态字面量。");
@@ -129,21 +313,37 @@ export const checkPureCode = (
       if (!path || !code.has(path)) fail(node, `依赖必须是仓库源码：${name}`);
       else inspect(path, followDynamic);
     };
-    for (const statement of source.statements) {
-      if (
-        ts.isImportDeclaration(statement) &&
-        ts.isStringLiteralLike(statement.moduleSpecifier) &&
-        statement.moduleSpecifier.text === "remotion"
-      ) {
-        const bindings = statement.importClause?.namedBindings;
-        if (bindings && ts.isNamedImports(bindings)) {
-          for (const binding of bindings.elements) {
-            if ((binding.propertyName ?? binding.name).text === "staticFile")
-              staticNames.add(binding.name.text);
-          }
+    const checkSpread = (node: ts.Node): void => {
+      node = unwrap(node);
+      if (!ts.isObjectLiteralExpression(node)) {
+        fail(node, "无法静态确认展开属性的媒体来源，请直接写出属性。");
+        return;
+      }
+      for (const property of node.properties) {
+        if (ts.isSpreadAssignment(property)) {
+          checkSpread(property.expression);
+          continue;
+        }
+        if (ts.isComputedPropertyName(property.name)) {
+          fail(property, "无法静态确认展开属性名，请直接写出属性。");
+          continue;
+        }
+        const name =
+          ts.isIdentifier(property.name) ||
+          ts.isStringLiteralLike(property.name)
+            ? property.name.text
+            : "";
+        if (["src", "href", "poster"].includes(name)) {
+          const value = ts.isPropertyAssignment(property)
+            ? property.initializer
+            : ts.isShorthandPropertyAssignment(property)
+              ? property.name
+              : undefined;
+          if (!value || !staticMedia(value))
+            fail(property, "展开媒体属性只能使用已登记的 staticFile 路径。");
         }
       }
-    }
+    };
     const walk = (node: ts.Node): void => {
       if (ts.isJsxText(node) && node.text.trim())
         fail(node, "不允许 DOM 文字，请用代码画笔画。");
@@ -160,21 +360,35 @@ export const checkPureCode = (
           ? node.importClause?.isTypeOnly
           : node.isTypeOnly;
         if (node.moduleSpecifier && !typeOnly) dependency(node.moduleSpecifier);
+        if (
+          ts.isExportDeclaration(node) &&
+          node.moduleSpecifier &&
+          ts.isStringLiteralLike(node.moduleSpecifier) &&
+          node.moduleSpecifier.text === "remotion" &&
+          !node.isTypeOnly &&
+          (!node.exportClause ||
+            !ts.isNamedExports(node.exportClause) ||
+            node.exportClause.elements.some(
+              (element) =>
+                !element.isTypeOnly &&
+                (element.propertyName ?? element.name).text === "staticFile",
+            ))
+        )
+          fail(
+            node,
+            "无法静态确认跨模块的 staticFile 用途，请在使用处直接导入。",
+          );
       } else if (ts.isCallExpression(node)) {
         const name = node.expression.getText(source);
         const dynamic = node.expression.kind === ts.SyntaxKind.ImportKeyword;
-        const deferred = ts.findAncestor(node, (parent) =>
-          ts.isFunctionLike(parent),
-        );
-        if (name === "require" || (dynamic && (followDynamic || !deferred)))
+        const deferred =
+          !followDynamic &&
+          ts.findAncestor(node, (parent) => loaders.has(parent)) &&
+          otherEpisode(node.arguments[0]);
+        if (name === "require" || (dynamic && !deferred))
           dependency(node.arguments[0]);
-        if (staticNames.has(name) || name.endsWith(".staticFile")) {
-          const argument = node.arguments[0];
-          if (
-            !argument ||
-            !ts.isStringLiteralLike(argument) ||
-            !allowed.has(argument.text)
-          )
+        if (staticCall(node)) {
+          if (!staticMedia(node))
             fail(node, "staticFile 只能引用生成物清单中的静态路径。");
         }
         if (
@@ -198,6 +412,46 @@ export const checkPureCode = (
         )
       )
         fail(node, `不允许资源加载或字体绘制 API：${node.text}`);
+      if (ts.isIdentifier(node)) {
+        const declaration = symbolAt(node)?.declarations?.[0];
+        if (
+          declaration &&
+          ts.isNamespaceImport(declaration) &&
+          ts.isStringLiteral(declaration.parent.parent.moduleSpecifier) &&
+          declaration.parent.parent.moduleSpecifier.text === "remotion" &&
+          node !== declaration.name &&
+          !(
+            ts.isPropertyAccessExpression(node.parent) &&
+            node.parent.expression === node
+          )
+        )
+          fail(
+            node,
+            "无法静态确认 remotion 命名空间的用途，请直接访问具名 API。",
+          );
+      }
+      if (
+        (ts.isIdentifier(node) || ts.isPropertyAccessExpression(node)) &&
+        remotionMember(node, "staticFile") &&
+        !ts.isImportSpecifier(node.parent) &&
+        !(ts.isVariableDeclaration(node.parent) && node.parent.name === node)
+      ) {
+        let value: ts.Node = node;
+        while (value.parent && unwrap(value.parent) === node)
+          value = value.parent;
+        const parent = value.parent;
+        if (
+          !(ts.isCallExpression(parent) && parent.expression === value) &&
+          !(
+            ts.isVariableDeclaration(parent) &&
+            parent.initializer === value &&
+            ts.isIdentifier(parent.name) &&
+            constant(parent.name) === parent &&
+            !exported(parent)
+          )
+        )
+          fail(node, "staticFile 只能直接调用或绑定为 const 别名。");
+      }
       if (
         ts.isStringLiteralLike(node) ||
         ts.isNoSubstitutionTemplateLiteral(node) ||
@@ -218,24 +472,11 @@ export const checkPureCode = (
           )
         ) {
           const parent = node.parent;
-          if (
-            !ts.isCallExpression(parent) ||
-            !(
-              staticNames.has(parent.expression.getText(source)) ||
-              parent.expression.getText(source).endsWith(".staticFile")
-            ) ||
-            !allowed.has(text)
-          )
+          if (!staticCall(parent) || !allowed.has(text))
             fail(node, "媒体路径必须通过 staticFile 引用仓库生成物。");
         }
       }
-      const staticMedia = (value: ts.Node) =>
-        ts.isCallExpression(value) &&
-        (staticNames.has(value.expression.getText(source)) ||
-          value.expression.getText(source).endsWith(".staticFile")) &&
-        value.arguments.length === 1 &&
-        ts.isStringLiteralLike(value.arguments[0]) &&
-        allowed.has(value.arguments[0].text);
+      if (ts.isJsxSpreadAttribute(node)) checkSpread(node.expression);
       if (
         ts.isBinaryExpression(node) &&
         node.operatorToken.kind === ts.SyntaxKind.EqualsToken
