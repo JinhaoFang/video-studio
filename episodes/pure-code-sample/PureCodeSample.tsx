@@ -1,77 +1,53 @@
-/** PureCodeSample 的 Canvas → WebGL 合成入口；图像载入与逐帧绘制通过 delayRender 阻止空帧。 */
-import { useEffect, useLayoutEffect, useRef, useState } from "react";
+/** 两版 312 帧成片的 Canvas → WebGL 入口；镜头内帧驱动画面和摄影，镜头切换同时应用各自后期覆盖，声音读取对应全片事件表生成的混音。 */
+import { useCallback, useMemo, useRef } from "react";
 import { Audio } from "@remotion/media";
-import {
-  AbsoluteFill,
-  cancelRender,
-  continueRender,
-  delayRender,
-  staticFile,
-  useCurrentFrame,
-  useVideoConfig,
-} from "remotion";
-import { height, shotTable, width } from "./model";
-import { createPost, placeholderShot } from "./shot";
+import { AbsoluteFill, staticFile, useCurrentFrame } from "remotion";
+import { defaultPost } from "./engine/post.ts";
+import { height, shotTable, width } from "./model.ts";
+import { shots } from "./shots/index.ts";
+import { useFrame } from "./samples/useFrame.ts";
+import { usePlates } from "./samples/usePlates.ts";
+import type { PlateSets } from "./samples/usePlates.ts";
 
-export const PureCodeSample: React.FC = () => {
+export type PureCodeSampleProps = { variant: "a" | "b" };
+
+export const PureCodeSample: React.FC<PureCodeSampleProps> = ({ variant }) => {
   const frame = useCurrentFrame();
-  const { fps } = useVideoConfig();
   const canvas = useRef<HTMLCanvasElement>(null);
-  const [background, setBackground] = useState<HTMLImageElement | null>(null);
-  const [ready] = useState(() => delayRender("等待纯代码底图和 WebGL 首帧"));
-  const initialized = useRef(false);
-  const post = useRef<ReturnType<typeof createPost> | null>(null);
-
-  useEffect(() => {
-    const image = new Image();
-    image.onload = () => setBackground(image);
-    image.onerror = () =>
-      cancelRender(new Error("底图读取失败，请先运行本期 generate.ts。"));
-    image.src = staticFile("episodes/pure-code-sample/background.png");
-    post.current = createPost(canvas.current!);
-    return () => {
-      image.onload = null;
-      image.onerror = null;
-      post.current?.dispose();
-      post.current = null;
-    };
-  }, []);
-
-  useLayoutEffect(() => {
-    if (!background || !post.current) return;
-    const handle = delayRender("等待纯代码帧绘制");
-    try {
-      const row = shotTable.find(
-        (item) =>
-          frame >= item.startFrame &&
-          frame < item.startFrame + item.durationInFrames,
-      );
-      if (!row) throw new Error("当前帧不属于镜头时间表。");
-      const source = document.createElement("canvas");
-      source.width = width;
-      source.height = height;
-      const context = source.getContext("2d");
-      if (!context) throw new Error("Canvas 2D 不可用。");
-      const localFrame = frame - row.startFrame;
-      placeholderShot.draw({ context, background }, localFrame);
-      post.current.draw(source, localFrame, placeholderShot.post);
-      if (!initialized.current) {
-        initialized.current = true;
-        continueRender(ready);
-      }
-      continueRender(handle);
-    } catch (error) {
-      cancelRender(error);
-    }
-  }, [background, frame, ready]);
-
+  const plates = usePlates();
+  const row = shotTable.find(
+    (item) =>
+      frame >= item.startFrame &&
+      frame < item.startFrame + item.durationInFrames,
+  );
+  if (!row) throw new Error("当前帧不属于镜头时间表。");
+  const current =
+    row.id === "S1" ? shots.s1 : shots[variant === "a" ? "s2-a" : "s2-b"];
+  const localFrame = frame - row.startFrame;
+  const post = useMemo(() => ({ ...defaultPost, ...current.post }), [current]);
+  const render = useCallback(
+    (context: CanvasRenderingContext2D, f: number, images: PlateSets) =>
+      current.draw({ context, ...images }, f),
+    [current],
+  );
+  useFrame(canvas, localFrame, plates, render, post);
   return (
     <AbsoluteFill>
       <canvas ref={canvas} width={width} height={height} />
-      <Audio
-        src={staticFile("episodes/pure-code-sample/mix.wav")}
-        premountFor={fps}
-      />
     </AbsoluteFill>
   );
 };
+
+export const PureCodeSampleA: React.FC = () => (
+  <AbsoluteFill>
+    <PureCodeSample variant="a" />
+    <Audio src={staticFile("episodes/pure-code-sample/mix-a.wav")} />
+  </AbsoluteFill>
+);
+
+export const PureCodeSampleB: React.FC = () => (
+  <AbsoluteFill>
+    <PureCodeSample variant="b" />
+    <Audio src={staticFile("episodes/pure-code-sample/mix-b.wav")} />
+  </AbsoluteFill>
+);

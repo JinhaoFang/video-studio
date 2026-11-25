@@ -3,19 +3,18 @@
  * sprayAt：甩水时从麻雀头颈甩出的水珠，每次甩到端点甩出一批，越甩越少，受重力飞出画外；头部的位置由调用方按甩出那一帧的画面给出。
  * 竹竿底下挂着几颗水珠（drawPoleDrops）：位置在近景里竹竿可见的一段上（停点两侧），由固定种子给出；不用 drawPole 自带的水珠，
  * 因为它们的位置种子带画张号，每换一张画就跳位。竹竿回弹时水珠逐颗被甩下、做抛体运动，
- * 落地的帧由弹道算出，写成 poleDripEvents（画面事件 pole_drip）。位置全部按固定种子和帧号算，不带状态。
+ * 落地事件的帧号保留在 timing.ts（原弹道计算结果）；位置全部按固定种子和帧号算，不带状态。
  */
 import type { Point } from "../../engine/figure.ts";
 import { resample, smooth } from "../../engine/figure.ts";
 import { tracePath } from "../../engine/cel.ts";
 import { boil, drawStrokes, strokes } from "../../engine/ink.ts";
 import { hash } from "../../engine/random.ts";
-import type { PictureEvent } from "../../model.ts";
 import { poleScreen } from "../../pole.ts";
-import { pole, poleAt, UNIT } from "../../scene.ts";
+import { pole, UNIT } from "../../scene.ts";
 import { dusk, ink, warm } from "../../tokens.ts";
 import type { Anchors } from "./acting.ts";
-import { perch, poleSag } from "./staging.ts";
+import { poleSag } from "./staging.ts";
 import type { Camera } from "../../engine/camera.ts";
 
 const channels = (hex: string) => [1, 3, 5].map((at) => parseInt(hex.slice(at, at + 2), 16));
@@ -187,13 +186,6 @@ const hang: readonly Hang[] = leaveFrames.map((leave, k) => ({
   vz: (1.15 - 0.1 * k) * (0.85 + 0.3 * hash(1564, k, 4)),
   seed: 7 + k * 3,
 }));
-
-const hangHeight = poleAt(perch)[2] - 0.05;
-
-export const poleDripEvents: readonly PictureEvent[] = hang.map((d, k) => {
-  const time = (d.vz + Math.sqrt(d.vz * d.vz + 2 * gravity * hangHeight)) / gravity;
-  return { frame: d.leave + Math.round(time * fps), kind: "pole_drip", description: `竹竿甩下的第 ${k + 1} 颗水珠落地` };
-});
 
 export const drawSpray = (ctx: CanvasRenderingContext2D, look: DropLook, light: Point) => drawTone(ctx, look, light, sprayTone, true);
 

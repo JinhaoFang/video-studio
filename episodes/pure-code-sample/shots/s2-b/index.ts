@@ -3,7 +3,7 @@
  * 每帧的画法：虚焦背景（background.ts）→ 竹竿（传入下沉回弹；不画它自带的水珠，改画 drops.ts 里位置固定的；经 fx.ts 的 limitLineWidth 绕开相机背后的取样点）
  * → 竹竿上挂的水珠 → 接触阴影 →
  * 麻雀（拖影帧先衬上一两张画的残影、画速度线，fx.ts）→ 甩出的水珠（drops.ts）。相机、竹竿运动和表演表见 staging.ts、acting.ts。
- * 导出名 s2 和登记表 shots/index.ts 对应；画面事件写在 events 里，竹竿水珠落地的事件由 drops.ts 按弹道算出。
+ * 导出名 s2 和登记表 shots/index.ts 对应；画面事件由 timing.ts 提供，保持原表演与弹道计算的帧号。
  * 待定（设计）：后期只沿用引擎静帧（PureCodeEngineStill）的两个覆盖值；镜头 1 定稿后如有自己的后期参数，这里跟着对齐。
  */
 import type { Camera, Vec3 } from "../../engine/camera.ts";
@@ -15,12 +15,13 @@ import { backlight, drawSparrow } from "../../sparrow.ts";
 import type { SparrowView } from "../../sparrow.ts";
 import { placeSparrow } from "../../stage.ts";
 import type { Surface } from "../../stage.ts";
-import { actingAt, actingEvents, anchorsAt, drawingAt, flightHeading, smearAt } from "./acting.ts";
+import { actingAt, anchorsAt, drawingAt, flightHeading, smearAt } from "./acting.ts";
 import type { Acting, Anchors, Drawing } from "./acting.ts";
 import { drawBackground } from "./background.ts";
-import { drawPoleDrops, drawSpray, poleDripEvents, sprayAt } from "./drops.ts";
+import { drawPoleDrops, drawSpray, sprayAt } from "./drops.ts";
 import { ghostAlpha, ghostLayer, limitLineWidth, paintGhost, shakeGhostAlpha, speedLines } from "./fx.ts";
-import { bendAt, cameraAt, perch, perchTop, poleBoil, poleSag, shotFrames } from "./staging.ts";
+import { bendAt, cameraAt, perch, perchTop, poleBoil, poleSag } from "./staging.ts";
+import { s2Timing } from "./timing.ts";
 
 type Framed = { view: SparrowView; acting: Acting; anchors: Anchors; offscreen: boolean };
 
@@ -104,12 +105,8 @@ const draw: Shot<Surface>["draw"] = ({ context, plates }, frame) => {
   for (const look of spray) drawSpray(context, look, light);
 };
 
-const events = [...actingEvents, ...poleDripEvents].sort((a, b) => a.frame - b.frame);
-
 export const s2: Shot<Surface> = {
-  id: "S2",
-  durationInFrames: shotFrames,
-  events,
+  ...s2Timing,
   post: { glow: 0.38, softFocus: 0.38 },
   draw,
 };

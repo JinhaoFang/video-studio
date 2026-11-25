@@ -27,17 +27,9 @@ export type ShotRow = {
 };
 export type FilmEvent = PictureEvent & { shotId: string; localFrame: number };
 
-export const placeholder: ShotTiming = {
-  id: "placeholder",
-  durationInFrames: 240,
-  events: [{ frame: 48, kind: "impact", description: "占位圆块触地" }],
-};
 export const shotTable: readonly ShotRow[] = [
-  {
-    id: placeholder.id,
-    startFrame: 0,
-    durationInFrames: placeholder.durationInFrames,
-  },
+  { id: "S1", startFrame: 0, durationInFrames: 168 },
+  { id: "S2", startFrame: 168, durationInFrames: 144 },
 ];
 export const durationInFrames = shotTable.reduce(
   (end, row) => Math.max(end, row.startFrame + row.durationInFrames),

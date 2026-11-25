@@ -1,6 +1,6 @@
 # 纯代码小样《雨后》（`pure-code-sample`）
 
-spec #147：吸收参照片的方法（[研究记录](../../docs/research/noroi-iwai.md)），在 Remotion 里做一段 13 秒、两个镜头的剧场级日式动画小样，画面、配乐、音效全部纯代码。合成 `PureCodeSample`，1920×1080，24 帧。
+spec #147：吸收参照片的方法（[研究记录](../../docs/research/noroi-iwai.md)），在 Remotion 里做一段 13 秒、两个镜头的剧场级日式动画小样，画面、配乐、音效全部纯代码。合成 `PureCodeSampleA`、`PureCodeSampleB`，1920×1080，24 帧。
 
 | 文档 | 内容 |
 |---|---|
@@ -57,26 +57,31 @@ spec #147：吸收参照片的方法（[研究记录](../../docs/research/noroi-
 
 ## 管线
 
-#149 打通的管线，后面的引擎、镜头和声音都长在它上面。
+#159 将两个镜头和 #158 声音命令接入两版成片：S1 共用，S2 分别取 A、B；S1 为 0–167 帧，S2 为 168–311 帧。画面按镜头内帧号绘制，切镜头时同时切换 `defaultPost` 加各镜头 `post` 覆盖。
 
-- `model.ts`：时间表 `shotTable`、镜头接口 `Shot<Surface>`、全片事件汇总 `collectEvents`、帧到采样的换算。
-- `shot.ts`：占位镜头。Canvas 2D 读取烘焙底图画圆块，交给 WebGL 1 着色器加暗角和颗粒。#152、#153 换成本期的引擎和镜头。
-- `PureCodeSample.tsx`：合成。等底图载入、画完之后才释放 Remotion 的渲染等待句柄，不依赖时钟、CSS 动画或随机运行状态。
-- `generate.ts`、`audio.ts`：生成器。Node 计算底图的 RGB 像素、用 FFmpeg 编码成 PNG；用固定种子的噪声和衰减振荡器合成 48 kHz PCM16 的音效；按事件表把音效的对齐点放到事件帧对应的采样上，混成双声道。混音起点是 `round(事件帧 × 采样率 / fps) - 对齐点采样号`；只施加常量增益，不做会移动对齐点的时域处理。
-- `data/events.json`：全片事件表。`data/generated.json`：生成命令、输入源码哈希、FFmpeg 版本、媒体哈希和混音参数，供缓存和护栏检查。
-- 缓存：`generate.ts`、`model.ts`、`audio.ts`、所用令牌或 FFmpeg 版本改变，以及产物缺失、哈希不匹配、事件表变化，都会让缓存失效；`--force` 强制重建。缓存只管生成物，改了镜头或着色器要重新渲染。
-- [独立声音命令](sound/README.md)：#158 的四件乐器、十三种音效、事件落位与混音验收；开发用 `sound/events.fixture.json`，输出 `out/qa/spec-147/158/`。接入生成器、合成与清单由 #159 完成。
-- 入口 `episodes/Root.tsx` 按需加载另外两期，免得它们的字体初始化进入本期的渲染。
+- `model.ts`：312 帧时间表、镜头接口、全片事件汇总和帧到采样换算。
+- `shots/s1/timing.ts`、`shots/s2-{a,b}/timing.ts`：不依赖浏览器的镜头编号、时长与事件。元数据迁移保留原事件帧号；B 版竹竿水珠落地帧为原弹道计算的 95、97、100、102、104、109。
+- `PureCodeSample.tsx`：共用画面组件，加两版各自的字面路径 `staticFile` 混音；共用预览的底图加载和 `delayRender` 绘制等待。
+- `generate.ts`：烘焙雨色/夕光十张底图，生成 `data/events-a.json`、`data/events-b.json` 及其 public 副本，再串行调用 [声音命令](sound/README.md)，将各自混音复制为 `mix-a.wav`、`mix-b.wav`。
+- `data/generated.json`：生成命令、源码与设计数据哈希、Node/FFmpeg 版本、事件表及媒体哈希；`status: complete` 表示两版声音全部生成，`audio-pending` 表示只有底图/事件已就绪，不能当作交付成功。占位镜头、占位底图和占位声音不再使用；`audio.ts` 仅保留给既有纯逻辑测试。
+- 缓存：源码、`score.json`、`sound.json`、运行版本、事件表或媒体哈希改变会失效；底图有独立缓存键，声音重试不必重烘焙。`--force` 强制全部重建。镜头绘图和后期不在媒体生成输入里，改画面后重新渲染两版即可。
+- 入口 `episodes/Root.tsx` 按需加载另外两期，免得它们的字体初始化进入本期渲染。
 
-从仓库根目录运行：
+从仓库根目录运行；以下命令包括镜头 1 定稿后的两版重新渲染：
 
 ```sh
 node episodes/pure-code-sample/generate.ts
-pnpm exec remotion render PureCodeSample out/pure-code-sample/pure-code-sample.mp4 --gl=swangle --concurrency=2
-pnpm qa loudness out/pure-code-sample/pure-code-sample.mp4 --target-lufs -16 --tolerance 1 --max-true-peak -1 --out out/qa/pure-code-sample/loudness
+pnpm exec remotion render PureCodeSampleA out/qa/spec-147/159/pure-code-sample-a.mp4 --gl=swangle --concurrency=4
+pnpm exec remotion render PureCodeSampleB out/qa/spec-147/159/pure-code-sample-b.mp4 --gl=swangle --concurrency=4
+pnpm qa loudness out/qa/spec-147/159/pure-code-sample-a.mp4 --target-lufs -16 --tolerance 1 --max-true-peak -1 --out out/qa/spec-147/159/loudness-a
+pnpm qa loudness out/qa/spec-147/159/pure-code-sample-b.mp4 --target-lufs -16 --tolerance 1 --max-true-peak -1 --out out/qa/spec-147/159/loudness-b
+pnpm qa strip out/qa/spec-147/159/pure-code-sample-a.mp4 --from 144 --to 191 --every 1 --out out/qa/spec-147/159/cut-a
+pnpm qa strip out/qa/spec-147/159/pure-code-sample-b.mp4 --from 144 --to 191 --every 1 --out out/qa/spec-147/159/cut-b
 ```
 
-媒体写进 `public/episodes/pure-code-sample/`，不进 git，渲染前先运行生成器。相关测试：`node --test episodes/pure-code-sample/pipeline.test.ts tools/check-guardrails.test.ts`；纯代码护栏在 `pnpm verify --static` 里。
+逐条串行运行，不同时开两份渲染。媒体位于 `public/episodes/pure-code-sample/`，验收产物位于 `out/qa/spec-147/159/`，均不进 Git。相关测试：`node --test episodes/pure-code-sample/pipeline.test.ts episodes/pure-code-sample/sound/sound.test.ts`；静态检查 `pnpm verify --static`；完整验证由 land 跑。
+
+**#159 当前阻塞**：真实 `light_break` 为 S1 第 62 帧；`score.json` 的 `light` 乐句按 72 BPM 最晚在第 152 帧结束，越过 `drip_fall` 第 145 帧的 `mustEndBefore`。声音命令正确拒绝生成。工单禁止改乐谱和事件帧号，因此保留该校验，待设计负责人调整乐谱后重跑生成器。`out/qa/spec-147/159/picture-only-{a,b}.mp4` 仅供画面验收，没有声音，不能作为带声成片；当前清单为 `audio-pending`，纯代码护栏会拒绝尚未登记的两份混音。证据及成本见该目录的 `report.md`。
 
 ## 实测
 

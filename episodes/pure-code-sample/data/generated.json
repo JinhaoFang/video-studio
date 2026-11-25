@@ -5,23 +5,17 @@
     "node",
     "episodes/pure-code-sample/generate.ts"
   ],
-  "cacheKey": "5117d8e91b28d3c94d1d53ce4487ef88355b0eb7fdce981741f39da7d2dd084a",
+  "status": "audio-pending",
+  "cacheKey": "216d3f441f4a6956da9c41576e460cb6f9e89f9f5995fc8489db9b427845687f",
+  "plateKey": "d72ed3c21c128c22d104eb753bf37ffe073d890bcaf9598bd1fd8033f7d0682e",
   "inputs": [
     {
       "path": "episodes/pure-code-sample/generate.ts",
-      "sha256": "38c32237bcf20093a4d3107d5b5df5dd6d30c66704964947da738e7251a12b93"
+      "sha256": "7c066c0b054db84372edbede0729779cbd1d058d04793afd2dda9420ddb3d8cf"
     },
     {
       "path": "episodes/pure-code-sample/model.ts",
-      "sha256": "7e7af370ee64402d3fd126988753f4ae1f2dc0bd3caa565ec4cfaa4917e40063"
-    },
-    {
-      "path": "episodes/pure-code-sample/audio.ts",
-      "sha256": "d8c4d0df412036a0980c55d944fd90fb7f9ee5f76ae700a48497d4fab1338433"
-    },
-    {
-      "path": "src/styles/nasa-punk/tokens.ts",
-      "sha256": "c3c35d47b22531f0abf399bdbf19d276b53f7d0b286b617be7c2098c55769d15"
+      "sha256": "7557acd064c82f9ee5d3904678edb3c6a932f5d2ff6c2cbb31366580363e5ec4"
     },
     {
       "path": "episodes/pure-code-sample/plates.ts",
@@ -50,21 +44,78 @@
     {
       "path": "episodes/pure-code-sample/engine/figure.ts",
       "sha256": "e16de01d0c45b8e19755b6f9e7fd69cfaa668c3acfcf41787c6e46ce79a9d440"
+    },
+    {
+      "path": "episodes/pure-code-sample/engine/timing.ts",
+      "sha256": "8426122d6aede3622669f33df41600af71e6d5e7097bd9eebb223ff0bd5c5ab1"
+    },
+    {
+      "path": "episodes/pure-code-sample/shots/s1/timing.ts",
+      "sha256": "48fcd5cc7e86a9f7e1e2666fc99bc5b8b08dab43bde9a05b61474906583178a7"
+    },
+    {
+      "path": "episodes/pure-code-sample/shots/s2-a/timing.ts",
+      "sha256": "42b5c7082343539d46168e98a2e9ea9659135da9faea9b68a053fd2cdc95603c"
+    },
+    {
+      "path": "episodes/pure-code-sample/shots/s2-b/timing.ts",
+      "sha256": "b836bc4d216b1e5ff7828b6005949c3d15415146a3301feede29ee11132f8c6c"
+    },
+    {
+      "path": "episodes/pure-code-sample/sound/types.ts",
+      "sha256": "d7a28e87c0ff2b7ade7719d6c75d365786be1cec54ec6440b75c591b5074b936"
+    },
+    {
+      "path": "episodes/pure-code-sample/sound/dsp.ts",
+      "sha256": "d31e36199bee567a54a30ee3231222056b146f787d13f9f369d35fddba27cd93"
+    },
+    {
+      "path": "episodes/pure-code-sample/sound/score.ts",
+      "sha256": "b2904417b7c2b5b42ad9f3f1c82f497b1de7d2b4cdb8c31fd2114980d2c4106b"
+    },
+    {
+      "path": "episodes/pure-code-sample/sound/sfx.ts",
+      "sha256": "05053a8f7c6c238686a163a35fa180577d86d61cec567e9f9746a8109d8fc874"
+    },
+    {
+      "path": "episodes/pure-code-sample/sound/mix.ts",
+      "sha256": "5e98bc28bc81b0568ada05816fb3bdc103ec677c19288ff2902dfff4b4826988"
+    },
+    {
+      "path": "episodes/pure-code-sample/sound/measure.ts",
+      "sha256": "525e7e5013c3ac075f6f351666437958cdaa44d5ccd5b627aa4c6ecb15e5f15b"
+    },
+    {
+      "path": "episodes/pure-code-sample/sound/render.ts",
+      "sha256": "99907b3a26fe34526b567e6a86c243d7fb9b13596e6758ab1effe22ab7c9035e"
+    },
+    {
+      "path": "tools/cli.ts",
+      "sha256": "bb85d29fc777b6c06b285a9aed616251bb0812bf1086afb69310e997d3cf5ae0"
     }
   ],
-  "ffmpegVersion": "ffmpeg version 4.4.2-0ubuntu0.22.04.1 Copyright (c) 2000-2021 the FFmpeg developers",
+  "dataInputs": [
+    {
+      "path": "episodes/pure-code-sample/score.json",
+      "sha256": "af841ea0d40263e677ae91c3c5401c510a4be453d95bdf900966629a82944191"
+    },
+    {
+      "path": "episodes/pure-code-sample/sound.json",
+      "sha256": "89cae890f0221b5281c8d1cf1b210e721e591b19b4e5751c26a1c1b3dcd1c0f1"
+    }
+  ],
+  "runtime": {
+    "node": "v22.23.3",
+    "ffmpegVersion": "ffmpeg version 4.4.2-0ubuntu0.22.04.1 Copyright (c) 2000-2021 the FFmpeg developers"
+  },
   "files": [
     {
-      "path": "episodes/pure-code-sample/background.png",
-      "sha256": "70ed4a93191c39fca95bdc0fccc02287ad428d20a473f1aca717017a185223dc"
+      "path": "episodes/pure-code-sample/events-a.json",
+      "sha256": "e806defb23c8b7cc8589e653b865fa9ae7cc8164973756739cbc7b1d86ef5e82"
     },
     {
-      "path": "episodes/pure-code-sample/impact.wav",
-      "sha256": "4585011850ae29eda46465a5c1519b7e4432230ec920858f753d61ed183b4b07"
-    },
-    {
-      "path": "episodes/pure-code-sample/mix.wav",
-      "sha256": "5982183059746c0ff5dd91bcff0f7ed413de8e855942051c2da8ce04ef561e36"
+      "path": "episodes/pure-code-sample/events-b.json",
+      "sha256": "aaed554a281948ccdc5e4688d38eb063117b4d0f0e70cda31c22ca91c2be4aed"
     },
     {
       "path": "episodes/pure-code-sample/plate-far-rain.png",
@@ -107,12 +158,17 @@
       "sha256": "862b04571098853eaf67fc9e7ca4936cb3980a40f86a2c0a1b47806808092fd5"
     }
   ],
-  "audio": {
-    "sampleRate": 48000,
-    "channels": 2,
-    "alignmentSample": 480,
-    "gain": 0.6870684400142322,
-    "measuredInputLufs": -12.74,
-    "targetLufs": -16
-  }
+  "eventTables": [
+    {
+      "variant": "a",
+      "path": "episodes/pure-code-sample/data/events-a.json",
+      "sha256": "e806defb23c8b7cc8589e653b865fa9ae7cc8164973756739cbc7b1d86ef5e82"
+    },
+    {
+      "variant": "b",
+      "path": "episodes/pure-code-sample/data/events-b.json",
+      "sha256": "aaed554a281948ccdc5e4688d38eb063117b4d0f0e70cda31c22ca91c2be4aed"
+    }
+  ],
+  "audio": {}
 }

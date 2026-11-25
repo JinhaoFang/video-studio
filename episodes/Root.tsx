@@ -2,7 +2,10 @@
 import { Composition, Folder } from "remotion";
 import type { ClinMeshPromoProps } from "./clinmesh-promo/ClinMeshPromo";
 import promoTimeline from "./clinmesh-promo/data/timeline.json";
-import { PureCodeSample } from "./pure-code-sample/PureCodeSample";
+import {
+  PureCodeSampleA,
+  PureCodeSampleB,
+} from "./pure-code-sample/PureCodeSample";
 import { durationInFrames as pureCodeDuration } from "./pure-code-sample/model";
 import { EngineStill, stillSize } from "./pure-code-sample/samples/EngineStill";
 import { ModelSheet, sheetSize } from "./pure-code-sample/samples/ModelSheet";
@@ -24,8 +27,16 @@ export const RemotionRoot: React.FC = () => (
   <>
     <Folder name="pure-code-sample">
       <Composition
-        id="PureCodeSample"
-        component={PureCodeSample}
+        id="PureCodeSampleA"
+        component={PureCodeSampleA}
+        durationInFrames={pureCodeDuration}
+        fps={24}
+        width={1920}
+        height={1080}
+      />
+      <Composition
+        id="PureCodeSampleB"
+        component={PureCodeSampleB}
         durationInFrames={pureCodeDuration}
         fps={24}
         width={1920}

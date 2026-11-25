@@ -13,8 +13,6 @@ import { drawTelephotoBackdrop } from "./backdrop.ts";
 import {
   cameraAt,
   characterDrawing,
-  DURATION,
-  events,
   poleBendAt,
   poleDrawing,
   sparrowAt,
@@ -27,10 +25,10 @@ import {
   drawShakeSpray,
 } from "./effects.ts";
 
+import { s2Timing } from "./timing.ts";
+
 export const s2: Shot<Surface> = {
-  id: "S2",
-  durationInFrames: DURATION,
-  events,
+  ...s2Timing,
   post: {
     softFocus: 0.38,
     glowThreshold: 0.7,

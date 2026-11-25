@@ -1,18 +1,22 @@
 # 生成物来源
 
-本期没有外部图片、视频、音频、字体、模型生成素材或采样。每个像素和 PCM 采样由本仓库代码计算。颜色和占位尺寸沿用 `src/styles/nasa-punk/tokens.ts`，不加载其字体模块。
+本期没有外部图片、视频、音频、字体、模型生成素材或采样。每个像素和 PCM 采样由本仓库代码计算；画面颜色来自本期 `tokens.ts`，不加载字体模块。
 
-以下命令从仓库根目录运行；媒体位于 `public/episodes/pure-code-sample/`，成片位于 `out/pure-code-sample/`，均不进入 Git。
+以下命令从仓库根目录运行；媒体位于 `public/episodes/pure-code-sample/`，成片和检查图位于 `out/qa/spec-147/159/`，均不进入 Git。`generate.ts` 使用 #158 的种子 158 分别生成 A/B 声音，镜头和乐谱不改。
 
 | 生成物 | 生成命令 | 代码与计算方法 |
 |---|---|---|
-| `public/episodes/pure-code-sample/background.png` | `node episodes/pure-code-sample/generate.ts` | `generate.ts` 用 Node 写出 1920×1080 RGB 纸色、地面和地线，FFmpeg 将原始像素编码为 PNG；没有图像输入 |
-| `public/episodes/pure-code-sample/plate-far-dusk.png`、`plate-field-dusk.png`、`plate-hedge-dusk.png`、`plate-yard-dusk.png`、`plate-eaves-dusk.png` | `node episodes/pure-code-sample/generate.ts` | `plates.ts` 按 `scene.ts` 的纵深和范围，用 `engine/paint.ts` 的水粉笔触（固定种子）在 Node 的浮点画布上画五层夕光底图，FFmpeg 将 RGBA 原始像素编码为 PNG；没有图像输入 |
-| `episodes/pure-code-sample/data/events.json` | `node episodes/pure-code-sample/generate.ts` | `model.ts` 将镜头声明的局部事件帧号加上时间表起点，汇总成全片事件 |
-| `public/episodes/pure-code-sample/impact.wav` | `node episodes/pure-code-sample/generate.ts` | `audio.ts` 用种子 149 的线性同余噪声和衰减余弦波合成 4 秒、48 kHz、单声道 PCM16；对齐点为内部第 480 个采样 |
-| `public/episodes/pure-code-sample/mix.wav` | `node episodes/pure-code-sample/generate.ts` | `audio.ts` 按事件采样位置排列音效并输出 10 秒双声道；FFmpeg 测量响度，Node 施加固定增益写出 PCM16，保留采样位置 |
-| `episodes/pure-code-sample/data/generated.json` | `node episodes/pure-code-sample/generate.ts` | 生成器记录命令、源码哈希、FFmpeg 版本、媒体 SHA-256 和混音参数，供缓存和护栏检查 |
-| `out/pure-code-sample/pure-code-sample.mp4` | `pnpm exec remotion render PureCodeSample out/pure-code-sample/pure-code-sample.mp4 --gl=swangle --concurrency=2` | `PureCodeSample.tsx` 与 `shot.ts` 用 Canvas 2D 绘制，WebGL 着色器加入逐帧确定的颗粒和暗角；Remotion 将生成的 WAV 与画面编码为 H.264/AAC MP4 |
+| `public/episodes/pure-code-sample/plate-{far,field,hedge,yard,eaves}-{rain,dusk}.png`（十张） | `node episodes/pure-code-sample/generate.ts` | `plates.ts` 按 `scene.ts` 的纵深和范围，用 `engine/paint.ts` 固定种子的水粉笔触在 Node 浮点画布绘制，FFmpeg 将 RGBA 编码成 PNG；没有图像输入 |
+| `episodes/pure-code-sample/data/events-a.json`、`events-b.json`，及 public 同名副本 | `node episodes/pure-code-sample/generate.ts` | `model.ts` 按 0/168 帧镜头起点汇总 S1 和对应 S2 的 `timing.ts`；A 版 24 条、B 版 27 条全片事件，B 版包含六次竹竿水珠落地 |
+| `public/episodes/pure-code-sample/mix-a.wav`、`mix-b.wav`（待设计解除乐谱阻塞） | `node episodes/pure-code-sample/generate.ts` | 串行调用 `sound/render.ts --events episodes/pure-code-sample/data/events-a.json --out out/qa/spec-147/159/sound-a --seed 158`（B 版同理），通过真实事件驱动乐谱、音效、床音、混响、让位和总线测量，再复制对应混音；48 kHz PCM16 双声道，312 帧 |
+| `out/qa/spec-147/159/sound-{a,b}/`（待设计解除乐谱阻塞） | 上述生成器自动调用声音命令 | 与下文 #158 相同的分轨、音效库、频谱和测量报告；每版各一套 `placements.json` 与 `measurements.json` |
+| `episodes/pure-code-sample/data/generated.json` | `node episodes/pure-code-sample/generate.ts` | 命令、源码和设计数据 SHA-256、Node/FFmpeg 版本、事件表、媒体哈希、总线参数；`status: audio-pending` 明确记录未生成混音，全部成功才变为 `complete` |
+| `out/qa/spec-147/159/pure-code-sample-a.mp4`（待声音就绪） | `pnpm exec remotion render PureCodeSampleA out/qa/spec-147/159/pure-code-sample-a.mp4 --gl=swangle --concurrency=4` | S1 + S2 A，`PureCodeSample.tsx` 用相同底图加载、局部帧 draw、各镜头 post 加默认摄影链，再编码 H.264/AAC |
+| `out/qa/spec-147/159/pure-code-sample-b.mp4`（待声音就绪） | `pnpm exec remotion render PureCodeSampleB out/qa/spec-147/159/pure-code-sample-b.mp4 --gl=swangle --concurrency=4` | S1 + S2 B，方法同 A；对应混音通过字面路径 `staticFile` 引用 |
+
+镜头 1 画面定稿后按上面两个成片命令**串行**重新渲染；若只改 `shots/s1/index.ts`、`weather.ts`，不必重做底图/声音。若改事件、底图或声音输入，先重跑生成器。两版响度、联系表和交接逐帧条的命令见 [README 管线](README.md#管线)。
+
+**当前状态**：真实光到事件第 62 帧与乐谱 `light` 的截止约束冲突，声音命令以 2 退出；保留原乐谱和事件帧，尚无两部带声成片。#159 的 `picture-only-a.mp4`、`picture-only-b.mp4` 是共用画面组件的静音验收输出，来源命令和检查结论见 `/root/project/video-studio.worktrees/159/out/qa/spec-147/159/report.md`，不能替代声音交付。
 
 引擎样张和单镜头预览（#152）只读上面的底图，验收图写在 `out/qa/spec-147/152/`，不进入 Git：
 
@@ -26,7 +30,7 @@
 
 ## #158 独立声音与验收产物
 
-以下生成物为原创纯代码声音，无外部采样或音频输入。目录前缀统一为 `out/qa/spec-147/158/`，不进入 Git；独立声音命令不写 `public/`，尚未接进成片，接入归 #159。
+以下生成物为 #158 的原创纯代码声音开发验收，无外部采样或音频输入。目录前缀统一为 `out/qa/spec-147/158/`，不进入 Git；独立声音命令不直接写 `public/`，#159 生成器负责真实事件表调用和成片混音复制。
 
 表中 **S** 指这条完整命令（从仓库根目录运行）：
 

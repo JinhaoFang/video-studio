@@ -1,0 +1,207 @@
+{
+  "fps": 24,
+  "sampleRate": 48000,
+  "shotTable": [
+    {
+      "id": "S1",
+      "startFrame": 0,
+      "durationInFrames": 168
+    },
+    {
+      "id": "S2",
+      "startFrame": 168,
+      "durationInFrames": 144
+    }
+  ],
+  "events": [
+    {
+      "frame": 0,
+      "kind": "rain_tail",
+      "description": "雨的尾声从第一帧开始渐稀",
+      "shotId": "S1",
+      "localFrame": 0
+    },
+    {
+      "frame": 62,
+      "kind": "light_break",
+      "description": "夕光从云缝里第一次照到远处的稻田",
+      "shotId": "S1",
+      "localFrame": 62
+    },
+    {
+      "frame": 145,
+      "kind": "drip_fall",
+      "description": "檐口那颗长大的水珠离开檐口（画外上方）",
+      "shotId": "S1",
+      "localFrame": 145
+    },
+    {
+      "frame": 151,
+      "kind": "drip_hit",
+      "description": "水珠打中麻雀头顶，它眼睛一闭",
+      "shotId": "S1",
+      "localFrame": 151
+    },
+    {
+      "frame": 174,
+      "kind": "flinch",
+      "description": "被打中后一缩，收到最紧",
+      "shotId": "S2",
+      "localFrame": 6
+    },
+    {
+      "frame": 178,
+      "kind": "shake",
+      "description": "第一次甩头抖身，甩到一端",
+      "shotId": "S2",
+      "localFrame": 10
+    },
+    {
+      "frame": 182,
+      "kind": "shake",
+      "description": "第二次甩头抖身，甩到另一端",
+      "shotId": "S2",
+      "localFrame": 14
+    },
+    {
+      "frame": 186,
+      "kind": "shake",
+      "description": "第三次甩头抖身",
+      "shotId": "S2",
+      "localFrame": 18
+    },
+    {
+      "frame": 189,
+      "kind": "shake",
+      "description": "第四次甩头抖身，幅度渐小",
+      "shotId": "S2",
+      "localFrame": 21
+    },
+    {
+      "frame": 190,
+      "kind": "puff",
+      "description": "抖完羽毛蓬到最大",
+      "shotId": "S2",
+      "localFrame": 22
+    },
+    {
+      "frame": 192,
+      "kind": "hush",
+      "description": "蓬成一团停住，静默开始",
+      "shotId": "S2",
+      "localFrame": 24
+    },
+    {
+      "frame": 216,
+      "kind": "look_up",
+      "description": "抬头看向画右上的夕光，眼里亮起光点",
+      "shotId": "S2",
+      "localFrame": 48
+    },
+    {
+      "frame": 232,
+      "kind": "crouch",
+      "description": "起飞前开始压低身子",
+      "shotId": "S2",
+      "localFrame": 64
+    },
+    {
+      "frame": 245,
+      "kind": "takeoff",
+      "description": "脚离开竹竿",
+      "shotId": "S2",
+      "localFrame": 77
+    },
+    {
+      "frame": 246,
+      "kind": "pole_spring",
+      "description": "竹竿下沉后弹回的第一下",
+      "shotId": "S2",
+      "localFrame": 78
+    },
+    {
+      "frame": 248,
+      "kind": "wingbeat",
+      "description": "第 1 次振翅下扑到最低",
+      "shotId": "S2",
+      "localFrame": 80
+    },
+    {
+      "frame": 252,
+      "kind": "wingbeat",
+      "description": "第 2 次振翅下扑到最低",
+      "shotId": "S2",
+      "localFrame": 84
+    },
+    {
+      "frame": 256,
+      "kind": "wingbeat",
+      "description": "第 3 次振翅下扑到最低",
+      "shotId": "S2",
+      "localFrame": 88
+    },
+    {
+      "frame": 260,
+      "kind": "wingbeat",
+      "description": "第 4 次振翅下扑到最低",
+      "shotId": "S2",
+      "localFrame": 92
+    },
+    {
+      "frame": 263,
+      "kind": "pole_drip",
+      "description": "竹竿甩下的第 1 颗水珠落地",
+      "shotId": "S2",
+      "localFrame": 95
+    },
+    {
+      "frame": 264,
+      "kind": "wingbeat",
+      "description": "第 5 次振翅下扑到最低",
+      "shotId": "S2",
+      "localFrame": 96
+    },
+    {
+      "frame": 265,
+      "kind": "pole_drip",
+      "description": "竹竿甩下的第 2 颗水珠落地",
+      "shotId": "S2",
+      "localFrame": 97
+    },
+    {
+      "frame": 268,
+      "kind": "pole_drip",
+      "description": "竹竿甩下的第 3 颗水珠落地",
+      "shotId": "S2",
+      "localFrame": 100
+    },
+    {
+      "frame": 270,
+      "kind": "pole_drip",
+      "description": "竹竿甩下的第 4 颗水珠落地",
+      "shotId": "S2",
+      "localFrame": 102
+    },
+    {
+      "frame": 272,
+      "kind": "pole_drip",
+      "description": "竹竿甩下的第 5 颗水珠落地",
+      "shotId": "S2",
+      "localFrame": 104
+    },
+    {
+      "frame": 277,
+      "kind": "pole_drip",
+      "description": "竹竿甩下的第 6 颗水珠落地",
+      "shotId": "S2",
+      "localFrame": 109
+    },
+    {
+      "frame": 282,
+      "kind": "settle",
+      "description": "相机停稳在空竹竿和夕光上",
+      "shotId": "S2",
+      "localFrame": 114
+    }
+  ]
+}
