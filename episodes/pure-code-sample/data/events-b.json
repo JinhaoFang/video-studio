@@ -43,18 +43,18 @@
       "localFrame": 151
     },
     {
-      "frame": 174,
+      "frame": 173,
       "kind": "flinch",
       "description": "被打中后一缩，收到最紧",
       "shotId": "S2",
-      "localFrame": 6
+      "localFrame": 5
     },
     {
-      "frame": 178,
+      "frame": 177,
       "kind": "shake",
       "description": "第一次甩头抖身，甩到一端",
       "shotId": "S2",
-      "localFrame": 10
+      "localFrame": 9
     },
     {
       "frame": 182,

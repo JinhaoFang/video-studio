@@ -148,6 +148,13 @@
       "localFrame": 92
     },
     {
+      "frame": 261,
+      "kind": "pole_drip",
+      "description": "竹竿甩下的第一批水珠落地",
+      "shotId": "S2",
+      "localFrame": 93
+    },
+    {
       "frame": 264,
       "kind": "wingbeat",
       "description": "第五次振翅下扑",
@@ -157,23 +164,16 @@
     {
       "frame": 264,
       "kind": "pole_drip",
-      "description": "竹竿甩下的第一颗水珠落地",
+      "description": "竹竿甩下的第二颗水珠落地",
       "shotId": "S2",
       "localFrame": 96
     },
     {
-      "frame": 270,
-      "kind": "pole_drip",
-      "description": "竹竿甩下的第二颗水珠落地",
-      "shotId": "S2",
-      "localFrame": 102
-    },
-    {
-      "frame": 277,
+      "frame": 268,
       "kind": "pole_drip",
       "description": "竹竿甩下的第三颗水珠落地",
       "shotId": "S2",
-      "localFrame": 109
+      "localFrame": 100
     },
     {
       "frame": 282,

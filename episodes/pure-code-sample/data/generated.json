@@ -6,7 +6,7 @@
     "episodes/pure-code-sample/generate.ts"
   ],
   "status": "complete",
-  "cacheKey": "23da4065e0d8c9c0ff6d277a96d76147362b0ecdf52244169d11b796d556c918",
+  "cacheKey": "53fe1b9254f855b93d413a112e352a3ff6584ff03c1909181e67af171cd98cda",
   "plateKey": "14bcf98175da2ace59e6165cc1bd837852205dc94234c93dce4e29ed822ec006",
   "inputs": [
     {
@@ -55,11 +55,11 @@
     },
     {
       "path": "episodes/pure-code-sample/shots/s2-a/timing.ts",
-      "sha256": "42b5c7082343539d46168e98a2e9ea9659135da9faea9b68a053fd2cdc95603c"
+      "sha256": "85e2cc7330a54f02bc7fe7423530eb0fb35d0be719c2f16a485904ac9bf93623"
     },
     {
       "path": "episodes/pure-code-sample/shots/s2-b/timing.ts",
-      "sha256": "b836bc4d216b1e5ff7828b6005949c3d15415146a3301feede29ee11132f8c6c"
+      "sha256": "e31a805a0d2bac0394d5729406f0e6af24bbaa592487884f4492e43a98d91e38"
     },
     {
       "path": "episodes/pure-code-sample/sound/types.ts",
@@ -111,11 +111,11 @@
   "files": [
     {
       "path": "episodes/pure-code-sample/events-a.json",
-      "sha256": "cbc9d7cfbc79f4f5558e6446f06023ed3fa38664e004146471dd9c09a6cc0d5a"
+      "sha256": "5e65cd07cbaff402b9af493604ae846023663b1f093ace767fee711fb042fcfd"
     },
     {
       "path": "episodes/pure-code-sample/events-b.json",
-      "sha256": "22ec92cc9fe74d313ef449ac0b5f9f2cff4a253917a7f572aa41955879fab041"
+      "sha256": "1caf45ba14d67fb3112c5d685b5ad832e276309ecd187c3af590d021f264dcfa"
     },
     {
       "path": "episodes/pure-code-sample/plate-far-rain.png",
@@ -159,23 +159,23 @@
     },
     {
       "path": "episodes/pure-code-sample/mix-a.wav",
-      "sha256": "fe82d4e513e2754b29177ce05f2321c71056559b05e3b5ee50d2cd19949ad08d"
+      "sha256": "35e2f0ad8945bb96ac367d5bca95803d0d54eadf0cd6f2c6a72e10944cad01fc"
     },
     {
       "path": "episodes/pure-code-sample/mix-b.wav",
-      "sha256": "b5031006e68ba16671f1802b8c34d0cd2aaa282b8ba513f10e7dcf033b517591"
+      "sha256": "d8daf8d3f3e18defe8634913ab8491173904bdab6626a2e80c4881940806e94e"
     }
   ],
   "eventTables": [
     {
       "variant": "a",
       "path": "episodes/pure-code-sample/data/events-a.json",
-      "sha256": "cbc9d7cfbc79f4f5558e6446f06023ed3fa38664e004146471dd9c09a6cc0d5a"
+      "sha256": "5e65cd07cbaff402b9af493604ae846023663b1f093ace767fee711fb042fcfd"
     },
     {
       "variant": "b",
       "path": "episodes/pure-code-sample/data/events-b.json",
-      "sha256": "22ec92cc9fe74d313ef449ac0b5f9f2cff4a253917a7f572aa41955879fab041"
+      "sha256": "1caf45ba14d67fb3112c5d685b5ad832e276309ecd187c3af590d021f264dcfa"
     }
   ],
   "audio": {

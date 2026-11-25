@@ -118,7 +118,7 @@ const flyingLook = (d: Flying, frame: number): DropLook | null => {
 };
 
 const bursts: readonly { frame: number; count: number; dir: number }[] = [
-  { frame: 10, count: 12, dir: 1 },
+  { frame: 9, count: 12, dir: 1 },
   { frame: 14, count: 9, dir: -1 },
   { frame: 18, count: 6, dir: 1 },
   { frame: 21, count: 4, dir: -1 },

@@ -1,4 +1,7 @@
-/** S2 A 版的 Node/浏览器共用镜头元数据；从原 choreography.ts 原样迁出，事件帧号保持不变。 */
+/**
+ * S2 A 版的 Node/浏览器共用镜头元数据；表演事件从原 choreography.ts 迁出。
+ * pole_drip 是 effects.ts 里 POLE_DROPS 按弹道落到地面（z=0）的帧：第 78、79 帧甩下的两颗在第 93、94 帧落地，合成一声记在 93；第 81 帧的落在 96，第 85 帧的落在 100。改了水珠的释放帧或初速要重算。
+ */
 import type { ShotTiming } from "../../model.ts";
 
 export const DURATION = 144;
@@ -30,9 +33,9 @@ export const s2Timing: ShotTiming = {
     { frame: 88, kind: "wingbeat", description: "第三次振翅下扑" },
     { frame: 92, kind: "wingbeat", description: "第四次振翅下扑" },
     { frame: 96, kind: "wingbeat", description: "第五次振翅下扑" },
-    { frame: 96, kind: "pole_drip", description: "竹竿甩下的第一颗水珠落地" },
-    { frame: 102, kind: "pole_drip", description: "竹竿甩下的第二颗水珠落地" },
-    { frame: 109, kind: "pole_drip", description: "竹竿甩下的第三颗水珠落地" },
+    { frame: 93, kind: "pole_drip", description: "竹竿甩下的第一批水珠落地" },
+    { frame: 96, kind: "pole_drip", description: "竹竿甩下的第二颗水珠落地" },
+    { frame: 100, kind: "pole_drip", description: "竹竿甩下的第三颗水珠落地" },
     {
       frame: 114,
       kind: "settle",
