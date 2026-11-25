@@ -1,7 +1,8 @@
 /**
  * 晾衣竹竿：按场景里的 3D 轴线（scene.ts 的 pole）经相机投影成有透视粗细的竹管，赛璐璐两色加一条受光带，
  * 湿面上断续的窄高光，竹节处略鼓并画节线，上下轮廓用手绘线；竿底挂几颗水珠。
- * bend(t) 给出轴线上每点的竖直位移（米），S2 竹竿被蹬得下沉、弹回时由镜头传入；drawing 决定线条抖动。
+ * bend(t) 给出轴线上每点的竖直位移（米），S2 竹竿被蹬得下沉、弹回时由镜头传入；drawing 只决定线条抖动，水珠和高光的位置固定。
+ * 离相机不到 MIN_DEPTH 米的一段（在相机旁边或背后）不画，免得投影出巨大的线宽。
  */
 import { project } from "./engine/camera.ts";
 import type { Camera, Vec3 } from "./engine/camera.ts";
@@ -10,6 +11,8 @@ import { boil, drawStrokes, strokes } from "./engine/ink.ts";
 import { hash } from "./engine/random.ts";
 import { ink, rain, dusk, warm } from "./tokens.ts";
 import { pole, poleAt } from "./scene.ts";
+
+const MIN_DEPTH = 0.3;
 
 export type PoleLook = {
   state: "rain" | "dusk";
@@ -36,8 +39,20 @@ export const drawPole = (ctx: CanvasRenderingContext2D, camera: Camera, look: Po
   const half: number[] = [];
   const length = Math.hypot(pole.b[0] - pole.a[0], pole.b[1] - pole.a[1], pole.b[2] - pole.a[2]);
   const nodeEvery = 0.34;
+  let t0 = 1;
+  let t1 = 0;
+  for (let i = 0; i <= 400; i++) {
+    const t = i / 400;
+    if (poleScreen(camera, t, look.bend).depth >= MIN_DEPTH) {
+      t0 = Math.min(t0, t);
+      t1 = Math.max(t1, t);
+    }
+  }
+  if (t1 <= t0) return;
+  const tAt = (i: number) => t0 + ((t1 - t0) * i) / n;
+  const indexAt = (t: number) => Math.round(((t - t0) / (t1 - t0)) * n);
   for (let i = 0; i <= n; i++) {
-    const t = i / n;
+    const t = tAt(i);
     const s = poleScreen(camera, t, look.bend);
     const along = (t * length) / nodeEvery;
     const node = Math.exp(-Math.pow((along - Math.round(along)) * 9, 2));
@@ -60,6 +75,7 @@ export const drawPole = (ctx: CanvasRenderingContext2D, camera: Camera, look: Po
       return [c[0] + nm[0] * half[i] * offset, c[1] + nm[1] * half[i] * offset];
     });
   const seed = Math.floor(hash(147, look.drawing, 9) * 1e6);
+  const fixed = 147009;
   const amp = ink.boilMinPx + (ink.boilMaxPx - ink.boilMinPx) * hash(147, look.drawing, 10);
   const top = boil(edge(1), seed, amp);
   const bottom = boil(edge(-1), seed, amp);
@@ -84,10 +100,10 @@ export const drawPole = (ctx: CanvasRenderingContext2D, camera: Camera, look: Po
   ctx.strokeStyle = isDusk ? mixHex(warm.rim, warm.dropHighlight, 0.6) : mixHex(rain.cloud.edge, "#ffffff", 0.3);
   ctx.lineCap = "round";
   for (let i = 2; i < n - 2; i++) {
-    const v = hash(seed, i, 2);
+    const v = hash(fixed, Math.round(tAt(i) * 400), 2);
     if (v < 0.7) continue;
-    const runLen = 1 + Math.floor(hash(seed, i, 3) * 2.5);
-    ctx.lineWidth = Math.max(0.9, half[i] * (0.1 + 0.08 * hash(seed, i, 4)));
+    const runLen = 1 + Math.floor(hash(fixed, Math.round(tAt(i) * 400), 3) * 2.5);
+    ctx.lineWidth = Math.max(0.9, half[i] * (0.1 + 0.08 * hash(fixed, Math.round(tAt(i) * 400), 4)));
     ctx.beginPath();
     ctx.moveTo(glint[i][0], glint[i][1]);
     for (let k = 1; k <= runLen && i + k < n; k++) ctx.lineTo(glint[i + k][0], glint[i + k][1]);
@@ -111,7 +127,8 @@ export const drawPole = (ctx: CanvasRenderingContext2D, camera: Camera, look: Po
   drawStrokes(ctx, strokes(bottom, false, { ...style, seed: seed + 1, base: 2.8 }), ink.color);
   for (let k = 1; k < length / nodeEvery; k++) {
     const t = (k * nodeEvery) / length;
-    const i = Math.round(t * n);
+    if (t < t0 || t > t1) continue;
+    const i = indexAt(t);
     if (i <= 1 || i >= n - 1) continue;
     const nm = normal(i);
     const c = centers[i];
@@ -126,12 +143,13 @@ export const drawPole = (ctx: CanvasRenderingContext2D, camera: Camera, look: Po
   }
   const drops = look.drops ?? 7;
   for (let k = 0; k < drops; k++) {
-    const t = 0.18 + 0.75 * hash(seed, k, 5);
-    const i = Math.round(t * n);
+    const t = 0.18 + 0.75 * hash(fixed, k, 5);
+    if (t < t0 || t > t1) continue;
+    const i = indexAt(t);
     const nm = normal(i);
     const c = centers[i];
     const w = half[i];
-    const size = w * (0.35 + 0.35 * hash(seed, k, 6));
+    const size = w * (0.35 + 0.35 * hash(fixed, k, 6));
     const x = c[0] - nm[0] * w * 0.95;
     const y = c[1] - nm[1] * w * 0.95 + size * 0.9;
     ctx.beginPath();

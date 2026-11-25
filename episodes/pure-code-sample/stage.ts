@@ -1,7 +1,8 @@
 /**
  * 舞台：按相机把烘焙好的各层底图摆进画面（正对相机的平面，按纵深缩放平移），以及把麻雀放到场景里的某个点上，
  * 算出它在画面上的位置、每单位像素数、视角和光照方向。镜头和样张共用，不为某个镜头写特例。
- * Surface 是镜头 draw 拿到的画布：1920×1080 的 2D 上下文和五层底图。
+ * 相机走到某层底图跟前或越过它时（放大超过 40 倍）不画这一层。
+ * Surface 是镜头 draw 拿到的画布：1920×1080 的 2D 上下文，五层夕光底图 plates 和雨色底图 rain。
  */
 import { directionToView, layer, project, sun } from "./engine/camera.ts";
 import type { Camera, Vec3 } from "./engine/camera.ts";
@@ -11,11 +12,12 @@ import { FOOT_Z } from "./sparrow.ts";
 
 export type PlateImages = Record<PlateId, HTMLImageElement>;
 
-export type Surface = { context: CanvasRenderingContext2D; plates: PlateImages };
+export type Surface = { context: CanvasRenderingContext2D; plates: PlateImages; rain: PlateImages };
 
 export const drawPlate = (ctx: CanvasRenderingContext2D, image: HTMLImageElement, id: PlateId, camera: Camera) => {
   const plate = plates.find((p) => p.id === id)!;
   const t = layer(reference, camera, plate.distance);
+  if (!(t.scale > 0 && t.scale < 40)) return;
   const size = plateSize(plate);
   ctx.save();
   ctx.imageSmoothingEnabled = true;

@@ -14,6 +14,7 @@ import { drawPlate, placeSparrow } from "../stage.ts";
 import type { PlateImages } from "../stage.ts";
 import { useFrame } from "./useFrame.ts";
 import { usePlates } from "./usePlates.ts";
+import type { PlateSets } from "./usePlates.ts";
 
 export const stillSize = { width: 1920, height: 1080, durationInFrames: 4 };
 
@@ -64,7 +65,7 @@ export const EngineStill: React.FC = () => {
   const frame = useCurrentFrame();
   const canvas = useRef<HTMLCanvasElement>(null);
   const images = usePlates();
-  const render = useCallback((ctx: CanvasRenderingContext2D, f: number, i: PlateImages) => paint(ctx, f, i), []);
+  const render = useCallback((ctx: CanvasRenderingContext2D, f: number, i: PlateSets) => paint(ctx, f, i.plates), []);
   useFrame(canvas, frame, images, render, post);
   return (
     <AbsoluteFill>

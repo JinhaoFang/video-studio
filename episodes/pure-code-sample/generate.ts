@@ -1,4 +1,4 @@
-/** 用 node episodes/pure-code-sample/generate.ts 烘焙占位底图、《雨后》各层水粉底图（plates.ts，夕光）、事件表、音效与混音；输入源码、FFmpeg 版本或产物哈希变化即重建缓存。 */
+/** 用 node episodes/pure-code-sample/generate.ts 烘焙占位底图、《雨后》各层水粉底图（plates.ts，雨色和夕光两种状态）、事件表、音效与混音；输入源码、FFmpeg 版本或产物哈希变化即重建缓存。 */
 import { spawnSync } from "node:child_process";
 import { createHash } from "node:crypto";
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
@@ -132,10 +132,10 @@ try {
         rgb,
       );
       const plateNames: string[] = [];
-      for (const plate of plates) {
+      for (const [plate, state] of plates.flatMap((p) => (["rain", "dusk"] as const).map((st) => [p, st] as const))) {
         const started = performance.now();
-        const painted = paintPlate(plate, "dusk");
-        const name = `plate-${plate.id}-dusk.png`;
+        const painted = paintPlate(plate, state);
+        const name = `plate-${plate.id}-${state}.png`;
         run(
           [
             "-hide_banner",

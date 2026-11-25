@@ -8,9 +8,9 @@ import { AbsoluteFill, useCurrentFrame } from "remotion";
 import { defaultPost } from "../engine/post.ts";
 import { shots } from "../shots/index.ts";
 import type { ShotKey } from "../shots/index.ts";
-import type { PlateImages } from "../stage.ts";
 import { useFrame } from "./useFrame.ts";
 import { usePlates } from "./usePlates.ts";
+import type { PlateSets } from "./usePlates.ts";
 
 export type ShotPreviewProps = { shot: ShotKey };
 
@@ -21,7 +21,7 @@ export const ShotPreview: React.FC<ShotPreviewProps> = ({ shot }) => {
   const current = shots[shot];
   const post = useMemo(() => ({ ...defaultPost, ...current.post }), [current]);
   const render = useCallback(
-    (context: CanvasRenderingContext2D, f: number, images: PlateImages) => current.draw({ context, plates: images }, f),
+    (context: CanvasRenderingContext2D, f: number, images: PlateSets) => current.draw({ context, ...images }, f),
     [current],
   );
   useFrame(canvas, frame, plates, render, post);

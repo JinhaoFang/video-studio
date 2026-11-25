@@ -340,8 +340,8 @@ export const drawSparrow = (target: CanvasRenderingContext2D, view: SparrowView,
     field(
       s,
       (_, n) => {
-        const d = n[0] * L[0] + n[1] * L[1] + n[2] * L[2];
-        return -Math.min(d - 0.5, 0.42 - Math.abs(n[2]));
+        const facing = (n[0] * L[0] + n[1] * L[1]) / (Math.hypot(L[0], L[1]) || 1);
+        return -Math.min(facing - 0.3, 0.4 - Math.abs(n[2]));
       },
       1e3,
     );

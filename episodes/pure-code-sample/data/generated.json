@@ -5,11 +5,11 @@
     "node",
     "episodes/pure-code-sample/generate.ts"
   ],
-  "cacheKey": "a3071540c41b481aad52ccc7643fc347234541fdbf39141749d387efe5c7eac9",
+  "cacheKey": "5117d8e91b28d3c94d1d53ce4487ef88355b0eb7fdce981741f39da7d2dd084a",
   "inputs": [
     {
       "path": "episodes/pure-code-sample/generate.ts",
-      "sha256": "deaa2ed0c7ee74aa336f839c9d55ebafd07495fa834db1939c4083e11ebfaa03"
+      "sha256": "38c32237bcf20093a4d3107d5b5df5dd6d30c66704964947da738e7251a12b93"
     },
     {
       "path": "episodes/pure-code-sample/model.ts",
@@ -25,7 +25,7 @@
     },
     {
       "path": "episodes/pure-code-sample/plates.ts",
-      "sha256": "41aeba03d65e084bbbab1abfc4478f631339f086fb31c8cad9bf5ecfc76393b7"
+      "sha256": "e74a258f954fae5a1bf9172f13028c7c66f5febe9abd22aa8e1e8ef900e32582"
     },
     {
       "path": "episodes/pure-code-sample/scene.ts",
@@ -67,20 +67,40 @@
       "sha256": "5982183059746c0ff5dd91bcff0f7ed413de8e855942051c2da8ce04ef561e36"
     },
     {
+      "path": "episodes/pure-code-sample/plate-far-rain.png",
+      "sha256": "9c3ddb182fbc9ad52e6e84b6f9f9c05e00298b5a7a19a27bc035985cc948e442"
+    },
+    {
       "path": "episodes/pure-code-sample/plate-far-dusk.png",
-      "sha256": "baa3b98e4d33bed2c174e582b4a90d299e9ad3dbfc9e3efdd8b0aa68d09d4a2f"
+      "sha256": "6eae853238dd06fa0afa47f518f67d2d48f7da17d3de865a09632c0c35d226ce"
+    },
+    {
+      "path": "episodes/pure-code-sample/plate-field-rain.png",
+      "sha256": "cf7152288236602f0048316c94c6405e3c41c71f7365a7c1d85d3561d424477f"
     },
     {
       "path": "episodes/pure-code-sample/plate-field-dusk.png",
       "sha256": "983304bcb19f12f60e4131942020b907e43ce9333096392d3dba7503642c796d"
     },
     {
+      "path": "episodes/pure-code-sample/plate-hedge-rain.png",
+      "sha256": "aba8a7ec5f61551e89893211ad1255f2847f9e21c8c810a75409d31d9b9e7c63"
+    },
+    {
       "path": "episodes/pure-code-sample/plate-hedge-dusk.png",
-      "sha256": "8ce1447c2b71f7929acb12df40f874694aaff97a370e4da74717bab3ad064c33"
+      "sha256": "1efeb1f69399226209082f4b4be02667f338bd69010c6fa96679e6843a52307a"
+    },
+    {
+      "path": "episodes/pure-code-sample/plate-yard-rain.png",
+      "sha256": "a20fff63b4b49f69b08a9a4c018a1b61543ec942e599e889bcb3ae11236b1adc"
     },
     {
       "path": "episodes/pure-code-sample/plate-yard-dusk.png",
       "sha256": "15f368ab3570eb3bebd006f4cf4166377a18c7068166fe393e6e18332324106f"
+    },
+    {
+      "path": "episodes/pure-code-sample/plate-eaves-rain.png",
+      "sha256": "c33c1a65063e110346a6d6a9491cc18bf0d0d668cbd48e529d4739aebeb3ca59"
     },
     {
       "path": "episodes/pure-code-sample/plate-eaves-dusk.png",
