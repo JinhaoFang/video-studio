@@ -46,4 +46,4 @@ pnpm verify --static
 - 静默仅对 `mute/duck` 中列出的声音生效，未额外截断 `water_spray` 等其他音效尾声。床音静默作用于其含混响的总线。
 - 竹竿按 180/520 Hz 主共振，首次后在 0.19/0.40 秒弱再激励；振翅每次变暗、向右移、减弱，并逐渐从檐下混响转向院子混响。
 
-`TODO(design)`：试听确认四件乐器的真实感、音效材质和默认湿度；两版真实事件的落位与静默验收见 `/root/project/video-studio.worktrees/159/out/qa/spec-147/159/report.md`。独立命令负责输出本地声音与测量，`generate.ts` 负责调用、复制混音到 `public/` 和更新生成物清单。
+`TODO(design)`：试听确认四件乐器的真实感、音效材质和默认湿度；两版真实事件的落位与静默验收见 `out/qa/spec-147/159/report.md`（主工作区）。独立命令负责输出本地声音与测量，`generate.ts` 负责调用、复制混音到 `public/` 和更新生成物清单。

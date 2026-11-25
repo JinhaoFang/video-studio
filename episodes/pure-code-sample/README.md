@@ -83,7 +83,7 @@ pnpm qa strip out/qa/spec-147/159/pure-code-sample-b.mp4 --from 144 --to 191 --e
 
 逐条串行运行，不同时开两份渲染。媒体位于 `public/episodes/pure-code-sample/`，验收产物位于 `out/qa/spec-147/159/`，均不进 Git。相关测试：`node --test episodes/pure-code-sample/pipeline.test.ts episodes/pure-code-sample/sound/sound.test.ts`；静态检查 `pnpm verify --static`；完整验证由 land 跑。
 
-**#159 验收**：两版使用 S1 第 51 帧的 `light_break` 重新生成声音，并按上述命令渲染带声成片。两版全部画面事件、交接处 F144–191 连续帧、三帧重复渲染、响度及成本实测见 `/root/project/video-studio.worktrees/159/out/qa/spec-147/159/report.md`。镜头 1 定稿后继续按上述命令重渲和复查；交接构图、B 版振翅出画由设计负责人在 #157 评价。
+**#159 验收**：两版使用 S1 第 51 帧的 `light_break` 重新生成声音，并按上述命令渲染带声成片。两版全部画面事件、交接处 F144–191 连续帧、三帧重复渲染、响度及成本实测见 `out/qa/spec-147/159/report.md`（主工作区）。镜头 1 定稿后继续按上述命令重渲和复查；交接构图、B 版振翅出画由设计负责人在 #157 评价。
 
 ## 实测
 
