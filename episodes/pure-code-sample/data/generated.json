@@ -5,15 +5,15 @@
     "node",
     "episodes/pure-code-sample/generate.ts"
   ],
-  "cacheKey": "7c2f1f07a4a47ffffd0b2e36665bc1db4da280221d80687a84f393016650e417",
+  "cacheKey": "a3071540c41b481aad52ccc7643fc347234541fdbf39141749d387efe5c7eac9",
   "inputs": [
     {
       "path": "episodes/pure-code-sample/generate.ts",
-      "sha256": "08d440d1358cb8e96de096ca365c135cab6aeac918a888fffcc578c1daccfefd"
+      "sha256": "deaa2ed0c7ee74aa336f839c9d55ebafd07495fa834db1939c4083e11ebfaa03"
     },
     {
       "path": "episodes/pure-code-sample/model.ts",
-      "sha256": "45709e6616c2166228f1970974b93e427363563ebc45d609da8e735c7a02dbf4"
+      "sha256": "7e7af370ee64402d3fd126988753f4ae1f2dc0bd3caa565ec4cfaa4917e40063"
     },
     {
       "path": "episodes/pure-code-sample/audio.ts",
@@ -22,6 +22,34 @@
     {
       "path": "src/styles/nasa-punk/tokens.ts",
       "sha256": "c3c35d47b22531f0abf399bdbf19d276b53f7d0b286b617be7c2098c55769d15"
+    },
+    {
+      "path": "episodes/pure-code-sample/plates.ts",
+      "sha256": "41aeba03d65e084bbbab1abfc4478f631339f086fb31c8cad9bf5ecfc76393b7"
+    },
+    {
+      "path": "episodes/pure-code-sample/scene.ts",
+      "sha256": "17be3d525cc720628536c385cafe5d4a1073807b6023a57e4691084d5647b4e4"
+    },
+    {
+      "path": "episodes/pure-code-sample/tokens.ts",
+      "sha256": "3b68663886cc0ff8c26845f61d2f7e35fe8f52fdefb310ce33a5d426019d133e"
+    },
+    {
+      "path": "episodes/pure-code-sample/engine/paint.ts",
+      "sha256": "2142e7717b5ecf1e77a54be2dc0b00ed8ec8de450f99f6c9a6593b80013191cc"
+    },
+    {
+      "path": "episodes/pure-code-sample/engine/random.ts",
+      "sha256": "a30da1124e65b04a840da264b014d0e37d1c1451561bf6949c6044e561fb548c"
+    },
+    {
+      "path": "episodes/pure-code-sample/engine/camera.ts",
+      "sha256": "16f06a77ddc205575bfd3042718c69bbbd48de1faeb4ac05111a53fe0cd8516b"
+    },
+    {
+      "path": "episodes/pure-code-sample/engine/figure.ts",
+      "sha256": "e16de01d0c45b8e19755b6f9e7fd69cfaa668c3acfcf41787c6e46ce79a9d440"
     }
   ],
   "ffmpegVersion": "ffmpeg version 4.4.2-0ubuntu0.22.04.1 Copyright (c) 2000-2021 the FFmpeg developers",
@@ -37,6 +65,26 @@
     {
       "path": "episodes/pure-code-sample/mix.wav",
       "sha256": "5982183059746c0ff5dd91bcff0f7ed413de8e855942051c2da8ce04ef561e36"
+    },
+    {
+      "path": "episodes/pure-code-sample/plate-far-dusk.png",
+      "sha256": "baa3b98e4d33bed2c174e582b4a90d299e9ad3dbfc9e3efdd8b0aa68d09d4a2f"
+    },
+    {
+      "path": "episodes/pure-code-sample/plate-field-dusk.png",
+      "sha256": "983304bcb19f12f60e4131942020b907e43ce9333096392d3dba7503642c796d"
+    },
+    {
+      "path": "episodes/pure-code-sample/plate-hedge-dusk.png",
+      "sha256": "8ce1447c2b71f7929acb12df40f874694aaff97a370e4da74717bab3ad064c33"
+    },
+    {
+      "path": "episodes/pure-code-sample/plate-yard-dusk.png",
+      "sha256": "15f368ab3570eb3bebd006f4cf4166377a18c7068166fe393e6e18332324106f"
+    },
+    {
+      "path": "episodes/pure-code-sample/plate-eaves-dusk.png",
+      "sha256": "862b04571098853eaf67fc9e7ca4936cb3980a40f86a2c0a1b47806808092fd5"
     }
   ],
   "audio": {

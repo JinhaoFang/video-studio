@@ -28,11 +28,27 @@
 | 摄影 | WebGL 后期链（第 5 节的固定顺序） | 设计负责人（#152） |
 | 主角 | 麻雀的造型、表情、姿势、轮廓光 | 设计负责人（#152） |
 | 镜头 S1 | 第一个镜头，对标片 | 设计负责人（#153） |
-| 镜头 S2 | 第二个镜头 | #155、#156 的执行者，各在自己的 worktree 里 |
+| 镜头 S2 | 第二个镜头，A、B 两版 | #155、#156 的执行者，各在自己的 worktree 里，各改自己的镜头目录 |
 | 管线 | 合成入口、时间表与事件汇总、生成器、纯代码护栏 | 工程（#149 已建） |
 | 声音 | 合成乐器、音效库、混音器 | 工程（#158）；乐谱、听点和声音设计数据归设计负责人（#154） |
 
-各模块落在哪个文件，由 #152 建好引擎后补进这一节。规则：
+各模块落在哪个文件（#152 建好引擎后补）：
+
+| 模块 | 文件 |
+|---|---|
+| 随机与噪声 | `engine/random.ts` |
+| 时间 | `engine/timing.ts` |
+| 线条 | `engine/ink.ts` |
+| 赛璐璐 | `engine/cel.ts`；角色形体的距离场、取样、轮廓提取在 `engine/figure.ts` |
+| 水粉 | 笔触和画布 `engine/paint.ts`；底图内容 `plates.ts`；烘焙在 `generate.ts` |
+| 相机 | `engine/camera.ts`；场景布置（参考机位、竹竿、檐口、各层底图的纵深）`scene.ts` |
+| 摄影 | `engine/post.ts` |
+| 主角 | `sparrow.ts`；本期令牌 `tokens.ts` |
+| 共用道具与舞台 | 竹竿 `pole.ts`；按相机摆底图、把麻雀放到场景里 `stage.ts`（设计负责人） |
+| 镜头 | 登记表 `shots/index.ts`；S1 在 `shots/s1/`，S2 的 A、B 两版在 `shots/s2-a/`、`shots/s2-b/`；占位与机位示例 `shots/placeholder.ts`、`shots/placeholder-s2.ts` |
+| 样张与预览 | `samples/`：设定图 `ModelSheet.tsx`、引擎静帧 `EngineStill.tsx`、单镜头预览 `ShotPreview.tsx`（合成 `PureCodeS1`、`PureCodeS2A`、`PureCodeS2B`） |
+
+规则：
 
 - 不是自己的模块不改。发现问题先绕开，写进汇报的"引擎问题"一节，由归属人修。
 - 镜头要的辅助函数写在自己的镜头文件或镜头目录里。

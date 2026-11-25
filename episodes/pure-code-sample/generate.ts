@@ -1,4 +1,4 @@
-/** 用 node episodes/pure-code-sample/generate.ts 烘焙底图、事件表、音效与混音；输入源码、FFmpeg 版本或产物哈希变化即重建缓存。 */
+/** 用 node episodes/pure-code-sample/generate.ts 烘焙占位底图、《雨后》各层水粉底图（plates.ts，夕光）、事件表、音效与混音；输入源码、FFmpeg 版本或产物哈希变化即重建缓存。 */
 import { spawnSync } from "node:child_process";
 import { createHash } from "node:crypto";
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
@@ -17,6 +17,9 @@ import {
   width,
 } from "./model.ts";
 import { mixEvents, sampleRate, synthesizeImpact, wav } from "./audio.ts";
+import { toBytes } from "./engine/paint.ts";
+import { paintPlate } from "./plates.ts";
+import { plates } from "./scene.ts";
 
 const root = resolve(import.meta.dirname, "../..");
 const data = resolve(import.meta.dirname, "data");
@@ -50,6 +53,13 @@ try {
       "episodes/pure-code-sample/model.ts",
       "episodes/pure-code-sample/audio.ts",
       "src/styles/nasa-punk/tokens.ts",
+      "episodes/pure-code-sample/plates.ts",
+      "episodes/pure-code-sample/scene.ts",
+      "episodes/pure-code-sample/tokens.ts",
+      "episodes/pure-code-sample/engine/paint.ts",
+      "episodes/pure-code-sample/engine/random.ts",
+      "episodes/pure-code-sample/engine/camera.ts",
+      "episodes/pure-code-sample/engine/figure.ts",
     ].map((path) => ({
       path,
       sha256: digest(readFileSync(resolve(root, path))),
@@ -121,6 +131,39 @@ try {
         ],
         rgb,
       );
+      const plateNames: string[] = [];
+      for (const plate of plates) {
+        const started = performance.now();
+        const painted = paintPlate(plate, "dusk");
+        const name = `plate-${plate.id}-dusk.png`;
+        run(
+          [
+            "-hide_banner",
+            "-loglevel",
+            "error",
+            "-nostdin",
+            "-y",
+            "-f",
+            "rawvideo",
+            "-pixel_format",
+            "rgba",
+            "-video_size",
+            `${painted.width}x${painted.height}`,
+            "-i",
+            "pipe:0",
+            "-frames:v",
+            "1",
+            "-threads",
+            "1",
+            "-update",
+            "1",
+            resolve(publicDirectory, name),
+          ],
+          toBytes(painted),
+        );
+        plateNames.push(name);
+        console.log(`底图 ${name}：${painted.width}×${painted.height}，${((performance.now() - started) / 1000).toFixed(1)} 秒`);
+      }
       const sound = synthesizeImpact(seed);
       writeFileSync(resolve(publicDirectory, "impact.wav"), wav(sound.samples));
       const mix = mixEvents(events, sound, durationInFrames, fps);
@@ -144,7 +187,7 @@ try {
       const gain = Math.pow(10, (-16 - Number(measured.input_i)) / 20);
       writeFileSync(resolve(publicDirectory, "mix.wav"), wav(mix, gain, 2));
       writeFileSync(eventsPath, eventText);
-      const files = ["background.png", "impact.wav", "mix.wav"].map((name) => ({
+      const files = ["background.png", "impact.wav", "mix.wav", ...plateNames].map((name) => ({
         path: `episodes/pure-code-sample/${name}`,
         sha256: digest(readFileSync(resolve(publicDirectory, name))),
       }));

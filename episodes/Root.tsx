@@ -4,6 +4,10 @@ import type { ClinMeshPromoProps } from "./clinmesh-promo/ClinMeshPromo";
 import promoTimeline from "./clinmesh-promo/data/timeline.json";
 import { PureCodeSample } from "./pure-code-sample/PureCodeSample";
 import { durationInFrames as pureCodeDuration } from "./pure-code-sample/model";
+import { EngineStill, stillSize } from "./pure-code-sample/samples/EngineStill";
+import { ModelSheet, sheetSize } from "./pure-code-sample/samples/ModelSheet";
+import { ShotPreview } from "./pure-code-sample/samples/ShotPreview";
+import { shots as pureCodeShots } from "./pure-code-sample/shots/index";
 import timeline from "./nasa-punk-opening/data/timeline.json";
 import type { Timeline } from "../tools/timeline-types";
 
@@ -26,6 +30,49 @@ export const RemotionRoot: React.FC = () => (
         fps={24}
         width={1920}
         height={1080}
+      />
+      <Composition
+        id="PureCodeModelSheet"
+        component={ModelSheet}
+        durationInFrames={sheetSize.durationInFrames}
+        fps={24}
+        width={sheetSize.width}
+        height={sheetSize.height}
+      />
+      <Composition
+        id="PureCodeEngineStill"
+        component={EngineStill}
+        durationInFrames={stillSize.durationInFrames}
+        fps={24}
+        width={stillSize.width}
+        height={stillSize.height}
+      />
+      <Composition
+        id="PureCodeS1"
+        component={ShotPreview}
+        durationInFrames={pureCodeShots["s1"].durationInFrames}
+        fps={24}
+        width={1920}
+        height={1080}
+        defaultProps={{ shot: "s1" as const }}
+      />
+      <Composition
+        id="PureCodeS2A"
+        component={ShotPreview}
+        durationInFrames={pureCodeShots["s2-a"].durationInFrames}
+        fps={24}
+        width={1920}
+        height={1080}
+        defaultProps={{ shot: "s2-a" as const }}
+      />
+      <Composition
+        id="PureCodeS2B"
+        component={ShotPreview}
+        durationInFrames={pureCodeShots["s2-b"].durationInFrames}
+        fps={24}
+        width={1920}
+        height={1080}
+        defaultProps={{ shot: "s2-b" as const }}
       />
     </Folder>
     <Folder name="nasa-punk-opening">

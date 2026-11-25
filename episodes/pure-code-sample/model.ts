@@ -1,4 +1,6 @@
-/** 本期镜头时间表与画面事件；镜头只声明局部帧，全片事件和采样位置统一在这里换算。 */
+/** 本期镜头时间表与画面事件；镜头只声明局部帧，全片事件和采样位置统一在这里换算。镜头的后期参数从摄影模块的默认值覆盖。 */
+import type { Post } from "./engine/post-settings.ts";
+
 export const fps = 24;
 export const width = 1920;
 export const height = 1080;
@@ -15,7 +17,7 @@ export type ShotTiming = {
   events: readonly PictureEvent[];
 };
 export type Shot<Surface> = ShotTiming & {
-  post: { grain: number; vignetteInner: number; vignette: number };
+  post: Partial<Post>;
   draw: (surface: Surface, frame: number) => void;
 };
 export type ShotRow = {

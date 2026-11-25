@@ -7,11 +7,20 @@
 | 生成物 | 生成命令 | 代码与计算方法 |
 |---|---|---|
 | `public/episodes/pure-code-sample/background.png` | `node episodes/pure-code-sample/generate.ts` | `generate.ts` 用 Node 写出 1920×1080 RGB 纸色、地面和地线，FFmpeg 将原始像素编码为 PNG；没有图像输入 |
+| `public/episodes/pure-code-sample/plate-far-dusk.png`、`plate-field-dusk.png`、`plate-hedge-dusk.png`、`plate-yard-dusk.png`、`plate-eaves-dusk.png` | `node episodes/pure-code-sample/generate.ts` | `plates.ts` 按 `scene.ts` 的纵深和范围，用 `engine/paint.ts` 的水粉笔触（固定种子）在 Node 的浮点画布上画五层夕光底图，FFmpeg 将 RGBA 原始像素编码为 PNG；没有图像输入 |
 | `episodes/pure-code-sample/data/events.json` | `node episodes/pure-code-sample/generate.ts` | `model.ts` 将镜头声明的局部事件帧号加上时间表起点，汇总成全片事件 |
 | `public/episodes/pure-code-sample/impact.wav` | `node episodes/pure-code-sample/generate.ts` | `audio.ts` 用种子 149 的线性同余噪声和衰减余弦波合成 4 秒、48 kHz、单声道 PCM16；对齐点为内部第 480 个采样 |
 | `public/episodes/pure-code-sample/mix.wav` | `node episodes/pure-code-sample/generate.ts` | `audio.ts` 按事件采样位置排列音效并输出 10 秒双声道；FFmpeg 测量响度，Node 施加固定增益写出 PCM16，保留采样位置 |
 | `episodes/pure-code-sample/data/generated.json` | `node episodes/pure-code-sample/generate.ts` | 生成器记录命令、源码哈希、FFmpeg 版本、媒体 SHA-256 和混音参数，供缓存和护栏检查 |
 | `out/pure-code-sample/pure-code-sample.mp4` | `pnpm exec remotion render PureCodeSample out/pure-code-sample/pure-code-sample.mp4 --gl=swangle --concurrency=2` | `PureCodeSample.tsx` 与 `shot.ts` 用 Canvas 2D 绘制，WebGL 着色器加入逐帧确定的颗粒和暗角；Remotion 将生成的 WAV 与画面编码为 H.264/AAC MP4 |
+
+引擎样张和单镜头预览（#152）只读上面的底图，验收图写在 `out/qa/spec-147/152/`，不进入 Git：
+
+| 生成物 | 生成命令 | 代码与计算方法 |
+|---|---|---|
+| `out/qa/spec-147/152/sheet-r4.png` | `pnpm exec remotion still PureCodeModelSheet out/qa/spec-147/152/sheet-r4.png --frame=0 --gl=swangle` | `samples/ModelSheet.tsx` 调 `sparrow.ts`：距离场取样、轮廓、赛璐璐填色、手绘线条，经 `engine/post.ts` 后期 |
+| `out/qa/spec-147/152/still-r3.png` | `pnpm exec remotion still PureCodeEngineStill out/qa/spec-147/152/still-r3.png --frame=0 --gl=swangle` | `samples/EngineStill.tsx` 按相机摆五层底图，画竹竿和麻雀，经后期 |
+| 镜头预览 | `pnpm exec remotion still PureCodeS2A <输出.png> --frame=<帧> --gl=swangle`（`PureCodeS1`、`PureCodeS2B` 同理） | `samples/ShotPreview.tsx` 调 `shots/index.ts` 登记的镜头的 `draw`，按镜头的 `post` 覆盖值走后期 |
 
 `generate.ts --force` 可强制重建。生成输入或产物变化时的缓存失效规则见本期 `README.md`；提交的是代码与生成记录，媒体必须在渲染前重建。
 

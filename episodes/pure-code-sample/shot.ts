@@ -162,12 +162,12 @@ export const createPost = (canvas: HTMLCanvasElement) => {
         source,
       );
       gl.uniform1f(gl.getUniformLocation(program, "frame"), frame);
-      gl.uniform1f(gl.getUniformLocation(program, "grain"), post.grain);
+      gl.uniform1f(gl.getUniformLocation(program, "grain"), post.grain ?? 0);
       gl.uniform1f(
         gl.getUniformLocation(program, "vignetteInner"),
-        post.vignetteInner,
+        post.vignetteInner ?? 0,
       );
-      gl.uniform1f(gl.getUniformLocation(program, "vignette"), post.vignette);
+      gl.uniform1f(gl.getUniformLocation(program, "vignette"), post.vignette ?? 0);
       gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
       gl.finish();
       if (gl.getError() !== gl.NO_ERROR) throw new Error("WebGL 绘制失败。");
