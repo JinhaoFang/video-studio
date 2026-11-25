@@ -12,7 +12,7 @@ pnpm verify --static
 
 参数：`--events` 默认本期 `data/events-a.json`，`--out` 默认 `out/qa/spec-147/158`，`--seed` 默认 158，接受 0–4294967295 的整数。事件表必须保持现有格式：24 fps、48000 Hz，`shotTable` 的 `id/startFrame/durationInFrames`，以及 `events` 的 `frame/kind/description/shotId/localFrame`。本期命令限一分钟以内，防止误输入长时间表超出资源预算。
 
-`generate.ts` 已按 A/B 真实事件表分别调用本命令，并将混音复制到 `public/episodes/pure-code-sample/mix-{a,b}.wav`。开发夹具 `events.fixture.json` 仅按派发的镜头剧本约数建表，不能替代真实事件验收。当前真实 `light_break` 在第 62 帧，`light` 乐句最晚到第 152 帧，越过 `drip_fall` 第 145 帧的截止约束；生成器会保留 `audio-pending` 状态并报错，待设计负责人调整乐谱后重跑。锚点按事件种类的最早全片帧解析，附加 `offsetFrames`；镜头锚点由传入 `shotTable` 换算，允许用镜头末帧边界标记截止点。乐句按 `tempo` 和音符 `beat/beats` 先验算结束帧；越过 `mustEndBefore`（可限定乐器）立即报错。退出码：成功/帮助 0，量化检查失败 1，参数、数据或运行错误 2；错误以“出错：”开头。
+`generate.ts` 已按 A/B 真实事件表分别调用本命令，并将混音复制到 `public/episodes/pure-code-sample/mix-{a,b}.wav`。开发夹具 `events.fixture.json` 仅按派发的镜头剧本约数建表，不能替代真实事件验收。真实 `light_break` 在 S1 第 51 帧，`light` 乐句最晚到第 141 帧，在 `drip_fall` 第 145 帧之前结束；两版混音已由 #159 重新生成，生成清单为 `complete`。锚点按事件种类的最早全片帧解析，附加 `offsetFrames`；镜头锚点由传入 `shotTable` 换算，允许用镜头末帧边界标记截止点。乐句按 `tempo` 和音符 `beat/beats` 先验算结束帧；越过 `mustEndBefore`（可限定乐器）立即报错。退出码：成功/帮助 0，量化检查失败 1，参数、数据或运行错误 2；错误以“出错：”开头。
 
 ## 产物
 
@@ -25,7 +25,7 @@ pnpm verify --static
 - `spectra/*.png`：以上每个 WAV 的频谱图，时间横轴、对数频率纵轴、对数颜色强度；图中文字仅在检查图内，不进入成片。
 - `measurements.json`、`measurements.md`：输入/源码 SHA-256、执行参数、总线电平、各轨峰值/RMS/响度、参考音效电平、各乐器音高统计。
 - `pitch.json`：每颗实际编译的干音的音高测量窗口、期望/估计频率、带符号音分误差。报告统计绝对误差的中位数和线性插值 90 分位。
-- `placements.json`：每次音效的事件全片帧、内部对齐点、混音起点、变体电平/声像/混响比例，满足 `startSample + alignmentSample = round(eventFrame × 48000 / 24)`。
+- `placements.json`：每次音效的设计偏移后的全片对齐帧、内部对齐点、混音起点、变体电平/声像/混响比例，满足 `startSample + alignmentSample = round(eventFrame × 48000 / 24)`。`crouch` 的竹竿受力按 `sound.json` 延后 6 帧，附加 `water_spray` 在第一次 `shake` 后 3 帧；其余映射为事件当帧。
 
 每个音效先以 48 kHz BS.1770 K 加权计算逐采样滑动的最响 100 ms 窗，归一至 −18，采样峰值不超过 −1.5 dBFS。该 100 ms 参考值沿用声音设计的“LUFS”称呼，不是 EBU R128 的 400 ms momentary。必要时使用不改变时间的静态软限幅后重新归一。场内按 `db` 施加增益；振翅逐次 −3 dB 是设计明确要求的变体，会低于基本 `foley` 档位下限。
 
@@ -46,4 +46,4 @@ pnpm verify --static
 - 静默仅对 `mute/duck` 中列出的声音生效，未额外截断 `water_spray` 等其他音效尾声。床音静默作用于其含混响的总线。
 - 竹竿按 180/520 Hz 主共振，首次后在 0.19/0.40 秒弱再激励；振翅每次变暗、向右移、减弱，并逐渐从檐下混响转向院子混响。
 
-`TODO(design)`：试听确认四件乐器的真实感、音效材质和默认湿度；解除真实 `light` 乐句截止冲突后生成两版并核对听点。独立命令负责输出本地声音与测量，`generate.ts` 负责调用、复制混音到 `public/` 和更新生成物清单。
+`TODO(design)`：试听确认四件乐器的真实感、音效材质和默认湿度；两版真实事件的落位与静默验收见 `/root/project/video-studio.worktrees/159/out/qa/spec-147/159/report.md`。独立命令负责输出本地声音与测量，`generate.ts` 负责调用、复制混音到 `public/` 和更新生成物清单。

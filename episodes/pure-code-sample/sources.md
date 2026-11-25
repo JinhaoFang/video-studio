@@ -8,15 +8,15 @@
 |---|---|---|
 | `public/episodes/pure-code-sample/plate-{far,field,hedge,yard,eaves}-{rain,dusk}.png`（十张） | `node episodes/pure-code-sample/generate.ts` | `plates.ts` 按 `scene.ts` 的纵深和范围，用 `engine/paint.ts` 固定种子的水粉笔触在 Node 浮点画布绘制，FFmpeg 将 RGBA 编码成 PNG；没有图像输入 |
 | `episodes/pure-code-sample/data/events-a.json`、`events-b.json`，及 public 同名副本 | `node episodes/pure-code-sample/generate.ts` | `model.ts` 按 0/168 帧镜头起点汇总 S1 和对应 S2 的 `timing.ts`；A 版 24 条、B 版 27 条全片事件，B 版包含六次竹竿水珠落地 |
-| `public/episodes/pure-code-sample/mix-a.wav`、`mix-b.wav`（待设计解除乐谱阻塞） | `node episodes/pure-code-sample/generate.ts` | 串行调用 `sound/render.ts --events episodes/pure-code-sample/data/events-a.json --out out/qa/spec-147/159/sound-a --seed 158`（B 版同理），通过真实事件驱动乐谱、音效、床音、混响、让位和总线测量，再复制对应混音；48 kHz PCM16 双声道，312 帧 |
-| `out/qa/spec-147/159/sound-{a,b}/`（待设计解除乐谱阻塞） | 上述生成器自动调用声音命令 | 与下文 #158 相同的分轨、音效库、频谱和测量报告；每版各一套 `placements.json` 与 `measurements.json` |
-| `episodes/pure-code-sample/data/generated.json` | `node episodes/pure-code-sample/generate.ts` | 命令、源码和设计数据 SHA-256、Node/FFmpeg 版本、事件表、媒体哈希、总线参数；`status: audio-pending` 明确记录未生成混音，全部成功才变为 `complete` |
-| `out/qa/spec-147/159/pure-code-sample-a.mp4`（待声音就绪） | `pnpm exec remotion render PureCodeSampleA out/qa/spec-147/159/pure-code-sample-a.mp4 --gl=swangle --concurrency=4` | S1 + S2 A，`PureCodeSample.tsx` 用相同底图加载、局部帧 draw、各镜头 post 加默认摄影链，再编码 H.264/AAC |
-| `out/qa/spec-147/159/pure-code-sample-b.mp4`（待声音就绪） | `pnpm exec remotion render PureCodeSampleB out/qa/spec-147/159/pure-code-sample-b.mp4 --gl=swangle --concurrency=4` | S1 + S2 B，方法同 A；对应混音通过字面路径 `staticFile` 引用 |
+| `public/episodes/pure-code-sample/mix-a.wav`、`mix-b.wav` | `node episodes/pure-code-sample/generate.ts` | 串行调用 `sound/render.ts --events episodes/pure-code-sample/data/events-a.json --out out/qa/spec-147/159/sound-a --seed 158`（B 版同理），通过真实事件驱动乐谱、音效、床音、混响、让位和总线测量，再复制对应混音；48 kHz PCM16 双声道，312 帧 |
+| `out/qa/spec-147/159/sound-{a,b}/` | 上述生成器自动调用声音命令 | 与下文 #158 相同的分轨、音效库、频谱和测量报告；每版各一套 `placements.json` 与 `measurements.json` |
+| `episodes/pure-code-sample/data/generated.json` | `node episodes/pure-code-sample/generate.ts` | 命令、源码和设计数据 SHA-256、Node/FFmpeg 版本、事件表、媒体哈希、总线参数；本次 `status: complete`，登记十张底图、两张事件表和两份混音 |
+| `out/qa/spec-147/159/pure-code-sample-a.mp4` | `pnpm exec remotion render PureCodeSampleA out/qa/spec-147/159/pure-code-sample-a.mp4 --gl=swangle --concurrency=4` | S1 + S2 A，`PureCodeSample.tsx` 用相同底图加载、局部帧 draw、各镜头 post 加默认摄影链，再编码 H.264/AAC |
+| `out/qa/spec-147/159/pure-code-sample-b.mp4` | `pnpm exec remotion render PureCodeSampleB out/qa/spec-147/159/pure-code-sample-b.mp4 --gl=swangle --concurrency=4` | S1 + S2 B，方法同 A；对应混音通过字面路径 `staticFile` 引用 |
 
 镜头 1 画面定稿后按上面两个成片命令**串行**重新渲染；若只改 `shots/s1/index.ts`、`weather.ts`，不必重做底图/声音。若改事件、底图或声音输入，先重跑生成器。两版响度、联系表和交接逐帧条的命令见 [README 管线](README.md#管线)。
 
-**当前状态**：真实光到事件第 62 帧与乐谱 `light` 的截止约束冲突，声音命令以 2 退出；保留原乐谱和事件帧，尚无两部带声成片。#159 的 `picture-only-a.mp4`、`picture-only-b.mp4` 是共用画面组件的静音验收输出，来源命令和检查结论见 `/root/project/video-studio.worktrees/159/out/qa/spec-147/159/report.md`，不能替代声音交付。
+**本次生成**：采用 S1 第 51 帧的 `light_break`，两版真实事件分别生成混音并登记；带声成片、响度、全部事件落位、交接连续帧、确定性和成本记录见 `/root/project/video-studio.worktrees/159/out/qa/spec-147/159/report.md`。旧的 picture-only 静音入口及静音视频已删除。
 
 引擎样张和单镜头预览（#152）只读上面的底图，验收图写在 `out/qa/spec-147/152/`，不进入 Git：
 

@@ -5,8 +5,8 @@
     "node",
     "episodes/pure-code-sample/generate.ts"
   ],
-  "status": "audio-pending",
-  "cacheKey": "216d3f441f4a6956da9c41576e460cb6f9e89f9f5995fc8489db9b427845687f",
+  "status": "complete",
+  "cacheKey": "d8b08142e28c5ee6107c055a0458149917c4bea7796c2d82f65606c5d8035985",
   "plateKey": "d72ed3c21c128c22d104eb753bf37ffe073d890bcaf9598bd1fd8033f7d0682e",
   "inputs": [
     {
@@ -51,7 +51,7 @@
     },
     {
       "path": "episodes/pure-code-sample/shots/s1/timing.ts",
-      "sha256": "48fcd5cc7e86a9f7e1e2666fc99bc5b8b08dab43bde9a05b61474906583178a7"
+      "sha256": "199609930d1829f35593607d8d8a8e74c4806d9c9530588571c59d9ce99d3e3e"
     },
     {
       "path": "episodes/pure-code-sample/shots/s2-a/timing.ts",
@@ -111,11 +111,11 @@
   "files": [
     {
       "path": "episodes/pure-code-sample/events-a.json",
-      "sha256": "e806defb23c8b7cc8589e653b865fa9ae7cc8164973756739cbc7b1d86ef5e82"
+      "sha256": "cbc9d7cfbc79f4f5558e6446f06023ed3fa38664e004146471dd9c09a6cc0d5a"
     },
     {
       "path": "episodes/pure-code-sample/events-b.json",
-      "sha256": "aaed554a281948ccdc5e4688d38eb063117b4d0f0e70cda31c22ca91c2be4aed"
+      "sha256": "22ec92cc9fe74d313ef449ac0b5f9f2cff4a253917a7f572aa41955879fab041"
     },
     {
       "path": "episodes/pure-code-sample/plate-far-rain.png",
@@ -156,19 +156,84 @@
     {
       "path": "episodes/pure-code-sample/plate-eaves-dusk.png",
       "sha256": "862b04571098853eaf67fc9e7ca4936cb3980a40f86a2c0a1b47806808092fd5"
+    },
+    {
+      "path": "episodes/pure-code-sample/mix-a.wav",
+      "sha256": "fe82d4e513e2754b29177ce05f2321c71056559b05e3b5ee50d2cd19949ad08d"
+    },
+    {
+      "path": "episodes/pure-code-sample/mix-b.wav",
+      "sha256": "b5031006e68ba16671f1802b8c34d0cd2aaa282b8ba513f10e7dcf033b517591"
     }
   ],
   "eventTables": [
     {
       "variant": "a",
       "path": "episodes/pure-code-sample/data/events-a.json",
-      "sha256": "e806defb23c8b7cc8589e653b865fa9ae7cc8164973756739cbc7b1d86ef5e82"
+      "sha256": "cbc9d7cfbc79f4f5558e6446f06023ed3fa38664e004146471dd9c09a6cc0d5a"
     },
     {
       "variant": "b",
       "path": "episodes/pure-code-sample/data/events-b.json",
-      "sha256": "aaed554a281948ccdc5e4688d38eb063117b4d0f0e70cda31c22ca91c2be4aed"
+      "sha256": "22ec92cc9fe74d313ef449ac0b5f9f2cff4a253917a7f572aa41955879fab041"
     }
   ],
-  "audio": {}
+  "audio": {
+    "a": {
+      "command": [
+        "/usr/bin/node",
+        "episodes/pure-code-sample/sound/render.ts",
+        "--events",
+        "episodes/pure-code-sample/data/events-a.json",
+        "--out",
+        "/root/project/video-studio.worktrees/159/out/qa/spec-147/159/sound-a",
+        "--seed",
+        "158"
+      ],
+      "sampleRate": 48000,
+      "channels": 2,
+      "master": {
+        "before": {
+          "integratedLufs": -19.7,
+          "truePeakDbtp": -5.9
+        },
+        "after": {
+          "integratedLufs": -16,
+          "truePeakDbtp": -2.2
+        },
+        "gainDb": 3.6999999999999993,
+        "maximumReductionDb": 4.440892098500626e-16,
+        "limiterCeilingDbfs": -1.3
+      },
+      "measurements": "out/qa/spec-147/159/sound-a/measurements.json"
+    },
+    "b": {
+      "command": [
+        "/usr/bin/node",
+        "episodes/pure-code-sample/sound/render.ts",
+        "--events",
+        "episodes/pure-code-sample/data/events-b.json",
+        "--out",
+        "/root/project/video-studio.worktrees/159/out/qa/spec-147/159/sound-b",
+        "--seed",
+        "158"
+      ],
+      "sampleRate": 48000,
+      "channels": 2,
+      "master": {
+        "before": {
+          "integratedLufs": -19.7,
+          "truePeakDbtp": -5.9
+        },
+        "after": {
+          "integratedLufs": -16,
+          "truePeakDbtp": -2.2
+        },
+        "gainDb": 3.6999999999999993,
+        "maximumReductionDb": 4.440892098500626e-16,
+        "limiterCeilingDbfs": -1.3
+      },
+      "measurements": "out/qa/spec-147/159/sound-b/measurements.json"
+    }
+  }
 }

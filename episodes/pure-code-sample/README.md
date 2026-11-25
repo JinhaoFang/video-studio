@@ -63,7 +63,7 @@ spec #147：吸收参照片的方法（[研究记录](../../docs/research/noroi-
 - `shots/s1/timing.ts`、`shots/s2-{a,b}/timing.ts`：不依赖浏览器的镜头编号、时长与事件。元数据迁移保留原事件帧号；B 版竹竿水珠落地帧为原弹道计算的 95、97、100、102、104、109。
 - `PureCodeSample.tsx`：共用画面组件，加两版各自的字面路径 `staticFile` 混音；共用预览的底图加载和 `delayRender` 绘制等待。
 - `generate.ts`：烘焙雨色/夕光十张底图，生成 `data/events-a.json`、`data/events-b.json` 及其 public 副本，再串行调用 [声音命令](sound/README.md)，将各自混音复制为 `mix-a.wav`、`mix-b.wav`。
-- `data/generated.json`：生成命令、源码与设计数据哈希、Node/FFmpeg 版本、事件表及媒体哈希；`status: complete` 表示两版声音全部生成，`audio-pending` 表示只有底图/事件已就绪，不能当作交付成功。占位镜头、占位底图和占位声音不再使用；`audio.ts` 仅保留给既有纯逻辑测试。
+- `data/generated.json`：生成命令、源码与设计数据哈希、Node/FFmpeg 版本、事件表及媒体哈希；本次 `status: complete`，已登记两版混音。占位镜头、占位底图和占位声音不再使用；`audio.ts` 仅保留给既有纯逻辑测试。
 - 缓存：源码、`score.json`、`sound.json`、运行版本、事件表或媒体哈希改变会失效；底图有独立缓存键，声音重试不必重烘焙。`--force` 强制全部重建。镜头绘图和后期不在媒体生成输入里，改画面后重新渲染两版即可。
 - 入口 `episodes/Root.tsx` 按需加载另外两期，免得它们的字体初始化进入本期渲染。
 
@@ -75,13 +75,15 @@ pnpm exec remotion render PureCodeSampleA out/qa/spec-147/159/pure-code-sample-a
 pnpm exec remotion render PureCodeSampleB out/qa/spec-147/159/pure-code-sample-b.mp4 --gl=swangle --concurrency=4
 pnpm qa loudness out/qa/spec-147/159/pure-code-sample-a.mp4 --target-lufs -16 --tolerance 1 --max-true-peak -1 --out out/qa/spec-147/159/loudness-a
 pnpm qa loudness out/qa/spec-147/159/pure-code-sample-b.mp4 --target-lufs -16 --tolerance 1 --max-true-peak -1 --out out/qa/spec-147/159/loudness-b
+pnpm qa sheet out/qa/spec-147/159/pure-code-sample-a.mp4 --count 24 --out out/qa/spec-147/159/contact-a
+pnpm qa sheet out/qa/spec-147/159/pure-code-sample-b.mp4 --count 24 --out out/qa/spec-147/159/contact-b
 pnpm qa strip out/qa/spec-147/159/pure-code-sample-a.mp4 --from 144 --to 191 --every 1 --out out/qa/spec-147/159/cut-a
 pnpm qa strip out/qa/spec-147/159/pure-code-sample-b.mp4 --from 144 --to 191 --every 1 --out out/qa/spec-147/159/cut-b
 ```
 
 逐条串行运行，不同时开两份渲染。媒体位于 `public/episodes/pure-code-sample/`，验收产物位于 `out/qa/spec-147/159/`，均不进 Git。相关测试：`node --test episodes/pure-code-sample/pipeline.test.ts episodes/pure-code-sample/sound/sound.test.ts`；静态检查 `pnpm verify --static`；完整验证由 land 跑。
 
-**#159 当前阻塞**：真实 `light_break` 为 S1 第 62 帧；`score.json` 的 `light` 乐句按 72 BPM 最晚在第 152 帧结束，越过 `drip_fall` 第 145 帧的 `mustEndBefore`。声音命令正确拒绝生成。工单禁止改乐谱和事件帧号，因此保留该校验，待设计负责人调整乐谱后重跑生成器。`out/qa/spec-147/159/picture-only-{a,b}.mp4` 仅供画面验收，没有声音，不能作为带声成片；当前清单为 `audio-pending`，纯代码护栏会拒绝尚未登记的两份混音。证据及成本见该目录的 `report.md`。
+**#159 验收**：两版使用 S1 第 51 帧的 `light_break` 重新生成声音，并按上述命令渲染带声成片。两版全部画面事件、交接处 F144–191 连续帧、三帧重复渲染、响度及成本实测见 `/root/project/video-studio.worktrees/159/out/qa/spec-147/159/report.md`。镜头 1 定稿后继续按上述命令重渲和复查；交接构图、B 版振翅出画由设计负责人在 #157 评价。
 
 ## 实测
 
