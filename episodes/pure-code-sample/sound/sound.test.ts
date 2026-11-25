@@ -1,4 +1,4 @@
-/** #158 外部行为测试：实谱/夹具、事件首现与镜头锚点、采样对齐、同种子 WAV 确定性，以及缺事件和乐句越界反例。 */
+/** #158/#162 外部行为测试：实谱/夹具、采样对齐、确定性与失败反例；弦乐用基频复解调、100 ms Hann 低通和 200 Hz 相位差测揉弦，取起音后至 0.7 秒避开四人长时拍频，频率容差 0.3 Hz、跨音高 0.6 Hz，并检查幅度排除无揉弦信号。 */
 import assert from "node:assert/strict";
 import { createHash } from "node:crypto";
 import { readFileSync } from "node:fs";
@@ -7,7 +7,12 @@ import { frameToSample } from "../model.ts";
 import { hottest100ms, pcmWav, place, rate, stereo } from "./dsp.ts";
 import { renderMix } from "./mix.ts";
 import { master } from "./measure.ts";
-import { compileScore, resolveAnchor } from "./score.ts";
+import {
+  compileScore,
+  frequency,
+  resolveAnchor,
+  synthesizeNote,
+} from "./score.ts";
 import { synthesizeSfx } from "./sfx.ts";
 import type { EventTable, Score, SfxName, SoundDesign } from "./types.ts";
 
@@ -18,6 +23,81 @@ const score = load<Score>("../score.json");
 const design = load<SoundDesign>("../sound.json");
 const digest = (data: Uint8Array) =>
   createHash("sha256").update(data).digest("hex");
+const measureVibrato = (samples: Float64Array, fundamental: number) => {
+  const size = Math.round(rate * 0.1),
+    hop = Math.round(rate / 200);
+  const real = new Float64Array(samples.length),
+    imag = new Float64Array(samples.length);
+  for (let i = 0; i < samples.length; i++) {
+    const phase = (2 * Math.PI * fundamental * i) / rate;
+    real[i] = samples[i] * Math.cos(phase);
+    imag[i] = samples[i] * Math.sin(phase);
+  }
+  const window = Float64Array.from(
+    { length: size },
+    (_, i) => 0.5 - 0.5 * Math.cos((2 * Math.PI * i) / (size - 1)),
+  );
+  const cents: number[] = [];
+  let previous: number | undefined;
+  for (
+    let start = Math.round(rate * 0.2);
+    start + size < samples.length - rate * 0.1;
+    start += hop
+  ) {
+    let re = 0,
+      im = 0;
+    for (let i = 0; i < size; i++) {
+      re += real[start + i] * window[i];
+      im += imag[start + i] * window[i];
+    }
+    const phase = Math.atan2(im, re);
+    if (previous !== undefined) {
+      const delta = Math.atan2(
+        Math.sin(phase - previous),
+        Math.cos(phase - previous),
+      );
+      const hz = fundamental - (delta * rate) / hop / (2 * Math.PI);
+      cents.push(1200 * Math.log2(hz / fundamental));
+    }
+    previous = phase;
+  }
+  const mean = cents.reduce((sum, value) => sum + value, 0) / cents.length;
+  let best = { hz: 0, amplitudeCents: 0 };
+  for (let hz = 2; hz <= 10; hz += 0.01) {
+    let re = 0,
+      im = 0,
+      weight = 0;
+    for (let i = 0; i < cents.length; i++) {
+      const w = 0.5 - 0.5 * Math.cos((2 * Math.PI * i) / (cents.length - 1));
+      const phase = (2 * Math.PI * hz * i * hop) / rate;
+      re += (cents[i] - mean) * w * Math.cos(phase);
+      im += (cents[i] - mean) * w * Math.sin(phase);
+      weight += w;
+    }
+    const amplitudeCents = (2 * Math.hypot(re, im)) / weight;
+    if (amplitudeCents > best.amplitudeCents) best = { hz, amplitudeCents };
+  }
+  return best;
+};
+
+for (const seed of [158, 159])
+  test(`弦乐 F3/F5 的实际揉弦约 4.7 Hz 且与音高无关，种子 ${seed} 逐采样一致`, (t) => {
+    const measured = ["F3", "F5"].map((pitch) => {
+      const samples = synthesizeNote("strings_pad", pitch, 0.8, 1, seed);
+      const repeat = synthesizeNote("strings_pad", pitch, 0.8, 1, seed);
+      assert.equal(
+        digest(new Uint8Array(samples.buffer)),
+        digest(new Uint8Array(repeat.buffer)),
+      );
+      return { pitch, ...measureVibrato(samples, frequency(pitch)) };
+    });
+    t.diagnostic(JSON.stringify(measured));
+    for (const row of measured) {
+      assert.ok(row.hz >= 4.4 && row.hz <= 5.7, `${row.pitch}: ${row.hz} Hz`);
+      assert.ok(row.amplitudeCents > 0.5, `${row.pitch}: 揉弦幅度不足`);
+    }
+    assert.ok(Math.abs(measured[0].hz - measured[1].hz) < 0.6);
+  });
 
 test("非零镜头起点、乱序重复事件取首现，extra 只跟第一次 shake", () => {
   const reversed = { ...table, events: [...table.events].reverse() };

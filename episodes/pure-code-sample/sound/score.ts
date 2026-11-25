@@ -1,4 +1,4 @@
-/** 乐谱编译与四件合成乐器：加法钢琴/竖琴/钟琴、四人弦乐声部；先验证锚点及 mustEndBefore，绝不按截止点缩短不合规乐句。 */
+/** 乐谱编译与四件合成乐器：加法钢琴/竖琴/钟琴、四人弦乐声部；揉弦初相独立于载波累加，先验证锚点及 mustEndBefore，绝不按截止点缩短不合规乐句。 */
 import { frameToSample } from "../model.ts";
 import { curve, random, rate, seedFor } from "./dsp.ts";
 import type { Anchor, EventTable, Instrument, Score, Voice } from "./types.ts";
@@ -54,7 +54,8 @@ export const synthesizeNote = (
   const samples = new Float64Array(Math.max(1, Math.round(seconds * rate)));
   const f = frequency(pitch);
   const rng = random(seed);
-  const phases = Array.from({ length: 4 }, () => rng() * 0.25);
+  const vibratoPhases = Array.from({ length: 4 }, () => rng() * 0.25);
+  const carrierPhases = vibratoPhases.slice();
   const detunes = Array.from({ length: 4 }, () => (rng() - 0.5) * 3);
   const twoPi = 2 * Math.PI;
   for (let i = 0; i < samples.length; i++) {
@@ -68,10 +69,11 @@ export const synthesizeNote = (
       for (let player = 0; player < 4; player++) {
         const cents =
           detunes[player] +
-          3 * Math.sin(twoPi * (4.7 + player * 0.23) * t + phases[player]);
-        phases[player] += (twoPi * f * 2 ** (cents / 1200)) / rate;
+          3 * Math.sin(twoPi * (4.7 + player * 0.23) * t + vibratoPhases[player]);
+        carrierPhases[player] += (twoPi * f * 2 ** (cents / 1200)) / rate;
         for (let h = 1; h <= 7 && f * h < rate / 2; h++)
-          value += (Math.sin(h * phases[player]) * Math.exp(-h * 0.35)) / h / 4;
+          value +=
+            (Math.sin(h * carrierPhases[player]) * Math.exp(-h * 0.35)) / h / 4;
       }
       value *= Math.min(1, t / Math.min(0.12, seconds / 4)) * 0.45;
     } else if (instrument === "glockenspiel") {
