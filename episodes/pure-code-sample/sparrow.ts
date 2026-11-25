@@ -530,9 +530,26 @@ export const drawSparrow = (target: CanvasRenderingContext2D, view: SparrowView,
             const pts = Array.from({ length: 9 }, (_, k): Point => {
               const t = k / 8 - 0.5;
               const bend = (1 - 4 * t * t) * curve * 0.45;
-              return [b[0] + fwdS[0] * t * 2.1 + upS[0] * bend, b[1] + fwdS[1] * t * 2.1 + upS[1] * bend];
+              return [b[0] + fwdS[0] * t * 2.5 + upS[0] * bend, b[1] + fwdS[1] * t * 2.5 + upS[1] * bend];
             });
-            drawStrokes(ctx, strokes(pts, false, { ...style(92, lineBase * 1.05), breakEvery: [1e4, 1e4], dropLit: 0 }), ink.color);
+            const thick = Math.hypot(upS[0], upS[1]) * 0.6;
+            const upN: Point = (() => {
+              const l = Math.hypot(upS[0], upS[1]) || 1;
+              return [upS[0] / l, upS[1] / l];
+            })();
+            const rim = (sign: number) =>
+              pts.map((p, k): Point => {
+                const t = k / 8 - 0.5;
+                const h = (1 - 4 * t * t) * thick * 0.5 * sign;
+                return [p[0] + upN[0] * h, p[1] + upN[1] * h];
+              });
+            const lens = [...rim(1), ...rim(-1).reverse()];
+            ctx.beginPath();
+            lens.forEach((p, k) => (k === 0 ? ctx.moveTo(p[0], p[1]) : ctx.lineTo(p[0], p[1])));
+            ctx.closePath();
+            ctx.fillStyle = palette.eye;
+            ctx.fill();
+            drawStrokes(ctx, strokes(pts, false, { ...style(92, lineBase * 1.4), litThin: 1, breakEvery: [1e4, 1e4], dropLit: 0, minLength: 4 }), ink.color);
           }
           ctx.restore();
         }

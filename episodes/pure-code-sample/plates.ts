@@ -12,7 +12,7 @@ import type { Rng } from "./engine/random.ts";
 import { curve, mixRgb, mottle, paper, polygon, rgb, roughen, shadeRgb, stroke } from "./engine/paint.ts";
 import type { Paper, Pt, RGB } from "./engine/paint.ts";
 import { dusk, rain } from "./tokens.ts";
-import { eave, plateSize, reference } from "./scene.ts";
+import { eave, plateSize, puddles, reference } from "./scene.ts";
 import type { Plate } from "./scene.ts";
 
 export type LightState = "rain" | "dusk";
@@ -131,7 +131,7 @@ const mass = (b: Brush, puffs: Puff[], st: MassStyle) => {
   };
   const T = 0.55;
   const shadeAt = (x: number, y: number) => {
-    const e = 3;
+    const e = st.backlit ? 16 : 3;
     const gx = (f(x + e, y) - f(x - e, y)) / (2 * e);
     const gy = (f(x, y + e) - f(x, y - e)) / (2 * e);
     const l = Math.hypot(gx, gy) || 1;
@@ -146,7 +146,7 @@ const mass = (b: Brush, puffs: Puff[], st: MassStyle) => {
     const up = Math.max(0, Math.min(1, (y1 - y) / (y1 - y0)));
     const lump = (fbm2(x / 70, y / 70, 77, 2) - 0.5) * 0.1;
     const v = st.backlit
-      ? facing * 0.55 + Math.exp(-depth / 0.18) * Math.max(0, facing) * 0.6 + up * 0.15 - 0.22 + lump
+      ? facing * 0.55 * (1 - 0.35 * depth) + Math.exp(-depth / 0.18) * Math.max(0, facing) * 0.6 + up * 0.18 - 0.22 - depth * 0.04 + lump * 0.6
       : facing * 0.6 * (1 - depth * 0.5) + up * 0.42 - depth * 0.12 + lump;
     return { v: v + (st.litBias ?? 0), n };
   };
@@ -295,15 +295,15 @@ const cloud = (b: Brush, state: LightState, puffs: Puff[], weight: number, floor
     }
     const squash = (pts: [number, number][]) => pts.map(([px, py]) => [x + (px - x) * wide, Math.min(py, bottom - 2)] as [number, number]);
     if (exposed) {
-      const strokes = 4 + Math.floor(b.r.next() * 3);
+      const strokes = 6 + Math.floor(b.r.next() * 3);
       const reach = state === "dusk" ? 1 : 0.45;
       for (let i = 0; i < strokes; i++) {
         const u = i / (strokes - 1);
-        const rr = r * (0.58 + 0.3 * u + b.r.range(-0.03, 0.03));
+        const rr = r * (0.7 + 0.24 * u + b.r.range(-0.02, 0.02));
         const span = (0.5 + 0.5 * (1 - u)) * b.r.range(0.75, 1.1);
         const a = sunAngle + b.r.gauss() * 0.22;
         const col = mixRgb(mixRgb(bodyCol, t.mid, 0.5), litCol, (0.25 + 0.65 * u) * reach);
-        line(b, squash(arc(x, y, rr, a - span, a + span, 9)), r * b.r.range(0.2, 0.3) * (1 - 0.35 * u), jitter(b, col, 0.02), { dry: 0.25, body: 0.7, taper: [0.2, 0.2] });
+        line(b, squash(arc(x, y, rr, a - span, a + span, 9)), r * b.r.range(0.15, 0.21) * (1 - 0.35 * u), jitter(b, col, 0.02), { dry: 0.06, body: 0.9, taper: [0.3, 0.3] });
       }
       if (state === "dusk") {
         for (let i = 0; i < 2; i++) {
@@ -333,12 +333,18 @@ const paintFar = (plate: Plate, state: LightState): Paper => {
     }
   }
   if (state === "dusk") {
-    for (let i = 0; i < 70; i++) {
+    for (let i = 0; i < 120; i++) {
       const a = b.r.range(0, Math.PI * 2);
-      const d = Math.abs(b.r.gauss()) * 110;
-      const x = SUN.x + Math.cos(a) * d * 1.5;
-      const y = SUN.y + Math.sin(a) * d * 0.8;
-      line(b, curve([x - 60, y], [x + 60, y + b.r.range(-8, 8)], 0.05), b.r.range(18, 36), jitter(b, mixRgb(rgb(dusk.cloudGap[0]), rgb(dusk.cloudGap[1]), d / 200), 0.02), { dry: 0.3, alpha: 0.9 });
+      const d = Math.abs(b.r.gauss()) * 120;
+      const x = SUN.x + Math.cos(a) * d * 1.6;
+      const y = SUN.y + Math.sin(a) * d * 0.7;
+      const fade = Math.max(0.25, 1 - d / 320);
+      const len = b.r.range(50, 300) * fade;
+      line(b, curve([x - len / 2, y], [x + len / 2, y + b.r.range(-6, 6)], b.r.range(-0.04, 0.04)), b.r.range(5, 24) * fade, jitter(b, mixRgb(rgb(dusk.cloudGap[0]), rgb(dusk.cloudGap[1]), Math.min(1, d / 220)), 0.02), {
+        dry: 0.15,
+        alpha: b.r.range(0.4, 0.8),
+        taper: [0.35, 0.35],
+      });
     }
   }
   for (let i = 0; i < 14; i++) {
@@ -564,18 +570,37 @@ const paintYard = (plate: Plate, state: LightState): Paper => {
       x += len * b.r.range(0.6, 0.95);
     }
   }
-  const puddles: [number, number, number][] = [[620, 9.2, 1.6], [1320, 8.1, 2.2], [1720, 9.8, 1.0], [180, 7.6, 1.3]];
-  for (const [px, d, w] of puddles) {
+  for (const { x: px, depth: d, width: w } of puddles) {
     const y = ground(0, d).y;
     const wpx = w * (project(reference, [1, d, 0]).x - project(reference, [0, d, 0]).x);
     const h = (ground(0, d * 0.9).y - y) * 0.9;
-    const shape = arc(px, y, wpx, 0, Math.PI * 2, 20).slice(0, -1).map(([x, yy]) => [x, y + (yy - y) * (h / wpx)] as [number, number]);
-    fill(b, shape, state === "dusk" ? mixRgb(skyColor(state, px, 380), rgb(dusk.cloud.shadow), 0.35) : rgb(rain.paddyWater), h * 0.05);
-    for (let i = 0; i < 5; i++) {
-      const yy = y + b.r.range(-h * 0.5, h * 0.5);
-      const x0 = px + b.r.range(-wpx * 0.6, wpx * 0.2);
-      const col = state === "dusk" ? rgb(b.r.next() < 0.5 ? dusk.waterGlint : dusk.cloudGap[0]) : mixRgb(rgb(rain.paddyWater), rgb(rain.cloud.edge), 0.5);
-      line(b, [[x0, yy], [x0 + wpx * b.r.range(0.3, 0.7), yy]], b.r.range(2, 4), col, { dry: 0.5, alpha: 0.9 });
+    const ellipse = (sx: number, sy: number) =>
+      arc(px, y, wpx * sx, 0, Math.PI * 2, 24).slice(0, -1).map(([x, yy]) => [x, y + (yy - y) * ((h * sy) / wpx)] as [number, number]);
+    fill(b, ellipse(1.1, 1.25), shadeRgb(soil, 0.72), h * 0.08, 0.85);
+    const far = state === "dusk" ? mixRgb(skyColor(state, px, HORIZON - 20), rgb(dusk.cloudGap[1]), 0.25) : mixRgb(rgb(rain.cloud.edge), rgb(rain.sky[2]), 0.5);
+    const near = state === "dusk" ? mixRgb(skyColor(state, px, 0), rgb(dusk.cloud.shadow), 0.4) : mixRgb(rgb(rain.cloud.dark), rgb(rain.paddyWater), 0.45);
+    const hedgeRef = pick(state, rain.hedge, dusk.shadowTeal, 0.6);
+    fill(b, ellipse(1, 1), mixRgb(far, near, 0.55), h * 0.04);
+    const rows = Math.max(6, Math.round(h / 3));
+    for (let i = 0; i < rows; i++) {
+      const u = (i + 0.5) / rows;
+      const yy = y - h + 2 * h * u;
+      const half = wpx * Math.sqrt(Math.max(0, 1 - Math.pow(2 * u - 1, 2))) * 0.96;
+      if (half < 4) continue;
+      const col = u < 0.22 ? mixRgb(hedgeRef, far, u / 0.22 * 0.6) : mixRgb(far, near, Math.pow((u - 0.22) / 0.78, 0.8));
+      for (let x = px - half; x < px + half; ) {
+        const len = Math.min(px + half - x, b.r.range(40, 140));
+        line(b, [[x, yy], [x + len, yy + b.r.range(-0.6, 0.6)]], (2 * h) / rows * 1.4, jitter(b, col, 0.03), { dry: 0.15, body: 0.8, alpha: 0.9 });
+        x += len * b.r.range(0.7, 0.95);
+      }
+    }
+    for (let i = 0; i < 4; i++) {
+      const u = b.r.range(0.3, 0.75);
+      const yy = y - h + 2 * h * u;
+      const half = wpx * Math.sqrt(Math.max(0, 1 - Math.pow(2 * u - 1, 2)));
+      const x0 = px + b.r.range(-half * 0.7, half * 0.1);
+      const col = state === "dusk" ? rgb(b.r.next() < 0.5 ? dusk.waterGlint : dusk.cloudGap[0]) : mixRgb(rgb(rain.cloud.edge), rgb(rain.sky[2]), 0.3);
+      line(b, [[x0, yy], [x0 + half * b.r.range(0.3, 0.6), yy]], b.r.range(1.5, 3), col, { dry: 0.5, alpha: 0.75, taper: [0.3, 0.3] });
     }
   }
   const stones: [number, number][] = [[880, 8.6], [1010, 7.3], [1150, 6.3]];

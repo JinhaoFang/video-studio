@@ -1,12 +1,12 @@
 /**
  * S1 的天气与光：光照遮罩（夕光照到的地方为 1）、雨丝、檐口滴水、主角头顶那颗水珠和打中后溅开的水花。
  * 遮罩在 1/16 分辨率上逐格计算再放大，天上从太阳向外扩，地上按纵深从远往近扫，边缘用噪声做出云影的不规则；
- * 雨丝和檐口滴水放在米制场景里按相机投影，近的长而淡、远的短而密，按雨量逐根退场，不是均匀粒子。
+ * 雨丝和檐口滴水放在米制场景里按相机投影，近的长而淡、远的短而密，按雨量逐根退场，不是均匀粒子；院子水洼里的雨点涟漪跟着院子那层底图走，按雨量变稀。
  */
 import { layer, project } from "../../engine/camera.ts";
 import type { Camera, Vec3 } from "../../engine/camera.ts";
 import { hash, noise2 } from "../../engine/random.ts";
-import { eave, reference } from "../../scene.ts";
+import { eave, plates, puddles, reference } from "../../scene.ts";
 import { dusk, ink, rain, warm } from "../../tokens.ts";
 import { lightFront, rainAmount, skyFront } from "./timing.ts";
 
@@ -143,7 +143,7 @@ export const drawDrop = (ctx: CanvasRenderingContext2D, x: number, y: number, r:
     ctx.restore();
     return;
   }
-  const body = lerpRgb(mixHex(rain.paddyWater, rain.cloud.edge, 0.35), toRgb(dusk.cloudGap[1]), warmth * 0.35);
+  const body = lerpRgb(mixHex(rain.paddyWater, rain.cloud.edge, 0.35), toRgb(dusk.cloudGap[1]), warmth * 0.6);
   dropShape(ctx, x, y, r, stretch);
   ctx.fillStyle = rgba(body, 0.92);
   ctx.fill();
@@ -194,7 +194,7 @@ export const drawEaveDrips = (ctx: CanvasRenderingContext2D, camera: Camera, fra
 
 export const splash = (ctx: CanvasRenderingContext2D, x: number, y: number, unit: number, age: number, warmth: number) => {
   if (age <= 1) {
-    const w = unit * (0.38 + 0.18 * age);
+    const w = unit * (0.5 + 0.3 * age);
     ctx.save();
     ctx.beginPath();
     ctx.ellipse(x, y + unit * 0.04, w, unit * 0.09, 0, 0, Math.PI * 2);
@@ -205,18 +205,67 @@ export const splash = (ctx: CanvasRenderingContext2D, x: number, y: number, unit
     ctx.stroke();
     ctx.restore();
   }
-  for (let k = 0; k < 7; k++) {
+  for (let k = 0; k < 10; k++) {
     const life = 6 + Math.floor(hash(149, k, 1) * 5);
     if (age > life) continue;
     const a = -Math.PI / 2 + (hash(149, k, 2) - 0.5) * 2.4;
-    const speed = unit * (0.16 + 0.16 * hash(149, k, 3));
+    const speed = unit * (0.24 + 0.22 * hash(149, k, 3));
     const g = unit * 0.035;
     const vx = Math.cos(a) * speed;
     const vy = Math.sin(a) * speed + g * age;
     const px = x + vx * age;
     const py = y + Math.sin(a) * speed * age + 0.5 * g * age * age;
-    const r = Math.max(1.6, unit * (0.06 + 0.05 * hash(149, k, 4)) * (1 - age / (life + 3)));
+    const r = Math.max(1.6, unit * (0.07 + 0.06 * hash(149, k, 4)) * (1 - age / (life + 3)));
     const v = Math.hypot(vx, vy);
     drawDrop(ctx, px, py, r, Math.min(2.5, (v / r) * 0.25), warmth, Math.atan2(vy, vx) - Math.PI / 2);
   }
+};
+
+export const drawRipples = (ctx: CanvasRenderingContext2D, camera: Camera, frame: number, warmth: number) => {
+  const amount = rainAmount(frame);
+  if (amount <= 0.01) return;
+  const yard = plates.find((p) => p.id === "yard")!;
+  const t = layer(reference, camera, yard.distance);
+  if (!(t.scale > 0 && t.scale < 40)) return;
+  const col = mixHex(rain.cloud.edge, warm.rim, warmth * 0.6);
+  puddles.forEach((p, n) => {
+    const y = project(reference, [0, p.depth, 0]).y;
+    const perMeter = project(reference, [1, p.depth, 0]).x - project(reference, [0, p.depth, 0]).x;
+    const h = (project(reference, [0, p.depth * 0.9, 0]).y - y) * 0.9;
+    const cx = p.x * t.scale + t.dx;
+    const cy = y * t.scale + t.dy;
+    const rx = p.width * perMeter * t.scale;
+    const ry = h * t.scale;
+    if (cy - ry > camera.height || cx + rx < 0 || cx - rx > camera.width) return;
+    ctx.save();
+    ctx.beginPath();
+    ctx.ellipse(cx, cy, rx * 0.96, ry * 0.9, 0, 0, Math.PI * 2);
+    ctx.clip();
+    const slots = Math.round(8 + p.width * 7);
+    for (let k = 0; k < slots; k++) {
+      const id = n * 64 + k;
+      const period = 9 + Math.floor(hash(150, id, 1) * 7);
+      const local = frame + hash(150, id, 2) * period;
+      const cycle = Math.floor(local / period);
+      const age = (local % period) / period;
+      if (hash(151, id, cycle) > amount) continue;
+      const a = hash(152, id, cycle) * Math.PI * 2;
+      const rr = Math.sqrt(hash(153, id, cycle));
+      const x = cx + Math.cos(a) * rr * rx * 0.85;
+      const yy = cy + Math.sin(a) * rr * ry * 0.75;
+      const R = (0.03 + 0.2 * Math.sqrt(age)) * perMeter * t.scale;
+      ctx.lineWidth = Math.max(1, 2.4 * (1 - age * 0.6) * Math.sqrt(t.scale));
+      ctx.strokeStyle = rgba(col, (1 - age) * 0.85);
+      ctx.beginPath();
+      ctx.ellipse(x, yy, R, R * (ry / rx) * 1.4, 0, 0, Math.PI * 2);
+      ctx.stroke();
+      if (age > 0.25) {
+        ctx.strokeStyle = rgba(col, (1 - age) * 0.5);
+        ctx.beginPath();
+        ctx.ellipse(x, yy, R * 0.55, R * 0.55 * (ry / rx) * 1.4, 0, 0, Math.PI * 2);
+        ctx.stroke();
+      }
+    }
+    ctx.restore();
+  });
 };

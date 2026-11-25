@@ -97,18 +97,18 @@ export const drawPole = (ctx: CanvasRenderingContext2D, camera: Camera, look: Po
   band(1, -0.1, mid);
   band(1, isDusk ? 0.62 : 0.4, lit);
   const glint = edge(0.8);
-  ctx.strokeStyle = isDusk ? mixHex(warm.rim, warm.dropHighlight, 0.6) : mixHex(rain.cloud.edge, "#ffffff", 0.3);
+  ctx.strokeStyle = isDusk ? mixHex(warm.rim, warm.dropHighlight, 0.35) : mixHex(rain.cloud.edge, rain.pole, 0.35);
   ctx.lineCap = "round";
   for (let i = 2; i < n - 2; i++) {
     const v = hash(fixed, Math.round(tAt(i) * 400), 2);
-    if (v < 0.7) continue;
-    const runLen = 1 + Math.floor(hash(fixed, Math.round(tAt(i) * 400), 3) * 2.5);
-    ctx.lineWidth = Math.max(0.9, half[i] * (0.1 + 0.08 * hash(fixed, Math.round(tAt(i) * 400), 4)));
+    if (v < 0.8) continue;
+    const runLen = 1 + Math.floor(hash(fixed, Math.round(tAt(i) * 400), 3) * 4);
+    ctx.lineWidth = Math.max(0.9, half[i] * (0.05 + 0.09 * hash(fixed, Math.round(tAt(i) * 400), 4)));
     ctx.beginPath();
     ctx.moveTo(glint[i][0], glint[i][1]);
     for (let k = 1; k <= runLen && i + k < n; k++) ctx.lineTo(glint[i + k][0], glint[i + k][1]);
     ctx.stroke();
-    i += runLen + 2;
+    i += runLen + 2 + Math.floor(hash(fixed, Math.round(tAt(i) * 400), 5) * 6);
   }
   const style = {
     seed,

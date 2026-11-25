@@ -18,7 +18,7 @@ import type { PlateImages, Surface } from "../../stage.ts";
 import { rain as rainTone } from "../../tokens.ts";
 import { perch } from "../placeholder.ts";
 import { cameraProgress, DRIP_ENTER, DRIP_FALL, DRIP_HIT, LIGHT_ON_BIRD, s1Timing } from "./timing.ts";
-import { drawDrop, drawEaveDrips, drawRain, fasciaPoint, lightMask, splash } from "./weather.ts";
+import { drawDrop, drawEaveDrips, drawRain, drawRipples, fasciaPoint, lightMask, splash } from "./weather.ts";
 
 const start: Camera = { ...reference, position: [-0.05, 0, 2.0], pitch: 0.075, focal: 31 };
 
@@ -152,6 +152,7 @@ const draw = ({ context, plates, rain }: Surface, frame: number) => {
   lit.globalCompositeOperation = "source-over";
   context.drawImage(litCanvas, 0, 0);
   const warmth = Math.min(1, Math.max(0, (frame - 40) / 60));
+  drawRipples(context, camera, frame, warmth);
   drawEaveDrips(context, camera, frame, warmth);
   drawRain(context, camera, frame, warmth);
   const anchor = fasciaPoint(camera, dripX);
