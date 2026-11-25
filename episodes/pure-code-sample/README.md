@@ -54,6 +54,7 @@ spec #147：吸收参照片的方法（[研究记录](../../docs/research/noroi-
 - `generate.ts`、`audio.ts`：生成器。Node 计算底图的 RGB 像素、用 FFmpeg 编码成 PNG；用固定种子的噪声和衰减振荡器合成 48 kHz PCM16 的音效；按事件表把音效的对齐点放到事件帧对应的采样上，混成双声道。混音起点是 `round(事件帧 × 采样率 / fps) - 对齐点采样号`；只施加常量增益，不做会移动对齐点的时域处理。
 - `data/events.json`：全片事件表。`data/generated.json`：生成命令、输入源码哈希、FFmpeg 版本、媒体哈希和混音参数，供缓存和护栏检查。
 - 缓存：`generate.ts`、`model.ts`、`audio.ts`、所用令牌或 FFmpeg 版本改变，以及产物缺失、哈希不匹配、事件表变化，都会让缓存失效；`--force` 强制重建。缓存只管生成物，改了镜头或着色器要重新渲染。
+- [独立声音命令](sound/README.md)：#158 的四件乐器、十三种音效、事件落位与混音验收；开发用 `sound/events.fixture.json`，输出 `out/qa/spec-147/158/`。接入生成器、合成与清单由 #159 完成。
 - 入口 `episodes/Root.tsx` 按需加载另外两期，免得它们的字体初始化进入本期的渲染。
 
 从仓库根目录运行：

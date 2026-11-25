@@ -1,0 +1,178 @@
+{
+  "fps": 24,
+  "sampleRate": 48000,
+  "shotTable": [
+    { "id": "S1", "startFrame": 0, "durationInFrames": 168 },
+    { "id": "S2", "startFrame": 168, "durationInFrames": 144 }
+  ],
+  "events": [
+    {
+      "frame": 0,
+      "kind": "rain_tail",
+      "description": "雨尾开始",
+      "shotId": "S1",
+      "localFrame": 0
+    },
+    {
+      "frame": 48,
+      "kind": "light_break",
+      "description": "夕光照到稻田",
+      "shotId": "S1",
+      "localFrame": 48
+    },
+    {
+      "frame": 144,
+      "kind": "drip_fall",
+      "description": "最后一滴离开檐口",
+      "shotId": "S1",
+      "localFrame": 144
+    },
+    {
+      "frame": 150,
+      "kind": "drip_hit",
+      "description": "水珠打中羽毛",
+      "shotId": "S1",
+      "localFrame": 150
+    },
+    {
+      "frame": 174,
+      "kind": "flinch",
+      "description": "一缩",
+      "shotId": "S2",
+      "localFrame": 6
+    },
+    {
+      "frame": 178,
+      "kind": "shake",
+      "description": "第一次甩水",
+      "shotId": "S2",
+      "localFrame": 10
+    },
+    {
+      "frame": 182,
+      "kind": "shake",
+      "description": "第二次甩水",
+      "shotId": "S2",
+      "localFrame": 14
+    },
+    {
+      "frame": 186,
+      "kind": "shake",
+      "description": "第三次甩水",
+      "shotId": "S2",
+      "localFrame": 18
+    },
+    {
+      "frame": 189,
+      "kind": "shake",
+      "description": "第四次甩水",
+      "shotId": "S2",
+      "localFrame": 21
+    },
+    {
+      "frame": 190,
+      "kind": "puff",
+      "description": "蓬起",
+      "shotId": "S2",
+      "localFrame": 22
+    },
+    {
+      "frame": 192,
+      "kind": "hush",
+      "description": "留白开始",
+      "shotId": "S2",
+      "localFrame": 24
+    },
+    {
+      "frame": 216,
+      "kind": "look_up",
+      "description": "看光",
+      "shotId": "S2",
+      "localFrame": 48
+    },
+    {
+      "frame": 232,
+      "kind": "crouch",
+      "description": "压身",
+      "shotId": "S2",
+      "localFrame": 64
+    },
+    {
+      "frame": 245,
+      "kind": "takeoff",
+      "description": "蹬离",
+      "shotId": "S2",
+      "localFrame": 77
+    },
+    {
+      "frame": 246,
+      "kind": "pole_spring",
+      "description": "竹竿首次弹回",
+      "shotId": "S2",
+      "localFrame": 78
+    },
+    {
+      "frame": 248,
+      "kind": "wingbeat",
+      "description": "第一次振翅",
+      "shotId": "S2",
+      "localFrame": 80
+    },
+    {
+      "frame": 252,
+      "kind": "wingbeat",
+      "description": "第二次振翅",
+      "shotId": "S2",
+      "localFrame": 84
+    },
+    {
+      "frame": 256,
+      "kind": "wingbeat",
+      "description": "第三次振翅",
+      "shotId": "S2",
+      "localFrame": 88
+    },
+    {
+      "frame": 260,
+      "kind": "wingbeat",
+      "description": "第四次振翅",
+      "shotId": "S2",
+      "localFrame": 92
+    },
+    {
+      "frame": 264,
+      "kind": "wingbeat",
+      "description": "第五次振翅",
+      "shotId": "S2",
+      "localFrame": 96
+    },
+    {
+      "frame": 264,
+      "kind": "pole_drip",
+      "description": "第一滴落地",
+      "shotId": "S2",
+      "localFrame": 96
+    },
+    {
+      "frame": 270,
+      "kind": "pole_drip",
+      "description": "第二滴落地",
+      "shotId": "S2",
+      "localFrame": 102
+    },
+    {
+      "frame": 277,
+      "kind": "pole_drip",
+      "description": "第三滴落地",
+      "shotId": "S2",
+      "localFrame": 109
+    },
+    {
+      "frame": 282,
+      "kind": "settle",
+      "description": "停稳空竹竿",
+      "shotId": "S2",
+      "localFrame": 114
+    }
+  ]
+}
