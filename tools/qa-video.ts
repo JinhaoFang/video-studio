@@ -6,6 +6,8 @@
  * repeated/unsorted requests map back to those files. ffprobe separately scans
  * timestamps. Display dimensions include sample aspect ratio. Requests before
  * the first displayed frame are rejected instead of synthesizing a picture.
+ * pixelWidth 保留像素宽高比修正前的编码宽度；extractFrameIndices 直接按解码帧号取样，
+ * 即使不同帧具有相同的呈现时间戳，也能分别选择。
  */
 import { statSync } from "node:fs";
 import { join } from "node:path";
@@ -36,7 +38,13 @@ type Probe = {
   format: { duration?: string; start_time?: string };
 };
 
-export type Video = { times: Time[]; end: Time; width: number; height: number };
+export type Video = {
+  times: Time[];
+  end: Time;
+  width: number;
+  height: number;
+  pixelWidth: number;
+};
 
 export const probeVideo = (video: string): Video => {
   if (!statSync(video).isFile()) {
@@ -113,7 +121,13 @@ export const probeVideo = (video: string): Video => {
     .split(":")
     .map(Number);
   const sar = sarWidth > 0 && sarHeight > 0 ? sarWidth / sarHeight : 1;
-  return { times, end, width: stream.width * sar, height: stream.height };
+  return {
+    times,
+    end,
+    width: stream.width * sar,
+    height: stream.height,
+    pixelWidth: stream.width,
+  };
 };
 
 const frameAt = (times: Time[], time: Time): number => {
@@ -157,8 +171,22 @@ export const extractFrames = (
   directory: string,
   scale: string,
   extension: "jpg" | "png" = "png",
+): string[] =>
+  extractFrameIndices(
+    input,
+    requested.map((time) => frameAt(video.times, time)),
+    directory,
+    scale,
+    extension,
+  );
+
+export const extractFrameIndices = (
+  input: string,
+  indices: number[],
+  directory: string,
+  filter: string,
+  extension: "jpg" | "png" = "png",
 ): string[] => {
-  const indices = requested.map((time) => frameAt(video.times, time));
   const unique = [...new Set(indices)].sort((a, b) => a - b);
   const paths = unique.map((_, index) =>
     join(directory, `${String(index + 1).padStart(6, "0")}.${extension}`),
@@ -176,7 +204,7 @@ export const extractFrames = (
     "-map",
     "0:v:0",
     "-vf",
-    `select='${unique.map((index) => `eq(n,${index})`).join("+")}',${scale},setsar=1`,
+    `select='${unique.map((index) => `eq(n,${index})`).join("+")}',${filter},setsar=1`,
     "-vsync",
     "0",
     "-frames:v",

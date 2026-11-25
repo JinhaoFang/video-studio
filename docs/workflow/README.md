@@ -66,6 +66,8 @@ pnpm 的版本由 `package.json` 的 `packageManager` 固定，本机装的 pnpm
 
 时间机制：台本每句一个编号（`L001`、`L002`……）和句后停顿，以每句音频的实测时长累计生成时间轴，记录每句的起止帧和配音来源。镜头代码按"某句开始后多少帧"定时，不写死帧号。改稿或重配音后重新生成时间轴，动画会跟着走。当前格式、生成工具和 `pnpm qa sentence` 按句取点用法见 [NASA 朋克开场说明](../../episodes/nasa-punk-opening/README.md)。
 
+画面细节与逐帧运动验收：`pnpm qa crop <视频> <时间点> <x,y…>` 按原始像素裁切一个或多个区域，左上角从 `0,0` 起，默认 600×450，可用 `--width`、`--height` 调整；输出不缩放的 PNG，区域超出画面时报错。`pnpm qa strip <视频> --from <起始帧> --to <结束帧> [--every <帧步长>]` 按从 0 开始的解码帧号取样，包含对齐步长的终点，步长默认 1；每格标帧号和实际呈现时间码，默认 4 列、每页最多 24 格，沿用 `sheet` 的排版与 2000 像素整页上限。两项均支持 `--out` 指定输出目录，详细用法见各自 `--help`。
+
 配音和成片的工具先看 `--help`：逐句配音 `pnpm tts`、等比变速 `node tools/stretch-voice.ts`、配音打分 `pnpm qa voice`、配乐与混音 `node tools/mix-opening.ts`、运动自检 `pnpm qa motion`。本期的复现命令见 [NASA 朋克开场说明](../../episodes/nasa-punk-opening/README.md)。`--help` 里没有的几条：
 
 - 凭据只从环境变量或 `--env` 指定的文件读，不复制进仓库和日志。
