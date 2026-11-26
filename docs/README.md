@@ -13,6 +13,7 @@
 | `video/` | 视频知识：13 项决定（见 `workflow/README.md`「一期视频」）各有哪些选项、各是什么意思、适合什么情况、样片和出处；只写知识，不写步骤 |
 | `research/nasa-ep04/` | 参考视频拆解：`pipeline.md` 流程、`shots.md` 镜头表、`style.md` 视觉与声音、`transcript.md` 旁白时间轴 |
 | `research/table-videosop.md` | 对照：另一位作者的 Table-Video SOP，以及可以借用的做法 |
+| `research/` 其余各份 | 一题一份的调研：`mg-styles-15.md` MG 风格拆解，`srt-whiteboard-animation.md` 白板技能实测，`noroi-iwai.md` 纯代码动画参照片的做法和小样对各条假设的验证结论 |
 | `reports/` | 每个视频 spec 完成后，设计负责人给用户的工作汇报：spec #60 是 HTML 可视化页面，spec #1 是 Markdown |
 
 开发流程（`run-spec`、`setup-run-spec`）的观察记录、规则判定标准、开局步骤和各版本汇报，2026-10-31 起在 `JinhaoFang/agent-workflow`。

@@ -31,7 +31,8 @@
 | 仓库定位 | 视频类型不限；目的是做出满意的视频、沉淀、可以对外交付；被邀请进来的人都是用户，不分主次（用户 11-09） | `AGENTS.md`、`GLOSSARY.md` |
 | 工作室层的沉淀 | 本仓库跨期共享的部分叫工作室层，"方法层"只指 `agent-workflow`；沉淀只从新会话的 `/retro` 进入，满足四条标准；推翻已定事项时请当初定的人确认；改了工作室层的 PR 合并前在新会话里用 `code-review` 审一次；不设人工把关（用户 11-09） | `docs/workflow/README.md`「复利」、`docs/adr/0001-studio-layer-without-gatekeeper.md` |
 | 帮不懂视频的用户 | 核心是在必要的时候请用户参与（只有用户知道的、之后改起来代价大的、满不满意），问新手给样片、说大白话；一期 13 项决定是设计负责人的检查清单；视频知识放 `docs/video/`，只写知识不写步骤；不加新流程、技能或简报文件，入口不变；白板技能按实测收纳，mg-styles 的评审打分不纳入（用户 11-09，spec #132） | `docs/workflow/README.md`「一期视频」、`docs/roles/design.md`「工作流」、`docs/video/`、`docs/reports/spec-132-video-novice.html` |
-| 纯代码动画 | 原创的剧场级日式动画短片，画面、配乐、音效全部由仓库代码算出（`GLOSSARY.md`「纯代码」）；宿主是 Remotion，Canvas 2D 加 WebGL，声音用 Node 合成，本机只能用软件图形 `--gl=swangle`；第一部小样 13 秒、两个镜头，镜头 2 的 A、B 两版各成一部（spec #147，PR #164） | `docs/adr/0002-pure-code-animation-on-remotion.md`、`episodes/pure-code-sample/README.md`、`docs/reports/spec-147-pure-code-sample.html` |
+| 纯代码动画 | 原创的剧场级日式动画短片，画面、配乐、音效全部由仓库代码算出（`GLOSSARY.md`「纯代码」）；宿主是 Remotion，Canvas 2D 加 WebGL，声音用 Node 合成，本机只能用软件图形 `--gl=swangle`；第一部小样 13 秒、两个镜头，镜头 2 的 A、B 两版各成一部（spec #147，PR #164）。用户看片选了 A；用哪个模型属于个人席位，仓库只记对比证据；参照片方法的验证结论在研究记录第 7 节（用户 11-26，复盘） | `docs/adr/0002-pure-code-animation-on-remotion.md`、`episodes/pure-code-sample/README.md`、`docs/reports/spec-147-pure-code-sample.html`、`docs/research/noroi-iwai.md` |
+| 视觉工单的自查 | 工作类型是「前端」「动画」的工单，执行者交付前一轮一轮自查画面（多帧、1:1 裁切、连续帧条、写下最差三处并改、对照反面清单），记录写进汇报；自查不代替设计负责人验收（用户 11-26，spec #147 复盘） | `docs/roles/engineering.md`「完成标准」 |
 
 进行中的工作以 GitHub 上打开的 spec 为准，不写进本文。
 
@@ -55,5 +56,5 @@
 - kit 组件要写测试时，测试的运行环境怎么定：现在 `.test.ts` 都按 Node 环境检查和运行，测不了 JSX。
 - kit 复用欠账：ClinMesh 是中英文加空格（首期 `text-spacing.ts`）和颗粒暗角（首期 `FilmFinish.tsx`）的第二次使用，但两处都各写了一份，没有提进 `src/kit/`。
 - 时间轴来源类型：`tools/build-timeline.ts` 只认 `temporary` 和 `elevenlabs`，非 ElevenLabs 的正式配音（如 ClinMesh 的 MiniMax）只能记成 `elevenlabs`。#114 曾加过 `local`，后来按审阅撤回；要不要加，再定。
-- 视频知识的维护：`docs/video/` 的「适合」是保守建议，出处里有会改版的平台规格页；第一次照 13 项清单做完一期后，看 `/retro` 怎么补充和更新它们。
-- 纯代码动画用哪个模型：用户看完小样选了镜头 2 的 A（agy / Gemini，理由记在 #157），个人席位已新增 `engineering.动画` 指向它。之后开新会话 `/retro`，逐条判断研究记录里的假设、本期约定和看片发现的问题（静默被做成关掉声音、切镜前后主体位置跳动）哪些进工作室层，再写正片 spec。
+- 视频知识的维护：做完一期后由 `/retro` 按这一期的证据更正和补充 `docs/video/`（spec #147 复盘改了日式动画等条目与代码路线冲突的说法，补了静默与环境底噪、视线引导、纯代码合成的声音）；出处里的平台规格页会改版，什么时候复查还没定。
+- 剧组底座：用户 11-26 认为按部门"搭建剧组"比现在按阶段排的 13 项清单更具体、更专业，而且适用于所有类型的视频，只是各类片子的做法不同，底座要通用。依据：spec #147 看片发现的两个问题（静默做成了断音，切镜时主体从约 62% 跳到约 38%）和 spec #60 的 1.2 秒黑场都出在交接处；#157 的评价是按色彩、构图、动作、剪辑、声音逐个部门看的；设计负责人的主会话用了全 spec 约一半的 token。要定的事：部门清单；每个部门交出什么、怎么自查；交接处由谁验收；部门和席位的工作类型怎么对应；怎么并进 13 项清单和 `docs/video/`，不另起一套。它会改到上面「帮不懂视频的用户」一行里"不加新流程、技能或简报文件"的决定，动手前请用户确认。「第一阶段留下的」里跨工单衔接、并行镜头冲突两条在这里一并处理（spec #147 用本期约定的归属表让 A、B 两版合并零冲突，见 `episodes/pure-code-sample/contract.md`）。正片 spec 之前，先开 `/grill-with-docs` 定下来。
