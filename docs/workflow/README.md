@@ -156,6 +156,7 @@ pnpm 的版本由 `package.json` 的 `packageManager` 固定，本机装的 pnpm
 | `generation/bake.ts` | Node 端 `bakePlate(paper, output)` 将任意底图烘焙成 PNG。 |
 | `generation/manifest.ts` | `generation` 从源码、数据和运行版本建立缓存，用 `cached`、`platesCached` 核实产物，`save` 写入清单。 |
 | `sound/types.ts`、`dsp.ts` | `EventTable`、`Score`、`SoundDesign` 描述输入，`place`、`reverb` 和 `pcmWav` 处理 48 kHz 采样。 |
+| `sound/voice.ts`、`sound/chirp.ts` | `synthesizeVoice` 根据音高、力度、开口度控制点合成人声，`synthesizeChirp` 根据扫频轨迹和谐波振幅合成鸟叫单音。两者都返回可用 `place` 落位的 `Clip`。参见[《雨后》试听配方](../../episodes/after-rain/auditions/)。 |
 | `sound/score.ts` | `resolveAnchor` 定位乐句，`compileScore` 和 `synthesizeNote` 按乐谱合成独立乐音。 |
 | `sound/mix.ts` | `renderMix(table, score, design, seed, synthesizeSfx, perspective?)` 生成混音与分轨。调用方提供 `(name, seed, options) => Clip`，为事件音效和环境床返回 48 kHz 单声道采样与 `alignmentSample`。参见[小样配方](../../episodes/pure-code-sample/sound/sfx.ts)。 |
 | `sound/measure.ts` | `measure`、`master` 测量响度、真峰值并处理总线，`pitchReport`、`spectrum` 检查音高和频谱。 |

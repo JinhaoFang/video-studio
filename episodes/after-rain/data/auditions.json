@@ -1,0 +1,95 @@
+{
+  "entry": "episodes/after-rain/auditions/generate.ts",
+  "generator": "episodes/after-rain/auditions/generate.ts",
+  "command": [
+    "node",
+    "episodes/after-rain/auditions/generate.ts"
+  ],
+  "status": "complete",
+  "cacheKey": "cd9f07a60fef6b64faba87965116a557a5b328f1e035227e2d102c9dadb2691d",
+  "plateKey": "0c8839f741cf5058943b2706b76c67a3d0ce1a6521aa0258107bc88474f263e6",
+  "inputs": [
+    {
+      "path": "episodes/after-rain/auditions/generate.ts",
+      "sha256": "99c6bba6ef451d5421ef296b8f254ae5a289ca9d817a09f97b7c5b83c65c353f"
+    },
+    {
+      "path": "episodes/after-rain/auditions/hum.ts",
+      "sha256": "bd9cf4132468f570323f58fdc7101d542708e507777ca0fe3de45543fa612e3d"
+    },
+    {
+      "path": "episodes/after-rain/auditions/courtyard.ts",
+      "sha256": "1fc70e2648d55a4ef0794dbbe9269681a96bf569670fb8697f79474c81364af3"
+    },
+    {
+      "path": "episodes/after-rain/auditions/calls.ts",
+      "sha256": "e535b0af914789784f064b631590793f911526c26d89652632fb8f9fcd2cdaea"
+    },
+    {
+      "path": "src/kit/sound/voice.ts",
+      "sha256": "e99391f0296126edb10fc51bccaf63343daafda55b45ce7960d71d3d3ee8318d"
+    },
+    {
+      "path": "src/kit/sound/chirp.ts",
+      "sha256": "e992d320948868b1815a3ef66c95938b9f7f065bf8d4d027a5ca82a4d3b74b6f"
+    },
+    {
+      "path": "src/kit/sound/dsp.ts",
+      "sha256": "faf5169f93f72aa0875f0aac91f412911b8da00792483247266cc46f2f30c5d3"
+    },
+    {
+      "path": "src/kit/sound/score.ts",
+      "sha256": "7e4e99102405d73fedcf47bac10a84bedc4321b9059dc07f6d111e97d458f5f2"
+    },
+    {
+      "path": "src/kit/shots.ts",
+      "sha256": "6b390030526f769262d85bea18344132a4be5d0331dbce13aec3d2d25dcc767a"
+    },
+    {
+      "path": "src/kit/generation/manifest.ts",
+      "sha256": "89bb11dfef5e8724ff0fbf429a18e6a832a5ab5189ca8ded9017faeb85fa28f5"
+    }
+  ],
+  "dataInputs": [
+    {
+      "path": "episodes/after-rain/score.json",
+      "sha256": "2d240a6dfa6432f27a8d34732ae9c65486152ff885dcfb4aaf08e0b21dcf7f42"
+    }
+  ],
+  "runtime": {
+    "node": "v22.23.3",
+    "ffmpegVersion": "ffmpeg version 4.4.2-0ubuntu0.22.04.1 Copyright (c) 2000-2021 the FFmpeg developers"
+  },
+  "files": [
+    {
+      "path": "episodes/after-rain/audition-hum.wav",
+      "sha256": "8bbc904190bc2a2941d26131441fd23538648e36400ec5a9716727d71fb272c3"
+    },
+    {
+      "path": "episodes/after-rain/audition-walla.wav",
+      "sha256": "7b3a4d5611735519519e3c9d21276815c7d0d3bd5d872fd91d11185bee7f80fb"
+    },
+    {
+      "path": "episodes/after-rain/audition-calls.wav",
+      "sha256": "4f8e8f14103f50619128d9c4c305f7e81aeb75eb6641a4caa72c5c45fc1ca724"
+    }
+  ],
+  "audio": {
+    "hum": {
+      "sampleRate": 48000,
+      "channels": 2,
+      "samplesPerChannel": 1069600
+    },
+    "walla": {
+      "sampleRate": 48000,
+      "channels": 2,
+      "samplesPerChannel": 480000
+    },
+    "calls": {
+      "sampleRate": 48000,
+      "channels": 2,
+      "samplesPerChannel": 144000
+    }
+  },
+  "eventTables": []
+}

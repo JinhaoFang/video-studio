@@ -16,6 +16,7 @@
     "../src/kit/sound/**/*.ts",
     "../src/**/*.test.ts",
     "../episodes/**/*.test.ts",
+    "../episodes/after-rain/auditions/**/*.ts",
     "../episodes/pure-code-sample/generate.ts",
     "../episodes/pure-code-sample/sound/**/*.ts",
     "../*.test.ts"
