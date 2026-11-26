@@ -38,9 +38,35 @@ const loadPromo = () =>
   import("./clinmesh-promo/ClinMeshPromo").then(({ ClinMeshPromo }) => ({
     default: ClinMeshPromo,
   }));
+const loadSparrowSheet = () =>
+  import("./after-rain/sheets/SparrowSheet").then(({ SparrowSheet }) => ({
+    default: SparrowSheet,
+  }));
+const loadPersonSheet = () =>
+  import("./after-rain/sheets/PersonSheet").then(({ PersonSheet }) => ({
+    default: PersonSheet,
+  }));
 
 export const RemotionRoot: React.FC = () => (
   <>
+    <Folder name="after-rain">
+      <Composition
+        id="AfterRainSparrowSheet"
+        lazyComponent={loadSparrowSheet}
+        durationInFrames={96}
+        fps={24}
+        width={1920}
+        height={1080}
+      />
+      <Composition
+        id="AfterRainPersonSheet"
+        lazyComponent={loadPersonSheet}
+        durationInFrames={96}
+        fps={24}
+        width={1920}
+        height={1080}
+      />
+    </Folder>
     <Folder name="pure-code-sample">
       <Composition
         id="PureCodeSampleA"
