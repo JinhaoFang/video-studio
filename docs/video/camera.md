@@ -15,7 +15,7 @@
 - **一句话**　从上往下看整个场景的一张图，让人看出每个镜头从哪里拍、朝哪里拍，以及主体在哪里、往哪里动。
 - **适合**　核对同一场景里多个镜头的空间关系，把镜头剧本中的镜号与场景位置对应起来。俯视图只给出水平位置和朝向，机位高度、仰俯角和实际构图见对应镜头。
 - **标志特征**　同一份场景平面上能找到地标、主体位置、主体动线、轴线，以及图中每个镜头的编号、机位和朝向。
-- **关键技法**　机位与朝向是一组标记，主体动线与轴线各有图例。日式动画的镜头版面（layout）呈现镜头里的画面，俯视平面图可作为它的空间参照。轴线、30° 规则和屏幕方向见 [⑨ 剪辑](editing.md#-剪辑)。
+- **关键技法**　机位与朝向是一组标记，主体动线与轴线各有图例。日式动画的镜头版面（layout）呈现镜头里的画面，俯视平面图可作为它的空间参照。轴线、30° 规则和屏幕方向见 [180° 轴线](editing.md#180-轴线)、[30° 规则](editing.md#30-规则)、[屏幕方向](editing.md#屏幕方向)。
 - **样片**　Shot Designer 的产品示意图展示俯视标记如何关联机位、人物及镜头清单。示意图归 Hollywood Camera Work 所有，仅供在线对照。[Shot Designer](https://www.hollywoodcamerawork.com/shot-designer.html#af_position_1)
 - **出处**　日本动画人·演出协会（JAniCA）的课程用俯视平面图解释镜头草版面的取景。Shot Designer 的产品说明用同一平面图展示相机位置、朝向和人物走位。[JAniCA「平面図とラフレイアウトの画面との関係」](https://www.janica.jp/course/perspective/basic20150920.html) · [Shot Designer「A Camera Diagram That Makes Itself」及「Animate Action in Real-Time」](https://www.hollywoodcamerawork.com/shot-designer.html#af_position_1)
 
