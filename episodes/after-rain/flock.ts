@@ -116,12 +116,15 @@ export const createFlock = (count = 7, seed = 180): FlockMember[] => {
   return out;
 };
 
+const hopTravel = 0.58;
+const reactionDelay = [14, 10, 6, 2, 4, 8, 12] as const;
+
 const hopOffset = (localFrame: number, dir: number) => {
   if (localFrame < 0) {
     return { dx: 0, dy: 0, crouch: 0, pitch: 0, tail: 0, legs: true };
   }
   if (localFrame > 12) {
-    return { dx: dir * 0.58, dy: 0, crouch: 0, pitch: 0, tail: 0, legs: true };
+    return { dx: dir * hopTravel, dy: 0, crouch: 0, pitch: 0, tail: 0, legs: true };
   }
   if (localFrame < 2) {
     const t = localFrame / 2;
@@ -130,7 +133,7 @@ const hopOffset = (localFrame: number, dir: number) => {
   if (localFrame < 6) {
     const t = (localFrame - 2) / 4;
     return {
-      dx: dir * 0.58 * t,
+      dx: dir * hopTravel * t,
       dy: -Math.sin(Math.PI * t) * 0.56,
       crouch: 0,
       pitch: 0.12 * (1 - t),
@@ -140,11 +143,11 @@ const hopOffset = (localFrame: number, dir: number) => {
   }
   if (localFrame < 8) {
     const t = (localFrame - 6) / 2;
-    return { dx: dir * 0.58, dy: 0, crouch: 0.34 * t, pitch: -0.12 * t, tail: 0.18, legs: true };
+    return { dx: dir * hopTravel, dy: 0, crouch: 0.34 * t, pitch: -0.12 * t, tail: 0.18, legs: true };
   }
   const t = (localFrame - 8) / 4;
   return {
-    dx: dir * 0.58,
+    dx: dir * hopTravel,
     dy: 0,
     crouch: 0.34 * (1 - t),
     pitch: -0.12 * (1 - t),
@@ -162,7 +165,6 @@ export const flockMemberState = (
   const f = d.frame;
   let offsetX = 0;
   let offsetY = 0;
-  let facing = member.facing;
   let bodyPitch = member.basePitch;
   let headPitch = member.baseHeadPitch;
   let headTurn = member.baseHeadYaw;
@@ -184,10 +186,11 @@ export const flockMemberState = (
     const p = cycle < 4 ? cycle / 4 : cycle < 12 ? 1 : (16 - cycle) / 4;
     headTurn = member.baseHeadYaw + (member.id % 2 === 0 ? 0.65 : -0.65) * p;
     headPitch = member.baseHeadPitch + 0.28 * p;
-  } else if (member.idleKind === "hop" && cycle < 14) {
+  } else if (member.idleKind === "hop" && f >= member.idleStart) {
     const dir = member.id % 2 === 0 ? 1 : -1;
-    const h = hopOffset(cycle, dir);
-    offsetX += h.dx * (cycle >= 12 ? 0 : 1);
+    const returning = Math.floor((f - member.idleStart) / member.idlePeriod) % 2 === 1;
+    const h = hopOffset(cycle, returning ? -dir : dir);
+    offsetX = (returning ? dir * hopTravel : 0) + h.dx;
     offsetY += h.dy;
     crouch += h.crouch;
     bodyPitch += h.pitch;
@@ -199,9 +202,7 @@ export const flockMemberState = (
     const dist = member.slot - land.slot;
     const absDist = Math.abs(dist);
     if (absDist > 0.02 && absDist < 0.36) {
-      const rank = absDist < 0.15 ? 0 : absDist < 0.25 ? 1 : 2;
-      const delay = 2 + rank * 4 + (member.id % 2) * 2;
-      const local = f - (land.frame + delay);
+      const local = f - (land.frame + reactionDelay[member.id % reactionDelay.length]);
       const dir = dist >= 0 ? 1 : -1;
       if (local >= 0) {
         const h = hopOffset(local, dir);
@@ -211,7 +212,6 @@ export const flockMemberState = (
         bodyPitch += h.pitch;
         tailLift += h.tail;
         legs = legs && h.legs;
-        facing = local < 14 ? (dir > 0 ? -0.78 : 0.78) : member.facing;
       }
     }
   }
@@ -220,7 +220,7 @@ export const flockMemberState = (
     mode: "perched",
     offsetX,
     offsetY,
-    facing,
+    facing: member.facing,
     bodyPitch,
     headPitch,
     headTurn,

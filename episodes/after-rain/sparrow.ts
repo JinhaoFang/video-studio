@@ -461,6 +461,7 @@ type BakedCone = {
   invDot: number;
   ra: number;
   dr: number;
+  smooth: number;
   minX: number;
   maxX: number;
   minY: number;
@@ -522,6 +523,7 @@ const bakeCone = (
   ra: number,
   rb: number,
   pad: number,
+  smooth: number,
 ): BakedCone => {
   const bax = b[0] - a[0];
   const bay = b[1] - a[1];
@@ -537,6 +539,7 @@ const bakeCone = (
     invDot: 1 / (bax * bax + bay * bay + baz * baz || 1),
     ra,
     dr: rb - ra,
+    smooth,
     minX: Math.min(a[0], b[0]) - mr,
     maxX: Math.max(a[0], b[0]) + mr,
     minY: Math.min(a[1], b[1]) - mr,
@@ -786,22 +789,24 @@ const rig = (pose: Pose): Rig => {
   ];
 
   const bakedCones: BakedCone[] = [];
-  let coneSmooth = 0.11;
-  if (ruffle > 0.12) {
-    coneSmooth = 0.12;
-    for (let i = 0; i < RUFFLE_TUFTS.length; i++) {
-      const [a, tip, ra, rb] = RUFFLE_TUFTS[i];
-      bakedCones.push(
-        bakeCone(a, mixV(a, tip, ruffle), ra * (0.65 + 0.35 * ruffle), rb, 0.2),
-      );
+  if (sleekWet > 0) {
+    const strength = (1 - ruffle) * Math.min(1, wet / 0.15);
+    for (const [a, tip, ra, rb] of WET_LOCKS) {
+      bakedCones.push(bakeCone(
+        a, mixV(a, tip, sleekWet),
+        ra * (0.72 + 0.28 * sleekWet) * strength, rb * strength,
+        0.16, 0.1 * strength,
+      ));
     }
-  } else if (sleekWet > 0.15) {
-    coneSmooth = 0.1;
-    for (let i = 0; i < WET_LOCKS.length; i++) {
-      const [a, tip, ra, rb] = WET_LOCKS[i];
-      bakedCones.push(
-        bakeCone(a, mixV(a, tip, sleekWet), ra * (0.72 + 0.28 * sleekWet), rb, 0.16),
-      );
+  }
+  if (ruffle > 0) {
+    for (const [a, tip, ra, rb] of RUFFLE_TUFTS) {
+      const core: V3 = a[2] > 1 ? HEAD : [0, 0, 0];
+      const tucked = mixV(core, a, 0.65);
+      bakedCones.push(bakeCone(
+        mixV(tucked, a, ruffle), mixV(tucked, tip, ruffle),
+        ra * ruffle, rb * ruffle, 0.2, 0.12 * ruffle,
+      ));
     }
   }
 
@@ -835,7 +840,7 @@ const rig = (pose: Pose): Rig => {
           continue;
         }
         const td = evalBakedCone(b, c);
-        if (td < d + coneSmooth) d = smin(d, td, coneSmooth);
+        if (td < d + c.smooth) d = smin(d, td, c.smooth);
       }
     }
     return d;
@@ -1069,6 +1074,8 @@ const rig = (pose: Pose): Rig => {
     spanScale,
   };
 };
+
+export const sparrowPlumageField = (pose: Pose) => rig(pose).bodyHead;
 
 const segmentDistance = (p: V3, a: V3, b: V3) => {
   const ba = sub(b, a);
@@ -1307,9 +1314,8 @@ export const drawSparrow = (
     const headMask = (p: V3) => {
       const q = headLocal(p);
       const sphereGate = Math.hypot(q[0] / 0.88, q[1] / 0.84, q[2] / 0.82) - 1;
-      return r.ruffle > 0.1
-        ? Math.min(r.headness(p) * 3 - headBias, sphereGate * 2.2)
-        : r.headness(p) * 3 - 0.04;
+      const neck = r.headness(p) * 3 - headBias;
+      return neck + r.ruffle * Math.min(0, sphereGate * 2.2 - neck);
     };
     const headF = field(sBody, (p) => headMask(p));
     const gate = (p: V3, m: number) => Math.max(m, headMask(p) - 0.06);
@@ -1459,7 +1465,9 @@ export const drawSparrow = (
         tracePath(ctx, tufted);
         ctx.clip("evenodd");
 
-        if (r.sleekWet > 0.2) {
+        if (r.sleekWet > 0) {
+          ctx.save();
+          ctx.globalAlpha *= Math.min(1, r.sleekWet / 0.2);
           const clumpSeeds: [V3, V3, string][] = [
             [
               [0.24, 0.48, -0.34],
@@ -1626,9 +1634,12 @@ export const drawSparrow = (
               sparrowCommon.glint,
             );
           }
+          ctx.restore();
         }
 
-        if (r.ruffle > 0.35) {
+        if (r.ruffle > 0) {
+          ctx.save();
+          ctx.globalAlpha *= Math.min(1, r.ruffle / 0.35);
           const fluffs: [V3, V3][] = [
             [
               [0.36, 0.58, 0.12],
@@ -1677,6 +1688,7 @@ export const drawSparrow = (
               ink.color,
             );
           }
+          ctx.restore();
         }
 
         const eyeLocal: V3 = [0.31 * hs[0], 0.5 * hs[1], 0.1 * hs[2]];
