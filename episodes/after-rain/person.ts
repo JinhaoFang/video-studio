@@ -4,6 +4,8 @@
  * 用 kit 的距离场正交投影、赛璐璐分色和手绘线条绘制，保证正面、四分之三、侧面、背面都是同一套衣鞋。
  * 公开接口：drawPerson、drawBasket、drawDistantPerson、mudWalkPose、stopTurnPose、placePerson、placeDistantPerson、personRoute。
  * 走路循环按 motion.md「人的腿脚表演」实现：泥地 24 帧一步、硬路 20 帧一步，含陷泥 2–3 厘米、重心下沉、拔泥延迟与泥丝泥点、裤脚与竹篮滞后跟随。
+ * 停步转向的帧号不在本文件里定：镜头把自己的时间数据（StopTurnTiming：踩实、两小步转过去、停住看、两小步转回、接着走）传给 stopTurnPose；
+ * 默认的 stopTurnSheetTiming 是设定图与 person.test.ts 用的那一套（#198 的帧号），第 6 镜传 shots/s04-06/timing.ts 的新时间表。
  * 停步朝向取停步点出发的路段；场景方位从 +Y 向 +X 顺时针为正，人物绕 +Z 的正转则从前方转向左侧。骨盆跟随两脚的局部转角，一起对准栖点。
  * 待定事项：TODO(design) 1) 竹篮默认挎在右手（-Y，即第 4、6 镜朝向镜头一侧，可用 basketSide 切换）；2) 远处小人影的斗笠暂用竹篮色族；3) 裤腰以上只留靛蓝裤腰截齐，不另加衣色。
  */
@@ -461,17 +463,58 @@ export const mudWalkPose = (frame: number, options: MudWalkOptions = {}): Person
   };
 };
 
+export type StopTurnTiming = {
+  settle: number;
+  turnIn: readonly [readonly [number, number], readonly [number, number]];
+  hold: readonly [number, number];
+  turnOut: readonly [readonly [number, number], readonly [number, number]];
+  resume: number;
+  firstStep: number;
+  firstLead: "left" | "right";
+  stepFrames: number;
+};
+
+export const stopTurnSheetTiming: StopTurnTiming = {
+  settle: 4,
+  turnIn: [[10, 14], [22, 26]],
+  hold: [34, 60],
+  turnOut: [[62, 68], [70, 74]],
+  resume: 74,
+  firstStep: 74,
+  firstLead: "left",
+  stepFrames: 20,
+};
+
+const spanOf = ([a, b]: readonly [number, number], lead: number, tail: number) => ({
+  pre: a - lead,
+  end: b + tail,
+});
+
 export const stopTurnPose = (
   frame: number,
   options: { basketSide?: 1 | -1; seed?: number; ones?: boolean } = {},
+  timing: StopTurnTiming = stopTurnSheetTiming,
 ): PersonPose => {
   const basketSide = options.basketSide ?? -1;
   const seed = options.seed ?? 186;
   const f = options.ones ? frame : drawing(frame, 2).frame;
+  const { settle } = timing;
+  const inA = spanOf(timing.turnIn[0], 2, 4);
+  const inB = spanOf(timing.turnIn[1], 4, 4);
+  const outA = spanOf(timing.turnOut[0], 2, 0);
+  const outB = timing.turnOut[1];
+  const [holdStart, holdEnd] = timing.hold;
 
-  if (f >= 74) {
-    const resume = mudWalkPose(f - 74, { stepFrames: 20, muddy: 0.3, basketSide, seed: seed + 9, ones: options.ones });
-    const blend = ease(progress(f, 74, 80), 1.4, 1.2);
+  if (f >= timing.resume) {
+    const leadOffset = timing.firstLead === "right" ? timing.stepFrames : 0;
+    const resume = mudWalkPose(f - timing.firstStep + leadOffset, {
+      stepFrames: timing.stepFrames,
+      muddy: 0.3,
+      basketSide,
+      seed: seed + 9,
+      ones: options.ones,
+    });
+    const blend = ease(progress(f, timing.resume, timing.resume + 6), 1.4, 1.2);
     return {
       ...resume,
       pelvisZ: mix(-0.018, resume.pelvisZ, blend),
@@ -485,70 +528,62 @@ export const stopTurnPose = (
   const targetFootYaw = Math.atan2(Math.sin(localTurn), Math.cos(localTurn));
   const targetPelvisYaw = targetFootYaw * pelvisFollow / (1 + pelvisFollow);
   const rightYaw =
-    f < 8
+    f < inA.pre
       ? -0.05
-      : f <= 14
-        ? mix(-0.05, targetFootYaw, ease(progress(f, 10, 14), 1.8, 1.5))
-        : f < 62
+      : f <= timing.turnIn[0][1]
+        ? mix(-0.05, targetFootYaw, ease(progress(f, timing.turnIn[0][0], timing.turnIn[0][1]), 1.8, 1.5))
+        : f < timing.turnOut[0][0]
           ? targetFootYaw
-          : mix(targetFootYaw, -0.05, ease(progress(f, 62, 68), 1.4, 1.2));
+          : mix(targetFootYaw, -0.05, ease(progress(f, timing.turnOut[0][0], timing.turnOut[0][1]), 1.4, 1.2));
 
   const leftYaw =
-    f < 20
+    f < timing.turnIn[1][0] - 2
       ? 0.04
-      : f <= 26
-        ? mix(0.04, targetFootYaw + 0.06, ease(progress(f, 22, 26), 1.8, 1.5))
-        : f < 70
+      : f <= timing.turnIn[1][1]
+        ? mix(0.04, targetFootYaw + 0.06, ease(progress(f, timing.turnIn[1][0], timing.turnIn[1][1]), 1.8, 1.5))
+        : f < timing.turnOut[1][0]
           ? targetFootYaw + 0.06
-          : mix(targetFootYaw + 0.06, 0.04, ease(progress(f, 70, 74), 1.4, 1.2));
+          : mix(targetFootYaw + 0.06, 0.04, ease(progress(f, timing.turnOut[1][0], timing.turnOut[1][1]), 1.4, 1.2));
 
-  const rightLift =
-    f >= 10 && f <= 14
-      ? Math.sin(progress(f, 10, 14) * Math.PI) * 0.028
-      : f >= 62 && f <= 68
-        ? Math.sin(progress(f, 62, 68) * Math.PI) * 0.028
-        : 0;
-  const leftLift =
-    f >= 22 && f <= 26
-      ? Math.sin(progress(f, 22, 26) * Math.PI) * 0.028
-      : f >= 70 && f <= 74
-        ? Math.sin(progress(f, 70, 74) * Math.PI) * 0.026
-        : 0;
+  const liftOver = (span: readonly [number, number], fNow: number, amount: number) =>
+    fNow >= span[0] && fNow <= span[1] ? Math.sin(progress(fNow, span[0], span[1]) * Math.PI) * amount : 0;
+  const rightLift = liftOver(timing.turnIn[0], f, 0.028) + liftOver(timing.turnOut[0], f, 0.028);
+  const leftLift = liftOver(timing.turnIn[1], f, 0.028) + liftOver(timing.turnOut[1], f, 0.026);
 
-  const stopSink = f <= 4 ? ease(progress(f, 0, 4), 1.5, 1.4) : 1 - 0.5 * ease(progress(f, 4, 10), 1.1, 1.2);
+  const stopSink = f <= settle ? ease(progress(f, 0, settle), 1.5, 1.4) : 1 - 0.5 * ease(progress(f, settle, settle + 6), 1.1, 1.2);
   const holdShift =
-    f < 34
+    f < holdStart
       ? 0
-      : f <= 60
-        ? Math.sin(ease(progress(f, 34, 60), 1.5, 1.5) * Math.PI)
+      : f <= holdEnd
+        ? Math.sin(ease(progress(f, holdStart, holdEnd), 1.5, 1.5) * Math.PI)
         : 0;
 
   const pelvisY =
-    f <= 8
-      ? mix(-0.018, 0.0, ease(progress(f, 0, 8), 1.3, 1.3))
-      : f <= 18
-        ? mix(0.0, 0.046, ease(progress(f, 8, 11), 1.7, 1.3)) * (1 - 0.52 * ease(progress(f, 14, 18), 1.2, 1.2))
-        : f <= 30
-          ? mix(0.022, -0.038, ease(progress(f, 18, 22), 1.5, 1.3)) * (1 - 0.55 * ease(progress(f, 26, 30), 1.2, 1.2))
-          : f <= 60
+    f <= inA.pre
+      ? mix(-0.018, 0.0, ease(progress(f, 0, inA.pre), 1.3, 1.3))
+      : f <= inA.end
+        ? mix(0.0, 0.046, ease(progress(f, inA.pre, timing.turnIn[0][0] + 1), 1.7, 1.3)) * (1 - 0.52 * ease(progress(f, timing.turnIn[0][1], inA.end), 1.2, 1.2))
+        : f <= inB.end
+          ? mix(0.022, -0.038, ease(progress(f, inB.pre, timing.turnIn[1][0]), 1.5, 1.3)) * (1 - 0.55 * ease(progress(f, timing.turnIn[1][1], inB.end), 1.2, 1.2))
+          : f <= holdEnd
             ? mix(-0.016, 0.032, holdShift)
-            : f <= 68
-              ? mix(-0.016, 0.036, ease(progress(f, 60, 64), 1.3, 1.2))
-              : mix(0.036, -0.02, ease(progress(f, 68, 74), 1.3, 1.2));
+            : f <= outA.end
+              ? mix(-0.016, 0.036, ease(progress(f, outA.pre, timing.turnOut[0][0] + 2), 1.3, 1.2))
+              : mix(0.036, -0.02, ease(progress(f, outA.end, outB[1]), 1.3, 1.2));
 
   const pelvisZ =
     -0.016 -
-    0.032 * (f <= 4 ? ease(progress(f, 0, 4), 1.6, 1.5) : Math.max(0, 1 - progress(f, 4, 12))) -
+    0.032 * (f <= settle ? ease(progress(f, 0, settle), 1.6, 1.5) : Math.max(0, 1 - progress(f, settle, settle + 8))) -
     0.01 * Math.abs(holdShift);
 
   const pelvisYaw =
-    f < 8
+    f < inA.pre
       ? 0
-      : f <= 28
-        ? mix(0, targetPelvisYaw, ease(progress(f, 8, 26), 1.4, 1.4))
-        : f < 61
+      : f <= timing.turnIn[1][1] + 2
+        ? mix(0, targetPelvisYaw, ease(progress(f, inA.pre, timing.turnIn[1][1]), 1.4, 1.4))
+        : f < timing.turnOut[0][0] - 1
           ? targetPelvisYaw
-          : mix(targetPelvisYaw, 0, ease(progress(f, 61, 73), 1.3, 1.2));
+          : mix(targetPelvisYaw, 0, ease(progress(f, timing.turnOut[0][0] - 1, outB[1] - 1), 1.3, 1.2));
 
   const pelvisRoll = -pelvisY * 1.25;
 
@@ -571,38 +606,38 @@ export const stopTurnPose = (
   const lIk = solveLegIK(lHipX, lHipZ, lAnkleX, lAnkleZ);
 
   const relaxRightKnee = holdShift * 0.14;
-  const dampT = Math.max(0, f - 4);
+  const dampT = Math.max(0, f - settle);
   const basketSwing =
-    f <= 4
-      ? mix(0.08, 0.24, ease(progress(f, 0, 4), 1.3, 1.6))
+    f <= settle
+      ? mix(0.08, 0.24, ease(progress(f, 0, settle), 1.3, 1.6))
       : 0.24 * Math.exp(-dampT / 11.5) * Math.cos((dampT / 11) * Math.PI * 2);
   const basketSway =
     basketSide * (0.03 + 0.048 * Math.exp(-dampT / 14) * Math.sin((dampT / 13) * Math.PI * 2)) - pelvisY * 0.7;
 
   return {
     pelvisZ,
-    pelvisX: mix(0.022, 0, ease(progress(f, 0, 8), 1.2, 1.4)),
+    pelvisX: mix(0.022, 0, ease(progress(f, 0, inA.pre), 1.2, 1.4)),
     pelvisY,
     pelvisYaw,
     pelvisRoll,
-    pelvisPitch: 0.03 + 0.028 * (f <= 4 ? 1 : Math.max(0, 1 - progress(f, 4, 14))),
+    pelvisPitch: 0.03 + 0.028 * (f <= settle ? 1 : Math.max(0, 1 - progress(f, settle, settle + 10))),
     left: {
       hipPitch: lIk.hipPitch,
       hipRoll: (leftHeelY - HIP_HALF_Y - pelvisY) * 0.32,
       kneeBend: lIk.kneeBend,
       anklePitch: leftLift > 0.002 ? 0.22 : 0,
       footYaw: leftYaw - pelvisYaw,
-      cuffSwing: f < 6 ? 0.06 * (1 - f / 6) : 0,
-      mudSink: leftLift > 0.002 ? 0 : f < 10 ? 0.45 : 0.2,
+      cuffSwing: f < settle + 2 ? 0.06 * (1 - f / (settle + 2)) : 0,
+      mudSink: leftLift > 0.002 ? 0 : f < settle + 6 ? 0.45 : 0.2,
       mudPull: 0,
     },
     right: {
       hipPitch: rIk.hipPitch + relaxRightKnee * 0.45,
       hipRoll: (rightHeelY + HIP_HALF_Y - pelvisY) * 0.32,
       kneeBend: rIk.kneeBend + relaxRightKnee,
-      anklePitch: rightLift > 0.002 ? 0.26 : f <= 4 ? 0.12 * (1 - f / 4) : 0,
+      anklePitch: rightLift > 0.002 ? 0.26 : f <= settle ? 0.12 * (1 - f / settle) : 0,
       footYaw: rightYaw - pelvisYaw,
-      cuffSwing: f <= 8 ? 0.14 * Math.sin((f / 8) * Math.PI) : 0,
+      cuffSwing: f <= settle + 4 ? 0.14 * Math.sin((f / (settle + 4)) * Math.PI) : 0,
       mudSink: rightLift > 0.002 ? 0 : stopSink * 0.8,
       mudPull: 0,
     },

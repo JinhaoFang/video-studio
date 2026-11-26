@@ -1,6 +1,6 @@
 /**
  * 《雨后》正片的规格、镜头时间表、叠化激活查询与画面事件种类表（对照 storyboard.md「时间表」与 contract.md 第 4 节）。
- * 12 个镜头共 1620 帧（67.5 秒，24 fps），其中 s11 与 s12 重叠 24 帧用于叠化。
+ * 12 个镜头共 1560 帧（65.0 秒，24 fps），其中 s11 与 s12 重叠 24 帧用于叠化。
  * 供合成入口、生成器、声音管线和测试共同取用；不依赖浏览器 API。
  * 待定事项：无。
  */
@@ -14,15 +14,15 @@ export const shotTable: readonly ShotRow[] = [
   { id: "s01", startFrame: 0, durationInFrames: 144 },
   { id: "s02", startFrame: 144, durationInFrames: 144 },
   { id: "s03", startFrame: 288, durationInFrames: 168 },
-  { id: "s04", startFrame: 456, durationInFrames: 96 },
-  { id: "s05", startFrame: 552, durationInFrames: 120 },
-  { id: "s06", startFrame: 672, durationInFrames: 120 },
-  { id: "s07", startFrame: 792, durationInFrames: 120 },
-  { id: "s08", startFrame: 912, durationInFrames: 144 },
-  { id: "s09", startFrame: 1056, durationInFrames: 96 },
-  { id: "s10", startFrame: 1152, durationInFrames: 84 },
-  { id: "s11", startFrame: 1236, durationInFrames: 192 },
-  { id: "s12", startFrame: 1404, durationInFrames: 216 },
+  { id: "s04", startFrame: 456, durationInFrames: 72 },
+  { id: "s05", startFrame: 528, durationInFrames: 108 },
+  { id: "s06", startFrame: 636, durationInFrames: 96 },
+  { id: "s07", startFrame: 732, durationInFrames: 120 },
+  { id: "s08", startFrame: 852, durationInFrames: 144 },
+  { id: "s09", startFrame: 996, durationInFrames: 96 },
+  { id: "s10", startFrame: 1092, durationInFrames: 84 },
+  { id: "s11", startFrame: 1176, durationInFrames: 192 },
+  { id: "s12", startFrame: 1344, durationInFrames: 216 },
 ];
 
 export const shotRow = (table: readonly ShotRow[], id: string) => {
