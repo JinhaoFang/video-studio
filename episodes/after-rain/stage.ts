@@ -2,12 +2,12 @@
  * 舞台：按相机把烘焙好的各层底图摆进画面（正对相机的平面，按纵深缩放平移），以及把麻雀放到场景里的某个点上，
  * 算出它在画面上的位置、每单位像素数、视角和光照方向。镜头和样张共用，不为某个镜头写特例。
  * 相机走到某层底图跟前或越过它时（放大超过 40 倍）不画这一层。
- * Surface 是镜头 draw 拿到的画布：1920×1080 的 2D 上下文，五层夕光底图 plates 和雨色底图 rain。
+ * Surface 是小样与第 3 镜拿到的画布；drawViewPlate 供正片各新机位底图使用。
  */
 import { directionToView, layer, project } from "../../src/kit/engine/camera.ts";
 import type { Camera, Vec3 } from "../../src/kit/engine/camera.ts";
-import { plateSize, plates, reference, sun, UNIT } from "./scene.ts";
-import type { PlateId } from "./scene.ts";
+import { plateSize, plates, reference, sun, UNIT, viewPlates } from "./scene.ts";
+import type { PlateId, ViewPlateId } from "./scene.ts";
 import { FOOT_Z } from "./sparrow.ts";
 
 export type PlateImages = Record<PlateId, HTMLImageElement>;
@@ -17,6 +17,24 @@ export type Surface = { context: CanvasRenderingContext2D; plates: PlateImages; 
 export const drawPlate = (ctx: CanvasRenderingContext2D, image: HTMLImageElement, id: PlateId, camera: Camera) => {
   const plate = plates.find((p) => p.id === id)!;
   const t = layer(reference, camera, plate.distance);
+  if (!(t.scale > 0 && t.scale < 40)) return;
+  const size = plateSize(plate);
+  ctx.save();
+  ctx.imageSmoothingEnabled = true;
+  ctx.imageSmoothingQuality = "high";
+  ctx.drawImage(
+    image,
+    plate.rect.x0 * t.scale + t.dx,
+    plate.rect.y0 * t.scale + t.dy,
+    (size.width / plate.k) * t.scale,
+    (size.height / plate.k) * t.scale,
+  );
+  ctx.restore();
+};
+
+export const drawViewPlate = (ctx: CanvasRenderingContext2D, image: HTMLImageElement, id: ViewPlateId, camera: Camera) => {
+  const plate = viewPlates.find((p) => p.id === id)!;
+  const t = layer(plate.reference, camera, plate.distance);
   if (!(t.scale > 0 && t.scale < 40)) return;
   const size = plateSize(plate);
   ctx.save();

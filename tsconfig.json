@@ -21,6 +21,7 @@
     "src/kit/generation",
     "src/kit/sound",
     "episodes/after-rain/auditions",
+    "episodes/after-rain/generate.ts",
     "episodes/pure-code-sample/generate.ts",
     "episodes/pure-code-sample/audio.ts",
     "episodes/pure-code-sample/sound"

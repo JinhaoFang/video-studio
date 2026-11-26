@@ -1,0 +1,166 @@
+{
+  "entry": "episodes/after-rain/plates-views.ts",
+  "generator": "episodes/after-rain/generate.ts",
+  "command": [
+    "node",
+    "episodes/after-rain/generate.ts"
+  ],
+  "status": "complete",
+  "cacheKey": "2ce368b1623a2964e2a7f7d7b43f1ab9cc1f4fb3be118a591865eb4914e633f4",
+  "plateKey": "5e71c6acb8338c3ed3749773f9eb2a20cdb1c1c5a99fb4bb1ac612d51989ed48",
+  "inputs": [
+    {
+      "path": "episodes/after-rain/generate.ts",
+      "sha256": "8e189fc808139eb848ea618f148e681c9b0b849b2ebf81fcb92e53c723aed4f0"
+    },
+    {
+      "path": "src/kit/generation/bake.ts",
+      "sha256": "37db79982ef2c10c07e2c6027c63a2288f7211004045c966da2eefba4fd76edc"
+    },
+    {
+      "path": "src/kit/generation/manifest.ts",
+      "sha256": "89bb11dfef5e8724ff0fbf429a18e6a832a5ab5189ca8ded9017faeb85fa28f5"
+    },
+    {
+      "path": "episodes/after-rain/plates.ts",
+      "sha256": "1bfdfe1d7c7da471e66ef9e43e29ee6301518e7aabc18abf891e98f47049149e"
+    },
+    {
+      "path": "episodes/after-rain/plates-views.ts",
+      "sha256": "58ba04ba1a17820f2546d7b0e015fe77fbfc742f0e405282f098ebe854ff69e5"
+    },
+    {
+      "path": "episodes/after-rain/scene.ts",
+      "sha256": "ada55ae4c543805db1fda57e46ceb47e0a923a196f71ff8db8a49ee3088c3a49"
+    },
+    {
+      "path": "episodes/after-rain/tokens.ts",
+      "sha256": "ecd81a974e9a955e0cb8f1f42dcf5d5dc0f8d2e14a52dd3d09a6a88fe6396d86"
+    },
+    {
+      "path": "src/kit/engine/paint.ts",
+      "sha256": "453b6d66ab892542405f70d8f6b430a60600050b1b9c6fcc4cd40989407540b0"
+    },
+    {
+      "path": "src/kit/engine/random.ts",
+      "sha256": "ae65ccebbdbdc26186e38122b1508e4a5a5d17cf916976efc4b9cdf2a5ec09a1"
+    },
+    {
+      "path": "src/kit/engine/camera.ts",
+      "sha256": "3786b65ff3a5f3444b233ac87d61d9be44c675a75a016f4a78827d9d8d4c21ca"
+    },
+    {
+      "path": "src/kit/engine/figure.ts",
+      "sha256": "07573e85f2797fa0cf54d0996ae5f40b8e6c835f0949f9bf26f48cbe2eb582d3"
+    },
+    {
+      "path": "tools/cli.ts",
+      "sha256": "bb85d29fc777b6c06b285a9aed616251bb0812bf1086afb69310e997d3cf5ae0"
+    }
+  ],
+  "dataInputs": [],
+  "runtime": {
+    "node": "v22.23.3",
+    "ffmpegVersion": "ffmpeg version 4.4.2-0ubuntu0.22.04.1 Copyright (c) 2000-2021 the FFmpeg developers"
+  },
+  "files": [
+    {
+      "path": "episodes/after-rain/plate-far-rain.png",
+      "sha256": "78386768bffdd07ad087edb7dc290a6cdc5870b173b5ca97a8a1cf9e11fa9a0a"
+    },
+    {
+      "path": "episodes/after-rain/plate-far-dusk.png",
+      "sha256": "08aff3b91ac4e850836cf0bc027cf5c65f82742b597518e1ac7ea1ddfedd2458"
+    },
+    {
+      "path": "episodes/after-rain/plate-field-rain.png",
+      "sha256": "090ea8d70e38c3ee5aa288466435389559ff023f6cdd435cdb2b8470dc2ee888"
+    },
+    {
+      "path": "episodes/after-rain/plate-field-dusk.png",
+      "sha256": "95307d961cd6002532e466a0b5fadad74976b4614d5104a95b49a8ecedaf5ac1"
+    },
+    {
+      "path": "episodes/after-rain/plate-hedge-rain.png",
+      "sha256": "71b27185d9d57f7538528aecd44d45a3f0ccb9e8a8243bbc32f285cbf35de2b0"
+    },
+    {
+      "path": "episodes/after-rain/plate-hedge-dusk.png",
+      "sha256": "fdfd2d29d91e822c4704ae8c9062487f80b3307e8a388491cd20861f5f5f9ab8"
+    },
+    {
+      "path": "episodes/after-rain/plate-yard-rain.png",
+      "sha256": "16942bba4728c2eeddf7a28d4959854dcec989da3ef4b487f314bc5f6ef83d42"
+    },
+    {
+      "path": "episodes/after-rain/plate-yard-dusk.png",
+      "sha256": "9f67727fcad809d549697a72473720dcdb5d53136218422535121b889c7ed39c"
+    },
+    {
+      "path": "episodes/after-rain/plate-eaves-rain.png",
+      "sha256": "d7910b575205b26c8e3227a25abf3771a06fc0c8383f255de179172d49bced9d"
+    },
+    {
+      "path": "episodes/after-rain/plate-eaves-dusk.png",
+      "sha256": "d915fbd883eea32202eefd3a501575f3d2f0e381c06c3b34018c95d988e25170"
+    },
+    {
+      "path": "episodes/after-rain/plate-house-sky-rain.png",
+      "sha256": "1926f6c2cb81532cf2b7baded0068729fc3db4b0846cc2fb6a0a06b1268dcc12"
+    },
+    {
+      "path": "episodes/after-rain/plate-house-front-rain.png",
+      "sha256": "d76cdb018fc762d4bd3efeb6c1e63646f65382d1b622c8a9e3620a42e3ad051f"
+    },
+    {
+      "path": "episodes/after-rain/plate-house-sky-twilight.png",
+      "sha256": "42eb1f0bf5cd1dd3c07db2692aec319345777377717e233124becd62dcc553e9"
+    },
+    {
+      "path": "episodes/after-rain/plate-house-front-twilight.png",
+      "sha256": "54e2d41b7171923e457e2ea9f56441a4d26848376be79c79c048846ee5803539"
+    },
+    {
+      "path": "episodes/after-rain/plate-house-takeoff.png",
+      "sha256": "29bbf05e038701f77f6f18639fcc2b29793b56fa2674415fc6dc05b28b076099"
+    },
+    {
+      "path": "episodes/after-rain/plate-low-s4.png",
+      "sha256": "7fba1081b94e1d21f81a0773f20ad4db2c1810b6f8e8a8c203d22d67477a53ef"
+    },
+    {
+      "path": "episodes/after-rain/plate-low-s6.png",
+      "sha256": "28b2ecd8f6fd012ee796a52df66b13f9343b845acfabcc586975ce85b1e40fa8"
+    },
+    {
+      "path": "episodes/after-rain/plate-paddy-wide.png",
+      "sha256": "5b50f1f90fbeaf5d2bb8639eaaefbfc443bf11340cca829c1b2b845ac1110865"
+    },
+    {
+      "path": "episodes/after-rain/plate-closeup-s2.png",
+      "sha256": "4ee00d7597c4db8ea57689cbc050bed815d278d167a2f10291b440db869b32f3"
+    },
+    {
+      "path": "episodes/after-rain/plate-closeup-s5.png",
+      "sha256": "dc1ba21fa01293ffc8431d54ef3be3acf0ac0fd99b4aa9cee7c14d65a3db4800"
+    },
+    {
+      "path": "episodes/after-rain/plate-closeup-s7.png",
+      "sha256": "55a3ec64d485ccff55b57622f315d3de5cc35d892b96d0878894b58e08f9cd40"
+    },
+    {
+      "path": "episodes/after-rain/plate-closeup-s8-start.png",
+      "sha256": "9f40f9cdfebae3ddf0b995447cecb8ae30c2cad21edd46efc7167c0fc81b801c"
+    },
+    {
+      "path": "episodes/after-rain/plate-closeup-s8-end.png",
+      "sha256": "1d6f807aa25720981fc3851719030809aafd9d7e2735c653016be6d4f6f20110"
+    },
+    {
+      "path": "episodes/after-rain/plate-closeup-s9.png",
+      "sha256": "ec167ea93069c55861aa909de667d7a93c46d3263a873ea86be70cb0bdd8c3a9"
+    }
+  ],
+  "eventTables": [],
+  "audio": {}
+}

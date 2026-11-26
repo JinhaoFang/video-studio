@@ -6,8 +6,8 @@
     "episodes/pure-code-sample/generate.ts"
   ],
   "status": "complete",
-  "cacheKey": "3d42c344d568c9d3ef2540b6ff49d7a5a8143bd5486c133c4668d7117a0aa3e8",
-  "plateKey": "8aa21f50c7461298f3d1212af7164e8730adbb8e32413c9326e3cc31abfc1568",
+  "cacheKey": "fba7c275e7311fa0200a5be20eb18589ff6f926ad8415b2c3a01cf1a2b1e31b3",
+  "plateKey": "e991eb55d33806f95de71f039570de15cb7870dd148ff53b5db161153847ae17",
   "inputs": [
     {
       "path": "episodes/pure-code-sample/generate.ts",
@@ -23,15 +23,15 @@
     },
     {
       "path": "episodes/after-rain/plates.ts",
-      "sha256": "7b0d66099c0b1a7fb5e6cf5b316d1f20608199f76e2d0bfd03020a70e3ea9bb5"
+      "sha256": "1bfdfe1d7c7da471e66ef9e43e29ee6301518e7aabc18abf891e98f47049149e"
     },
     {
       "path": "episodes/after-rain/scene.ts",
-      "sha256": "d58d4c2cf2e7e09d5a7c7ce8c15528d877c0562528991c8f33a4d3ae57f94a7d"
+      "sha256": "ada55ae4c543805db1fda57e46ceb47e0a923a196f71ff8db8a49ee3088c3a49"
     },
     {
       "path": "episodes/after-rain/tokens.ts",
-      "sha256": "3b13241b077226cf058f5243d4e62b8f04a7b06792795cfc691aeeae974c2098"
+      "sha256": "ecd81a974e9a955e0cb8f1f42dcf5d5dc0f8d2e14a52dd3d09a6a88fe6396d86"
     },
     {
       "path": "src/kit/engine/paint.ts",
@@ -139,43 +139,43 @@
     },
     {
       "path": "episodes/pure-code-sample/plate-far-rain.png",
-      "sha256": "2426e0d8015300f9244a9aa2c045a95a23a52771f4dfed52d90c6086c9432126"
+      "sha256": "78386768bffdd07ad087edb7dc290a6cdc5870b173b5ca97a8a1cf9e11fa9a0a"
     },
     {
       "path": "episodes/pure-code-sample/plate-far-dusk.png",
-      "sha256": "c810244caa60f995ee6c998b5a14afbc30b5750e54537eb2810c0ae5e487f97e"
+      "sha256": "08aff3b91ac4e850836cf0bc027cf5c65f82742b597518e1ac7ea1ddfedd2458"
     },
     {
       "path": "episodes/pure-code-sample/plate-field-rain.png",
-      "sha256": "606661b171052710765d26a440c9a3607c2e4055f1a1a359e301a8c290d867d8"
+      "sha256": "090ea8d70e38c3ee5aa288466435389559ff023f6cdd435cdb2b8470dc2ee888"
     },
     {
       "path": "episodes/pure-code-sample/plate-field-dusk.png",
-      "sha256": "fdf6d3a50d5ad34151ce2d86bc21a0641cc8a93afc1f6007ed60c82fddecf7c1"
+      "sha256": "95307d961cd6002532e466a0b5fadad74976b4614d5104a95b49a8ecedaf5ac1"
     },
     {
       "path": "episodes/pure-code-sample/plate-hedge-rain.png",
-      "sha256": "f76d633b57ab5a8c5b64ca24d15429114476d9d5588f1a8004afefcb82942fe3"
+      "sha256": "71b27185d9d57f7538528aecd44d45a3f0ccb9e8a8243bbc32f285cbf35de2b0"
     },
     {
       "path": "episodes/pure-code-sample/plate-hedge-dusk.png",
-      "sha256": "21f20977fea5ee60e728d7655e2d35aa691eacb86756a6da10d102eb3c504d90"
+      "sha256": "fdfd2d29d91e822c4704ae8c9062487f80b3307e8a388491cd20861f5f5f9ab8"
     },
     {
       "path": "episodes/pure-code-sample/plate-yard-rain.png",
-      "sha256": "4a225d07651a28919e3f848fa2c420fe43ecb2594bf7b26450215ff877972525"
+      "sha256": "16942bba4728c2eeddf7a28d4959854dcec989da3ef4b487f314bc5f6ef83d42"
     },
     {
       "path": "episodes/pure-code-sample/plate-yard-dusk.png",
-      "sha256": "bb03ef0cf891e3430d80a85a257455accbdf81430ba5f09c0d2f3de38a6783c0"
+      "sha256": "9f67727fcad809d549697a72473720dcdb5d53136218422535121b889c7ed39c"
     },
     {
       "path": "episodes/pure-code-sample/plate-eaves-rain.png",
-      "sha256": "c33c1a65063e110346a6d6a9491cc18bf0d0d668cbd48e529d4739aebeb3ca59"
+      "sha256": "d7910b575205b26c8e3227a25abf3771a06fc0c8383f255de179172d49bced9d"
     },
     {
       "path": "episodes/pure-code-sample/plate-eaves-dusk.png",
-      "sha256": "862b04571098853eaf67fc9e7ca4936cb3980a40f86a2c0a1b47806808092fd5"
+      "sha256": "d915fbd883eea32202eefd3a501575f3d2f0e381c06c3b34018c95d988e25170"
     },
     {
       "path": "episodes/pure-code-sample/mix-a.wav",
