@@ -103,11 +103,18 @@ spec #168：纯代码小样《雨后》（[pure-code-sample](../pure-code-sample
 | [tokens-person.ts](tokens-person.ts) | 人和随身道具按光照分的色值 |
 | [plates.ts](plates.ts) | 水粉底图的内容：院子五层（远景、稻田、树篱、院子、檐口），雨和夕光两种状态，第 3 镜（小样 S1）用 |
 | [plates-views.ts](plates-views.ts) | 正片新机位的底图：屋子正面（雨、暮色亮灯）、贴地低机位、稻田上空大远景、迎面看屋子，以及近景的虚化背景 |
-| [generate.ts](generate.ts) | 正片唯一的生成入口：烘焙全部底图，带缓存，写 `data/generated.json`；用法 `node episodes/after-rain/generate.ts [--force]` |
+| [generate.ts](generate.ts) | 正片唯一的生成入口：烘焙全部底图、汇总全片画面事件 `data/events.json`、合成混音 `mix.wav`，带缓存，写 `data/generated.json`；用法 `node episodes/after-rain/generate.ts [--force]` |
 | [auditions/](auditions/) | 试听样（哼唱、隔墙交谈、麻雀叫声）的配方和生成器，清单在 `data/auditions.json` |
 | [pole.ts](pole.ts) | 晾衣竹竿：透视竹管、受光带、水珠，`bend` 让它下沉和弹回 |
 | [stage.ts](stage.ts) | 舞台：按相机摆底图（院子五层和新机位底图），把麻雀放进场景 |
 | [tokens.ts](tokens.ts) | 本期令牌：色值、线条、样张底色、摄影默认值 |
 | [sheets/](sheets/) | 设定图的入口：`AfterRainSparrowSheet`、`AfterRainPersonSheet`，由 #180、#181 填内容 |
+| [AfterRain.tsx](AfterRain.tsx) | 正片合成 `AfterRain`：按时间表找当前镜头（第 11→12 镜叠化时两镜同画），套后期链，挂混音 |
+| [model.ts](model.ts) | 正片规格和时间表 `shotTable`（12 镜，1620 帧），叠化区间查询 `activeShots`，画面事件种类表 |
+| [shots/](shots/) | 各镜头的代码，一个目录一段（`s01-02`、`s03`、`s04-06`、`s07-09`、`s10-11`、`s12`），各自的 `timing.ts` 放动作和画面事件共用的帧号；`index.ts` 是登记表 |
+| [usePlates.ts](usePlates.ts) | 按镜头懒加载、缓存底图，换镜头时等新底图画好再出帧 |
+| [grade.ts](grade.ts) | 各场的后期参数和黑位（雨色、夕光、晒太阳、低夕光、暮色），第 3 镜雨色转夕光、叠化时的插值 |
+| [sound/](sound/) | 全片声音：按 `score.json` 编译配乐，合成哼唱、麻雀叫、拟音和环境底，混音到 −16 LUFS；现在是 #185 的临时声音，正式声音由 #193 替换 |
+| [title/](title/) | 片名「雨后」的行楷字骨和书写时间、署名「遡游」的满白文印，预览合成 `AfterRainTitlePreview`；`export-cover.ts` 导出透明底封面字和放大的印章检查图。笔刷和刻印工具在 kit 的 `engine/calligraphy.ts`、`engine/seal.ts` |
 
 [layout.md](layout.md) 里新增的对象（屋子正面、小路、水洼 W1、电线和鸟群）由底图和镜头工单按那里的坐标写进代码。
