@@ -23,14 +23,14 @@ export const useFrame = <I>(
       chain.current?.dispose();
       chain.current = null;
     },
-    [post.darkest],
+    [],
   );
   useLayoutEffect(() => {
     if (inputs === null) return;
     const handle = delayRender(`绘制第 ${frame} 帧`);
     try {
       if (!chain.current) {
-        chain.current = createPost(canvas.current!, post.darkest);
+        chain.current = createPost(canvas.current!);
         console.log("WebGL 实测：", chain.current.renderer());
       }
       const target = canvas.current!;

@@ -11,11 +11,10 @@ import {
   stereo,
 } from "./dsp.ts";
 import { compileScore, resolveAnchor } from "./score.ts";
-import { synthesizeSfx } from "./sfx.ts";
 import type {
   EventTable,
   Score,
-  SfxName,
+  SynthesizeSfx,
   SoundDesign,
   Stereo,
 } from "./types.ts";
@@ -74,7 +73,7 @@ export const validateEvents = (
   }
   return previousEnd;
 };
-export type Perspective = (name: SfxName, ordinal: number) => {
+export type Perspective<Name extends string> = (name: Name, ordinal: number) => {
   panOffset?: number;
   dbOffset?: number;
   wet?: number;
@@ -82,12 +81,13 @@ export type Perspective = (name: SfxName, ordinal: number) => {
   cutoffHz?: number;
 };
 
-export const renderMix = (
+export const renderMix = <Name extends string>(
   table: EventTable,
   score: Score,
-  design: SoundDesign,
+  design: SoundDesign<Name>,
   seed: number,
-  perspective: Perspective = () => ({}),
+  synthesizeSfx: SynthesizeSfx<Name>,
+  perspective: Perspective<Name> = () => ({}),
 ) => {
   const durationFrames = validateEvents(table, design);
   const count = frameToSample(durationFrames, rate, table.fps);
@@ -150,7 +150,7 @@ export const renderMix = (
     }
   };
   const placements: {
-    sfx: SfxName;
+    sfx: Name;
     shotId: string;
     ordinal: number;
     eventFrame: number;
@@ -163,7 +163,7 @@ export const renderMix = (
   }[] = [];
   const heroSamples: number[] = [];
   const counters = new Map<string, number>();
-  const drop = (name: SfxName, eventFrame: number, shotId: string) => {
+  const drop = (name: Name, eventFrame: number, shotId: string) => {
     const config = design.sfx[name];
     if (!config) throw new Error(`声音设计未配置音效：${name}`);
     const key = `${shotId}/${name}`;

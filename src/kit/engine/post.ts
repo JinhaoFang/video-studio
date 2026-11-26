@@ -1,6 +1,6 @@
 /**
  * 摄影：WebGL 1 后期链，顺序固定：柔焦 → 高光光晕 → 四角色差 → 暗角 → 抬黑位、压高光 → 按亮度加颗粒。
- * 传入黑位颜色创建着色器，逐帧给 draw 传 Post 参数。半分辨率做柔焦模糊和亮部提取，光晕在 1/2、1/4、1/8 三档分辨率各模糊一次
+ * 用 createPost(canvas) 创建后期链，逐帧给 draw 传黑位在内的 Post 参数。半分辨率做柔焦模糊和亮部提取，光晕在 1/2、1/4、1/8 三档分辨率各模糊一次
  * （约合全分辨率 6.5、24、72 px），最后一遍在全分辨率合成；色差在合成函数上按三个偏移位置各取一次。颗粒每帧换种子，只由帧号决定。
  * 待定事项：无。
  */
@@ -59,10 +59,10 @@ void main() {
   gl_FragColor = vec4(c * k, 1.0);
 }`;
 
-const hex = (value: string) =>
-  [1, 3, 5].map((i) => (parseInt(value.slice(i, i + 2), 16) / 255).toFixed(4)).join(", ");
+const blackLevel = (color: string) =>
+  [1, 3, 5].map((i) => Number((parseInt(color.slice(i, i + 2), 16) / 255).toFixed(4)));
 
-const finalFragment = (darkest: string) => `
+const finalFragment = `
 precision highp float;
 uniform sampler2D base;
 uniform sampler2D soft;
@@ -83,7 +83,7 @@ uniform float grain;
 uniform float grainHighlight;
 uniform float seed;
 varying vec2 uv;
-const vec3 darkest = vec3(${hex(darkest)});
+uniform vec3 darkest;
 vec3 graded(vec2 p) {
   vec3 c = texture2D(base, p).rgb;
   vec3 b = texture2D(soft, p).rgb;
@@ -128,7 +128,7 @@ void main() {
 
 type Target = { texture: WebGLTexture; buffer: WebGLFramebuffer | null; width: number; height: number };
 
-export const createPost = (canvas: HTMLCanvasElement, darkest: string) => {
+export const createPost = (canvas: HTMLCanvasElement) => {
   const gl = canvas.getContext("webgl", { alpha: false, antialias: false, preserveDrawingBuffer: true });
   if (!gl) throw new Error("WebGL 不可用，请用 --gl=swangle 渲染。");
   const compile = (type: number, text: string) => {
@@ -155,7 +155,7 @@ export const createPost = (canvas: HTMLCanvasElement, darkest: string) => {
     down: program(downFragment),
     blur: program(blurFragment),
     bright: program(brightFragment),
-    final: program(finalFragment(darkest)),
+    final: program(finalFragment),
   };
   const quad = gl.createBuffer();
   gl.bindBuffer(gl.ARRAY_BUFFER, quad);
@@ -261,6 +261,7 @@ export const createPost = (canvas: HTMLCanvasElement, darkest: string) => {
           gl.uniform1f(u("aberration"), post.aberration);
           gl.uniform1f(u("vignette"), post.vignette);
           gl.uniform1f(u("vignetteInner"), post.vignetteInner);
+          gl.uniform3fv(u("darkest"), blackLevel(post.darkest));
           gl.uniform1f(u("lift"), post.lift);
           gl.uniform1f(u("knee"), post.knee);
           gl.uniform1f(u("ceiling"), post.ceiling);

@@ -4,7 +4,7 @@ import { createHash } from "node:crypto";
 import { readFileSync } from "node:fs";
 import { test } from "node:test";
 import { frameToSample } from "../../../src/kit/shots.ts";
-import { hottest100ms, pcmWav, rate } from "../../../src/kit/sound/dsp.ts";
+import { hottest100ms, pcmWav, place, rate, stereo } from "../../../src/kit/sound/dsp.ts";
 import { perspective } from "./perspective.ts";
 import { renderMix } from "../../../src/kit/sound/mix.ts";
 import { master } from "../../../src/kit/sound/measure.ts";
@@ -12,14 +12,14 @@ import {
   compileScore,
   resolveAnchor,
 } from "../../../src/kit/sound/score.ts";
-import { synthesizeSfx } from "../../../src/kit/sound/sfx.ts";
-import type { EventTable, Score, SfxName, SoundDesign } from "../../../src/kit/sound/types.ts";
+import { synthesizeSfx, type SfxName } from "./sfx.ts";
+import type { EventTable, Score, SoundDesign } from "../../../src/kit/sound/types.ts";
 
 const load = <T>(file: string): T =>
   JSON.parse(readFileSync(new URL(file, import.meta.url), "utf8"));
 const table = load<EventTable>("events.fixture.json");
 const score = load<Score>("../score.json");
-const design = load<SoundDesign>("../sound.json");
+const design = load<SoundDesign<SfxName>>("../sound.json");
 const digest = (data: Uint8Array) =>
   createHash("sha256").update(data).digest("hex");
 test("非零镜头起点、乱序重复事件取首现，extra 只跟第一次 shake", () => {
@@ -29,7 +29,7 @@ test("非零镜头起点、乱序重复事件取首现，extra 只跟第一次 s
     181,
   );
   assert.equal(resolveAnchor({ shot: "S2", frame: 144 }, table), 312);
-  const mix = renderMix(reversed, score, design, 158, perspective);
+  const mix = renderMix(reversed, score, design, 158, synthesizeSfx, perspective);
   assert.equal(mix.durationFrames, 312);
   assert.equal(mix.mix[0].length, 624000);
   assert.deepEqual(
@@ -91,8 +91,8 @@ test("非零镜头起点、乱序重复事件取首现，extra 只跟第一次 s
 });
 
 test("同种子完整混音、三分轨和十四音效 WAV 字节一致，换种子确实变化", () => {
-  const first = renderMix(table, score, design, 158, perspective);
-  const second = renderMix(table, score, design, 158, perspective);
+  const first = renderMix(table, score, design, 158, synthesizeSfx, perspective);
+  const second = renderMix(table, score, design, 158, synthesizeSfx, perspective);
   const firstMaster = master(first.mix, first.stems, -16, -1);
   const secondMaster = master(second.mix, second.stems, -16, -1);
   assert.equal(
@@ -120,13 +120,21 @@ test("同种子完整混音、三分轨和十四音效 WAV 字节一致，换种
   );
 });
 
+test("滴中音效的实际峰值落在事件采样上", () => {
+  const hit = synthesizeSfx("drip_hit", 158);
+  const bus = stereo(rate * 7);
+  const target = frameToSample(150, rate, 24);
+  place(bus, hit, target, 1, -1);
+  assert.equal(bus[0].indexOf(Math.max(...hit.samples)), target);
+});
+
 test("反例：锚点事件缺失必须报出种类，不能静默跳过", () => {
   const missing = {
     ...table,
     events: table.events.filter((event) => event.kind !== "light_break"),
   };
   assert.throws(
-    () => renderMix(missing, score, design, 158, perspective),
+    () => renderMix(missing, score, design, 158, synthesizeSfx, perspective),
     /锚点引用的事件不存在：light_break/,
   );
   assert.throws(

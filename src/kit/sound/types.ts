@@ -38,21 +38,16 @@ export type Score = {
   sections: { id: string; from: Anchor }[];
   phrases: Phrase[];
 };
-export type SfxName =
-  | "rain_tail"
-  | "eave_drips"
-  | "higurashi"
-  | "garden_air"
-  | "drip_hit"
-  | "feather_flinch"
-  | "feather_shake"
-  | "water_spray"
-  | "feather_puff"
-  | "pole_creak"
-  | "takeoff_push"
-  | "pole_spring"
-  | "wing_flap"
-  | "drip_land";
+export type SfxOptions = {
+  seconds?: number;
+  cutoffHz?: number;
+  density?: [number, number][];
+};
+export type SynthesizeSfx<Name extends string> = (
+  name: Name,
+  seed: number,
+  options: SfxOptions,
+) => Clip;
 export type Scene = {
   t60: number;
   preDelayMs: number;
@@ -70,14 +65,14 @@ export type SfxDesign = {
   width?: number;
   variation?: string;
 };
-export type SoundDesign = {
+export type SoundDesign<Name extends string = string> = {
   tiers: Record<string, { range: [number, number] }>;
   scenes: Record<string, Scene>;
-  sfx: Partial<Record<SfxName, SfxDesign>>;
-  eventMap: Record<string, { offsetFrames: number; sfx: SfxName }[]>;
-  extra: { sfx: SfxName; at: Anchor }[];
+  sfx: Record<Name, SfxDesign>;
+  eventMap: Record<string, { offsetFrames: number; sfx: Name }[]>;
+  extra: { sfx: Name; at: Anchor }[];
   beds: {
-    sfx: SfxName;
+    sfx: Name;
     from: Anchor;
     to: Anchor;
     fadeInFrames?: number;

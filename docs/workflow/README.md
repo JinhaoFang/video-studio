@@ -148,7 +148,7 @@ pnpm 的版本由 `package.json` 的 `packageManager` 固定，本机装的 pnpm
 | `engine/cel.ts` | `createLayer`、`drawCel`、`placeLayer` 用指定色区、硬边阴影和线条绘制体块。 |
 | `engine/paint.ts` | `paper`、`stroke`、`polygon`、`mottle` 在浮点画布上刷水粉，`toBytes` 输出 RGBA。 |
 | `engine/camera.ts` | `project`、`directionToView` 和 `layer` 将世界点、光向和不同纵深的底图投到机位。 |
-| `engine/post.ts`、`post-settings.ts` | `createPost(canvas, darkest)` 创建摄影链，`draw` 按帧应用 `Post`，用完调用 `dispose`。 |
+| `engine/post.ts`、`post-settings.ts` | `createPost(canvas)` 创建摄影链。每帧用 `draw(image, frame, post)` 传入包含 `darkest` 的全部后期参数，用完调用 `dispose`。 |
 | `shots.ts` | `Shot<Surface>` 声明镜头，`filmDuration`、`locateShot`、`collectEvents` 和 `frameToSample` 共用镜头时间表。 |
 | `samples/useFrame.ts` | `useFrame` 等待输入就绪后按帧绘制 Canvas，再应用后期。 |
 | `samples/ModelSheet.tsx` | `ModelSheet` 接收各行参考线、视图和角色绘制函数，输出设定图。 |
@@ -157,8 +157,7 @@ pnpm 的版本由 `package.json` 的 `packageManager` 固定，本机装的 pnpm
 | `generation/manifest.ts` | `generation` 从源码、数据和运行版本建立缓存，用 `cached`、`platesCached` 核实产物，`save` 写入清单。 |
 | `sound/types.ts`、`dsp.ts` | `EventTable`、`Score`、`SoundDesign` 描述输入，`place`、`reverb` 和 `pcmWav` 处理 48 kHz 采样。 |
 | `sound/score.ts` | `resolveAnchor` 定位乐句，`compileScore` 和 `synthesizeNote` 按乐谱合成独立乐音。 |
-| `sound/sfx.ts` | `synthesizeSfx` 按音色、种子和参数返回带对齐采样的音效。 |
-| `sound/mix.ts` | `renderMix` 按事件、床音、乐谱和可选的远近变化生成混音与分轨。 |
+| `sound/mix.ts` | `renderMix(table, score, design, seed, synthesizeSfx, perspective?)` 生成混音与分轨。调用方提供 `(name, seed, options) => Clip`，为事件音效和环境床返回 48 kHz 单声道采样与 `alignmentSample`。参见[小样配方](../../episodes/pure-code-sample/sound/sfx.ts)。 |
 | `sound/measure.ts` | `measure`、`master` 测量响度、真峰值并处理总线，`pitchReport`、`spectrum` 检查音高和频谱。 |
 
 已有的按句工具 `sentence-timing.ts` 用 `sentenceFrame`、`chapterSpans` 定时，`subtitle-schedule.ts` 用 `buildSubtitleSchedule`、`subtitleState` 定字幕条。用法见 [NASA 朋克开场](../../episodes/nasa-punk-opening/README.md)。

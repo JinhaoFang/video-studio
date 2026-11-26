@@ -1,7 +1,8 @@
 /** 小样的声音运动设计。振翅逐拍向右远去，抖羽左右交替。 */
 import type { Perspective } from "../../../src/kit/sound/mix.ts";
+import type { SfxName } from "./sfx.ts";
 
-export const perspective: Perspective = (name, ordinal) => {
+export const perspective: Perspective<SfxName> = (name, ordinal) => {
   if (name === "wing_flap")
     return {
       panOffset: ordinal * 0.15,

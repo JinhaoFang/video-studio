@@ -18,8 +18,8 @@ import {
 import { perspective } from "./perspective.ts";
 import { soundSources } from "./inputs.ts";
 import { renderMix } from "../../../src/kit/sound/mix.ts";
-import { synthesizeSfx } from "../../../src/kit/sound/sfx.ts";
-import type { EventTable, Score, SfxName, SoundDesign } from "../../../src/kit/sound/types.ts";
+import { synthesizeSfx, type SfxName } from "./sfx.ts";
+import type { EventTable, Score, SoundDesign } from "../../../src/kit/sound/types.ts";
 
 const usage =
   "node episodes/pure-code-sample/sound/render.ts [--events <事件表>] [--out <目录>] [--seed <整数>] [--help]";
@@ -58,11 +58,11 @@ try {
       : join(root, "out/qa/spec-147/158");
     const table = readJson<EventTable>(eventsPath);
     const score = readJson<Score>(join(episode, "score.json"));
-    const design = readJson<SoundDesign>(join(episode, "sound.json"));
+    const design = readJson<SoundDesign<SfxName>>(join(episode, "sound.json"));
     const start = performance.now();
     if (table.fps !== 24 || table.shotTable.some((row) => row.startFrame + row.durationInFrames > 24 * 60))
       throw new Error("本期独立声音命令仅接受 24 fps、一分钟以内的事件表。");
-    const rendered = renderMix(table, score, design, seed, perspective);
+    const rendered = renderMix(table, score, design, seed, synthesizeSfx, perspective);
     const mastered = master(
       rendered.mix,
       rendered.stems,

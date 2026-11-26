@@ -5,7 +5,8 @@ import { createHash } from "node:crypto";
 import { frameToSample } from "../shots.ts";
 import { place, rate, stereo } from "./dsp.ts";
 import { frequency, synthesizeNote } from "./score.ts";
-import { synthesizeSfx } from "./sfx.ts";
+import { renderMix } from "./mix.ts";
+import type { SoundDesign } from "./types.ts";
 
 const digest = (data: Uint8Array) =>
   createHash("sha256").update(data).digest("hex");
@@ -101,9 +102,32 @@ test("内部对齐点实际落在正确采样，含非整数采样帧率和开�
   const start = stereo(10);
   place(start, clip, 0, 1, -1);
   assert.equal(start[0][0], 0.9);
-  const hit = synthesizeSfx("drip_hit", 158);
-  const bus = stereo(rate * 7);
-  const target = frameToSample(150, rate, 24);
-  place(bus, hit, target, 1, -1);
-  assert.equal(bus[0].indexOf(Math.max(...hit.samples)), target);
+});
+
+test("调用方音效的内部脉冲在混音中对齐到指定采样", () => {
+  const fps = 24;
+  const design: SoundDesign<"probe"> = {
+    tiers: { contact: { range: [-6, 0] } },
+    scenes: { dry: { t60: 0.2, preDelayMs: 10, highCutHz: 6000 } },
+    sfx: { probe: { name: "脉冲", material: "测试", alignment: "峰值", tier: "contact", db: 0, scene: "dry", pan: -1 } },
+    eventMap: { hit: [{ sfx: "probe", offsetFrames: 1 }] },
+    extra: [], beds: [], silences: [],
+    ducking: { on: [], musicDb: 0, attackMs: 0, holdMs: 0, releaseMs: 0 },
+    master: { integratedLufs: -16, toleranceLu: 1, maxTruePeakDbtp: -1, fadeOutFrames: 0, stems: ["music", "sfx", "ambience"] },
+  };
+  const { mix } = renderMix(
+    {
+      fps, sampleRate: rate,
+      shotTable: [{ id: "test", startFrame: 0, durationInFrames: 4 }],
+      events: [{ shotId: "test", kind: "hit", description: "", frame: 1, localFrame: 1 }],
+    },
+    { fps, instruments: {}, sections: [], phrases: [] },
+    design, 42,
+    (name) => {
+      assert.equal(name, "probe");
+      return { samples: Float64Array.of(0, 0.25, 1), alignmentSample: 2 };
+    },
+  );
+  assert.equal(mix[0].indexOf(1), 4000);
+  assert.equal(mix[0][3999], 0.25);
 });

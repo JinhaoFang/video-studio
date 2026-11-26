@@ -6,7 +6,7 @@
     "episodes/pure-code-sample/generate.ts"
   ],
   "status": "complete",
-  "cacheKey": "000455651d28bde48beb398c338873dbbf99de95b311522e671fdd9341c2cc23",
+  "cacheKey": "3d42c344d568c9d3ef2540b6ff49d7a5a8143bd5486c133c4668d7117a0aa3e8",
   "plateKey": "8aa21f50c7461298f3d1212af7164e8730adbb8e32413c9326e3cc31abfc1568",
   "inputs": [
     {
@@ -51,15 +51,19 @@
     },
     {
       "path": "episodes/pure-code-sample/sound/inputs.ts",
-      "sha256": "03c8065f712cba45880538a27e109a5e6e7d25690090850e469de80499226e2c"
+      "sha256": "f3d1b4de5f2316300800163fadfc35cea6ed48df5e640b478c1f9117cd90f08d"
     },
     {
       "path": "episodes/pure-code-sample/sound/render.ts",
-      "sha256": "2565be4bf534dd43ca5f732f79024043af309da5d69f4393d45b358544da8b8b"
+      "sha256": "339de18d0918af6276789c915c6ff25bfb8437d74e7e011281f019a20d9d0566"
     },
     {
       "path": "episodes/pure-code-sample/sound/perspective.ts",
-      "sha256": "841d1aecbbcc45e71ac0430741e83c202a6725980a979e15fc47744612c93dff"
+      "sha256": "61cd6d87bfd817ff8b8875d0f1cc8305ebbad0481a30216f0295f61652aafc5c"
+    },
+    {
+      "path": "episodes/pure-code-sample/sound/sfx.ts",
+      "sha256": "3f379962419fced8eff4eb391f051269efc9aacad07060266ad974cab77ec903"
     },
     {
       "path": "src/kit/shots.ts",
@@ -67,7 +71,7 @@
     },
     {
       "path": "src/kit/sound/types.ts",
-      "sha256": "29b086a1d455a228c380f601293ecc8d16c11aa32e3c9b3c180be3785f2bdb5a"
+      "sha256": "ae0c986c98463cddf877b317c808d415395e5ef7bb5c859155efbfedcbaaafd0"
     },
     {
       "path": "src/kit/sound/dsp.ts",
@@ -78,12 +82,8 @@
       "sha256": "7e4e99102405d73fedcf47bac10a84bedc4321b9059dc07f6d111e97d458f5f2"
     },
     {
-      "path": "src/kit/sound/sfx.ts",
-      "sha256": "f3162dde7e2e2ba42b72c9a9236e0844fa9bf9ddd749e2fd8ffb2b6ff9216c73"
-    },
-    {
       "path": "src/kit/sound/mix.ts",
-      "sha256": "b227eb80572ee88b322b9fff3b069bcfb0f57c607484f99656311d653be8e5c1"
+      "sha256": "c4e767a1fe4814a2fc0d68b781ffa08980b57615953607273a0b201d858d02b6"
     },
     {
       "path": "src/kit/sound/measure.ts",
