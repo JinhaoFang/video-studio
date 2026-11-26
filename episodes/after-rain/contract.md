@@ -56,6 +56,8 @@
 
 `tokens.ts` 里旧的 `sparrow` 一节在 #180 落地后由设计负责人删掉；#180 只从 `tokens-sparrow.ts` 取色。
 
+**小样的生成清单**：`../pure-code-sample/data/generated.json` 记着小样生成器输入的哈希，其中有本期的 `plates.ts`、`scene.ts`、`tokens.ts`，和 kit 的 `engine/` 里的 `camera.ts`、`figure.ts`、`paint.ts`、`random.ts`、`timing.ts`，`generation/`、`shots.ts`、`sound/` 下的文件（完整列表看清单的 `inputs`）。改了其中任何一个，在同一个提交里重跑 `node episodes/pure-code-sample/generate.ts` 刷新清单，否则纯代码护栏不过。
+
 **kit**（`src/kit/`）：现有模块不归任何画面工单。确实要改，改成通用功能、补测试，在汇报的「kit 问题」里写明改了哪个文件、为什么；不为《雨后》的角色开特例。新建的 kit 模块归新建它的工单：#183 的 `engine/calligraphy.ts`、`engine/seal.ts`，#184 的 `sound/voice.ts`、`sound/chirp.ts`。设计负责人派发并行的工单时，不让两张工单改同一个 kit 文件；派发说明没提到、自己又非改不可的 kit 文件，先绕开，写进汇报。
 
 **登记处**：几张工单都要往里加东西的文件。每张工单只加自己的一项，不改别人的项。
