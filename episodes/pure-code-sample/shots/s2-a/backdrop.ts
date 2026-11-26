@@ -3,12 +3,12 @@
  * 经分层景深虚化回贴全画幅，保持与 S1 完全一致的空间与色调连贯；在虚化层内柔和融入画右上云缝斜洒的夕光空气光柱
  * （无硬直边），再按 3D 锚点叠画柔和的水粉式暖金/橄榄色虚焦光斑，让画面始终保持 3–5 块清晰大明暗。
  */
-import { project } from "../../engine/camera.ts";
-import type { Camera, Vec3 } from "../../engine/camera.ts";
-import { hash, rng } from "../../engine/random.ts";
-import { drawPlate } from "../../stage.ts";
-import type { PlateImages } from "../../stage.ts";
-import { dusk, rain, warm } from "../../tokens.ts";
+import { project } from "../../../../src/kit/engine/camera.ts";
+import type { Camera, Vec3 } from "../../../../src/kit/engine/camera.ts";
+import { hash, rng } from "../../../../src/kit/engine/random.ts";
+import { drawPlate } from "../../../after-rain/stage.ts";
+import type { PlateImages } from "../../../after-rain/stage.ts";
+import { dusk, rain, warm } from "../../../after-rain/tokens.ts";
 
 type BokehPatch = {
   pos: Vec3;

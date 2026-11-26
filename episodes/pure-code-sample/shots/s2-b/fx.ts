@@ -6,11 +6,11 @@
  * 那几段的高光笔画线宽会到十几万像素、圆头盖住整幅画面（近景机位下竹竿的画张号为 10 时触发），画面内的高光最宽只有二十几像素，限制线宽不影响外观。
  * 待定（设计）：残影的透明度和速度线的条数是本版自定的。
  */
-import type { Point } from "../../engine/figure.ts";
-import { resample } from "../../engine/figure.ts";
-import { boil, drawStrokes, strokes } from "../../engine/ink.ts";
-import { hash } from "../../engine/random.ts";
-import { ink } from "../../tokens.ts";
+import type { Point } from "../../../../src/kit/engine/figure.ts";
+import { resample } from "../../../../src/kit/engine/figure.ts";
+import { boil, drawStrokes, strokes } from "../../../../src/kit/engine/ink.ts";
+import { hash } from "../../../../src/kit/engine/random.ts";
+import { ink } from "../../../after-rain/tokens.ts";
 
 const maxLinePx = 30;
 

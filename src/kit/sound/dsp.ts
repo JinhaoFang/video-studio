@@ -1,4 +1,4 @@
-/** 声音 DSP：固定种子噪声、K 加权参考电平、双声道 PCM16、无时间位移的落位和参数混响；只计算采样，不读取媒体。 */
+/** 声音 DSP：固定种子噪声、K 加权参考电平、双声道 PCM16、无时间位移的落位和参数混响；只计算采样，不读取媒体。 待定事项：无。 */
 import { Buffer } from "node:buffer";
 import type { Clip, Scene, Stereo } from "./types.ts";
 

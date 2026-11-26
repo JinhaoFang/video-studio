@@ -1,5 +1,5 @@
-/** 事件驱动混音：逐镜头序号变体、床音、场景混响、明确静默与主音效让位；分轨保留相同主总线增益，可相加还原混音。 */
-import { frameToSample } from "../model.ts";
+/** 事件驱动混音：逐镜头序号变体、床音、场景混响、明确静默与主音效让位；分轨保留相同主总线增益，可相加还原混音。 待定事项：无。 */
+import { frameToSample } from "../shots.ts";
 import {
   add,
   curve,
@@ -27,10 +27,10 @@ export const validateEvents = (
   if (
     !table.shotTable?.length ||
     !Array.isArray(table.events) ||
-    table.fps !== 24 ||
+    !Number.isFinite(table.fps) || table.fps <= 0 ||
     table.sampleRate !== rate
   )
-    throw new Error("事件表需要镜头表、事件数组、24 fps 和 48000 Hz 采样率。");
+    throw new Error("事件表需要镜头表、事件数组、正帧率和 48000 Hz 采样率。");
   const ids = new Set<string>();
   let previousEnd = 0;
   for (const row of [...table.shotTable].sort(
@@ -47,8 +47,6 @@ export const validateEvents = (
     ids.add(row.id);
     previousEnd = row.startFrame + row.durationInFrames;
   }
-  if (previousEnd > 24 * 60)
-    throw new Error("本期独立声音命令仅接受一分钟内的事件表。");
   for (const event of table.events) {
     const row = table.shotTable.find((shot) => shot.id === event.shotId);
     if (
@@ -76,11 +74,20 @@ export const validateEvents = (
   }
   return previousEnd;
 };
+export type Perspective = (name: SfxName, ordinal: number) => {
+  panOffset?: number;
+  dbOffset?: number;
+  wet?: number;
+  far?: { scene: string; distance: number };
+  cutoffHz?: number;
+};
+
 export const renderMix = (
   table: EventTable,
   score: Score,
   design: SoundDesign,
   seed: number,
+  perspective: Perspective = () => ({}),
 ) => {
   const durationFrames = validateEvents(table, design);
   const count = frameToSample(durationFrames, rate, table.fps);
@@ -158,28 +165,14 @@ export const renderMix = (
   const counters = new Map<string, number>();
   const drop = (name: SfxName, eventFrame: number, shotId: string) => {
     const config = design.sfx[name];
+    if (!config) throw new Error(`声音设计未配置音效：${name}`);
     const key = `${shotId}/${name}`;
     const ordinal = counters.get(key) ?? 0;
     counters.set(key, ordinal + 1);
-    const clip = synthesizeSfx(name, seedFor(seed, `${key}/${ordinal}`), {
-      ordinal,
-    });
-    const wing = name === "wing_flap";
-    const pan = Math.min(
-      1,
-      Math.max(
-        -1,
-        config.pan +
-          (wing
-            ? ordinal * 0.15
-            : name === "feather_shake"
-              ? ordinal % 2
-                ? 0.15
-                : -0.15
-              : 0),
-      ),
-    );
-    const db = config.db - (wing ? ordinal * 3 : 0);
+    const change = perspective(name, ordinal);
+    const clip = synthesizeSfx(name, seedFor(seed, `${key}/${ordinal}`), { cutoffHz: change.cutoffHz });
+    const pan = Math.min(1, Math.max(-1, config.pan + (change.panOffset ?? 0)));
+    const db = config.db + (change.dbOffset ?? 0);
     const dry = stereo(count);
     const alignedSample = sample(eventFrame);
     const startSample = place(
@@ -190,11 +183,11 @@ export const renderMix = (
       pan,
       config.width,
     );
-    const wet = wing ? 0.12 + ordinal * 0.06 : 0.16;
+    const wet = change.wet ?? 0.16;
     const near = reverb(dry, design.scenes[config.scene], wet);
-    if (wing && ordinal > 0) {
-      const far = reverb(dry, design.scenes.garden, wet);
-      const distance = Math.min(1, ordinal / 4);
+    if (change.far) {
+      const far = reverb(dry, design.scenes[change.far.scene], wet);
+      const distance = change.far.distance;
       for (let c = 0; c < 2; c++)
         for (let i = 0; i < count; i++)
           near[c][i] = near[c][i] * (1 - distance) + far[c][i] * distance;
@@ -242,6 +235,7 @@ export const renderMix = (
       ]),
     });
     const config = design.sfx[bed.sfx];
+    if (!config) throw new Error(`声音设计未配置床音：${bed.sfx}`);
     const bus = stereo(count);
     place(bus, clip, start, dbGain(config.db), config.pan, config.width);
     const wet = reverb(bus, design.scenes[config.scene]);

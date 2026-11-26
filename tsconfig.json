@@ -18,6 +18,8 @@
   "exclude": [
     "remotion.config.ts",
     "**/*.test.ts",
+    "src/kit/generation",
+    "src/kit/sound",
     "episodes/pure-code-sample/generate.ts",
     "episodes/pure-code-sample/audio.ts",
     "episodes/pure-code-sample/sound"

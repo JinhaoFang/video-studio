@@ -7,7 +7,7 @@
  * import.meta.resolve calls, module names assembled at runtime, and paths with
  * different casing are intentionally outside this static check.
  */
-import { readFileSync } from "node:fs";
+import { existsSync, readFileSync } from "node:fs";
 import { dirname, isAbsolute, relative, resolve, sep } from "node:path";
 import ts from "typescript";
 import { reportError, usageError } from "./cli.ts";
@@ -35,10 +35,12 @@ const main = (): void => {
 
   const root = resolve(rootArg ?? process.cwd());
   if (mode === "pure-code") {
-    const errors = checkPureCode(
-      root,
-      "episodes/pure-code-sample/PureCodeSample.tsx",
-      "episodes/pure-code-sample/data/generated.json",
+    const registry = resolve(root, "episodes/pure-code.json");
+    const records: { ids: string[]; entry: string; manifest: string }[] = existsSync(resolve(root, "episodes"))
+      ? JSON.parse(readFileSync(registry, "utf8"))
+      : [];
+    const errors = records.flatMap(({ ids, entry, manifest }) =>
+      checkPureCode(root, ids, entry, manifest),
     );
     errors.forEach((message) => console.error(`出错：${message}`));
     if (errors.length) process.exitCode = 1;

@@ -3,14 +3,14 @@
  * 同时是引擎用法的最小示例：按相机摆底图（drawPlate）、画竹竿（drawPole）、把麻雀放到竹竿上（placeSparrow → drawSparrow）。
  * perchAt 给出麻雀落在竹竿上的参数 t，使它在某台相机的画面里位于给定的横向比例处。
  */
-import type { Camera, Vec3 } from "../engine/camera.ts";
-import { drawing, ease, progress } from "../engine/timing.ts";
-import type { Shot } from "../model.ts";
-import { drawPole, poleScreen } from "../pole.ts";
-import { pole, poleAt, reference } from "../scene.ts";
-import { backlight, drawSparrow, restPose } from "../sparrow.ts";
-import { drawPlate, placeSparrow } from "../stage.ts";
-import type { Surface } from "../stage.ts";
+import type { Camera, Vec3 } from "../../../src/kit/engine/camera.ts";
+import { drawing, ease, progress } from "../../../src/kit/engine/timing.ts";
+import type { Shot } from "../../../src/kit/shots.ts";
+import { drawPole, poleScreen } from "../../after-rain/pole.ts";
+import { pole, poleAt, reference } from "../../after-rain/scene.ts";
+import { backlight, drawSparrow, restPose } from "../../after-rain/sparrow.ts";
+import { drawPlate, placeSparrow } from "../../after-rain/stage.ts";
+import type { Surface } from "../../after-rain/stage.ts";
 
 export const perchAt = (camera: Camera, fraction: number) => {
   let best = 0;

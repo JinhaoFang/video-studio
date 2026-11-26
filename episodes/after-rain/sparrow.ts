@@ -5,8 +5,8 @@
  * 画张号决定线条抖动；同一张画、同一姿势，像素完全一样。镜头负责身下的接触阴影和环境光在背景上的效果。
  * 待定：张翅的形状只够远景飞行用，近景振翅要更细的羽毛分层。
  */
-import { createLayer, drawCel, placeLayer, tracePath } from "./engine/cel.ts";
-import type { CelPart, Tone } from "./engine/cel.ts";
+import { createLayer, drawCel, placeLayer, tracePath } from "../../src/kit/engine/cel.ts";
+import type { CelPart, Tone } from "../../src/kit/engine/cel.ts";
 import {
   add,
   contours,
@@ -25,11 +25,11 @@ import {
   sub,
   toView,
   viewBasis,
-} from "./engine/figure.ts";
-import type { Basis, Point, Sampled, V3 } from "./engine/figure.ts";
-import { boil, drawStrokes, strokes } from "./engine/ink.ts";
-import type { StrokeStyle } from "./engine/ink.ts";
-import { hash, noise1 } from "./engine/random.ts";
+} from "../../src/kit/engine/figure.ts";
+import type { Basis, Point, Sampled, V3 } from "../../src/kit/engine/figure.ts";
+import { boil, drawStrokes, strokes } from "../../src/kit/engine/ink.ts";
+import type { StrokeStyle } from "../../src/kit/engine/ink.ts";
+import { hash, noise1 } from "../../src/kit/engine/random.ts";
 import { ink, sparrow as palette, warm } from "./tokens.ts";
 
 export const FOOT_Z = -1.3;

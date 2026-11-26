@@ -3,14 +3,14 @@
  * 每一笔从颜色引导函数取色（雨色或夕光，state 决定），同样的种子在两种光下落笔位置完全一样，镜头可以按光照图在两张之间过渡。
  * 坐标先用参考画面像素想，再乘 k 落到底图像素。只在 Node 生成器里调用；输出预乘浮点画布，由生成器编码成 PNG。
  */
-import { project } from "./engine/camera.ts";
-import type { Vec3 } from "./engine/camera.ts";
-import { contours, resample, smooth } from "./engine/figure.ts";
-import type { Point } from "./engine/figure.ts";
-import { fbm2, noise1, rng } from "./engine/random.ts";
-import type { Rng } from "./engine/random.ts";
-import { curve, mixRgb, mottle, paper, polygon, rgb, roughen, shadeRgb, stroke } from "./engine/paint.ts";
-import type { Paper, Pt, RGB } from "./engine/paint.ts";
+import { project } from "../../src/kit/engine/camera.ts";
+import type { Vec3 } from "../../src/kit/engine/camera.ts";
+import { contours, resample, smooth } from "../../src/kit/engine/figure.ts";
+import type { Point } from "../../src/kit/engine/figure.ts";
+import { fbm2, noise1, rng } from "../../src/kit/engine/random.ts";
+import type { Rng } from "../../src/kit/engine/random.ts";
+import { curve, mixRgb, mottle, paper, polygon, rgb, roughen, shadeRgb, stroke } from "../../src/kit/engine/paint.ts";
+import type { Paper, Pt, RGB } from "../../src/kit/engine/paint.ts";
 import { dusk, rain } from "./tokens.ts";
 import { eave, plateSize, puddles, reference } from "./scene.ts";
 import type { Plate } from "./scene.ts";

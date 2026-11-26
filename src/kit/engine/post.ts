@@ -1,13 +1,12 @@
 /**
- * 摄影：WebGL 1 后期链，顺序固定（contract.md 第 5 节）：柔焦 → 高光光晕 → 四角色差 → 暗角 → 抬黑位、压高光 → 按亮度加颗粒。
- * 镜头只给 Post 参数（从 defaultPost 覆盖数值），不自己加后期。半分辨率做柔焦模糊和亮部提取，光晕在 1/2、1/4、1/8 三档分辨率各模糊一次
+ * 摄影：WebGL 1 后期链，顺序固定：柔焦 → 高光光晕 → 四角色差 → 暗角 → 抬黑位、压高光 → 按亮度加颗粒。
+ * 传入黑位颜色创建着色器，逐帧给 draw 传 Post 参数。半分辨率做柔焦模糊和亮部提取，光晕在 1/2、1/4、1/8 三档分辨率各模糊一次
  * （约合全分辨率 6.5、24、72 px），最后一遍在全分辨率合成；色差在合成函数上按三个偏移位置各取一次。颗粒每帧换种子，只由帧号决定。
+ * 待定事项：无。
  */
-import { darkest } from "../tokens.ts";
 import type { Post } from "./post-settings.ts";
 
 export type { Post } from "./post-settings.ts";
-export { defaultPost } from "./post-settings.ts";
 
 const vertex = `
 attribute vec2 position;
@@ -63,7 +62,7 @@ void main() {
 const hex = (value: string) =>
   [1, 3, 5].map((i) => (parseInt(value.slice(i, i + 2), 16) / 255).toFixed(4)).join(", ");
 
-const finalFragment = `
+const finalFragment = (darkest: string) => `
 precision highp float;
 uniform sampler2D base;
 uniform sampler2D soft;
@@ -129,7 +128,7 @@ void main() {
 
 type Target = { texture: WebGLTexture; buffer: WebGLFramebuffer | null; width: number; height: number };
 
-export const createPost = (canvas: HTMLCanvasElement) => {
+export const createPost = (canvas: HTMLCanvasElement, darkest: string) => {
   const gl = canvas.getContext("webgl", { alpha: false, antialias: false, preserveDrawingBuffer: true });
   if (!gl) throw new Error("WebGL 不可用，请用 --gl=swangle 渲染。");
   const compile = (type: number, text: string) => {
@@ -156,7 +155,7 @@ export const createPost = (canvas: HTMLCanvasElement) => {
     down: program(downFragment),
     blur: program(blurFragment),
     bright: program(brightFragment),
-    final: program(finalFragment),
+    final: program(finalFragment(darkest)),
   };
   const quad = gl.createBuffer();
   gl.bindBuffer(gl.ARRAY_BUFFER, quad);

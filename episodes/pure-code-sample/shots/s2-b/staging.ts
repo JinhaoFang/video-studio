@@ -6,10 +6,10 @@
  * poleSag 给出竹竿在停点处的竖直位移（米）：压身时略弯，被蹬到最低点后按衰减振动弹回；bendAt 把它摊到整根竹竿（两端固定的第一振型）。
  * 只由帧号决定。待定（设计）：推近和上摇的幅度是本版按镜头剧本「极慢」「略」自定的。
  */
-import type { Camera, Vec3 } from "../../engine/camera.ts";
-import { ease, progress, tween } from "../../engine/timing.ts";
-import { pole, poleAt, reference } from "../../scene.ts";
-import { poleScreen } from "../../pole.ts";
+import type { Camera, Vec3 } from "../../../../src/kit/engine/camera.ts";
+import { ease, progress, tween } from "../../../../src/kit/engine/timing.ts";
+import { pole, poleAt, reference } from "../../../after-rain/scene.ts";
+import { poleScreen } from "../../../after-rain/pole.ts";
 
 const s1End: Camera = { ...reference, position: [0.5, 1.25, 1.95], pitch: 0.035, focal: 46 };
 

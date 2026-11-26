@@ -137,6 +137,32 @@ pnpm 的版本由 `package.json` 的 `packageManager` 固定，本机装的 pnpm
 
 ### 工具
 
+**纯代码动画 kit**。从[小样合成](../../episodes/pure-code-sample/PureCodeSample.tsx)、[样张](../../episodes/pure-code-sample/samples/)和[生成器](../../episodes/pure-code-sample/generate.ts)看调用。新合成在 [纯代码登记表](../../episodes/pure-code.json) 增加合成 ID、源码入口和生成清单，共用入口与许可的版本可放在同一项。verify 按项检查启动依赖和媒体字面路径。
+
+| 模块（相对 `src/kit/`） | 公开接口与用途 |
+|---|---|
+| `engine/random.ts` | `hash`、`rng`、`noise1/2`、`fbm2` 按种子生成可复现的随机数和噪声。 |
+| `engine/timing.ts` | `drawing` 取画张，`hold` 硬停姿势，`progress`、`ease`、`tween` 插值。 |
+| `engine/figure.ts` | `ellipsoid`、`roundCone`、`smin` 组合距离场，`sample`、`field`、`contours` 提取轮廓。 |
+| `engine/ink.ts` | `boil`、`strokes`、`drawStrokes` 把折线画成有压感、带画张抖动的笔画。 |
+| `engine/cel.ts` | `createLayer`、`drawCel`、`placeLayer` 用指定色区、硬边阴影和线条绘制体块。 |
+| `engine/paint.ts` | `paper`、`stroke`、`polygon`、`mottle` 在浮点画布上刷水粉，`toBytes` 输出 RGBA。 |
+| `engine/camera.ts` | `project`、`directionToView` 和 `layer` 将世界点、光向和不同纵深的底图投到机位。 |
+| `engine/post.ts`、`post-settings.ts` | `createPost(canvas, darkest)` 创建摄影链，`draw` 按帧应用 `Post`，用完调用 `dispose`。 |
+| `shots.ts` | `Shot<Surface>` 声明镜头，`filmDuration`、`locateShot`、`collectEvents` 和 `frameToSample` 共用镜头时间表。 |
+| `samples/useFrame.ts` | `useFrame` 等待输入就绪后按帧绘制 Canvas，再应用后期。 |
+| `samples/ModelSheet.tsx` | `ModelSheet` 接收各行参考线、视图和角色绘制函数，输出设定图。 |
+| `samples/ShotPreview.tsx` | `ShotPreview` 接收镜头、后期基准、输入和 surface 构造函数，随播放头预览或指定局部帧出引擎静帧。 |
+| `generation/bake.ts` | Node 端 `bakePlate(paper, output)` 将任意底图烘焙成 PNG。 |
+| `generation/manifest.ts` | `generation` 从源码、数据和运行版本建立缓存，用 `cached`、`platesCached` 核实产物，`save` 写入清单。 |
+| `sound/types.ts`、`dsp.ts` | `EventTable`、`Score`、`SoundDesign` 描述输入，`place`、`reverb` 和 `pcmWav` 处理 48 kHz 采样。 |
+| `sound/score.ts` | `resolveAnchor` 定位乐句，`compileScore` 和 `synthesizeNote` 按乐谱合成独立乐音。 |
+| `sound/sfx.ts` | `synthesizeSfx` 按音色、种子和参数返回带对齐采样的音效。 |
+| `sound/mix.ts` | `renderMix` 按事件、床音、乐谱和可选的远近变化生成混音与分轨。 |
+| `sound/measure.ts` | `measure`、`master` 测量响度、真峰值并处理总线，`pitchReport`、`spectrum` 检查音高和频谱。 |
+
+已有的按句工具 `sentence-timing.ts` 用 `sentenceFrame`、`chapterSpans` 定时，`subtitle-schedule.ts` 用 `buildSubtitleSchedule`、`subtitleState` 定字幕条。用法见 [NASA 朋克开场](../../episodes/nasa-punk-opening/README.md)。
+
 画面细节与逐帧运动验收：`pnpm qa crop <视频> <时间点> <x,y…>` 按原始像素裁切一个或多个区域，左上角从 `0,0` 起，默认 600×450，可用 `--width`、`--height` 调整；输出不缩放的 PNG，区域超出画面时报错。`pnpm qa strip <视频> --from <起始帧> --to <结束帧> [--every <帧步长>]` 按从 0 开始的解码帧号取样，包含对齐步长的终点，步长默认 1；每格标帧号和实际呈现时间码，默认 4 列、每页最多 24 格，沿用 `sheet` 的排版与 2000 像素整页上限。两项均支持 `--out` 指定输出目录，详细用法见各自 `--help`。
 
 配音和成片的工具先看 `--help`：逐句配音 `pnpm tts`、等比变速 `node tools/stretch-voice.ts`、配音打分 `pnpm qa voice`、配乐与混音 `node tools/mix-opening.ts`、运动自检 `pnpm qa motion`。本期的复现命令见 [NASA 朋克开场说明](../../episodes/nasa-punk-opening/README.md)。`--help` 里没有的几条：

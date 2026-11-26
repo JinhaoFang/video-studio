@@ -2,6 +2,7 @@
  * 动画时间：drawing 给出一拍二、一拍三的画张号和该画张的起始帧；hold 是关键姿势硬停表（停在上一个关键值，不插值）；
  * ease 是起止都慢的插值，leave、arrive 大于 1 时离开或到达那一头更慢，曲线在两端斜率为零，不回弹；tween 按关键帧表插值，适合相机和慢动作。
  * 角色动作先用 drawing 取画张起始帧再算姿势，所以同一张画内姿势不变。
+ * 待定事项：无。
  */
 export const drawing = (frame: number, step: number) => {
   const index = Math.floor(frame / step);

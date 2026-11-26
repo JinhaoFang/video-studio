@@ -1,5 +1,5 @@
-/** 乐谱编译与四件合成乐器：加法钢琴/竖琴/钟琴、四人弦乐声部；揉弦初相独立于载波累加，先验证锚点及 mustEndBefore，绝不按截止点缩短不合规乐句。 */
-import { frameToSample } from "../model.ts";
+/** 乐谱编译与四件合成乐器：加法钢琴/竖琴/钟琴、四人弦乐声部；揉弦初相独立于载波累加，先验证锚点及 mustEndBefore，绝不按截止点缩短不合规乐句。 待定事项：无。 */
+import { frameToSample } from "../shots.ts";
 import { curve, random, rate, seedFor } from "./dsp.ts";
 import type { Anchor, EventTable, Instrument, Score, Voice } from "./types.ts";
 
@@ -37,10 +37,12 @@ export const frequency = (pitch: string) =>
 const pitchName = (note: number) =>
   `${["C", "C#", "D", "E-", "E", "F", "F#", "G", "A-", "A", "B-", "B"][note % 12]}${Math.floor(note / 12) - 1}`;
 const glissPitches = (from: string, to: string, scale: string): string[] => {
-  if (scale !== "F major") throw new Error(`不支持的刮奏音阶：${scale}`);
+  const tonic = /^([A-G][#-]?) major$/.exec(scale);
+  if (!tonic) throw new Error(`不支持的刮奏音阶：${scale}`);
+  const root = midi(`${tonic[1]}0`) % 12;
   const notes = [];
   for (let note = midi(from); note <= midi(to); note++)
-    if ([0, 2, 4, 5, 7, 9, 10].includes(note % 12)) notes.push(pitchName(note));
+    if ([0, 2, 4, 5, 7, 9, 11].includes((note - root + 12) % 12)) notes.push(pitchName(note));
   if (!notes.length) throw new Error("竖琴刮奏音域为空。");
   return notes;
 };
@@ -152,7 +154,7 @@ export const compileScore = (
         ? glissPitches(note.gliss.from, note.gliss.to, note.gliss.scale)
         : [note.pitch!];
       for (const [ordinal, pitch] of pitches.entries()) {
-        const [low, high] = score.instruments[note.instrument].range;
+        const [low, high] = score.instruments[note.instrument]!.range;
         if (midi(pitch) < midi(low) || midi(pitch) > midi(high))
           throw new Error(`音高超出乐器音域：${note.instrument} ${pitch}`);
         const beat =

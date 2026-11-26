@@ -4,11 +4,11 @@
  * bend(t) 给出轴线上每点的竖直位移（米），S2 竹竿被蹬得下沉、弹回时由镜头传入；drawing 只决定线条抖动，水珠和高光的位置固定。
  * 离相机不到 MIN_DEPTH 米的一段（在相机旁边或背后）不画，免得投影出巨大的线宽。
  */
-import { project } from "./engine/camera.ts";
-import type { Camera, Vec3 } from "./engine/camera.ts";
-import type { Point } from "./engine/figure.ts";
-import { boil, drawStrokes, strokes } from "./engine/ink.ts";
-import { hash } from "./engine/random.ts";
+import { project } from "../../src/kit/engine/camera.ts";
+import type { Camera, Vec3 } from "../../src/kit/engine/camera.ts";
+import type { Point } from "../../src/kit/engine/figure.ts";
+import { boil, drawStrokes, strokes } from "../../src/kit/engine/ink.ts";
+import { hash } from "../../src/kit/engine/random.ts";
 import { ink, rain, dusk, warm } from "./tokens.ts";
 import { pole, poleAt } from "./scene.ts";
 

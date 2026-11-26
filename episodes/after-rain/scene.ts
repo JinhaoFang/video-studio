@@ -4,7 +4,14 @@
  * 竹竿是水平的，从左下近处伸向右中远处；麻雀的一个单位是 UNIT 米。生成器按这里烘焙底图，镜头按这里摆相机、竹竿和麻雀。
  * 院子里的水洼（puddles）：x 是参考画面像素，depth、width 是米；底图画水面，S1 在同一位置画雨点涟漪。
  */
-import type { Camera, Vec3 } from "./engine/camera.ts";
+import type { Camera, Vec3 } from "../../src/kit/engine/camera.ts";
+
+export const sun: Vec3 = (() => {
+  const v: Vec3 = [0.42, 0.78, 0.46];
+  const l = Math.hypot(v[0], v[1], v[2]);
+  return [v[0] / l, v[1] / l, v[2] / l];
+})();
+export const sky: Vec3 = [0, -0.2, 0.98];
 
 export const reference: Camera = {
   position: [0, 0, 2.0],

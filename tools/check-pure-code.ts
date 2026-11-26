@@ -7,7 +7,7 @@
  */
 import { createHash } from "node:crypto";
 import { existsSync, readFileSync } from "node:fs";
-import { basename, dirname, relative, resolve, sep } from "node:path";
+import { dirname, relative, resolve, sep } from "node:path";
 import ts from "typescript";
 import { listCodeFiles } from "./code-files.ts";
 
@@ -22,6 +22,7 @@ const digest = (path: string) =>
 
 export const checkPureCode = (
   root: string,
+  ids: readonly string[],
   entry: string,
   manifestPath: string,
 ): string[] => {
@@ -29,7 +30,10 @@ export const checkPureCode = (
   const report = (file: string, line: number, text: string) =>
     errors.push(`${file}:${line} pure-code ${text}`);
   const code = new Set(listCodeFiles(root));
-  if (!code.has(entry)) return errors;
+  if (!ids.length || !code.has(entry)) {
+    report(entry, 1, "登记的合成需要编号和仓库源码入口。");
+    return errors;
+  }
   if (!existsSync(resolve(root, manifestPath))) {
     report(entry, 1, "缺少生成物清单，请运行本期生成脚本。");
     return errors;
@@ -392,7 +396,7 @@ export const checkPureCode = (
           !ts.isJsxAttribute(id) ||
           !id.initializer ||
           !ts.isStringLiteral(id.initializer) ||
-          id.initializer.text === basename(entry).replace(/\.[^.]+$/, "")
+          ids.includes(id.initializer.text)
         )
           return;
         for (const attribute of node.attributes.properties)

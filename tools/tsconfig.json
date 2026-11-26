@@ -12,6 +12,8 @@
   },
   "include": [
     "./**/*.ts",
+    "../src/kit/generation/**/*.ts",
+    "../src/kit/sound/**/*.ts",
     "../src/**/*.test.ts",
     "../episodes/**/*.test.ts",
     "../episodes/pure-code-sample/generate.ts",

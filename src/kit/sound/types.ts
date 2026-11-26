@@ -1,5 +1,5 @@
-/** 本期声音输入类型；乐器、音效和事件名保持设计数据原名，事件帧换算复用 model.ts。 */
-import type { FilmEvent, ShotRow } from "../model.ts";
+/** 声音设计契约。由调用方传入乐谱、事件与混音设计，采样放在 Clip / Stereo 中。 待定事项：无。 */
+import type { FilmEvent, ShotRow } from "../shots.ts";
 
 export type Instrument = "piano_felt" | "strings_pad" | "harp" | "glockenspiel";
 export type Anchor =
@@ -31,10 +31,10 @@ export type Phrase = {
 };
 export type Score = {
   fps: number;
-  instruments: Record<
+  instruments: Partial<Record<
     Instrument,
     { name: string; range: [string, string]; notes: string }
-  >;
+  >>;
   sections: { id: string; from: Anchor }[];
   phrases: Phrase[];
 };
@@ -73,7 +73,7 @@ export type SfxDesign = {
 export type SoundDesign = {
   tiers: Record<string, { range: [number, number] }>;
   scenes: Record<string, Scene>;
-  sfx: Record<SfxName, SfxDesign>;
+  sfx: Partial<Record<SfxName, SfxDesign>>;
   eventMap: Record<string, { offsetFrames: number; sfx: SfxName }[]>;
   extra: { sfx: SfxName; at: Anchor }[];
   beds: {

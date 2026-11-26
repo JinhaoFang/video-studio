@@ -6,7 +6,7 @@ import { join, relative, resolve } from "node:path";
 import process from "node:process";
 import { parseArgs } from "node:util";
 import { reportError } from "../../../tools/cli.ts";
-import { hottest100ms, pcmWav, rate, seedFor } from "./dsp.ts";
+import { hottest100ms, pcmWav, rate, seedFor } from "../../../src/kit/sound/dsp.ts";
 import {
   levels,
   master,
@@ -14,10 +14,12 @@ import {
   MeasurementFailure,
   pitchReport,
   spectrum,
-} from "./measure.ts";
-import { renderMix } from "./mix.ts";
-import { synthesizeSfx } from "./sfx.ts";
-import type { EventTable, Score, SfxName, SoundDesign } from "./types.ts";
+} from "../../../src/kit/sound/measure.ts";
+import { perspective } from "./perspective.ts";
+import { soundSources } from "./inputs.ts";
+import { renderMix } from "../../../src/kit/sound/mix.ts";
+import { synthesizeSfx } from "../../../src/kit/sound/sfx.ts";
+import type { EventTable, Score, SfxName, SoundDesign } from "../../../src/kit/sound/types.ts";
 
 const usage =
   "node episodes/pure-code-sample/sound/render.ts [--events <事件表>] [--out <目录>] [--seed <整数>] [--help]";
@@ -58,7 +60,9 @@ try {
     const score = readJson<Score>(join(episode, "score.json"));
     const design = readJson<SoundDesign>(join(episode, "sound.json"));
     const start = performance.now();
-    const rendered = renderMix(table, score, design, seed);
+    if (table.fps !== 24 || table.shotTable.some((row) => row.startFrame + row.durationInFrames > 24 * 60))
+      throw new Error("本期独立声音命令仅接受 24 fps、一分钟以内的事件表。");
+    const rendered = renderMix(table, score, design, seed, perspective);
     const mastered = master(
       rendered.mix,
       rendered.stems,
@@ -151,14 +155,6 @@ try {
       "--seed",
       String(seed),
     ];
-    const sourceFiles = [
-      "score.json",
-      "sound.json",
-      "model.ts",
-      ...["types", "dsp", "score", "sfx", "mix", "measure", "render"].map(
-        (name) => `sound/${name}.ts`,
-      ),
-    ];
     const report = {
       command,
       runtime: {
@@ -174,8 +170,8 @@ try {
       durationSeconds: rendered.durationFrames / table.fps,
       inputs: [
         eventsPath,
-        join(root, "tools/cli.ts"),
-        ...sourceFiles.map((name) => join(episode, name)),
+        join(episode, "score.json"), join(episode, "sound.json"),
+        ...soundSources.map((path) => join(root, path)),
       ].map((path) => ({
         path: relative(root, path),
         sha256: hash(readFileSync(path)),

@@ -363,6 +363,12 @@ test("guardrails check tracked ignored paths and skip ignored untracked files", 
   );
 });
 
+const pureRegistration = {
+  ids: ["PureCodeSample"],
+  entry: "episodes/pure-code-sample/PureCodeSample.tsx",
+  manifest: "episodes/pure-code-sample/data/generated.json",
+};
+
 const pureFixture = (
   context: TestContext,
   source: string,
@@ -374,6 +380,7 @@ const pureFixture = (
   const hash = (text: string) =>
     createHash("sha256").update(text).digest("hex");
   return fixture(context, {
+    "episodes/pure-code.json": JSON.stringify([pureRegistration]),
     [entry]: source,
     [generator]: "export {};",
     "episodes/pure-code-sample/data/generated.json": JSON.stringify({
@@ -596,6 +603,25 @@ for (const [name, source] of [
   });
 }
 
+test("pure-code 按登记检查第二期，两个入口的媒体许可彼此独立", (context) => {
+  const entry = "episodes/second/Film.tsx";
+  const manifest = "episodes/second/data/generated.json";
+  const generator = "episodes/second/generate.ts";
+  const root = pureFixture(context, pureImage, {
+    "episodes/pure-code.json": JSON.stringify([pureRegistration, { ids: ["NewFilm"], entry, manifest }]),
+    [entry]: "export {};",
+    [generator]: "export {};",
+    [manifest]: JSON.stringify({ entry, generator, inputs: [{ path: generator, sha256: createHash("sha256").update("export {};").digest("hex") }], files: [] }),
+  });
+  assert.equal(run(root, "pure-code").status, 0);
+  for (const value of ["path", '"episodes/pure-code-sample/background.png"']) {
+    writeFileSync(join(root, entry), `import { staticFile } from "remotion"; staticFile(${value});`);
+    const result = run(root, "pure-code");
+    assert.equal(result.status, 1, result.stderr);
+    assert.match(result.stderr, /second\/Film.tsx:1 pure-code/);
+  }
+});
+
 test("pure-code 拒绝间接依赖加载字体", (context) => {
   const root = pureFixture(context, 'import "./draw";', {
     "episodes/pure-code-sample/draw.ts": 'import "../../shared";',
@@ -619,6 +645,7 @@ test("pure-code 拒绝被替换的媒体和过期的生成输入", (context) => 
 
 test("pure-code 在无本地媒体的干净 checkout 可检查声明，缺失清单则失败", (context) => {
   const root = fixture(context, {
+    "episodes/pure-code.json": JSON.stringify([pureRegistration]),
     "episodes/pure-code-sample/PureCodeSample.tsx": pureImage,
   });
   assert.equal(run(root, "pure-code").status, 1);
@@ -1093,13 +1120,23 @@ for (const [name, index, rootSource, extra, expected] of [
   });
 }
 
+test("pure-code 按实际登记 ID 检查加载器，即使文件名与合成名不同", (context) => {
+  const pureId = "SampleVersionA";
+  const root = pureFixture(context, pureImage, {
+    "episodes/pure-code.json": JSON.stringify([{ ...pureRegistration, ids: [pureId] }]),
+    "episodes/index.ts": 'import "./Root";',
+    "episodes/Root.tsx": lazyRegistration.replace('id="Other"', `id="${pureId}"`),
+    "episodes/other.ts": 'import "@remotion/google-fonts/Inter";',
+  });
+  const result = run(root, "pure-code");
+  assert.equal(result.status, 1, result.stdout + result.stderr);
+  assert.match(result.stderr, /episodes\/other.ts:1 pure-code/);
+});
+
 test("pure-code 对本期 lazyComponent 仍递归检查", (context) => {
   const root = pureFixture(context, pureImage, {
     "episodes/index.ts": 'import "./Root";',
-    "episodes/Root.tsx": lazyRegistration.replace(
-      "./other",
-      "./pure-code-sample/fonts",
-    ),
+    "episodes/Root.tsx": lazyRegistration.replace("./other", "./pure-code-sample/fonts"),
     "episodes/pure-code-sample/fonts.ts":
       'import "@remotion/google-fonts/Inter";',
   });

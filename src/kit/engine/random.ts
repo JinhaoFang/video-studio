@@ -1,4 +1,4 @@
-/** 固定种子的随机与噪声：hash 取整数种子组合出 [0,1) 值，rng 生成序列，noise1/noise2 为平滑值噪声，fbm2 叠加多个频率。浏览器与 Node 共用，结果只由参数决定。 */
+/** 固定种子的随机与噪声：hash 取整数种子组合出 [0,1) 值，rng 生成序列，noise1/noise2 为平滑值噪声，fbm2 叠加多个频率。浏览器与 Node 共用，结果只由参数决定。 待定事项：无。 */
 export const hash = (...values: number[]): number => {
   let h = 0x811c9dc5;
   for (let i = 0; i < values.length; i++) {

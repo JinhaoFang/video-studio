@@ -2,6 +2,7 @@
  * 手绘线条：把闭合或开放折线切成若干笔（转折处和随机位置抬笔断开），每笔两端收尖、按压感变化粗细；
  * 背光一侧的线更粗、受光一侧更细，最亮处的笔可以整笔消失。drawStrokes 把笔画成填充多边形，按 factor 画在 2 倍画布上再缩小。
  * boil 用一张随画张号变化的平滑位移场抖动控制点，填色和线条用同一张位移场，所以一起抖。
+ * 待定事项：无。
  */
 import { hash, noise1, noise2, rng } from "./random.ts";
 import type { Point } from "./figure.ts";

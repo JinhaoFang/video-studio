@@ -7,15 +7,15 @@
  * 5) 蓬起与起飞后从身侧飘散的细小绒羽（看光前收净，不干扰看光帧）与夕光尘粒。
  * 所有颜色均取自 tokens.ts，不写散落色值。
  */
-import { project } from "../../engine/camera.ts";
-import type { Camera, Vec3 } from "../../engine/camera.ts";
-import type { Point } from "../../engine/figure.ts";
-import { boil, drawStrokes, strokes } from "../../engine/ink.ts";
-import { hash, rng } from "../../engine/random.ts";
-import { clamp01, ease, progress } from "../../engine/timing.ts";
-import { poleScreen } from "../../pole.ts";
-import { pole, poleAt } from "../../scene.ts";
-import { dusk, ink, rain, sparrow as spPalette, warm } from "../../tokens.ts";
+import { project } from "../../../../src/kit/engine/camera.ts";
+import type { Camera, Vec3 } from "../../../../src/kit/engine/camera.ts";
+import type { Point } from "../../../../src/kit/engine/figure.ts";
+import { boil, drawStrokes, strokes } from "../../../../src/kit/engine/ink.ts";
+import { hash, rng } from "../../../../src/kit/engine/random.ts";
+import { clamp01, ease, progress } from "../../../../src/kit/engine/timing.ts";
+import { poleScreen } from "../../../after-rain/pole.ts";
+import { pole, poleAt } from "../../../after-rain/scene.ts";
+import { dusk, ink, rain, sparrow as spPalette, warm } from "../../../after-rain/tokens.ts";
 import { perch } from "../placeholder.ts";
 import type { SparrowState } from "./choreography.ts";
 import { perchPoint, poleBendAmount, poleBendAt } from "./choreography.ts";

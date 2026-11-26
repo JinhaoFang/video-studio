@@ -2,7 +2,7 @@
  * 相机：以米为单位的针孔相机，世界坐标 +X 向右、+Y 向前、+Z 向上；焦距按 36 mm 宽画幅换算成像素。
  * project 把世界点投到画面（像素、离相机的纵深、每米多少像素）；layer 给出正对相机的平面底图在两台相机之间的缩放和平移，
  * 底图在参考相机的画面坐标里画，镜头移动时只按纵深重新摆放，近的层移动得多、远的层几乎不动；小角度的摇、俯仰对各层是同样的平移。
- * 全片统一光源：夕阳在画面右上方的云缝后，sun 是从景物指向太阳的方向；sky 是雨天的天光方向。
+ * 世界光向由场景通过 directionToView 投影。待定事项：无。
  */
 export type Vec3 = [number, number, number];
 
@@ -14,14 +14,6 @@ export type Camera = {
   width: number;
   height: number;
 };
-
-export const sun: Vec3 = (() => {
-  const v: Vec3 = [0.42, 0.78, 0.46];
-  const l = Math.hypot(v[0], v[1], v[2]);
-  return [v[0] / l, v[1] / l, v[2] / l];
-})();
-
-export const sky: Vec3 = [0, -0.2, 0.98];
 
 export const focalPx = (c: Camera) => (c.focal / 36) * c.width;
 

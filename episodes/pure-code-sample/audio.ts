@@ -1,7 +1,7 @@
 /** Node 合成占位撞击声，按音效对齐点落位；音效为单声道、混音为双声道，输出确定性的 PCM16 WAV。 */
 import { Buffer } from "node:buffer";
-import { frameToSample } from "./model.ts";
-import type { FilmEvent } from "./model.ts";
+import { frameToSample } from "../../src/kit/shots.ts";
+import type { FilmEvent } from "../../src/kit/shots.ts";
 
 export const sampleRate = 48000;
 export type Sound = { samples: Float64Array; alignmentSample: number };

@@ -1,0 +1,7 @@
+[
+  {
+    "ids": ["PureCodeSampleA", "PureCodeSampleB"],
+    "entry": "episodes/pure-code-sample/PureCodeSample.tsx",
+    "manifest": "episodes/pure-code-sample/data/generated.json"
+  }
+]

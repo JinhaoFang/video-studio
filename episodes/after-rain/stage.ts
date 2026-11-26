@@ -4,9 +4,9 @@
  * 相机走到某层底图跟前或越过它时（放大超过 40 倍）不画这一层。
  * Surface 是镜头 draw 拿到的画布：1920×1080 的 2D 上下文，五层夕光底图 plates 和雨色底图 rain。
  */
-import { directionToView, layer, project, sun } from "./engine/camera.ts";
-import type { Camera, Vec3 } from "./engine/camera.ts";
-import { plateSize, plates, reference, UNIT } from "./scene.ts";
+import { directionToView, layer, project } from "../../src/kit/engine/camera.ts";
+import type { Camera, Vec3 } from "../../src/kit/engine/camera.ts";
+import { plateSize, plates, reference, sun, UNIT } from "./scene.ts";
 import type { PlateId } from "./scene.ts";
 import { FOOT_Z } from "./sparrow.ts";
 

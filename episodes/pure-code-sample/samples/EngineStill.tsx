@@ -2,21 +2,19 @@
  * 引擎静帧样张（#152）：S1 推近后的机位，夕光下的各层水粉底图、晾衣竹竿和停在竹竿约 62% 宽处的湿麻雀，经摄影后期。
  * 两帧一张画，用来看线条抖动和每帧耗时；这一帧也是 #153 镜头 1 末尾的构图参考。
  */
-import { useCallback, useRef } from "react";
-import { AbsoluteFill, useCurrentFrame } from "remotion";
-import type { Camera } from "../engine/camera.ts";
-import { defaultPost } from "../engine/post.ts";
-import { drawing } from "../engine/timing.ts";
-import { drawPole, poleScreen } from "../pole.ts";
-import { poleAt, reference, pole } from "../scene.ts";
-import { backlight, drawSparrow, restPose } from "../sparrow.ts";
-import { drawPlate, placeSparrow } from "../stage.ts";
-import type { PlateImages } from "../stage.ts";
-import { useFrame } from "./useFrame.ts";
-import { usePlates } from "./usePlates.ts";
-import type { PlateSets } from "./usePlates.ts";
+import { ShotPreview } from "../../../src/kit/samples/ShotPreview.tsx";
+import type { Shot } from "../../../src/kit/shots.ts";
+import type { Camera } from "../../../src/kit/engine/camera.ts";
+import { defaultPost } from "../../after-rain/tokens.ts";
+import { drawing } from "../../../src/kit/engine/timing.ts";
+import { drawPole, poleScreen } from "../../after-rain/pole.ts";
+import { poleAt, reference, pole } from "../../after-rain/scene.ts";
+import { backlight, drawSparrow, restPose } from "../../after-rain/sparrow.ts";
+import { drawPlate, placeSparrow } from "../../after-rain/stage.ts";
+import type { PlateImages, Surface } from "../../after-rain/stage.ts";
+import { surface, usePlates } from "./usePlates.ts";
 
-export const stillSize = { width: 1920, height: 1080, durationInFrames: 4 };
+import { sampleSize as stillSize } from "../model.ts";
 
 export const stillCamera: Camera = { ...reference, position: [0.5, 1.25, 1.95], pitch: 0.035, focal: 46 };
 
@@ -61,15 +59,12 @@ const paint = (ctx: CanvasRenderingContext2D, frame: number, images: PlateImages
   drawPlate(ctx, images.eaves, "eaves", stillCamera);
 };
 
+const shot: Shot<Surface> = {
+  id: "still", durationInFrames: stillSize.durationInFrames, events: [], post,
+  draw: ({ context, plates }, frame) => paint(context, frame, plates),
+};
+
 export const EngineStill: React.FC = () => {
-  const frame = useCurrentFrame();
-  const canvas = useRef<HTMLCanvasElement>(null);
-  const images = usePlates();
-  const render = useCallback((ctx: CanvasRenderingContext2D, f: number, i: PlateSets) => paint(ctx, f, i.plates), []);
-  useFrame(canvas, frame, images, render, post);
-  return (
-    <AbsoluteFill>
-      <canvas ref={canvas} width={stillSize.width} height={stillSize.height} />
-    </AbsoluteFill>
-  );
+  const inputs = usePlates();
+  return <ShotPreview shot={shot} defaults={defaultPost} inputs={inputs} surface={surface} />;
 };

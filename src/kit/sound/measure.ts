@@ -1,4 +1,4 @@
-/** 声音量化验收：FFmpeg EBU R128/真峰值、共用离线限幅包络、独立音符的 Hann FFT 峰值估计；频谱图仅作检查。 */
+/** 声音量化验收：FFmpeg EBU R128/真峰值、共用离线限幅包络、独立音符的 Hann FFT 峰值估计；频谱图仅作检查。 待定事项：无。 */
 import { Buffer } from "node:buffer";
 import { spawnSync } from "node:child_process";
 import { dbGain, peak, rate } from "./dsp.ts";
