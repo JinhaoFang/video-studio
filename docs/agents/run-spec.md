@@ -18,7 +18,7 @@
 | `symlinkDirectories` | `["references", ".agents"]` | 不进 git、但派出去的 agent 要读的目录。`dispatch` 把它们从主工作区软链接进 worktree，派发指令要求只读使用。本仓库是参考资料和第三方技能（Matt 的技能、Remotion 技能）。 |
 | `acceptanceRoot` | `"out/qa"` | 验收产物根目录。每张工单写到下面的 `spec-<S>/<T>/`；`land` 把它复制回主工作区，`cleanup` 整个删掉 `spec-<S>/`。已复制的记录和验收产物在删除 worktree 前按内容核对，变了就重新复制；其余被忽略的工单产物在 `<仓库目录>.worktrees/.kept/<T>/`，`cleanup` 列出后删除。 |
 | `codexSandbox` | `"danger-full-access"` | 工程席位用 Codex 时的权限（旧兼容项）。用户要求完全权限，让执行者能联网、能用 `gh` 读 issue；其他框架的权限写在个人席位配置里。 |
-| `workTypes` | `{"前端":"镜头、样式、预览页这类视觉实现"}` | 工作类型词表。工单写一行 `工作类型：前端` 时按席位配置的「前端」档派发；视觉实现和脚本、管线适合的模型不同。 |
+| `workTypes` | `{"前端":"镜头、样式、预览页这类视觉实现","动画":"纯代码动画的引擎、设定和镜头绘制"}` | 工作类型词表。工单写一行 `工作类型：前端` 或 `工作类型：动画` 时按席位配置的同名档派发；视觉实现和脚本、管线适合的模型不同，纯代码动画（spec #147 起）又和网页式的视觉实现不同。个人席位文件还没有「动画」档时回落 default，派发会打印原因。 |
 | `seats`、`agents` | 不写 | 用哪个框架、模型和并发上限属于个人和本机，写在 `~/.config/agent-workflow/seats.json`；仓库没有硬要求，不覆盖。格式见 `setup-run-spec` 的 `seats.md`，实际值用 `doctor` 看。 |
 | `prCheckCommand` | 不写（默认 `["gh", "pr", "checks", "{pr}", "--watch"]`） | 可选。`pr-check` 运行的 PR 检查命令，每个参数里的 `{pr}` 换成 PR 号。CI 启动不了时不改这一项，按 `docs/workflow/README.md`「护栏」改为本机验证。 |
 | `verificationEnv` | 不写（默认 `{}`） | 可选。验证要用的环境变量，字符串到字符串的对象；值里的 `{mainRoot}` 换成主工作区路径，进程里已有的同名变量优先。`verify`、`land`、`pr-check` 和 `dispatch` 的安装与执行者进程都带上它，实际值写进派发指令和派发记录，所以不放密钥。本仓库的验证不依赖环境变量。 |

@@ -4,7 +4,10 @@
   "symlinkDirectories": ["references", ".agents"],
   "acceptanceRoot": "out/qa",
   "codexSandbox": "danger-full-access",
-  "workTypes": { "前端": "镜头、样式、预览页这类视觉实现" },
+  "workTypes": {
+    "前端": "镜头、样式、预览页这类视觉实现",
+    "动画": "纯代码动画的引擎、设定和镜头绘制"
+  },
   "staticCheckCommand": ["pnpm", "verify", "--static"],
   "staticOnlyPaths": ["**/*.md", "docs/reports/*.html"]
 }

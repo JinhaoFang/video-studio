@@ -1,8 +1,10 @@
 /**
- * Dispatch frames, sheet, compare, loudness, sentence, voice and motion with `pnpm qa <command>`.
- * Add a usage string and run(args) handler to commands for future QA tools.
- * Chinese help returns 0; check failures return 1; argument/runtime errors return 2.
+ * 通过 pnpm qa <子命令> 分发验收工具，包括原始像素裁切和连续帧条。
+ * 新工具在 commands 中登记用法字符串与 run(args) 处理函数。
+ * 中文帮助退出 0，检查不通过退出 1，参数或运行错误退出 2。
  */
+import { stripUsage, runStrip } from "./qa-strip.ts";
+import { cropUsage, runCrop } from "./qa-crop.ts";
 import { framesUsage, runFrames } from "./qa-frames.ts";
 import { sheetUsage, runSheet } from "./qa-sheet.ts";
 import { compareUsage, runCompare } from "./qa-compare.ts";
@@ -17,6 +19,8 @@ const commands: Record<
   string,
   { usage: string; run: (args: string[]) => void }
 > = {
+  crop: { usage: cropUsage, run: runCrop },
+  strip: { usage: stripUsage, run: runStrip },
   frames: { usage: framesUsage, run: runFrames },
   sheet: { usage: sheetUsage, run: runSheet },
   compare: { usage: compareUsage, run: runCompare },

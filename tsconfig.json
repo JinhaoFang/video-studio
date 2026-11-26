@@ -6,6 +6,7 @@
     "jsx": "react-jsx",
     "strict": true,
     "noEmit": true,
+    "allowImportingTsExtensions": true,
     "lib": ["es2015"],
     "types": ["react", "web"],
     "esModuleInterop": true,
@@ -14,5 +15,11 @@
     "noUnusedLocals": true
   },
   "include": ["src", "episodes"],
-  "exclude": ["remotion.config.ts", "**/*.test.ts"]
+  "exclude": [
+    "remotion.config.ts",
+    "**/*.test.ts",
+    "episodes/pure-code-sample/generate.ts",
+    "episodes/pure-code-sample/audio.ts",
+    "episodes/pure-code-sample/sound"
+  ]
 }

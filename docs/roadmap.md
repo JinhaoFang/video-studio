@@ -17,10 +17,10 @@
 | 事项 | 决定 | 写在哪 |
 |---|---|---|
 | 仓库形态 | 一个工作室仓库放所有期，可复用的放 `src/`，每期的放 `episodes/<期>/` | `AGENTS.md`「目录与归属」 |
-| 时间机制 | 动画按台本句子编号定时，不写死帧号 | `docs/workflow/README.md`「一期视频」 |
+| 时间机制 | 按时间轴锚点定时，不写死全片帧号：有旁白时锚点是句子编号，没有旁白时是镜头起点和画面事件（用户 11-25，spec #147） | `docs/workflow/README.md`「一期视频」 |
 | 包管理、媒体 | pnpm；媒体和渲染结果不进 git | `AGENTS.md` |
 | 远程仓库 | `github.com/JinhaoFang/video-studio`（私有） | — |
-| 开发流程 | 设计负责人是和用户对话的主会话，工程负责人由它按席位派发，用 `run-spec` 执行 spec；用哪个框架和模型写在个人席位配置里，仓库只登记工作类型 `前端`；派发层随 `run-spec` 自带，不再需要 DispatchDock；版本 `workflow-v7`（11-17），各版本内容见 `JinhaoFang/agent-workflow` 的 README「版本」 | `AGENTS.md`、`docs/roles/`、`docs/workflow/README.md`、`docs/agents/` |
+| 开发流程 | 设计负责人是和用户对话的主会话，工程负责人由它按席位派发，用 `run-spec` 执行 spec；用哪个框架和模型写在个人席位配置里，仓库只登记工作类型 `前端`、`动画`；派发层随 `run-spec` 自带，不再需要 DispatchDock；版本 `workflow-v7`（11-17），各版本内容见 `JinhaoFang/agent-workflow` 的 README「版本」 | `AGENTS.md`、`docs/roles/`、`docs/workflow/README.md`、`docs/agents/` |
 | 流程的版本 | `workflow-v1`～`workflow-v3.1` 从本仓库发布；之后的版本从 `JinhaoFang/agent-workflow` 发布 | `JinhaoFang/agent-workflow` 的 README |
 | 方法层仓库 | 开发流程带着历史拆到 `JinhaoFang/agent-workflow`（私有）；视频的组件、风格、工具、规则和护栏留在本仓库；本仓库的两个技能从 `workflow-v4` 起换成安装版本，不进 git（用户 10-31） | `docs/workflow/README.md`「方法层仓库」 |
 | 方法层怎么改 | 放方法和思路，不放写死的规范；遇到的问题先记成观察，经过分析和评估再决定加不加、用什么形式；"汇报给人"由用户打分（用户 10-31） | `JinhaoFang/agent-workflow` 的 `AGENTS.md`「怎么改方法层」 |
@@ -31,6 +31,7 @@
 | 仓库定位 | 视频类型不限；目的是做出满意的视频、沉淀、可以对外交付；被邀请进来的人都是用户，不分主次（用户 11-09） | `AGENTS.md`、`GLOSSARY.md` |
 | 工作室层的沉淀 | 本仓库跨期共享的部分叫工作室层，"方法层"只指 `agent-workflow`；沉淀只从新会话的 `/retro` 进入，满足四条标准；推翻已定事项时请当初定的人确认；改了工作室层的 PR 合并前在新会话里用 `code-review` 审一次；不设人工把关（用户 11-09） | `docs/workflow/README.md`「复利」、`docs/adr/0001-studio-layer-without-gatekeeper.md` |
 | 帮不懂视频的用户 | 核心是在必要的时候请用户参与（只有用户知道的、之后改起来代价大的、满不满意），问新手给样片、说大白话；一期 13 项决定是设计负责人的检查清单；视频知识放 `docs/video/`，只写知识不写步骤；不加新流程、技能或简报文件，入口不变；白板技能按实测收纳，mg-styles 的评审打分不纳入（用户 11-09，spec #132） | `docs/workflow/README.md`「一期视频」、`docs/roles/design.md`「工作流」、`docs/video/`、`docs/reports/spec-132-video-novice.html` |
+| 纯代码动画 | 原创的剧场级日式动画短片，画面、配乐、音效全部由仓库代码算出（`GLOSSARY.md`「纯代码」）；宿主是 Remotion，Canvas 2D 加 WebGL，声音用 Node 合成，本机只能用软件图形 `--gl=swangle`；第一部小样 13 秒、两个镜头，镜头 2 的 A、B 两版各成一部（spec #147，PR #164） | `docs/adr/0002-pure-code-animation-on-remotion.md`、`episodes/pure-code-sample/README.md`、`docs/reports/spec-147-pure-code-sample.html` |
 
 进行中的工作以 GitHub 上打开的 spec 为准，不写进本文。
 
@@ -55,3 +56,4 @@
 - kit 复用欠账：ClinMesh 是中英文加空格（首期 `text-spacing.ts`）和颗粒暗角（首期 `FilmFinish.tsx`）的第二次使用，但两处都各写了一份，没有提进 `src/kit/`。
 - 时间轴来源类型：`tools/build-timeline.ts` 只认 `temporary` 和 `elevenlabs`，非 ElevenLabs 的正式配音（如 ClinMesh 的 MiniMax）只能记成 `elevenlabs`。#114 曾加过 `local`，后来按审阅撤回；要不要加，再定。
 - 视频知识的维护：`docs/video/` 的「适合」是保守建议，出处里有会改版的平台规格页；第一次照 13 项清单做完一期后，看 `/retro` 怎么补充和更新它们。
+- 纯代码动画用哪个模型：用户看完小样选了镜头 2 的 A（agy / Gemini，理由记在 #157），个人席位已新增 `engineering.动画` 指向它。之后开新会话 `/retro`，逐条判断研究记录里的假设、本期约定和看片发现的问题（静默被做成关掉声音、切镜前后主体位置跳动）哪些进工作室层，再写正片 spec。

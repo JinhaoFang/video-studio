@@ -1,0 +1,372 @@
+{
+  "version": 1,
+  "notes": "音效设计数据，#158 的混音器按它放音效。每个音效合成时按参考电平归一（最响的 100 ms 为 -18 LUFS，峰值不超过 -1.5 dBFS），再按 db 放到片中；db 必须落在 tier 的范围内。对齐点是音效里必须落在事件帧上的时刻，合成时返回它距第一个采样的秒数。锚点写法和 score.json 相同；eventMap 的值为空数组表示故意不出声。pan 为 -1（左）到 1（右）。",
+  "tiers": {
+    "hero": {
+      "name": "主",
+      "range": [-8, 0]
+    },
+    "foley": {
+      "name": "拟音",
+      "range": [-22, -10]
+    },
+    "ambience": {
+      "name": "环境",
+      "range": [-34, -22]
+    }
+  },
+  "scenes": {
+    "eaves": {
+      "name": "檐下近场",
+      "t60": 0.35,
+      "preDelayMs": 2,
+      "earlyReflectionsMs": [2.5, 4.1, 6.3, 8.8],
+      "highCutHz": 6000,
+      "notes": "木头檐口、椽子和竹竿就在身边：早期反射短而密，尾音短，高频衰减快"
+    },
+    "garden": {
+      "name": "雨后院子",
+      "t60": 0.9,
+      "preDelayMs": 30,
+      "earlyReflectionsMs": [45, 78, 120],
+      "highCutHz": 4500,
+      "notes": "开阔，近处几乎没有反射；远处房屋和树篱有稀疏回声，尾音低而长"
+    },
+    "music": {
+      "name": "配乐小厅",
+      "t60": 1.6,
+      "preDelayMs": 20,
+      "highCutHz": 9000,
+      "notes": "配乐只进这个混响，不进场景混响"
+    }
+  },
+  "sfx": {
+    "rain_tail": {
+      "name": "雨的尾声",
+      "material": "雨点打在瓦、树叶和积水上：限带的颗粒噪声，密度和亮度一起逐渐降低，最后只剩零星几点",
+      "alignment": null,
+      "tier": "ambience",
+      "db": -24,
+      "scene": "garden",
+      "pan": 0,
+      "width": 0.9
+    },
+    "eave_drips": {
+      "name": "檐下滴水",
+      "material": "檐口间歇落下的水滴打在石板和积水上，每一滴音高、亮度、位置都不同，间隔不规则",
+      "alignment": null,
+      "tier": "ambience",
+      "db": -26,
+      "scene": "garden",
+      "pan": 0,
+      "width": 0.7
+    },
+    "higurashi": {
+      "name": "暮蝉",
+      "material": "远处的暮蝉，一串下行的颤音，几声之间有停顿；雨停后从远处开始",
+      "alignment": null,
+      "tier": "ambience",
+      "db": -30,
+      "scene": "garden",
+      "pan": -0.4,
+      "width": 0.5
+    },
+    "garden_air": {
+      "name": "院子的空气声",
+      "material": "雨后院子的底噪：极轻的宽带空气声，低频略多，带很慢的起伏；全片不断，静默时也在，保证任何时刻都不是数字静音",
+      "alignment": null,
+      "tier": "ambience",
+      "db": -32,
+      "scene": "garden",
+      "pan": 0,
+      "width": 1
+    },
+    "drip_hit": {
+      "name": "水珠打在羽毛上",
+      "material": "一颗大水珠打在湿羽毛上：短促、偏闷的湿声，加极短的高频溅开",
+      "alignment": "水珠接触羽毛的瞬间（起音峰值）",
+      "tier": "hero",
+      "db": -4,
+      "scene": "eaves",
+      "pan": 0.24
+    },
+    "feather_flinch": {
+      "name": "一缩",
+      "material": "羽毛一下收紧的轻微摩擦，约 0.12 秒",
+      "alignment": "收紧到最小",
+      "tier": "foley",
+      "db": -16,
+      "scene": "eaves",
+      "pan": 0.1
+    },
+    "feather_shake": {
+      "name": "甩一下",
+      "material": "湿羽毛快速甩动，干湿混合的短促擦响；每次甩动的音色和声像略有不同",
+      "alignment": "甩到最远端、速度转向的瞬间",
+      "tier": "foley",
+      "db": -10,
+      "scene": "eaves",
+      "pan": 0.1,
+      "variation": "按这次甩动在本镜头里的序号换种子，声像左右交替 ±0.15"
+    },
+    "water_spray": {
+      "name": "水珠甩出",
+      "material": "甩出的水珠落在木头和地上的一串细碎声，0.4 秒内由密到稀",
+      "alignment": "第一颗水珠落下",
+      "tier": "foley",
+      "db": -18,
+      "scene": "eaves",
+      "pan": 0.1,
+      "width": 0.8
+    },
+    "feather_puff": {
+      "name": "蓬起",
+      "material": "羽毛蓬开的柔软气声，带一点低频",
+      "alignment": "蓬到最大",
+      "tier": "foley",
+      "db": -14,
+      "scene": "eaves",
+      "pan": 0.1
+    },
+    "pole_creak": {
+      "name": "竹竿受力",
+      "material": "压身时竹竿受力的轻微竹纤维吱声",
+      "alignment": "压到最低",
+      "tier": "foley",
+      "db": -20,
+      "scene": "eaves",
+      "pan": 0.1
+    },
+    "takeoff_push": {
+      "name": "蹬离",
+      "material": "小爪蹬离竹竿的轻敲声",
+      "alignment": "脚离开竹竿",
+      "tier": "foley",
+      "db": -12,
+      "scene": "eaves",
+      "pan": 0.12
+    },
+    "pole_spring": {
+      "name": "竹竿弹回",
+      "material": "中空竹管的弹响，接着减幅的低沉嗡声（竹管的两个主要共振，约 180 Hz 和 520 Hz），衰减约 0.8 秒；竹竿每晃回一次有一下更弱的再激励，共 2–3 下",
+      "alignment": "弹回的第一下",
+      "tier": "hero",
+      "db": -6,
+      "scene": "eaves",
+      "pan": 0
+    },
+    "wing_flap": {
+      "name": "振翅",
+      "material": "小鸟翅膀下扑的短促气流加羽毛摩擦；随鸟飞远，一次比一次弱、高频减少、声像向右",
+      "alignment": "下扑到最低",
+      "tier": "foley",
+      "db": -12,
+      "scene": "eaves",
+      "pan": 0.3,
+      "variation": "按这次振翅在本镜头里的序号：电平每次 -3 dB，高频截止每次降低，pan 每次 +0.15，场景混响的比例逐次增大"
+    },
+    "drip_land": {
+      "name": "水珠落地",
+      "material": "竹竿甩下的小水珠落在石板或积水上",
+      "alignment": "接触的瞬间",
+      "tier": "foley",
+      "db": -20,
+      "scene": "garden",
+      "pan": 0
+    }
+  },
+  "eventMap": {
+    "rain_tail": [],
+    "light_break": [],
+    "drip_fall": [],
+    "drip_hit": [
+      {
+        "offsetFrames": 0,
+        "sfx": "drip_hit"
+      }
+    ],
+    "flinch": [
+      {
+        "offsetFrames": 0,
+        "sfx": "feather_flinch"
+      }
+    ],
+    "shake": [
+      {
+        "offsetFrames": 0,
+        "sfx": "feather_shake"
+      }
+    ],
+    "puff": [
+      {
+        "offsetFrames": 0,
+        "sfx": "feather_puff"
+      }
+    ],
+    "hush": [],
+    "look_up": [],
+    "crouch": [
+      {
+        "offsetFrames": 6,
+        "sfx": "pole_creak"
+      }
+    ],
+    "takeoff": [
+      {
+        "offsetFrames": 0,
+        "sfx": "takeoff_push"
+      }
+    ],
+    "pole_spring": [
+      {
+        "offsetFrames": 0,
+        "sfx": "pole_spring"
+      }
+    ],
+    "wingbeat": [
+      {
+        "offsetFrames": 0,
+        "sfx": "wing_flap"
+      }
+    ],
+    "pole_drip": [
+      {
+        "offsetFrames": 0,
+        "sfx": "drip_land"
+      }
+    ],
+    "settle": []
+  },
+  "extra": [
+    {
+      "sfx": "water_spray",
+      "at": {
+        "event": "shake",
+        "offsetFrames": 3
+      },
+      "notes": "只跟第一次甩动"
+    }
+  ],
+  "beds": [
+    {
+      "sfx": "rain_tail",
+      "from": {
+        "shot": "S1",
+        "frame": 0
+      },
+      "to": {
+        "event": "light_break",
+        "offsetFrames": 60
+      },
+      "fadeOutFrames": 48,
+      "notes": "从镜头起点就在，光到之后 2.5 秒散尽"
+    },
+    {
+      "sfx": "eave_drips",
+      "from": {
+        "shot": "S1",
+        "frame": 0
+      },
+      "to": {
+        "shot": "S2",
+        "frame": 144
+      },
+      "density": [
+        [
+          {
+            "shot": "S1",
+            "frame": 0
+          },
+          1
+        ],
+        [
+          {
+            "event": "light_break"
+          },
+          0.6
+        ],
+        [
+          {
+            "shot": "S2",
+            "frame": 0
+          },
+          0.25
+        ],
+        [
+          {
+            "shot": "S2",
+            "frame": 144
+          },
+          0.15
+        ]
+      ],
+      "notes": "越来越稀"
+    },
+    {
+      "sfx": "higurashi",
+      "from": {
+        "event": "light_break",
+        "offsetFrames": 24
+      },
+      "to": {
+        "shot": "S2",
+        "frame": 144
+      },
+      "fadeInFrames": 36,
+      "notes": "雨停后从远处响起"
+    },
+    {
+      "sfx": "garden_air",
+      "from": {
+        "shot": "S1",
+        "frame": 0
+      },
+      "to": {
+        "shot": "S2",
+        "frame": 144
+      },
+      "notes": "全片的底噪，不参与任何静默和压低；静默是安静，不是声音断掉"
+    }
+  ],
+  "silences": [
+    {
+      "from": {
+        "event": "drip_fall"
+      },
+      "to": {
+        "event": "drip_hit",
+        "offsetFrames": 4
+      },
+      "mute": ["eave_drips"],
+      "notes": "配乐已经退出（score.json 的 mustEndBefore），檐下滴水也停，让最后一滴落在安静里；雨的尾声和暮蝉保留"
+    },
+    {
+      "from": {
+        "event": "hush"
+      },
+      "to": {
+        "event": "look_up"
+      },
+      "mute": ["eave_drips"],
+      "duck": {
+        "higurashi": -6
+      },
+      "notes": "蓬起之后留一拍安静：滴水停、暮蝉压低，竖琴的余音自然响完，院子的空气声一直在。不静音配乐：静默靠乐谱里不出新音来做，切配乐会把余音截断；也不让总线掉到数字静音，那听起来像声音断了"
+    }
+  ],
+  "ducking": {
+    "on": ["hero"],
+    "musicDb": -6,
+    "attackMs": 10,
+    "holdMs": 50,
+    "releaseMs": 400,
+    "notes": "主音效出现时配乐让位"
+  },
+  "master": {
+    "integratedLufs": -16,
+    "toleranceLu": 1,
+    "maxTruePeakDbtp": -1,
+    "fadeOutFrames": 6,
+    "stems": ["music", "sfx", "ambience"]
+  }
+}

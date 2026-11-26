@@ -40,6 +40,7 @@ spec #S     ─ 确认基线（verify）；由用户决定是否启动派发前�
 能机械判断的规则交给护栏，不靠自觉：
 
 - `pnpm verify`：步骤见 `tools/verify.ts`，运行时每步先打印 `[verify]` 标签；`pnpm verify --static` 跑除测试以外的全部步骤。合并前跑哪一层由工单脚本按改动路径选，配置见 `docs/agents/run-spec.md`。设计负责人用工单脚本的 `verify` 子命令跑它：屏幕只看尾部和一行结论，完整输出进日志，退出码照实，不用 `| tail` 这种会吞掉退出码的写法。
+- 纯代码合成：`node tools/check-guardrails.ts pure-code` 已进入 verify 的静态步骤，检查 `PureCodeSampleA`、`PureCodeSampleB` 及启动入口的即时依赖，拒绝外部媒体、字体和未登记的动态素材路径；本地生成媒体存在时核对哈希。生成清单与重建命令见 `episodes/pure-code-sample/sources.md`，渲染前先运行本期生成器。
 - commit-msg 钩子：按 `AGENTS.md` 的格式检查提交信息。
 - CI：开 PR、推送 `ticket/**` 和手动触发时跑 `pnpm verify`，并逐条检查分支上的提交信息，兜住绕过本地钩子的提交。工单分支只有派发时加了 `--allow-push` 才会被推上去。集成分支 `spec/**` 推送时不跑：`land` 合并每张工单前已在本机跑过同样的验证。同一个 PR 的新运行会取消还没跑完的旧运行。本地复现：`pnpm verify`，再 `pnpm check:commits origin/main <分支>`。收尾时工单脚本的 `pr-check` 等 PR 的检查跑完。CI 启动不了时（用户 10-31）：GitHub Actions 的设定不动，改为本机验证。判断办法：`gh run view <运行号>` 里作业一步都没跑就失败，注解写 `The job was not started`（例如 10-29 起的账号计费问题）。在 PR 分支上跑上面两条本地复现命令，把结论评论到 PR，代替这次的 CI 结果。
 
@@ -64,7 +65,12 @@ pnpm 的版本由 `package.json` 的 `packageManager` 固定，本机装的 pnpm
 
 镜头剧本 `storyboard.md` 一个镜头一行，列为：镜头、句子范围、参考段落（复刻时）、画面、运镜。运镜一列写清镜头跟着谁、揭示什么、停在哪里；同一素材上换景别写成推拉或横移，换素材、换场景才写溶解或切，规则见 `docs/roles/design.md`「镜头运动」。复刻参考时，这一列要按 10fps 以上的密集帧核对后再写。示例见 [NASA 朋克开场镜头剧本](../../episodes/nasa-punk-opening/storyboard.md)。
 
-时间机制：台本每句一个编号（`L001`、`L002`……）和句后停顿，以每句音频的实测时长累计生成时间轴，记录每句的起止帧和配音来源。镜头代码按"某句开始后多少帧"定时，不写死帧号。改稿或重配音后重新生成时间轴，动画会跟着走。当前格式、生成工具和 `pnpm qa sentence` 按句取点用法见 [NASA 朋克开场说明](../../episodes/nasa-punk-opening/README.md)。
+时间机制：按时间轴锚点定时。镜头代码按"某个锚点之后多少帧"定时，不写死全片帧号；改了锚点的位置，动画会跟着走。
+
+- **有旁白时，锚点是台本句子**：台本每句一个编号（`L001`、`L002`……）和句后停顿，以每句音频的实测时长累计生成时间轴，记录每句的起止帧和配音来源。改稿或重配音后重新生成时间轴。当前格式、生成工具和 `pnpm qa sentence` 按句取点用法见 [NASA 朋克开场说明](../../episodes/nasa-punk-opening/README.md)。
+- **没有旁白时，锚点是镜头起点和画面事件**：本期有一张镜头时间表（编号、起点、时长），镜头里的动画按镜头起点之后的帧数定时；镜头声明的画面事件汇总成全片事件表，音效按对齐点落到事件帧上。改镜头时长只改时间表。示例见 [纯代码小样说明](../../episodes/pure-code-sample/README.md)。
+
+画面细节与逐帧运动验收：`pnpm qa crop <视频> <时间点> <x,y…>` 按原始像素裁切一个或多个区域，左上角从 `0,0` 起，默认 600×450，可用 `--width`、`--height` 调整；输出不缩放的 PNG，区域超出画面时报错。`pnpm qa strip <视频> --from <起始帧> --to <结束帧> [--every <帧步长>]` 按从 0 开始的解码帧号取样，包含对齐步长的终点，步长默认 1；每格标帧号和实际呈现时间码，默认 4 列、每页最多 24 格，沿用 `sheet` 的排版与 2000 像素整页上限。两项均支持 `--out` 指定输出目录，详细用法见各自 `--help`。
 
 配音和成片的工具先看 `--help`：逐句配音 `pnpm tts`、等比变速 `node tools/stretch-voice.ts`、配音打分 `pnpm qa voice`、配乐与混音 `node tools/mix-opening.ts`、运动自检 `pnpm qa motion`。本期的复现命令见 [NASA 朋克开场说明](../../episodes/nasa-punk-opening/README.md)。`--help` 里没有的几条：
 

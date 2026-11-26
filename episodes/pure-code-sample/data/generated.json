@@ -1,0 +1,239 @@
+{
+  "entry": "episodes/pure-code-sample/PureCodeSample.tsx",
+  "generator": "episodes/pure-code-sample/generate.ts",
+  "command": [
+    "node",
+    "episodes/pure-code-sample/generate.ts"
+  ],
+  "status": "complete",
+  "cacheKey": "09315a4c5a59dbdfbabbb6aa917d659763b77d3d77160514f4c62ab4740fb1df",
+  "plateKey": "14bcf98175da2ace59e6165cc1bd837852205dc94234c93dce4e29ed822ec006",
+  "inputs": [
+    {
+      "path": "episodes/pure-code-sample/generate.ts",
+      "sha256": "7c066c0b054db84372edbede0729779cbd1d058d04793afd2dda9420ddb3d8cf"
+    },
+    {
+      "path": "episodes/pure-code-sample/model.ts",
+      "sha256": "7557acd064c82f9ee5d3904678edb3c6a932f5d2ff6c2cbb31366580363e5ec4"
+    },
+    {
+      "path": "episodes/pure-code-sample/plates.ts",
+      "sha256": "da66d00f5049076336559ea665d28778a237ef9596db12a5c20d764653d3bdc2"
+    },
+    {
+      "path": "episodes/pure-code-sample/scene.ts",
+      "sha256": "a056ffb27eebff1d424d1d972de315331aed20c0bee16cd02e4e4aecee42faff"
+    },
+    {
+      "path": "episodes/pure-code-sample/tokens.ts",
+      "sha256": "3b68663886cc0ff8c26845f61d2f7e35fe8f52fdefb310ce33a5d426019d133e"
+    },
+    {
+      "path": "episodes/pure-code-sample/engine/paint.ts",
+      "sha256": "2142e7717b5ecf1e77a54be2dc0b00ed8ec8de450f99f6c9a6593b80013191cc"
+    },
+    {
+      "path": "episodes/pure-code-sample/engine/random.ts",
+      "sha256": "a30da1124e65b04a840da264b014d0e37d1c1451561bf6949c6044e561fb548c"
+    },
+    {
+      "path": "episodes/pure-code-sample/engine/camera.ts",
+      "sha256": "16f06a77ddc205575bfd3042718c69bbbd48de1faeb4ac05111a53fe0cd8516b"
+    },
+    {
+      "path": "episodes/pure-code-sample/engine/figure.ts",
+      "sha256": "e16de01d0c45b8e19755b6f9e7fd69cfaa668c3acfcf41787c6e46ce79a9d440"
+    },
+    {
+      "path": "episodes/pure-code-sample/engine/timing.ts",
+      "sha256": "8426122d6aede3622669f33df41600af71e6d5e7097bd9eebb223ff0bd5c5ab1"
+    },
+    {
+      "path": "episodes/pure-code-sample/shots/s1/timing.ts",
+      "sha256": "199609930d1829f35593607d8d8a8e74c4806d9c9530588571c59d9ce99d3e3e"
+    },
+    {
+      "path": "episodes/pure-code-sample/shots/s2-a/timing.ts",
+      "sha256": "85e2cc7330a54f02bc7fe7423530eb0fb35d0be719c2f16a485904ac9bf93623"
+    },
+    {
+      "path": "episodes/pure-code-sample/shots/s2-b/timing.ts",
+      "sha256": "e31a805a0d2bac0394d5729406f0e6af24bbaa592487884f4492e43a98d91e38"
+    },
+    {
+      "path": "episodes/pure-code-sample/sound/types.ts",
+      "sha256": "60a1f0576fb0f2fc61014b6eb2587dcec3c9bc47d0653d88e89cbe2689ce7d1e"
+    },
+    {
+      "path": "episodes/pure-code-sample/sound/dsp.ts",
+      "sha256": "d31e36199bee567a54a30ee3231222056b146f787d13f9f369d35fddba27cd93"
+    },
+    {
+      "path": "episodes/pure-code-sample/sound/score.ts",
+      "sha256": "b2904417b7c2b5b42ad9f3f1c82f497b1de7d2b4cdb8c31fd2114980d2c4106b"
+    },
+    {
+      "path": "episodes/pure-code-sample/sound/sfx.ts",
+      "sha256": "fc0987427104f8976585f91152724871849e5ded8a41abf094dbc5e966587e71"
+    },
+    {
+      "path": "episodes/pure-code-sample/sound/mix.ts",
+      "sha256": "c6642064ead912485ccec9fff014bb048ee3601549442de45adaa7a82bba9b2b"
+    },
+    {
+      "path": "episodes/pure-code-sample/sound/measure.ts",
+      "sha256": "525e7e5013c3ac075f6f351666437958cdaa44d5ccd5b627aa4c6ecb15e5f15b"
+    },
+    {
+      "path": "episodes/pure-code-sample/sound/render.ts",
+      "sha256": "76a0a067ba5922801dca74015e12fbc7abd1dfe5140261d76ecbe14440bdb51b"
+    },
+    {
+      "path": "tools/cli.ts",
+      "sha256": "bb85d29fc777b6c06b285a9aed616251bb0812bf1086afb69310e997d3cf5ae0"
+    }
+  ],
+  "dataInputs": [
+    {
+      "path": "episodes/pure-code-sample/score.json",
+      "sha256": "3ad39b53cc885436de7157452d1b448f3158df5c0711d62309f391b77a2bd6cd"
+    },
+    {
+      "path": "episodes/pure-code-sample/sound.json",
+      "sha256": "a2b76cd848303a5ca34a3decf887eda3c8d221cd561c5a86f305eae7f9871401"
+    }
+  ],
+  "runtime": {
+    "node": "v22.23.3",
+    "ffmpegVersion": "ffmpeg version 4.4.2-0ubuntu0.22.04.1 Copyright (c) 2000-2021 the FFmpeg developers"
+  },
+  "files": [
+    {
+      "path": "episodes/pure-code-sample/events-a.json",
+      "sha256": "5e65cd07cbaff402b9af493604ae846023663b1f093ace767fee711fb042fcfd"
+    },
+    {
+      "path": "episodes/pure-code-sample/events-b.json",
+      "sha256": "1caf45ba14d67fb3112c5d685b5ad832e276309ecd187c3af590d021f264dcfa"
+    },
+    {
+      "path": "episodes/pure-code-sample/plate-far-rain.png",
+      "sha256": "2426e0d8015300f9244a9aa2c045a95a23a52771f4dfed52d90c6086c9432126"
+    },
+    {
+      "path": "episodes/pure-code-sample/plate-far-dusk.png",
+      "sha256": "c810244caa60f995ee6c998b5a14afbc30b5750e54537eb2810c0ae5e487f97e"
+    },
+    {
+      "path": "episodes/pure-code-sample/plate-field-rain.png",
+      "sha256": "606661b171052710765d26a440c9a3607c2e4055f1a1a359e301a8c290d867d8"
+    },
+    {
+      "path": "episodes/pure-code-sample/plate-field-dusk.png",
+      "sha256": "fdf6d3a50d5ad34151ce2d86bc21a0641cc8a93afc1f6007ed60c82fddecf7c1"
+    },
+    {
+      "path": "episodes/pure-code-sample/plate-hedge-rain.png",
+      "sha256": "f76d633b57ab5a8c5b64ca24d15429114476d9d5588f1a8004afefcb82942fe3"
+    },
+    {
+      "path": "episodes/pure-code-sample/plate-hedge-dusk.png",
+      "sha256": "21f20977fea5ee60e728d7655e2d35aa691eacb86756a6da10d102eb3c504d90"
+    },
+    {
+      "path": "episodes/pure-code-sample/plate-yard-rain.png",
+      "sha256": "4a225d07651a28919e3f848fa2c420fe43ecb2594bf7b26450215ff877972525"
+    },
+    {
+      "path": "episodes/pure-code-sample/plate-yard-dusk.png",
+      "sha256": "bb03ef0cf891e3430d80a85a257455accbdf81430ba5f09c0d2f3de38a6783c0"
+    },
+    {
+      "path": "episodes/pure-code-sample/plate-eaves-rain.png",
+      "sha256": "c33c1a65063e110346a6d6a9491cc18bf0d0d668cbd48e529d4739aebeb3ca59"
+    },
+    {
+      "path": "episodes/pure-code-sample/plate-eaves-dusk.png",
+      "sha256": "862b04571098853eaf67fc9e7ca4936cb3980a40f86a2c0a1b47806808092fd5"
+    },
+    {
+      "path": "episodes/pure-code-sample/mix-a.wav",
+      "sha256": "11aec1eaa6bd78bd0ef5078194a076db07948ad602045096b1b7d3808be92fce"
+    },
+    {
+      "path": "episodes/pure-code-sample/mix-b.wav",
+      "sha256": "0d9d13b2c0979a50657ef8fcda3eed7fe0d8a17a2b44c19e2889c14cfd42c5e8"
+    }
+  ],
+  "eventTables": [
+    {
+      "variant": "a",
+      "path": "episodes/pure-code-sample/data/events-a.json",
+      "sha256": "5e65cd07cbaff402b9af493604ae846023663b1f093ace767fee711fb042fcfd"
+    },
+    {
+      "variant": "b",
+      "path": "episodes/pure-code-sample/data/events-b.json",
+      "sha256": "1caf45ba14d67fb3112c5d685b5ad832e276309ecd187c3af590d021f264dcfa"
+    }
+  ],
+  "audio": {
+    "a": {
+      "command": [
+        "/usr/bin/node",
+        "episodes/pure-code-sample/sound/render.ts",
+        "--events",
+        "episodes/pure-code-sample/data/events-a.json",
+        "--out",
+        "/root/project/video-studio/out/qa/spec-147/159/sound-a",
+        "--seed",
+        "158"
+      ],
+      "sampleRate": 48000,
+      "channels": 2,
+      "master": {
+        "before": {
+          "integratedLufs": -19.8,
+          "truePeakDbtp": -5.9
+        },
+        "after": {
+          "integratedLufs": -16,
+          "truePeakDbtp": -2.1
+        },
+        "gainDb": 3.8000000000000007,
+        "maximumReductionDb": 0,
+        "limiterCeilingDbfs": -1.3
+      },
+      "measurements": "out/qa/spec-147/159/sound-a/measurements.json"
+    },
+    "b": {
+      "command": [
+        "/usr/bin/node",
+        "episodes/pure-code-sample/sound/render.ts",
+        "--events",
+        "episodes/pure-code-sample/data/events-b.json",
+        "--out",
+        "/root/project/video-studio/out/qa/spec-147/159/sound-b",
+        "--seed",
+        "158"
+      ],
+      "sampleRate": 48000,
+      "channels": 2,
+      "master": {
+        "before": {
+          "integratedLufs": -19.8,
+          "truePeakDbtp": -5.9
+        },
+        "after": {
+          "integratedLufs": -16,
+          "truePeakDbtp": -2.1
+        },
+        "gainDb": 3.8000000000000007,
+        "maximumReductionDb": 0,
+        "limiterCeilingDbfs": -1.3
+      },
+      "measurements": "out/qa/spec-147/159/sound-b/measurements.json"
+    }
+  }
+}
