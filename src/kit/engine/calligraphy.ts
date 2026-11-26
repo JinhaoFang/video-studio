@@ -1,11 +1,11 @@
 /**
  * 通用毛笔水粉书写工具：沿手工设计的笔画骨架采样（向心 Catmull-Rom 样条，转折处按 corner 断开保留折锋），
- * 按藏锋/露锋起笔、提按压感曲线、折锋顿笔、出锋/回锋收笔与速度驱动的干笔飞白在浮点 Paper 上栅格化。
- * 支持按帧进度逐步揭示（活动笔锋自然圆润，已落墨部分跨帧像素不变），并提供雨滴状落墨点与 WCAG 对比度计算。
+ * 按藏锋/露锋起笔、横细竖粗提按压感曲线、转折蓄墨顿笔、出锋/回锋收笔、速度驱动丝状飞白与水粉浓淡质感在浮点 Paper 上栅格化。
+ * 支持按帧进度逐步揭示（活动笔锋自然收尖，已落墨部分跨帧像素不变），并提供雨滴状落墨点与 WCAG 对比度计算。
  * 不依赖浏览器，Node 与浏览器共用。待定事项：无。
  */
 import { mixRgb, paper, type Paper, type Pt, type RGB } from "./paint.ts";
-import { noise1, noise2 } from "./random.ts";
+import { fbm2, noise1, noise2 } from "./random.ts";
 import { clamp01, ease, progress as frameProgress } from "./timing.ts";
 
 export type BrushNode = {
@@ -23,6 +23,7 @@ export type CalligraphyStroke = {
   id: string;
   nodes: readonly BrushNode[];
   width?: number;
+  alpha?: number;
   entry?: StrokeEntry;
   exit?: StrokeExit;
   dry?: number;
@@ -208,7 +209,7 @@ export const sampleStroke = (
     let cornerWeight = 0;
     for (const ca of cornerArcs) {
       const d = Math.abs(arc[i] - ca);
-      const w = Math.exp(-(d * d) / Math.max(24, stepPx * stepPx * 28));
+      const w = Math.exp(-(d * d) / Math.max(28, stepPx * stepPx * 32));
       if (w > cornerWeight) cornerWeight = w;
     }
     out.push({
@@ -233,37 +234,40 @@ export const pressureProfile = (
   entry: StrokeEntry,
   exit: StrokeExit,
   baseWidth: number,
-  nibAngle = Math.PI * 0.24,
-  oblique = 0.22,
+  nibAngle = Math.PI * 0.5,
+  oblique = 0.42,
 ): number => {
   const u = clamp01(sample.u);
   let entryFactor = 1;
   if (entry === "hidden") {
-    const ramp = clamp01(u / 0.075);
-    const heel = 0.78 + 0.22 * Math.sqrt(ramp);
-    const press = 1 + 0.14 * Math.exp(-Math.pow((u - 0.06) / 0.06, 2));
-    entryFactor = heel * press;
+    const ramp = clamp01(u / 0.055);
+    const heel = 0.76 + 0.24 * Math.sqrt(ramp);
+    const press = 1 + 0.18 * Math.exp(-Math.pow((u - 0.055) / 0.055, 2));
+    const liftWaist = 1 - 0.12 * Math.exp(-Math.pow((u - 0.24) / 0.14, 2));
+    entryFactor = heel * press * liftWaist;
   } else {
-    entryFactor = Math.pow(clamp01(u / 0.14), 0.72);
+    entryFactor = 0.08 + 0.92 * Math.pow(clamp01(u / 0.18), 0.9);
   }
   let exitFactor = 1;
   if (exit === "taper") {
-    const remain = clamp01((1 - u) / 0.2);
-    exitFactor = Math.pow(remain, 0.72);
+    const remain = clamp01((1 - u) / 0.32);
+    exitFactor = Math.pow(remain, 1.32);
   } else if (exit === "hook") {
-    const prePress = 1 + 0.18 * Math.exp(-Math.pow((u - 0.87) / 0.05, 2));
-    const flick = Math.pow(clamp01((1 - u) / 0.1), 0.65);
+    const prePress = 1 + 0.14 * Math.exp(-Math.pow((u - 0.84) / 0.045, 2));
+    const flick = Math.pow(clamp01((1 - u) / 0.17), 1.18);
     exitFactor = prePress * flick;
   } else {
-    const swell = 1 + 0.14 * Math.exp(-Math.pow((u - 0.92) / 0.055, 2));
-    const close = 0.72 + 0.28 * Math.sqrt(clamp01((1 - u) / 0.055));
-    exitFactor = swell * close;
+    const preLift = 1 - 0.08 * Math.exp(-Math.pow((u - 0.78) / 0.09, 2));
+    const swell = 1 + 0.16 * Math.exp(-Math.pow((u - 0.915) / 0.055, 2));
+    const close = 0.68 + 0.32 * Math.sqrt(clamp01((1 - u) / 0.045));
+    exitFactor = preLift * swell * close;
   }
   const dirAngle = Math.atan2(sample.ty, sample.tx);
   const obliqueFactor = 1 - oblique * 0.5 * (1 - Math.cos(2 * (dirAngle - nibAngle)));
   const cornerPress = 1 + 0.2 * sample.cornerWeight;
+  const floor = exit === "taper" || exit === "hook" || entry === "exposed" ? 0.12 : 0.3;
   return Math.max(
-    0.35,
+    floor,
     baseWidth * 0.5 * sample.pressure * entryFactor * exitFactor * obliqueFactor * cornerPress,
   );
 };
@@ -355,7 +359,7 @@ const blendPixel = (
   d[idx + 3] = d[idx + 3] * inv + a;
 };
 
-const paintHeelBlob = (
+const paintPressKnot = (
   c: Paper,
   cx: number,
   cy: number,
@@ -369,7 +373,7 @@ const paintHeelBlob = (
 ) => {
   const cos = Math.cos(angle);
   const sin = Math.sin(angle);
-  const reach = Math.max(rx, ry) * (1 + rough * 0.25) + 2;
+  const reach = Math.max(rx, ry) * (1 + rough * 0.3) + 2;
   const x0 = Math.max(0, Math.floor(cx - reach));
   const y0 = Math.max(0, Math.floor(cy - reach));
   const x1 = Math.min(c.width - 1, Math.ceil(cx + reach));
@@ -381,15 +385,25 @@ const paintHeelBlob = (
       const dy = y - cy;
       const lx = dx * cos + dy * sin;
       const ly = -dx * sin + dy * cos;
-      const q = Math.hypot(lx / Math.max(0.5, rx), ly / Math.max(0.5, ry));
-      if (q > 1.35) continue;
-      const edge = 1 + rough * 0.22 * (noise2(x * 0.16, y * 0.16, seed) - 0.5) * 2;
-      const aEdge = clamp01((edge - q) * Math.min(rx, ry) * 0.9 + 0.5);
+      const ax = Math.abs(lx / Math.max(0.5, rx));
+      const ay = Math.abs(ly / Math.max(0.5, ry));
+      const q = Math.pow(Math.pow(ax, 2.35) + Math.pow(ay, 2.35), 1 / 2.35);
+      if (q > 1.38) continue;
+      const edge = 1 + rough * 0.26 * (noise2(x * 0.18, y * 0.18, seed) - 0.5) * 2;
+      const aEdge = clamp01((edge - q) * Math.min(rx, ry) * 0.95 + 0.5);
       if (aEdge <= 0.002) continue;
-      const grain = 0.88 + 0.12 * noise2(x * 0.24, y * 0.24, seed + 17);
-      const a = alpha * aEdge * grain;
+      const mottle = 0.86 + 0.14 * fbm2(x * 0.12, y * 0.12, seed + 17, 2);
+      const a = alpha * aEdge * mottle;
       if (a <= 0.002) continue;
-      blendPixel(d, (y * c.width + x) * 4, color[0], color[1], color[2], a);
+      const poolTone = 0.88 + 0.12 * noise2(x * 0.22, y * 0.22, seed + 29);
+      blendPixel(
+        d,
+        (y * c.width + x) * 4,
+        color[0] * poolTone,
+        color[1] * poolTone,
+        color[2] * poolTone,
+        a,
+      );
     }
   }
 };
@@ -402,43 +416,24 @@ export const paintCalligraphyStroke = (
 ) => {
   const p = clamp01(reveal);
   if (p <= 0.001) return;
-  const pts = sampleStroke(strokeDef.nodes, 2);
+  const pts = sampleStroke(strokeDef.nodes, 1.5);
   const n = pts.length;
   if (n < 2) return;
   const baseWidth = strokeDef.width ?? style.baseWidth;
   const entry = strokeDef.entry ?? "hidden";
   const exit = strokeDef.exit ?? "press";
-  const alpha = style.alpha ?? 1;
-  const bristles = style.bristles ?? Math.max(6, Math.min(11, Math.round(baseWidth * 0.56)));
-  const dry = strokeDef.dry ?? style.dry ?? 0.35;
-  const rough = style.rough ?? 0.45;
-  const streak = style.streak ?? 0.08;
-  const nibAngle = style.nibAngle ?? Math.PI * 0.24;
-  const oblique = style.oblique ?? 0.22;
+  const alpha = strokeDef.alpha ?? style.alpha ?? 1;
+  const bristles = style.bristles ?? Math.max(10, Math.min(18, Math.round(baseWidth * 0.95)));
+  const dry = strokeDef.dry ?? style.dry ?? 0.38;
+  const rough = style.rough ?? 0.52;
+  const streak = style.streak ?? 0.14;
+  const nibAngle = style.nibAngle ?? Math.PI * 0.5;
+  const oblique = style.oblique ?? 0.42;
   const wobble = style.wobble ?? 0.08;
   const seed = strokeDef.seed;
   const total = pts[n - 1].s;
   const maxArc = p * total;
-
-  if (entry === "hidden") {
-    const head = pts[0];
-    const headHw = pressureProfile(head, entry, exit, baseWidth, nibAngle, oblique);
-    const tuck = headHw * 0.28;
-    const hx = head.x - Math.cos(nibAngle) * tuck * 0.65 - head.tx * tuck * 0.35;
-    const hy = head.y - Math.sin(nibAngle) * tuck * 0.65 - head.ty * tuck * 0.35;
-    paintHeelBlob(
-      c,
-      hx,
-      hy,
-      headHw * 0.88,
-      headHw * 0.62,
-      nibAngle,
-      style.color,
-      alpha * Math.min(1, p / 0.08),
-      rough * 0.85,
-      seed + 31,
-    );
-  }
+  const pressAngle = Math.PI * 0.24;
 
   let activeSegments = 0;
   for (let i = 0; i < n - 1; i++) {
@@ -455,7 +450,70 @@ export const paintCalligraphyStroke = (
     if (hw > maxHw) maxHw = hw;
   }
 
-  const reach = maxHw * (1 + wobble + rough * 0.28) + 3;
+  if (entry === "hidden") {
+    const head = pts[0];
+    const headHw = Math.max(hws[0], hws[Math.min(n - 1, 2)]);
+    const tuck = headHw * 0.22;
+    const hx = head.x - Math.cos(pressAngle) * tuck * 0.55 - head.tx * tuck * 0.45;
+    const hy = head.y - Math.sin(pressAngle) * tuck * 0.55 - head.ty * tuck * 0.45;
+    paintPressKnot(
+      c,
+      hx,
+      hy,
+      headHw * 0.74,
+      headHw * 0.44,
+      pressAngle,
+      style.color,
+      alpha * Math.min(1, p / 0.06),
+      rough * 0.75,
+      seed + 31,
+    );
+  }
+
+  for (let i = 1; i < n - 1; i++) {
+    if (pts[i].cornerWeight > 0.96 && pts[i].s <= maxArc) {
+      const prev = pts[Math.max(0, i - 2)];
+      const curr = pts[i];
+      const ch = hws[i];
+      const arrival = clamp01((maxArc - curr.s) / Math.max(2, ch * 1.4) + 0.5);
+      const sx = curr.x + prev.tx * ch * 0.16 - prev.ty * ch * 0.06;
+      const sy = curr.y + prev.ty * ch * 0.16 + prev.tx * ch * 0.06;
+      paintPressKnot(
+        c,
+        sx,
+        sy,
+        ch * 0.68,
+        ch * 0.46,
+        pressAngle,
+        style.color,
+        alpha * arrival,
+        rough * 0.7,
+        seed + 43 + i,
+      );
+    }
+  }
+
+  if (exit === "press" && p > 0.92 && total > baseWidth * 2.1) {
+    const tail = pts[n - 1];
+    const tailHw = Math.max(hws[n - 1], hws[Math.max(0, n - 4)]);
+    const arrival = clamp01((p - 0.92) / 0.08);
+    const ex = tail.x + Math.cos(pressAngle) * tailHw * 0.1;
+    const ey = tail.y + Math.sin(pressAngle) * tailHw * 0.12;
+    paintPressKnot(
+      c,
+      ex,
+      ey,
+      tailHw * 0.66,
+      tailHw * 0.4,
+      pressAngle,
+      style.color,
+      alpha * arrival,
+      rough * 0.72,
+      seed + 67,
+    );
+  }
+
+  const reach = maxHw * (1 + wobble + rough * 0.32) + 3.5;
   const reach2 = reach * reach;
   const ax = new Float64Array(activeSegments);
   const ay = new Float64Array(activeSegments);
@@ -554,49 +612,86 @@ export const paintCalligraphyStroke = (
       const speed = aNode.speed + (bNode.speed - aNode.speed) * segFrac;
       const cornerW = aNode.cornerWeight + (bNode.cornerWeight - aNode.cornerWeight) * segFrac;
       const hw = Math.max(
-        0.35,
-        baseHw * (1 + wobble * (noise1(segArc / Math.max(4, baseWidth * 1.4) + seed * 0.37, seed) - 0.5) * 2),
+        0.12,
+        baseHw * (1 + wobble * (noise1(segArc / Math.max(3.5, baseWidth * 1.25) + seed * 0.37, seed) - 0.5) * 2),
       );
       const distance = Math.sqrt(best);
       let q = distance / hw;
       if (p < 0.999) {
         const remain = maxArc - segArc;
-        const tipSpan = hw * 0.9;
+        const tipSpan = Math.max(2, hw * 1.15);
         if (remain < tipSpan) {
-          const tipScale = Math.max(0.25, Math.sqrt(clamp01(remain / tipSpan)));
+          const tipScale = Math.max(0.18, Math.pow(clamp01(remain / tipSpan), 0.65));
           q = distance / (hw * tipScale);
         }
       }
 
       const edgeNoise =
-        1 + rough * 0.22 * (noise2(segArc * 0.14, bestSide * 2.9 + seed, seed + 1) - 0.5) * 2;
-      const aEdge = clamp01((edgeNoise - q) * hw + 0.5);
+        1 + rough * 0.28 * (noise2(segArc * 0.16, bestSide * 3.1 + seed, seed + 1) - 0.5) * 2;
+      const aEdge = clamp01((edgeNoise - q) * Math.max(0.9, hw * 1.05) + 0.5);
       if (aEdge <= 0.002) continue;
 
       const signedAcross = bestSide * Math.min(1, q);
       const across = (signedAcross + 1) * 0.5;
-      const drift = (noise1(segArc * 0.008 + seed * 0.13, seed + 9) - 0.5) * 0.22;
-      const track = (across + drift) * bristles;
-      const bristleMain = noise1(track + seed * 0.71, seed + 2);
-      const bristleLong = noise2(segArc * 0.011, track * 1.15, seed + 3);
-      const edgeDryBias = 0.2 * signedAcross * signedAcross;
-      const dryCurve = Math.pow(clamp01((u - 0.08) / 0.92), 0.72);
-      const hookWet = exit === "hook" && u > 0.78 ? 1 - 0.8 * clamp01((u - 0.78) / 0.14) : 1;
-      const cornerWet = 1 - 0.85 * cornerW;
-      const dryStrength =
-        dry * (0.28 + 1.02 * speed) * (0.22 + 0.78 * dryCurve) * cornerWet * hookWet;
-      const hairField = bristleMain * 0.58 + bristleLong * 0.42 - edgeDryBias;
-      const threshold = dryStrength * 0.78;
+      const drift = (noise1(segArc * 0.006 + seed * 0.13, seed + 9) - 0.5) * 0.14;
+      const localBristles = Math.min(bristles, Math.max(4.5, hw * 0.88));
+      const track = (across + drift) * localBristles;
+      const comb = 0.5 + 0.5 * Math.sin(track * Math.PI * 2 + seed * 1.73);
+      const bristleMain = noise1(track * 1.05 + seed * 0.71, seed + 2) * 0.72 + comb * 0.28;
+      const bristleLong = noise2(segArc * 0.0038, track * 0.8, seed + 3);
+      const rx = x * 0.866 - y * 0.5;
+      const ry = x * 0.5 + y * 0.866;
+      const bristleTooth = fbm2(rx * 0.16, ry * 0.16, seed + 23, 2);
+
+      const entryPool = entry === "hidden" ? Math.exp(-Math.pow(u / 0.12, 2)) : 0;
+      const exitPool =
+        exit === "press"
+          ? Math.exp(-Math.pow((1 - u) / 0.11, 2))
+          : exit === "hook"
+            ? Math.exp(-Math.pow((u - 0.84) / 0.06, 2))
+            : 0;
+      const inkPool = clamp01(Math.max(entryPool, exitPool, cornerW));
+
+      const dryCurve = Math.pow(clamp01((u - 0.12) / 0.88), 0.6);
+      const speedDrive = 0.16 + 1.08 * speed * speed;
+      const poolWet = 1 - 0.94 * inkPool;
+      const tipCohere =
+        exit === "hook"
+          ? 1 - 0.96 * clamp01((u - 0.74) / 0.12)
+          : exit === "taper"
+            ? 1 - 0.88 * clamp01((u - 0.72) / 0.18)
+            : 1;
+      const dryStrength = Math.min(
+        0.66,
+        dry * speedDrive * (0.28 + 0.72 * dryCurve) * poolWet * tipCohere,
+      );
+
+      const edgeDryBias = 0.14 * signedAcross * signedAcross;
+      const hairField =
+        bristleMain * 0.64 + bristleLong * 0.32 + bristleTooth * 0.04 - edgeDryBias;
+      const threshold = 0.08 + dryStrength * 0.52;
       const cover =
-        dryStrength <= 0.01
+        dryStrength <= 0.04
           ? 1
-          : clamp01((hairField - threshold + 0.3) / 0.2);
+          : clamp01((hairField - threshold + 0.12) / 0.11);
       if (cover <= 0.002) continue;
 
-      const gouache = 0.94 + 0.06 * noise2(x * 0.14, y * 0.14, seed + 11);
-      const a = alpha * aEdge * cover * gouache;
+      const broadMottle = (fbm2(rx * 0.065, ry * 0.065, seed + 11, 2) - 0.5) * 2;
+      const fineGrain = (bristleTooth - 0.5) * 2;
+      const gouacheBody = clamp01(
+        0.87 + 0.13 * inkPool + broadMottle * 0.09 + fineGrain * 0.06 - dryStrength * 0.08,
+      );
+      const edgeFeather = 1 - 0.14 * Math.pow(clamp01(q), 2.2) * (1 - inkPool * 0.7);
+      const a = alpha * aEdge * cover * gouacheBody * edgeFeather;
       if (a <= 0.002) continue;
-      const toneShift = 1 + (bristleMain - 0.5) * streak * 2;
+
+      const poolDarken = 1 - 0.14 * inkPool;
+      const toneShift =
+        poolDarken *
+        (1 +
+          (bristleMain - 0.5) * streak * 2 +
+          broadMottle * 0.08 +
+          dryStrength * 0.08);
       blendPixel(
         d,
         (y * c.width + x) * 4,
@@ -634,10 +729,11 @@ const paintTeardrop = (
       const nx = (x - cx) / Math.max(0.8, rx * taper);
       const q = Math.hypot(nx, ny * (ny < 0 ? 0.78 : 1.05));
       if (q > 1.25) continue;
-      const edge = 1 + 0.09 * (noise2(x * 0.2, y * 0.2, seed) - 0.5) * 2;
+      const edge = 1 + 0.1 * (noise2(x * 0.2, y * 0.2, seed) - 0.5) * 2;
       const aEdge = clamp01((edge - q) * radius * 0.9 + 0.5);
       if (aEdge <= 0.002) continue;
-      blendPixel(d, (y * c.width + x) * 4, color[0], color[1], color[2], alpha * aEdge);
+      const grain = 0.9 + 0.1 * noise2(x * 0.24, y * 0.24, seed + 13);
+      blendPixel(d, (y * c.width + x) * 4, color[0] * grain, color[1] * grain, color[2] * grain, alpha * aEdge);
     }
   }
 };
@@ -654,7 +750,7 @@ export const paintDropDot = (
   const width = drop.width ?? style.baseWidth * 0.92;
   const alpha = style.alpha ?? 1;
   if (state.phase === "falling") {
-    const r = width * (0.38 + 0.16 * state.fallProgress);
+    const r = width * (0.36 + 0.16 * state.fallProgress);
     paintTeardrop(
       c,
       state.x,
@@ -676,10 +772,10 @@ export const paintDropDot = (
       width,
       entry: "exposed",
       exit: "press",
-      dry: 0.08,
+      dry: 0.1,
       seed: drop.seed,
     },
-    { ...style, rough: (style.rough ?? 0.45) * 0.45, wobble: (style.wobble ?? 0.08) * 0.5 },
+    { ...style, oblique: 0.2, rough: (style.rough ?? 0.5) * 0.55, wobble: (style.wobble ?? 0.08) * 0.5 },
     reveal,
   );
 };
@@ -714,10 +810,10 @@ export const renderCalligraphyPaper = (
           width: d.width ?? style.baseWidth * 0.92,
           entry: "exposed",
           exit: "press",
-          dry: 0.14,
+          dry: 0.12,
           seed: d.seed,
         },
-        style,
+        { ...style, oblique: 0.2 },
         1,
       );
     }

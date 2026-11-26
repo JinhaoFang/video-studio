@@ -190,29 +190,39 @@ const paintChiselStroke = (
       let bu = 0;
       let side = 1;
       for (let i = 0; i < n - 1; i++) {
-        let t = ((x - ax[i]) * dx[i] + (y - ay[i]) * dy[i]) / len2[i];
-        t = t < 0 ? 0 : t > 1 ? 1 : t;
-        const px = ax[i] + dx[i] * t - x;
-        const py = ay[i] + dy[i] * t - y;
-        const dd = px * px + py * py;
+        const segLen = Math.sqrt(len2[i]);
+        const ux = dx[i] / segLen;
+        const uy = dy[i] / segLen;
+        const rx = x - ax[i];
+        const ry = y - ay[i];
+        const proj = rx * ux + ry * uy;
+        const clamped = proj < 0 ? 0 : proj > segLen ? segLen : proj;
+        const alongExcess = Math.abs(proj - clamped);
+        const perp = Math.abs(rx * -uy + ry * ux);
+        const euclid = Math.hypot(alongExcess, perp);
+        const chisel =
+          alongExcess > 0
+            ? Math.max(alongExcess * 1.15, perp) * 0.65 + euclid * 0.35
+            : perp;
+        const dd = chisel * chisel;
         if (dd < best) {
           best = dd;
-          bu = start[i] + t * Math.sqrt(len2[i]);
-          side = dx[i] * (y - ay[i]) - dy[i] * (x - ax[i]) >= 0 ? 1 : -1;
+          bu = start[i] + clamped;
+          side = dx[i] * ry - dy[i] * rx >= 0 ? 1 : -1;
         }
       }
       if (best > reach2) continue;
       const u = total > 0 ? bu / total : 0;
-      const endSquare = 0.88 + 0.12 * Math.min(1, u / 0.08, (1 - u) / 0.08);
-      const chiselWobble = 1 + 0.11 * (noise1(bu * 0.15 + seed * 0.41, seed) - 0.5) * 2;
-      const hw = Math.max(0.6, width * 0.5 * endSquare * chiselWobble);
+      const endFlare = 1 + 0.06 * Math.exp(-Math.pow(Math.min(u, 1 - u) / 0.08, 2));
+      const chiselWobble = 1 + 0.09 * (noise1(bu * 0.16 + seed * 0.41, seed) - 0.5) * 2;
+      const hw = Math.max(0.6, width * 0.5 * endFlare * chiselWobble);
       const q = Math.sqrt(best) / hw;
-      const edge = 1 + rough * 0.2 * (noise2(bu * 0.25, side * 2.3 + seed, seed + 7) - 0.5) * 2;
-      const a = clamp01((edge - q) * hw * 1.15 + 0.5);
+      const edge = 1 + rough * 0.18 * (noise2(bu * 0.25, side * 2.3 + seed, seed + 7) - 0.5) * 2;
+      const a = clamp01((edge - q) * hw * 1.25 + 0.5);
       if (a <= 0.002) continue;
       const idx = (y * c.width + x) * 4;
       if (d[idx + 3] <= 0.05) continue;
-      const tone = 0.97 + 0.03 * noise2(x * 0.22, y * 0.22, seed + 19);
+      const tone = 0.96 + 0.04 * noise2(x * 0.22, y * 0.22, seed + 19);
       const inv = 1 - a;
       d[idx] = d[idx] * inv + color[0] * tone * a * d[idx + 3];
       d[idx + 1] = d[idx + 1] * inv + color[1] * tone * a * d[idx + 3];
@@ -234,9 +244,14 @@ const applyPasteTexture = (
       const idx = (y * c.width + x) * 4;
       const a = d[idx + 3];
       if (a <= 0.002) continue;
-      const broad = (fbm2(x / scale, y / scale, seed + 41, 3) - 0.5) * 2;
-      const tooth = (noise2(x / (scale * 0.16), y / (scale * 0.16), seed + 59) - 0.5) * 2;
-      const pinhole = noise2(x * 0.28, y * 0.28, seed + 73);
+      const rx1 = x * 0.866 - y * 0.5;
+      const ry1 = x * 0.5 + y * 0.866;
+      const rx2 = x * 0.643 + y * 0.766;
+      const ry2 = -x * 0.766 + y * 0.643;
+      const broad = (fbm2(rx1 / scale, ry1 / scale, seed + 41, 3) - 0.5) * 2;
+      const tooth = (fbm2(rx2 / (scale * 0.24), ry2 / (scale * 0.24), seed + 59, 2) - 0.5) * 2;
+      const poreScale = Math.max(1.8, scale * 0.11);
+      const pinhole = fbm2(rx2 / poreScale, ry2 / poreScale, seed + 73, 2);
       const pore =
         pinhole < drySpots * 0.36
           ? clamp01((pinhole - drySpots * 0.1) / Math.max(0.05, drySpots * 0.26))

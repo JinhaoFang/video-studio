@@ -56,6 +56,20 @@ test("pressureProfile 区分藏锋/露锋起笔与出锋/回锋收笔", () => {
   const pressEnd = pressureProfile(end, "hidden", "press", 20);
   const taperEnd = pressureProfile(end, "hidden", "taper", 20);
   assert.ok(pressEnd > taperEnd * 3);
+
+  const midH = pts[Math.floor(pts.length / 2)];
+  const vPts = sampleStroke(
+    [
+      { x: 0, y: 0, pressure: 1 },
+      { x: 0, y: 50, pressure: 1 },
+      { x: 0, y: 100, pressure: 1 },
+    ],
+    2,
+  );
+  const midV = vPts[Math.floor(vPts.length / 2)];
+  const wH = pressureProfile(midH, "hidden", "press", 20);
+  const wV = pressureProfile(midV, "hidden", "press", 20);
+  assert.ok(wV > wH * 1.4, `竖画宽度 ${wV.toFixed(2)} 应显著大于横画 ${wH.toFixed(2)}`);
 });
 
 test("paintCalligraphyStroke 确定性、进度单调递增且快笔干墨产生飞白", () => {
