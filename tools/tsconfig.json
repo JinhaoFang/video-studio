@@ -21,6 +21,7 @@
     "../episodes/after-rain/sound/**/*.ts",
     "../episodes/pure-code-sample/generate.ts",
     "../episodes/pure-code-sample/sound/**/*.ts",
+    "../episodes/after-rain/title/export-cover.ts",
     "../*.test.ts"
   ],
   "exclude": []

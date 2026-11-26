@@ -13,6 +13,7 @@ import {
   shotTable,
   sampleSize,
 } from "./pure-code-sample/model";
+import { SHOT12_DURATION as afterRainTitleDuration } from "./after-rain/title/timing";
 import timeline from "./nasa-punk-opening/data/timeline.json";
 import type { Timeline } from "../tools/timeline-types";
 
@@ -56,6 +57,10 @@ const loadPersonSheet = () =>
   import("./after-rain/sheets/PersonSheet").then(({ PersonSheet }) => ({
     default: PersonSheet,
   }));
+const loadAfterRainTitle = () =>
+  import("./after-rain/title/TitlePreview").then(({ TitlePreview }) => ({
+    default: TitlePreview,
+  }));
 
 export const RemotionRoot: React.FC = () => (
   <>
@@ -80,6 +85,14 @@ export const RemotionRoot: React.FC = () => (
         id="AfterRainPersonSheet"
         lazyComponent={loadPersonSheet}
         durationInFrames={96}
+        fps={24}
+        width={1920}
+        height={1080}
+      />
+      <Composition
+        id="AfterRainTitlePreview"
+        lazyComponent={loadAfterRainTitle}
+        durationInFrames={afterRainTitleDuration}
         fps={24}
         width={1920}
         height={1080}

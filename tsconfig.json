@@ -25,6 +25,7 @@
     "episodes/after-rain/sound",
     "episodes/pure-code-sample/generate.ts",
     "episodes/pure-code-sample/audio.ts",
-    "episodes/pure-code-sample/sound"
+    "episodes/pure-code-sample/sound",
+    "episodes/after-rain/title/export-cover.ts"
   ]
 }
