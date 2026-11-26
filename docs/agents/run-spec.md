@@ -18,20 +18,20 @@
 | `symlinkDirectories` | `["references", ".agents"]` | 不进 git、但派出去的 agent 要读的目录。`dispatch` 把它们从主工作区软链接进 worktree，派发指令要求只读使用。本仓库是参考资料和第三方技能（Matt 的技能、Remotion 技能）。 |
 | `acceptanceRoot` | `"out/qa"` | 验收产物根目录。每张工单写到下面的 `spec-<S>/<T>/`；`land` 把它复制回主工作区，`cleanup` 整个删掉 `spec-<S>/`。已复制的记录和验收产物在删除 worktree 前按内容核对，变了就重新复制；其余被忽略的工单产物在 `<仓库目录>.worktrees/.kept/<T>/`，`cleanup` 列出后删除。 |
 | `codexSandbox` | `"danger-full-access"` | 工程席位用 Codex 时的权限（旧兼容项）。用户要求完全权限，让执行者能联网、能用 `gh` 读 issue；其他框架的权限写在个人席位配置里。 |
-| `workTypes` | `{"前端":"镜头、样式、预览页这类视觉实现","动画":"纯代码动画的引擎、设定和镜头绘制"}` | 工作类型词表。工单写一行 `工作类型：前端` 或 `工作类型：动画` 时按席位配置的同名档派发；视觉实现和脚本、管线适合的模型不同，纯代码动画（spec #147 起）又和网页式的视觉实现不同。个人席位文件还没有「动画」档时回落 default，派发会打印原因。 |
+| `workTypes` | `{"前端":"镜头、样式、预览页这类视觉实现","动画":"纯代码动画的引擎、设定和镜头绘制"}` | 工作类型词表。工单写一行 `工作类型：前端` 或 `工作类型：动画` 时按席位配置的同名档派发；视觉实现和脚本、管线适合的模型不同，纯代码动画（spec #147 起）又和网页式的视觉实现不同。个人席位文件还没有「动画」档时回落 default，派发会打印原因。「动画」用哪个模型，spec #147 有一次同工单对比，结果见[研究记录第 7 节验-5](../research/noroi-iwai.md#经验)。 |
 | `seats`、`agents` | 不写 | 用哪个框架、模型和并发上限属于个人和本机，写在 `~/.config/agent-workflow/seats.json`；仓库没有硬要求，不覆盖。格式见 `setup-run-spec` 的 `seats.md`，实际值用 `doctor` 看。 |
 | `prCheckCommand` | 不写（默认 `["gh", "pr", "checks", "{pr}", "--watch"]`） | 可选。`pr-check` 运行的 PR 检查命令，每个参数里的 `{pr}` 换成 PR 号。CI 启动不了时不改这一项，按 `docs/workflow/README.md`「护栏」改为本机验证。 |
 | `verificationEnv` | 不写（默认 `{}`） | 可选。验证要用的环境变量，字符串到字符串的对象；值里的 `{mainRoot}` 换成主工作区路径，进程里已有的同名变量优先。`verify`、`land`、`pr-check` 和 `dispatch` 的安装与执行者进程都带上它，实际值写进派发指令和派发记录，所以不放密钥。本仓库的验证不依赖环境变量。 |
 | `exclusiveVerification` | 不写（默认 `false`） | 可选。开启后完整验证在全仓库排队，一次只跑一个：锁在 git 公共目录，`verify`、`land` 的验证和非默认的 PR 检查命令共用；持锁进程被杀后，等验证作业的整个进程组都退出才回收（Windows 只看持锁进程）；持锁期间嵌套调用的 `verify` 沿用同一把锁，不会死锁；派发指令要求执行者用主工作区的 `tickets.ts verify <T>` 做完整验证。验证吃满 CPU、内存或独占端口、数据库的仓库开它；本仓库的验证一分钟内跑完，并发不互相干扰，不开。 |
 | `staticCheckCommand` | `["pnpm", "verify", "--static"]` | 可选。静态检查：完整验证里除测试以外的全部步骤，约 6 秒。配了它，派发指令要求执行者开发时只跑相关测试和静态检查，完整验证由 `land` 跑一次。 |
 | `staticOnlyPaths` | `["**/*.md", "docs/reports/*.html"]` | 可选，和 `staticCheckCommand` 一起配。gitignore 写法；一张工单的改动全部匹配时，`land` 和设计工单的 `verify` 只跑静态检查。只放验证不会读的文件：Markdown 文档和 HTML 汇报。台本 `episodes/<期>/script.md` 会被管线工具读，但测试不读它，完整验证也测不到，所以同样只跑静态检查。 |
-| `disposableIgnored` | 不写（默认 `[]`） | 可选。`land` 删除 worktree 前可以直接删掉的被忽略文件，gitignore 写法的模式数组，例如 `**/__pycache__/`、`.pytest_cache/`、`apps/*/dist/`。匹配的文件直接删除、输出删了多少，其余照旧移到保留目录；`.codex-runs/` 和本 spec 的验收产物目录（`<acceptanceRoot>/spec-<S>/`）永远不按它删，验收产物根目录下别的路径（例如测试输出）照样按模式处理；`--dry-run` 列出将删的数量。本仓库合并后的保留目录是空的，不写。 |
+| `disposableIgnored` | `["public/episodes/pure-code-sample/"]` | 可选。`land` 删除 worktree 前可以直接删掉的被忽略文件，gitignore 写法的模式数组，例如 `**/__pycache__/`、`.pytest_cache/`、`apps/*/dist/`。匹配的文件直接删除、输出删了多少，其余照旧移到保留目录；`.codex-runs/` 和本 spec 的验收产物目录（`<acceptanceRoot>/spec-<S>/`）永远不按它删，验收产物根目录下别的路径（例如测试输出）照样按模式处理；`--dry-run` 列出将删的数量。本仓库只放纯代码小样的生成媒体：它们由 `node episodes/pure-code-sample/generate.ts` 按生成清单的哈希重建，主工作区随时能重新生成；spec #147 时 `land` 移动这些文件报"文件不存在"，每次都要手动移开 `public`。别的期在 worktree 里生成的媒体（例如付费配音）不在这里，照旧移到保留目录。 |
 
 ## 执行时要知道的其他值
 
 - **框架**：各席位用到的 agent 命令行要装好并登录，`doctor` 逐个检查，并列出每个席位实际用的框架、模型和来源。
 - **汇报目录**：`docs/reports/`。新汇报用 `workflow-v6` 的目录加页签模板，写法见 `run-spec` 技能的 `report.md`，从同目录的 `report-template.html` 复制；已有汇报保留为独立快照，不重做，`report-check` 仍能检查旧汇报。
-- **实测用时**：一张工程工单派发后 5～10 分钟结束，一次按批审查约 4 分钟。告诉用户粗略用时就按这个估。
+- **实测用时**：告诉用户粗略用时就按这个估。脚本、工具类工程工单派发后 5～15 分钟结束（spec #147 的 #150 约 14 分钟）；要在本机实测的管线工单约 40 分钟（#149）；「动画」镜头工单 45 分钟到两个多小时，看模型（#155 agy 43.5 分钟，#156 pi 135 分钟）；一次按批审查约 8 分钟（spec #147 三次都是 7.8～8.3 分钟）。
 - **独占资源**：无。
 - **常见的共享登记处**：`pnpm qa` 的子命令登记表、工单脚本的子命令登记表。并行的工单都要往里加一项时，派发的补充说明写"只加自己那一项"。
 

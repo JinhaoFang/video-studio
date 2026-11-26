@@ -9,5 +9,6 @@
     "动画": "纯代码动画的引擎、设定和镜头绘制"
   },
   "staticCheckCommand": ["pnpm", "verify", "--static"],
-  "staticOnlyPaths": ["**/*.md", "docs/reports/*.html"]
+  "staticOnlyPaths": ["**/*.md", "docs/reports/*.html"],
+  "disposableIgnored": ["public/episodes/pure-code-sample/"]
 }
