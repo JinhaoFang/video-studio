@@ -95,11 +95,14 @@ spec #168：纯代码小样《雨后》（[pure-code-sample](../pure-code-sample
 
 | 文件 | 内容 |
 |---|---|
-| [scene.ts](scene.ts) | 场景布置（米）：参考相机、竹竿、檐口、水洼、各层底图的纵深、太阳和天光方向 |
+| [scene.ts](scene.ts) | 场景布置（米）：参考相机、竹竿与晾衣架、檐口、屋子、水洼 W1、小路、树篱、稻田，各镜头的参考机位，各层底图的纵深，太阳（夕光、低夕光）和天光方向 |
 | [sparrow.ts](sparrow.ts) | 主角树麻雀：距离场体块、赛璐璐、线条，任意角度都是同一只鸟 |
-| [plates.ts](plates.ts) | 水粉底图的内容：远景、稻田、树篱、院子、檐口 |
+| [plates.ts](plates.ts) | 水粉底图的内容：院子五层（远景、稻田、树篱、院子、檐口），雨和夕光两种状态，第 3 镜（小样 S1）用 |
+| [plates-views.ts](plates-views.ts) | 正片新机位的底图：屋子正面（雨、暮色亮灯）、贴地低机位、稻田上空大远景、迎面看屋子，以及近景的虚化背景 |
+| [generate.ts](generate.ts) | 正片唯一的生成入口：烘焙全部底图，带缓存，写 `data/generated.json`；用法 `node episodes/after-rain/generate.ts [--force]` |
+| [auditions/](auditions/) | 试听样（哼唱、隔墙交谈、麻雀叫声）的配方和生成器，清单在 `data/auditions.json` |
 | [pole.ts](pole.ts) | 晾衣竹竿：透视竹管、受光带、水珠，`bend` 让它下沉和弹回 |
-| [stage.ts](stage.ts) | 舞台：按相机摆底图，把麻雀放进场景 |
+| [stage.ts](stage.ts) | 舞台：按相机摆底图（院子五层和新机位底图），把麻雀放进场景 |
 | [tokens.ts](tokens.ts) | 本期令牌：色值、线条、样张底色、摄影默认值 |
 | [sheets/](sheets/) | 设定图的入口：`AfterRainSparrowSheet`、`AfterRainPersonSheet`，由 #180、#181 填内容 |
 
