@@ -96,7 +96,11 @@ spec #168：纯代码小样《雨后》（[pure-code-sample](../pure-code-sample
 | 文件 | 内容 |
 |---|---|
 | [scene.ts](scene.ts) | 场景布置（米）：参考相机、竹竿与晾衣架、檐口、屋子、水洼 W1、小路、树篱、稻田，各镜头的参考机位，各层底图的纵深，太阳（夕光、低夕光）和天光方向 |
-| [sparrow.ts](sparrow.ts) | 主角树麻雀：距离场体块、赛璐璐、线条，任意角度都是同一只鸟 |
+| [sparrow.ts](sparrow.ts) | 主角树麻雀：距离场体块、赛璐璐、线条，任意角度都是同一只鸟；湿、甩乱、干由 `wet`、`ruffle` 两个连续参数控制，`sparrowPoses` 是各镜头的关键姿势 |
+| [tokens-sparrow.ts](tokens-sparrow.ts) | 麻雀按光照和干湿分的色板、轮廓光色、远处鸟群的剪影色和金边 |
+| [flock.ts](flock.ts) | 远处鸟群：5–7 只各不相同的逆光剪影，停栖时的小动作、主角落下时邻鸟错开挪步、波浪式飞行 |
+| [person.ts](person.ts) | 走过院子的人（只到腰）：转面、陷泥走路 `mudWalkPose`、停步转向 `stopTurnPose`、竹篮、场景里的路线和摆放、远处戴斗笠的小人影 |
+| [tokens-person.ts](tokens-person.ts) | 人和随身道具按光照分的色值 |
 | [plates.ts](plates.ts) | 水粉底图的内容：院子五层（远景、稻田、树篱、院子、檐口），雨和夕光两种状态，第 3 镜（小样 S1）用 |
 | [plates-views.ts](plates-views.ts) | 正片新机位的底图：屋子正面（雨、暮色亮灯）、贴地低机位、稻田上空大远景、迎面看屋子，以及近景的虚化背景 |
 | [generate.ts](generate.ts) | 正片唯一的生成入口：烘焙全部底图，带缓存，写 `data/generated.json`；用法 `node episodes/after-rain/generate.ts [--force]` |
