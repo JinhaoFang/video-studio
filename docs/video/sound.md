@@ -1,6 +1,6 @@
 # 声音
 
-对应「一期视频」清单的 ⑧ 声音（旁白、配乐、音效）和 ⑫ 混音与响度。只写知识：有哪些选项、各是什么意思、适合什么情况、样片和出处；不写先做什么、后做什么，制作步骤见 `docs/workflow/README.md`「一期视频」。条目格式见 [visual-style.md](visual-style.md)「条目格式」。
+对应「一期视频」部门表里声音的 ⑧ 声音（旁白、配乐、音效）和 ⑫ 混音与响度。只写知识：有哪些选项、各是什么意思、适合什么情况、样片和出处；不写先做什么、后做什么，制作步骤见 `docs/workflow/README.md`「一期视频」。条目格式见 [visual-style.md](visual-style.md)「条目格式」。
 
 下文的「适合」是根据来源描述归纳的用途，不表示某种声音只能用于某类视频，也不替具体一期定方向。声音的性别感、年龄感、音色、语速和情绪是不同维度，可以组合；音色描述不等于对说话人真实身份的判断。依据是 ElevenLabs 官方 [Voice Design](https://elevenlabs.io/docs/eleven-creative/voices/voice-design.md) 对这些维度的分别定义。
 
