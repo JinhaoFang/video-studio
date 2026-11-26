@@ -144,7 +144,7 @@ pnpm 的版本由 `package.json` 的 `packageManager` 固定，本机装的 pnpm
 - 凭据只从环境变量或 `--env` 指定的文件读，不复制进仓库和日志。
 - `eleven_v4` 不支持 Speed，请求成功不代表生效（[API 研究](../research/nasa-ep04/elevenlabs-api.md)）。
 - 变速总是从原始目录生成到新目录；时间轴读变速后的实测时长，来源说明写明默认倍率和例外。
-- 成片响度用 `pnpm qa loudness` 验收：目标 -16 LUFS、容差 1 LU、真峰值不超过 -1 dBTP，LRA 只报告。
+- 成片响度用 `pnpm qa loudness` 验收：目标 -16 LUFS、容差 1 LU、真峰值不超过 -1 dBTP，LRA 只报告。用 `pnpm qa dropouts` 查成片断音，按 JSON 的帧号和时间码在逐帧电平图里复核低电平段与骤降。默认只报告，显式给检测阈值可判定通过与否。
 - 配音打分的截断标记和运动自检的检出都是复核线索，结合原始转写或画面再下结论。
 
 白板手绘段落可以用外部技能 `srt-whiteboard-animation`（MIT，登记在 `skills-lock.json`）：它把一张线稿按字幕分区，用连续笔迹画成 MP4，作为视频素材放进 Remotion 合成。几点约定：
