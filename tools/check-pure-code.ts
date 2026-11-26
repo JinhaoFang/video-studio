@@ -3,7 +3,8 @@
  * 且返回函数只用于安全 JSX 返回链或 Remotion registerRoot 的 lazyComponent 加载器。
  * 按声明节点归并跨文件具名引用，避免类型推导产生的临时符号漏检；函数调用、
  * 逃逸及无法证明用途的模块引用均取消豁免。媒体（含 srcSet 和 Audio 构造参数）
- * 只接受已登记的 staticFile 字面量及其 const 别名。
+ * 只接受已登记的 staticFile 字面量及其 const 别名。登记 ID 从启动入口的
+ * registerRoot 和组件返回的 JSX 核对，缺失时取消本项的延迟加载豁免。
  */
 import { createHash } from "node:crypto";
 import { existsSync, readFileSync } from "node:fs";
@@ -20,11 +21,12 @@ type Manifest = {
 const digest = (path: string) =>
   createHash("sha256").update(readFileSync(path)).digest("hex");
 
+export type Registration = { ids: string[]; entry: string; manifest: string };
+
 export const checkPureCode = (
   root: string,
-  ids: readonly string[],
-  entry: string,
-  manifestPath: string,
+  { ids, entry, manifest: manifestPath }: Registration,
+  registry: readonly Registration[],
 ): string[] => {
   const errors: string[] = [];
   const report = (file: string, line: number, text: string) =>
@@ -167,8 +169,12 @@ export const checkPureCode = (
       }
     });
   }
-  const inspect = (file: string, followDynamic = true): void => {
-    const key = `${file}:${followDynamic}`;
+  const registeredRoots = new Set<ts.Node>();
+  const returnedViews = new Map<ts.Node, (ts.Node | string)[]>();
+  const deferredPaths = new Set<string>();
+  const inspect = (file: string, scope: "entry" | "startup" | "lazy" = "entry"): void => {
+    const followDynamic = scope === "entry";
+    const key = `${file}:${scope}`;
     if (visited.has(key)) return;
     visited.add(key);
     const source = program.getSourceFile(resolve(root, file))!;
@@ -378,37 +384,67 @@ export const checkPureCode = (
         );
       });
     };
-    const loaderAttributes = new Set<ts.JsxAttribute>();
+    const componentFunction = (node: ts.Node): ts.Node => {
+      node = unwrap(node);
+      const declaration = targetSymbol(node)?.valueDeclaration;
+      if (
+        declaration &&
+        ts.isVariableDeclaration(declaration) &&
+        declaration.initializer
+      )
+        return unwrap(declaration.initializer);
+      return declaration ?? node;
+    };
+    const loaderAttributes = new Map<ts.JsxAttribute, string>();
     visit(source, (node) => {
       if (
-        (ts.isJsxOpeningElement(node) || ts.isJsxSelfClosingElement(node)) &&
-        remotionMember(node.tagName, "Composition") &&
-        componentOnly(registrationFunction(node)) &&
-        !node.attributes.properties.some(ts.isJsxSpreadAttribute)
+        scope === "startup" &&
+        ts.isCallExpression(node) &&
+        ts.isExpressionStatement(node.parent) &&
+        ts.isSourceFile(node.parent.parent) &&
+        node.arguments.length === 1 &&
+        remotionMember(node.expression, "registerRoot")
+      )
+        registeredRoots.add(componentFunction(node.arguments[0]));
+      if (!ts.isJsxOpeningElement(node) && !ts.isJsxSelfClosingElement(node))
+        return;
+      const parent = registrationFunction(node);
+      if (!parent) return;
+      const composition = remotionMember(node.tagName, "Composition");
+      const attributes = node.attributes.properties;
+      if (composition && attributes.some(ts.isJsxSpreadAttribute)) return;
+      const id = attributes.find(
+        (attr) => ts.isJsxAttribute(attr) && attr.name.getText(source) === "id",
+      );
+      const value = id && ts.isJsxAttribute(id) ? id.initializer : undefined;
+      const literal =
+        value && ts.isJsxExpression(value) ? value.expression : value;
+      const idText =
+        literal && ts.isStringLiteralLike(literal) ? literal.text : undefined;
+      if (scope === "startup") {
+        const child = composition ? idText : componentFunction(node.tagName);
+        if (child !== undefined) {
+          const views = returnedViews.get(parent) ?? [];
+          views.push(child);
+          returnedViews.set(parent, views);
+        }
+      }
+      if (
+        composition &&
+        idText &&
+        !ids.includes(idText) &&
+        componentOnly(parent)
       ) {
-        const id = node.attributes.properties.find(
-          (attribute) =>
-            ts.isJsxAttribute(attribute) &&
-            attribute.name.getText(source) === "id",
-        );
-        if (
-          !id ||
-          !ts.isJsxAttribute(id) ||
-          !id.initializer ||
-          !ts.isStringLiteral(id.initializer) ||
-          ids.includes(id.initializer.text)
-        )
-          return;
-        for (const attribute of node.attributes.properties)
+        for (const attr of attributes)
           if (
-            ts.isJsxAttribute(attribute) &&
-            attribute.name.getText(source) === "lazyComponent"
+            ts.isJsxAttribute(attr) &&
+            attr.name.getText(source) === "lazyComponent"
           )
-            loaderAttributes.add(attribute);
+            loaderAttributes.set(attr, idText);
       }
     });
-    const loaders = new Set<ts.Node>();
-    for (const attribute of loaderAttributes) {
+    const loaders = new Map<ts.Node, Set<string>>();
+    for (const [attribute, id] of loaderAttributes) {
       const value = attribute.initializer;
       if (!value || !ts.isJsxExpression(value) || !value.expression) continue;
       let loader = unwrap(value.expression);
@@ -436,10 +472,15 @@ export const checkPureCode = (
         const name = ts.isFunctionExpression(loader) ? loader.name : undefined;
         if (name && (references.get(loader)?.length ?? 0) > 1)
           continue;
-        loaders.add(loader);
+        const owners = loaders.get(loader) ?? new Set<string>();
+        owners.add(id);
+        loaders.set(loader, owners);
       }
     }
-    const otherEpisode = (node: ts.Node | undefined): boolean => {
+    const otherEntry = (
+      node: ts.Node | undefined,
+      owners: Set<string>,
+    ): boolean => {
       if (!node || !ts.isStringLiteralLike(node) || !node.text.startsWith("."))
         return false;
       const resolved = ts.resolveModuleName(
@@ -451,14 +492,26 @@ export const checkPureCode = (
       const path =
         resolved &&
         relative(root, resolved.resolvedFileName).split(sep).join("/");
-      return (
-        !!path &&
-        code.has(path) &&
-        path.startsWith("episodes/") &&
-        !path.startsWith(mediaPrefix)
-      );
+      if (
+        !path ||
+        !code.has(path) ||
+        !path.startsWith("episodes/") ||
+        path === entry
+      )
+        return false;
+      if (
+        path.startsWith(mediaPrefix) &&
+        ![...owners].every((id) =>
+          registry.some(
+            (record) => record.entry === path && record.ids.includes(id),
+          ),
+        )
+      )
+        return false;
+      deferredPaths.add(path);
+      return true;
     };
-    const dependency = (node: ts.Node | undefined) => {
+    const dependency = (node: ts.Node | undefined, dynamic = false) => {
       if (!node || !ts.isStringLiteralLike(node)) {
         if (node) fail(node, "模块路径必须是静态字面量。");
         return;
@@ -485,7 +538,7 @@ export const checkPureCode = (
         resolved &&
         relative(root, resolved.resolvedFileName).split(sep).join("/");
       if (!path || !code.has(path)) fail(node, `依赖必须是仓库源码：${name}`);
-      else inspect(path, followDynamic);
+      else inspect(path, dynamic && scope === "startup" ? "lazy" : scope);
     };
     const checkSpread = (node: ts.Node): void => {
       node = unwrap(node);
@@ -555,12 +608,12 @@ export const checkPureCode = (
       } else if (ts.isCallExpression(node)) {
         const name = node.expression.getText(source);
         const dynamic = node.expression.kind === ts.SyntaxKind.ImportKeyword;
-        const deferred =
-          !followDynamic &&
-          ts.findAncestor(node, (parent) => loaders.has(parent)) &&
-          otherEpisode(node.arguments[0]);
+        const loader = dynamic && !followDynamic
+          ? ts.findAncestor(node, (parent) => loaders.has(parent))
+          : undefined;
+        const deferred = loader && otherEntry(node.arguments[0], loaders.get(loader)!);
         if (name === "require" || (dynamic && !deferred))
-          dependency(node.arguments[0]);
+          dependency(node.arguments[0], dynamic);
         if (staticCall(node)) {
           if (!staticMedia(node))
             fail(node, "staticFile 只能引用生成物清单中的静态路径。");
@@ -695,6 +748,21 @@ export const checkPureCode = (
     walk(source);
   };
   inspect(entry);
-  if (code.has("episodes/index.ts")) inspect("episodes/index.ts", false);
+  if (code.has("episodes/index.ts")) inspect("episodes/index.ts", "startup");
+  const registeredIds = new Set<string>();
+  for (const view of registeredRoots) {
+    for (const child of returnedViews.get(view) ?? []) {
+      if (typeof child === "string") registeredIds.add(child);
+      else registeredRoots.add(child);
+    }
+  }
+  const missing = ids.filter((id) => !registeredIds.has(id));
+  for (const id of missing)
+    report(
+      "episodes/pure-code.json",
+      1,
+      `登记 ID「${id}」没有对应的 Remotion 注册合成。`,
+    );
+  if (missing.length) for (const path of deferredPaths) inspect(path);
   return errors;
 };

@@ -11,7 +11,7 @@ import { existsSync, readFileSync } from "node:fs";
 import { dirname, isAbsolute, relative, resolve, sep } from "node:path";
 import ts from "typescript";
 import { reportError, usageError } from "./cli.ts";
-import { checkPureCode } from "./check-pure-code.ts";
+import { checkPureCode, type Registration } from "./check-pure-code.ts";
 import { listCodeFiles } from "./code-files.ts";
 
 const main = (): void => {
@@ -36,12 +36,13 @@ const main = (): void => {
   const root = resolve(rootArg ?? process.cwd());
   if (mode === "pure-code") {
     const registry = resolve(root, "episodes/pure-code.json");
-    const records: { ids: string[]; entry: string; manifest: string }[] = existsSync(resolve(root, "episodes"))
+    const hasEpisodes = existsSync(resolve(root, "episodes"));
+    const records: Registration[] = hasEpisodes
       ? JSON.parse(readFileSync(registry, "utf8"))
       : [];
-    const errors = records.flatMap(({ ids, entry, manifest }) =>
-      checkPureCode(root, ids, entry, manifest),
-    );
+    const errors = hasEpisodes && records.length === 0
+      ? ["episodes/pure-code.json:1 pure-code 登记表不能为空。"]
+      : records.flatMap((record) => checkPureCode(root, record, records));
     errors.forEach((message) => console.error(`出错：${message}`));
     if (errors.length) process.exitCode = 1;
     else console.log("纯代码护栏通过。");
