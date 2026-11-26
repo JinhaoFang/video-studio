@@ -18,6 +18,7 @@
     "../episodes/**/*.test.ts",
     "../episodes/after-rain/auditions/**/*.ts",
     "../episodes/after-rain/generate.ts",
+    "../episodes/after-rain/sound/**/*.ts",
     "../episodes/pure-code-sample/generate.ts",
     "../episodes/pure-code-sample/sound/**/*.ts",
     "../*.test.ts"

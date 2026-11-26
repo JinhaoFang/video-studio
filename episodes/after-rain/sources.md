@@ -19,3 +19,15 @@
 ## #182 正片底图
 
 从仓库根目录运行 `node episodes/after-rain/generate.ts`（加 `--force` 跳过缓存）。生成器用 `plates.ts`（院子五层，雨和夕光两种状态，第 3 镜用）和 `plates-views.ts`（正片新机位和近景的虚化背景）里的水粉画法，烘焙全部底图到 `public/episodes/after-rain/plate-*.png`，按源码、运行版本和产物的 SHA-256 判断能否复用。每张底图对应哪个镜头、生成命令和哈希见[底图生成清单](data/generated.json)。笔刷、斑驳、相机投影都来自 `src/kit/engine/`，没有用第三方代码、照片或素材。
+
+## #185 全片装配预演
+
+从仓库根目录运行 `node episodes/after-rain/generate.ts`，一次性烘焙全部 24 张水粉底图、汇总 12 个镜头的全片事件表（`episodes/after-rain/data/events.json` 与 `public/episodes/after-rain/events.json`）并生成 48 kHz 双声道临时混音（`public/episodes/after-rain/mix.wav`），重建命令与输入/产物 SHA-256 哈希登记在[正片生成清单](data/generated.json)。
+
+| 文件 | 内容与来源 |
+|---|---|
+| `plate-*.png`（24 张） | 由 `plates.ts` 与 `plates-views.ts` 水粉画笔代码烘焙的院子五层（雨/夕光）及 14 张新机位底图。 |
+| `events.json` | 由 `model.ts` 与 `shots/timings.ts` 汇总的 12 镜全片画面事件表（24 fps，1620 帧，s11→s12 重叠 24 帧叠化）。 |
+| `mix.wav` | 由 `sound/render.ts` 与 `sound/sfx.ts` 基于 `score.json`、kit 乐器/鸟叫/哼唱人声与临时拟音/环境床合成的 48 kHz PCM16 临时混音（−16 LUFS ±1 LU，真峰值不超过 −1 dBTP）。 |
+
+所有画面与声音均由本仓库纯代码算得，无外部录音、音色库、图片或字体依赖。正式声音与混音由 #193 替换。

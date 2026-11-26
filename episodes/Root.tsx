@@ -3,6 +3,12 @@ import { Composition, Folder } from "remotion";
 import type { ClinMeshPromoProps } from "./clinmesh-promo/ClinMeshPromo";
 import promoTimeline from "./clinmesh-promo/data/timeline.json";
 import {
+  durationInFrames as afterRainDuration,
+  fps as afterRainFps,
+  height as afterRainHeight,
+  width as afterRainWidth,
+} from "./after-rain/model";
+import {
   durationInFrames as pureCodeDuration,
   shotTable,
   sampleSize,
@@ -38,6 +44,10 @@ const loadPromo = () =>
   import("./clinmesh-promo/ClinMeshPromo").then(({ ClinMeshPromo }) => ({
     default: ClinMeshPromo,
   }));
+const loadAfterRain = () =>
+  import("./after-rain/AfterRain").then(({ AfterRain }) => ({
+    default: AfterRain,
+  }));
 const loadSparrowSheet = () =>
   import("./after-rain/sheets/SparrowSheet").then(({ SparrowSheet }) => ({
     default: SparrowSheet,
@@ -50,6 +60,14 @@ const loadPersonSheet = () =>
 export const RemotionRoot: React.FC = () => (
   <>
     <Folder name="after-rain">
+      <Composition
+        id="AfterRain"
+        lazyComponent={loadAfterRain}
+        durationInFrames={afterRainDuration}
+        fps={afterRainFps}
+        width={afterRainWidth}
+        height={afterRainHeight}
+      />
       <Composition
         id="AfterRainSparrowSheet"
         lazyComponent={loadSparrowSheet}

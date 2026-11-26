@@ -1,17 +1,17 @@
 {
-  "entry": "episodes/after-rain/plates-views.ts",
+  "entry": "episodes/after-rain/AfterRain.tsx",
   "generator": "episodes/after-rain/generate.ts",
   "command": [
     "node",
     "episodes/after-rain/generate.ts"
   ],
   "status": "complete",
-  "cacheKey": "94c735d28ad8eaf02f67553907ed085d633354ea54c3fa81ef7694fe299c32c1",
-  "plateKey": "aaba791e93fcf70678acc335f4f466862609ce5651a7a896a178322048c7005a",
+  "cacheKey": "67689f19eed6449ba51143c26d18d3c93c620fed2bbe3c54edc91ab1a5ce1b86",
+  "plateKey": "c2420db355bb783b3bd678fcdcfdbe90a1bc19800c2afa10aa3e4dfd5f75cbde",
   "inputs": [
     {
       "path": "episodes/after-rain/generate.ts",
-      "sha256": "8e189fc808139eb848ea618f148e681c9b0b849b2ebf81fcb92e53c723aed4f0"
+      "sha256": "5c8b367e8f4dd36755575249d57d8f9d23ffc67e59c365cdae7d74e201a30762"
     },
     {
       "path": "src/kit/generation/bake.ts",
@@ -54,16 +54,105 @@
       "sha256": "07573e85f2797fa0cf54d0996ae5f40b8e6c835f0949f9bf26f48cbe2eb582d3"
     },
     {
+      "path": "episodes/after-rain/sound/inputs.ts",
+      "sha256": "1e7f5ce1c993ac21c9e84f2992428a66a678e3a74a75ebada43da8d76caa1a43"
+    },
+    {
+      "path": "episodes/after-rain/sound/sfx.ts",
+      "sha256": "ca9339d465ef809f86127a9380ac47dfa91c2a397c05795eda96debe6dd3dd42"
+    },
+    {
+      "path": "episodes/after-rain/sound/render.ts",
+      "sha256": "2ced4173175e4cae642194703ae95ce1562d80b63ae99ee1b0e539c617a5f2bc"
+    },
+    {
+      "path": "src/kit/shots.ts",
+      "sha256": "6b390030526f769262d85bea18344132a4be5d0331dbce13aec3d2d25dcc767a"
+    },
+    {
+      "path": "src/kit/sound/types.ts",
+      "sha256": "ae0c986c98463cddf877b317c808d415395e5ef7bb5c859155efbfedcbaaafd0"
+    },
+    {
+      "path": "src/kit/sound/dsp.ts",
+      "sha256": "faf5169f93f72aa0875f0aac91f412911b8da00792483247266cc46f2f30c5d3"
+    },
+    {
+      "path": "src/kit/sound/score.ts",
+      "sha256": "7e4e99102405d73fedcf47bac10a84bedc4321b9059dc07f6d111e97d458f5f2"
+    },
+    {
+      "path": "src/kit/sound/voice.ts",
+      "sha256": "e99391f0296126edb10fc51bccaf63343daafda55b45ce7960d71d3d3ee8318d"
+    },
+    {
+      "path": "src/kit/sound/chirp.ts",
+      "sha256": "e992d320948868b1815a3ef66c95938b9f7f065bf8d4d027a5ca82a4d3b74b6f"
+    },
+    {
+      "path": "src/kit/sound/measure.ts",
+      "sha256": "476c2807d15c7267cf1ccd5471752d19bcf06e224673dc4ce2734d2410c76a09"
+    },
+    {
       "path": "tools/cli.ts",
       "sha256": "bb85d29fc777b6c06b285a9aed616251bb0812bf1086afb69310e997d3cf5ae0"
+    },
+    {
+      "path": "episodes/after-rain/model.ts",
+      "sha256": "a2d2e99785d7c1336823346f9d1aed1c08487c757336c5a368b1a7a01df26924"
+    },
+    {
+      "path": "src/kit/engine/timing.ts",
+      "sha256": "04e9c5f93180379ffb0e42d2605c0282b6931b26d9f9897717301fda0cc2471f"
+    },
+    {
+      "path": "episodes/after-rain/shots/timings.ts",
+      "sha256": "ee010d323aa8c7ff5531135678483788a02720cca21a105046729a92deddd11b"
+    },
+    {
+      "path": "episodes/after-rain/shots/s01-02/timing.ts",
+      "sha256": "c4016573b9c87d55a54204deaa416feb22ce123f90a8b42f160c548baa2226a0"
+    },
+    {
+      "path": "episodes/after-rain/shots/s03/timing.ts",
+      "sha256": "0cc8cf2332d31574255fb96d79ac3d20b259d2cb3518a4fb81ecbfee1a3b1942"
+    },
+    {
+      "path": "episodes/after-rain/shots/s04-06/timing.ts",
+      "sha256": "ff5e49d205900aad6de34afad83d829689639d775ccd2f44bf53335661e9453c"
+    },
+    {
+      "path": "episodes/after-rain/shots/s07-09/timing.ts",
+      "sha256": "c53b481dabc7722c0ef533722a1003f3b29d9694a936612c6c4b71dc089d8f7c"
+    },
+    {
+      "path": "episodes/after-rain/shots/s10-11/timing.ts",
+      "sha256": "32d8288ba35fd4dfea08ad2c0722d397cf8a8c1da73d346f1d5ddf9d51901e08"
+    },
+    {
+      "path": "episodes/after-rain/shots/s12/timing.ts",
+      "sha256": "e5bc0431e472c527326a13b64d0fe99fc40b758bb1c075a9701c7f5912e0d813"
+    },
+    {
+      "path": "episodes/pure-code-sample/shots/s1/timing.ts",
+      "sha256": "1dee6c390296c6eab022a8a9c0d342e7b3fe6c21de500e5a89f21725bbca8741"
     }
   ],
-  "dataInputs": [],
+  "dataInputs": [
+    {
+      "path": "episodes/after-rain/score.json",
+      "sha256": "2d240a6dfa6432f27a8d34732ae9c65486152ff885dcfb4aaf08e0b21dcf7f42"
+    }
+  ],
   "runtime": {
     "node": "v22.23.3",
     "ffmpegVersion": "ffmpeg version 4.4.2-0ubuntu0.22.04.1 Copyright (c) 2000-2021 the FFmpeg developers"
   },
   "files": [
+    {
+      "path": "episodes/after-rain/events.json",
+      "sha256": "b78d350452ff190eef4a8b8ab8383a0b8d8da8d1e95bfe713f2442e3c2fe5fb4"
+    },
     {
       "path": "episodes/after-rain/plate-far-rain.png",
       "sha256": "6abc499af05e086a2651a9d80a334539a4b160548344b2fa248e9cbbf0f1d88d"
@@ -159,8 +248,46 @@
     {
       "path": "episodes/after-rain/plate-closeup-s9.png",
       "sha256": "ec167ea93069c55861aa909de667d7a93c46d3263a873ea86be70cb0bdd8c3a9"
+    },
+    {
+      "path": "episodes/after-rain/mix.wav",
+      "sha256": "97b1a7f623485ee4991bf8c3be58da513ae1e9ff4328b2ae1f661916ed0961e5"
     }
   ],
-  "eventTables": [],
-  "audio": {}
+  "eventTables": [
+    {
+      "path": "episodes/after-rain/data/events.json",
+      "sha256": "b78d350452ff190eef4a8b8ab8383a0b8d8da8d1e95bfe713f2442e3c2fe5fb4"
+    }
+  ],
+  "audio": {
+    "main": {
+      "command": [
+        "node",
+        "episodes/after-rain/sound/render.ts",
+        "--events",
+        "episodes/after-rain/data/events.json",
+        "--out",
+        "out/qa/spec-168/185/sound",
+        "--seed",
+        "185"
+      ],
+      "sampleRate": 48000,
+      "channels": 2,
+      "master": {
+        "before": {
+          "integratedLufs": -18.8,
+          "truePeakDbtp": -5
+        },
+        "after": {
+          "integratedLufs": -16,
+          "truePeakDbtp": -2.2
+        },
+        "gainDb": 2.8000000000000007,
+        "maximumReductionDb": 0,
+        "limiterCeilingDbfs": -1.3
+      },
+      "measurements": "out/qa/spec-168/185/sound/measurements.json"
+    }
+  }
 }
