@@ -6,6 +6,23 @@
 
 样片只提供在线试听或观看，不搬运。ElevenLabs 预听的权利属于平台及相关权利人，链接不代表取得合成或成片使用许可；下列预听地址来自其[公开 Voices API](https://api.elevenlabs.io/v1/voices)。Mixkit 样片属于其 Stock Music Free License 或 Sound Effects Free License，本文仅供试听，实际素材使用范围以[对应许可](https://mixkit.co/license/)为准。耶鲁教学片段的电影版权属于各自权利人，本文只链接教学页面观看，不表示取得素材授权。
 
+## ⑧ 声音设计
+
+### 声音分层与对白、音乐、音效分轨
+
+- **一句话**　分层说明每种声音在片里做什么，分轨让这些声音能独立调整和交付。
+- **适合**　同一场景有多种声源，或交付时需要保留单独的对白、音乐和音效以便重混。
+- **标志特征**　对白或人声承担角色发声，拟音对应表演和接触，硬音效对应可定位的声响事件（如雷击），环境声交代持续的空间，设计音用加工或合成塑造特定听感，音乐组织情绪与节奏。同一事件可以有多层，例如落地的一下可同时带衣料摩擦、撞击和音乐重音。
+- **关键技法**　对白（D）、音乐（M）、音效（E）各是一条合成分轨（stem），制作时可细分更多轨。拟音、硬音效、环境和设计音通常汇入 E。可听清的对白或后续要替换的人声留在 D，作为环境的背景人声可按交付要求归入 E。分轨共用同一时间起点、时长和声道布局，按原电平相加能还原对应混音。片中各层的相对电平见下方的混音条目。[分轨平衡与人声让位](#分轨平衡与人声让位)
+- **出处**　声音层与可定位效果参照乌得勒支艺术大学声音教材《The Sound Track》第 30–31、114 页。分轨交付和等增益重合成参照美国电影艺术与科学学院档案建议。[HKU 教材](https://www.hku.nl/getmedia/4bb61eb2-c777-4eb3-ab13-83251a22ea8b/HKU-The-Sound-Track-Engels-leesbare-pdf.pdf#page=31) · [Academy DME Composited Stems](https://academydigitalpreservationforum.org/recommended-practices/audio/archiving/dme-composited-stems/)
+
+### 听点会与听点表
+
+- **一句话**　导演和声音团队对着同一版画面商定哪里能听到什么，以及这些声音要让观众注意到什么。
+- **适合**　画面锁定后，统筹对白、拟音、音效、环境和配乐的进出、各层的注意力和有意留白。
+- **标志特征**　讨论以全片装配为共同参照。听点表的条目能定位到镜头和事件，记录起止时间码或帧号、对齐点、声音层、声音内容和叙事意图。导演确认的取舍也能落在表上，例如「脚碰地时为重音」「此处无新音，底声延续」。后一种也有独立条目可查。[静默与环境底噪](#静默与环境底噪)
+- **出处**　参与者和讨论内容见 Vancouver Film School 的声音编辑课程说明，声音效果的时间码、编号、描述与备注见 Taylor & Francis 出版的听点单。全片装配、画面锁定和表的用途沿用本仓库约定。[VFS「Sound Editor」](https://vfs.edu/content/sound-editor) · [Sample Sound Effects Spotting Sheet](https://s3-eu-west-1.amazonaws.com/s3-euw1-ap-pe-ws4-cws-documents.ri-prod/9781138795433/forms/sample_sound_effects_spotting_sheet_copyedited.pdf) · [工作流「交接」](../workflow/README.md#交接)
+
 ## ⑧ 旁白
 
 ### 有旁白
@@ -94,6 +111,34 @@
 - **素材来源**：已用服务；本期生成、切句属于未入库的本机步骤，配音也没有经过现有配音工具的错字率评分，不能与另一服务直接作质量排名。
 - **出处**：[ClinMesh README「制作步骤」「复现」「已知偏离」「与首期的差异」](../../episodes/clinmesh-promo/README.md)、[该期 sources.md 的未登记项](../../episodes/clinmesh-promo/sources.md)：账号、模型及商用条款尚未补齐，不由知识文档补作授权结论。
 
+## ⑧ 人声
+
+### 背景人声（walla／ガヤ）
+
+- **一句话**　从背景能听出有人在说话，观众的注意力仍留在前景。
+- **适合**　餐厅、街道等多人交谈的空间。同样的语流处理也适用于一墙之隔的单人说话，这类声源保留一人的节奏与起伏。
+- **标志特征**　听得出短句般的强弱、起伏和停顿。若场景只需交代有人，词句无需可辨，偶尔冒出的一个声音也不会让人错认成主角对白。
+- **关键技法**　多人层可由不同音高、说话节奏和方向的声音错开叠加。隔墙声可兼用高频衰减与空间处理。电平是在场景中相对前景衡量的，听感上低于主对白或主要动作，安静时仍可察觉有人。电平差、频带重叠、声像和时间空隙都会影响可懂度，恰当的电平取决于当时的前景内容。[声音远近与景别](#声音远近与景别)
+- **出处**　日本动画音响监督明田川进说明了ガヤ的可懂程度、分角色表演和叠录。Juniper Post 举出餐厅交谈声处于配乐下的例子。Best 等的听觉实验比较了空间分离、频带重叠和时间重叠对同时说话时语音识别的影响。[明田川进《音物语》](https://anime.eiga.com/news/column/aketagawa_oto/117964/) · [Juniper Post「Why Walla Walla Walla?」](https://juniperpost.com/why-walla-walla-walla-2/) · [频带重叠实验摘要](https://api.crossref.org/works/10.1121/1.4803517) · [时间重叠实验摘要](https://api.crossref.org/works/10.1121/1.3533733)
+
+### 纯代码人声合成
+
+- **一句话**　代码产生声带振动般的脉冲和气流声，再用随口形变化的共鸣把它们变成人声。
+- **适合**　无词哼唱、模糊说话和非词汇发声。可辨台词还需要细致的音素时序和语调设计。
+- **标志特征**　声门脉冲的重复频率决定基频。不同声道形状让不同频带突出，形成可分辨的元音色彩。说话有发声与停顿、音高滑动、开合口形及气流变化。闭口哼唱的音高可沿旋律变化，口腔出口闭合，鼻腔支路开放，仍有连续、有音高的声音。
+- **关键技法**　源—滤波模型可用时变的共振峰频率和带宽描述声道，也可用数字波导模拟波在分段声管内的传播、反射及鼻腔分支。语流可由短段发声、气声和停顿组成，起伏和重音由基频与力度曲线描述。哼唱可共用声门激励，用相对稳定的声道形状、旋律音高和呼吸般的包络保持连贯。已有生成手段可供对照。[本仓库来源：纯代码合成](#本仓库来源纯代码合成)
+- **素材来源**　可编程实现及许可原文如下。MIT 版本在复制或分发实质部分时保留版权声明和许可全文。代码来源的登记要求见术语表的「纯代码」。[GLOSSARY.md](../../GLOSSARY.md)
+
+  | 实现 | 许可原文 | 用途与可用性 |
+  | --- | --- | --- |
+  | [Pink Trombone 原版](https://dood.al/pinktrombone/) | [MIT，作者声明见页面源码或固定快照](https://github.com/imaginary/pink-trombone/blob/dd2e9447e1e101139aa37a949dd1e6f2ba0842b6/index.html#L29-L47) | 可用其人声合成代码。原版为浏览器交互演示。 |
+  | [pink-trombone-mod](https://github.com/chdh/pink-trombone-mod/tree/359c2d3b42b10280404c1650dc601902112b4c90) | [MIT](https://github.com/chdh/pink-trombone-mod/blob/359c2d3b42b10280404c1650dc601902112b4c90/LICENSE.md) | 可用。TypeScript 合成核心按采样率生成缓冲区，可分别控制声门音高、张力、声道及鼻腔，适合离线合成模糊语流和无词哼唱。 |
+  | [Soundpipe 的 voc 模块](https://github.com/PaulBatchelor/Soundpipe/tree/3efb43bdabd0ed23b17c694292b5a79f1692a3ea) | [MIT，Soundpipe](https://github.com/PaulBatchelor/Soundpipe/blob/3efb43bdabd0ed23b17c694292b5a79f1692a3ea/LICENSE)及 [MIT，Pink Trombone 上游](https://github.com/imaginary/pink-trombone/blob/dd2e9447e1e101139aa37a949dd1e6f2ba0842b6/index.html#L29-L47) | 可用其 C 声道模块，保留两份版权和许可声明。接口可控制音高、口腔和鼻腔，接入 Node 管线需 C 构建或移植。[voc 模块说明](https://paulbatchelor.github.io/res/soundpipe/docs/voc.html) |
+  | [SAM JavaScript 移植](https://github.com/discordier/sam/tree/fa70b9679a731731d91c6592fdd44d990002b0f9) | [许可不明，作者在 README 的 License 节说明未授予开源许可](https://github.com/discordier/sam/blob/fa70b9679a731731d91c6592fdd44d990002b0f9/README.md#license) | 不可用。 |
+
+- **样片**　Pink Trombone 作者网页的交互合成演示（合成代码 MIT，仅在线试听），可用来对照音高与口形变化。[Pink Trombone](https://dood.al/pinktrombone/)
+- **出处**　阿姆斯特丹大学 Praat 手册解释声源、共振峰和音高目标，斯坦福 CCRMA 教材论述数字声管与演唱鼻腔支路。TypeScript 接口见固定版本源码。noroi-iwai 仅据仓库研究记录引用其声门脉冲与分段声管方法摘要。[Praat「Source-filter synthesis」](https://www.fon.hum.uva.nl/praat/manual/Source-filter_synthesis.html) · [CCRMA「Singing Kelly-Lochbaum Vocal Tract」](https://ccrma.stanford.edu/~jos/pasp/Singing_Kelly_Lochbaum_Vocal_Tract.html) · [Synthesizer.ts](https://github.com/chdh/pink-trombone-mod/blob/359c2d3b42b10280404c1650dc601902112b4c90/src/Synthesizer.ts) · [Glottis.ts](https://github.com/chdh/pink-trombone-mod/blob/359c2d3b42b10280404c1650dc601902112b4c90/src/Glottis.ts) · [Tract.ts](https://github.com/chdh/pink-trombone-mod/blob/359c2d3b42b10280404c1650dc601902112b4c90/src/Tract.ts) · [noroi-iwai 研究记录「声音的做法」](../research/noroi-iwai.md#4-声音的做法)
+
 ## ⑧ 配乐
 
 配乐风格和情绪不是同一件事：同属电影配乐，可以是希望、悲伤、幽默或紧张。下列是常用选择，具体曲目的乐器、节奏与情绪以曲目本身为准；分类依据是 [Mixkit 的 Genre、Mood、Instrument 标签](https://mixkit.co/free-stock-music/)。
@@ -154,6 +199,37 @@
 - **样片**：[Mixkit Tension](https://mixkit.co/free-stock-music/mood/tension/) 中的《Echoes》《Fallen (Asper)》（Stock Music Free License，仅试听）。
 - **出处**：[Mixkit Tension](https://mixkit.co/free-stock-music/mood/tension/) 的 drone、atmospheres、mysterious、thriller 等标签；[耶鲁 Sound 对《司汤达综合征》中不安配乐的分析](https://filmanalysis.yale.edu/sound/)。
 
+### 铺底配乐与米老鼠式对点
+
+- **一句话**　铺底配乐跟着整段戏的情绪走，米老鼠式配乐用音符、节奏或音高走势追随一连串动作。
+- **适合**　铺底适合对白、细碎拟音和需要连贯情绪的段落。密集对点适合节奏本身就是笑点的表演，例如乐句逐次呼应踮脚、停步和失衡。两种做法可以同段并用，铺底中只在少数动作上响起重音。
+- **标志特征**　铺底的乐句可跨越动作或剪切，独立维持一段情绪。米老鼠式对点可以在画面上逐一指出音型对应的动作，音乐会随动作量改变节奏密度。
+- **出处**　Berklee 的配乐课程第 8、10 课涵盖随画面写作和铺底。Lea Jacobs 分析动画中音乐与动作的节奏同步。[Berklee「Film Scoring 101」](https://online.berklee.edu/courses/film-scoring-101) · [*Film Rhythm after Sound* 第 3 章「Mickey Mousing Reconsidered」](https://www.ucpress.edu/books/film-rhythm-after-sound/paper)
+
+### 主题动机
+
+- **一句话**　短到能记住的一小段音乐，和人物、地方或情绪反复联系起来。
+- **适合**　提示人物或情绪回来，或让前段留下的一小截旋律在后段得到回应。
+- **标志特征**　经过移调、换乐器或改速度，观众仍可凭节奏、音程或旋律方向辨认两处是同一动机。
+- **关键技法**　动机可单独露出、发展成较长乐句，也可换和声与配器讲出不同情绪。一期内实际怎样发展，见小样的配乐思路。[纯代码小样的声音设计](../../episodes/pure-code-sample/sound-design.md#配乐的思路)
+- **出处**　Berklee 的 Motific Writing 和 Theme Adaptation 课程内容涵盖短动机写作、主题适配与变奏。[Berklee「Film Scoring 101」](https://online.berklee.edu/courses/film-scoring-101)
+
+### 音乐强调音、速度图与对点
+
+- **一句话**　强调音用一次音乐重音标出某个画面时刻，速度图让音乐拍点能对上选定的画面时刻。
+- **适合**　揭示、碰撞、动作转折等需要突出一拍的地方。乐句还要顺着几个相隔不等的时刻往前走时，速度图可在各乐句里维持合适的拍感。
+- **标志特征**　对点（hit point）在画面上有帧号或时间码，在音乐上有拍位或可辨认的音符、和弦起音。速度图描述节拍速度沿时间的变化，节拍变化处仍能听出乐句的连贯性。
+- **关键技法**　重音可以是有清楚起音的单音、和弦或乐句中的力度变化。时长不等的锚点可通过选择拍位、局部换速或调整拍号与小节长度来容纳。独立的撞击声和提示声另有条目。[转场声与强调声](#转场声与强调声)
+- **出处**　Berklee 第 6–8 课涵盖标记、速度与拍号图以及随画面写作。Ableton 的视频章说明 hit point 和音乐拍位的同步关系。[Berklee「Film Scoring 101」](https://online.berklee.edu/courses/film-scoring-101) · [Ableton「Working with Video」](https://www.ableton.com/en/manual/working-with-video/)
+
+### 剧中声音转成配乐
+
+- **一句话**　故事里有人哼过或弹过的旋律，后来由配乐接过去，观众还能认出来。
+- **适合**　把早先的声源变成后段的回忆或情绪线索，也可以在同一段里让听觉视角从场景移到配乐。
+- **标志特征**　第一次能从环境、声像或画面定位到声源。接过去以后，音色、配器或空间感改变，旋律或节奏中的辨认线索保存了下来。
+- **关键技法**　配乐可以接唱原有的下一拍，也可以在相隔数镜后重现同一动机。音高轮廓或节奏保持可辨，房间色彩或声像随声源归属改变。同一声音跨剪切时也涉及声音桥。[声音桥](#声音桥)
+- **出处**　耶鲁电影分析教材解释剧内与剧外声音以及声音来源的重新理解。保留动机而变配器的用途参照主题适配教学。[耶鲁「Sound」，DIEGETIC/NON-DIEGETIC SOUND、OFFSCREEN SOUND](https://filmanalysis.yale.edu/sound/) · [Berklee「Film Scoring 101」，Theme Adaptation](https://online.berklee.edu/courses/film-scoring-101)
+
 ## ⑧ 音效
 
 ### 动作与材质声
@@ -163,6 +239,23 @@
 - **标志特征**：声音起点与接触、落地等事件相对应，音色能提示材质；后期加入的声音也可以与画面同步。
 - **样片**：[Mixkit Footsteps](https://mixkit.co/free-sound-effects/footsteps/)（Sound Effects Free License，仅试听）。
 - **出处**：[耶鲁 Sound，POSTSYNCHRONIZATION DUBBING、SYNCHRONOUS SOUND、SOUND PERSPECTIVE](https://filmanalysis.yale.edu/sound/)；[Mixkit Footsteps](https://mixkit.co/free-sound-effects/footsteps/) 的动作声音示例。
+
+### 拟音（动作、脚步、羽毛与道具）
+
+- **一句话**　为画面里的表演和接触补出同步的细小声响，让观众听出动作的重量和材质。
+- **适合**　近处脚步、身体运动、翅膀张合、手与道具的互动。动作与声音起点的对应关系见已有条目。[动作与材质声](#动作与材质声)
+- **标志特征**　脚步的间隔、强弱和着地质地随步态与表面改变。羽毛窸窣和振翅扫过可分别听出细碎摩擦与较宽的空气声。道具拿起、碰撞、放下时有各自的起音和余振。
+- **关键技法**　动作声可以用衣物或羽片的摩擦和气流层表达。脚步的主体是触地瞬态，后面可带湿泥吸附、水洼溅水或鞋底离地的声音。羽毛可用短促的轻擦模拟细部，翅膀的空气层可参考快速开合轻质材料的拟音。道具可分接触瞬态和由材料、空腔或松动部件引出的衰减声，例如竹篮碰擦与吱呀。分解为瞬态、短噪声和余振也便于独立合成。
+- **出处**　Berklee 说明脚步、衣物和道具的拟音分工。乌得勒支艺术大学教材第 114 页讨论拟音脚步和人的步态，Science World 展示用轻开合雨伞模仿翅膀。[Berklee「Foley Artist」](https://www.berklee.edu/careers/roles/foley-artist) · [HKU《The Sound Track》](https://www.hku.nl/getmedia/4bb61eb2-c777-4eb3-ab13-83251a22ea8b/HKU-The-Sound-Track-Engels-leesbare-pdf.pdf#page=115) · [Science World「Foley Artist Recipe Book」](https://www.scienceworld.ca/stories/foley-artist-recipe-book/)
+
+### 树麻雀叫声
+
+- **一句话**　树麻雀（*Passer montanus*）的接触叫是短促的单音节，警报叫可以由几个有谐波的短音组成。
+- **适合**　用频率走势、时长与重复方式区分呼应同伴的接触叫和捕食者接近时的警报叫。
+- **标志特征**　韩国多点野外录音研究的接触叫与警报叫合计约在 1–10 kHz。A 型接触叫在窝和繁殖点附近出现，B 型接触叫频率范围更高、时长更长。警报叫含 1–3 个具谐波结构的音符。[Cho 等，摘要及 Methods](https://doi.org/10.1038/s41598-025-88287-8)
+- **关键技法**　图 3 的示例谱图可作为调频和包络参照。A 型约 60 ms，主能量纹从约 3 kHz 迅速上扫至 5–6 kHz，回落后留一小段低频余音。B 型约 75 ms，从约 3.5 kHz 上扫至约 6.5 kHz 后回落。图 1 拟合线随录音点噪声变化，A 型整音节能量峰约 3.5–4.5 kHz，B 型约 3.7–4.7 kHz。示例警报叫有两个音符，起音相隔约 80 ms。上述图读数对应所示录音或拟合线。[论文图 1](https://pmc-oa-opendata.s3.amazonaws.com/PMC11825673.1/41598_2025_88287_Fig1_HTML.jpg) · [论文图 3](https://pmc-oa-opendata.s3.amazonaws.com/PMC11825673.1/41598_2025_88287_Fig3_HTML.jpg)
+- **样片**　Jarek Matusiak 的树麻雀录音 XC42213（CC BY-NC-ND 2.5，仅在线试听）可作叫声成串的节奏参照。档案类型标为「call」。[英国皇家鸟类保护协会（RSPB）树麻雀页面](https://www.rspb.org.uk/birds-and-wildlife/tree-sparrow) · [XC42213 原录音与许可](https://xeno-canto.org/42213/embed)
+- **出处**　Cho、Lee、Jang、Son、Sung，2025 年发表于《Scientific Reports》。音节类型见 Methods，峰值频率指单个发声单元内能量最高的频率。图 1 给出实测值和拟合趋势，图 3 给出各类型示例。[论文、图表及测量口径](https://doi.org/10.1038/s41598-025-88287-8)
 
 ### 环境与空间声
 
@@ -240,6 +333,14 @@
 - **标志特征**：远近变化伴随清晰度和混响变化；环境、音效和对白的空间关系可相互呼应。
 - **样片**：[耶鲁 SOUND PERSPECTIVE 的《安倍逊大族》片段](https://filmanalysis.yale.edu/sound/)（电影版权保留，仅观看）：门内外的人声变化用于分析距离感。
 - **出处**：[耶鲁 Sound，SOUND PERSPECTIVE、Quality](https://filmanalysis.yale.edu/sound/)；解释声保持清楚的适用描述，依据该教材对空间写实与叙述可懂度取舍的分析归纳。
+
+### 声音远近与景别
+
+- **一句话**　远处的声听起来更轻、更少细节，近处的声有更明显的直接声和材质细节。
+- **适合**　同一角色从近景到远景、声源在画外靠近或远离、隔门隔墙。景别改变时，声音视点可以随观察位置移动，也可以留在人物身边，延续同一听觉视点。
+- **标志特征**　听觉视点移近时，同一接触的直接声更突出，起音与细节更清楚。移远时，直达声减弱，有明显反射的空间里其占比也常下降。墙后的人声高频和细节衰减，仍可感到语调或起伏。这些线索与既有的空间处理可以配合。[空间感与混响](#空间感与混响)
+- **关键技法**　距离感由电平、直达声与混响的比例和频谱一起表达。隔墙声可用高频衰减模拟遮挡造成的闷感，保留适量低中频和来自对应空间的反射。景别提供叙事线索，实际电平和混响比例取决于声源、距离和场所。
+- **出处**　Kolarik 等综述声音电平、直达与混响能量比、频谱等距离线索及各自适用的距离。耶鲁教材举出门内外的声音透视及与对白可懂度的取舍。[Kolarik 等「Auditory distance perception in humans」](https://doi.org/10.3758/s13414-015-1015-1) · [耶鲁「SOUND PERSPECTIVE」](https://filmanalysis.yale.edu/sound/)
 
 ### 响度、真峰值与响度范围
 
