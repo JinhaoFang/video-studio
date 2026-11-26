@@ -172,6 +172,17 @@
 - **样片**：[Mixkit Ambience](https://mixkit.co/free-sound-effects/ambience/)（Sound Effects Free License，仅试听）；[耶鲁 SOUND PERSPECTIVE 的《安倍逊大族》片段](https://filmanalysis.yale.edu/sound/)（电影版权保留，仅观看）。
 - **出处**：[耶鲁 Sound，OFFSCREEN SOUND、SOUND PERSPECTIVE](https://filmanalysis.yale.edu/sound/)；[Mixkit Ambience](https://mixkit.co/free-sound-effects/ambience/)。
 
+### 静默与环境底噪
+
+- **一句话**：片子里的"静默"是安静下来，不是声音断掉：配乐和音效停了，场所里很轻的底声还在。
+- **适合**：情绪停顿、喜剧里的一拍留白、大事前后的屏息。声音彻底消失听起来像设备出了故障，不像安静。
+- **标志特征**：静默段里仍听得到场所的底声，例如空气、远处的虫鸣、房间的回响；电平明显下降，但不掉到数字静音，也就是波形上的一条平线。进入静默前正在响的声音按自己的余音收完，不在静默开始那一帧被截断。只量"静默区间是不是零"，会把声音断掉判成合格。
+- **关键技法**：
+  - 静默靠对比做出来：先有声，再撤掉。配乐不出新音，已经响起的音自然衰减。
+  - 底噪（room tone，又叫空气声）单独一轨，从头铺到尾，不参与静默和让位。剪开的对白或音效之间的空隙用底噪补上，否则背景声会随片段时有时无。
+  - 远处的动物叫声、隔壁的钟声、细碎的窸窣，以及孤立声音上的一点混响，都能让人觉得周围很安静。
+- **出处**：Michel Chion，[*Audio-Vision: Sound on Screen*](https://cup.columbia.edu/book/audio-vision/9780231185899)，Claudia Gorbman 译，Columbia University Press，第 57–58 页：静默从来不是中性的空白，是前面听到的声音的反面，是对比的产物；远处动物叫声、钟声、窸窣可作为静默的同义声音。页码与引文据 [Film Quarterly 2016 年的 Chantal Akerman 声音专文](https://filmquarterly.org/2016/09/16/walking-talking-singing-exploding/)转引。[Frame.io Workflow Guide「Roomtone」](https://workflow.frame.io/guide/roomtone)：底噪是录音所在环境的声音，用来填补剪辑留下的空隙，形成一条连续的底。[纯代码小样的声音设计](../../episodes/pure-code-sample/sound-design.md)只作单期实现引用：静默最初做成静音配乐，用户看片两次听出声音断了，过程记在 #157。
+
 ### 界面反馈与提示音
 
 - **一句话**：短促的点击、确认或报错声，把一次操作和它的结果连起来。
@@ -195,6 +206,14 @@
 - **标志特征**：声音边界与画面切点错开；观众能辨认声音跨越了两个镜头或场景。
 - **样片**：[耶鲁 SOUND BRIDGE 中的《一一》片段](https://filmanalysis.yale.edu/sound/)（电影版权保留，仅观看教学片段）。
 - **出处**：[耶鲁 Film Analysis，SOUND BRIDGE](https://filmanalysis.yale.edu/sound/)：跨场声音的定义、连续性和创造性用法。
+
+### 本仓库来源：纯代码合成
+
+- **一句话**：配乐和音效不用任何采样或素材库，乐器和音效都由仓库里的 Node 代码算出来，按乐谱和画面事件混音。
+- **适合**：纯代码的片子，以及要求每个声音都能复现、来源清单天然干净的片子。乐器的真实感不如录音，要靠试听判断能不能接受。
+- **标志特征**：每个声音由一条生成命令和固定种子产生，同一种子合成两次结果完全相同；音效按画面事件的对齐点落位，落位误差可以按采样数量出来。
+- **素材来源**：已用方法，见纯代码小样（spec #147）：毡锤钢琴、弦乐、竖琴、钟琴和十四种音效全部合成。音高、电平和落位都量过，用户试听前发现不了"静默被做成断音"这类设计错误，见上文「静默与环境底噪」。
+- **出处**：[纯代码小样的声音合成说明](../../episodes/pure-code-sample/sound/README.md)、[研究记录「声音的做法」](../research/noroi-iwai.md#4-声音的做法)：参照片的配乐、音效（noroi-iwai 还有演唱）都由代码合成。
 
 ## ⑫ 混音与响度
 
