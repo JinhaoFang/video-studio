@@ -149,7 +149,12 @@ test("非零镜头起点、乱序重复事件取首现，extra 只跟第一次 s
           .reduce((peak, sample) => Math.max(peak, Math.abs(sample)), 0),
       ),
     );
-  assert.ok(peakIn(201, 202) < peakIn(190, 193) * 0.1);
+  const pluck = peakIn(190, 193);
+  const firstSilent = [...Array(216 - 190).keys()]
+    .map((offset) => 190 + offset)
+    .find((frame) => peakIn(frame, frame + 1) === 0);
+  assert.equal(firstSilent, 202);
+  assert.ok(peakIn(firstSilent - 1, firstSilent) < pluck * 0.1);
   for (const channel of mix.stems.music)
     assert.ok(
       channel
