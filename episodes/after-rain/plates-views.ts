@@ -4,7 +4,7 @@
  * 1. 老屋正面反向机位（第 1 镜暴雨版、第 12 镜暮色灭灯版 + 独立透明亮灯层）：移除底图中的木制晾衣架（改由 pole-stand.ts 实时投影）；屋顶改画日式和瓦（往屋脊方向行距变密的瓦檐横线与连续竖向瓦垄起伏，第 1 镜沿瓦垄保留湿反光）；暮色屋拆出灭灯底图与可按帧淡入的独立灯层；
  * 2. 第 10 镜低夕光回看老屋正面：保持玄关门洞与 1.64 米檐影线构图不变；檐影上半墙改灰泥哑光质感；下半墙板逐块画接缝、通长木纹与深浅（去掉梭形）；右上受光屋瓦按 3D 透视画成行瓦垄（去掉迷彩斑）；檐廊地板木纹顺地板方向走；两根柱子改成手画边的木方柱；
  * 3. 第 4、6 镜贴地低机位院子与第 2、5、7、8、9 镜近景虚化背景保持验收通过版本不变；
- * 4. 第 11 镜稻田上空大远景：按 shots/s10-11/ 实际相机路径（含末段上摇至 +8.3°）扩展天空覆盖并画入冷暖夕云与空气层；远处补林带与农舍罩在暖紫雾（#b49aa8）中；稻田去掉细直地块线，改用大片风吹明暗稻浪与地块色相/稻行方向变化，田埂改成手画不规则宽窄、弯折、缺口与边草。
+ * 4. 第 11 镜稻田上空大远景：按 shots/s10-11/ 实际相机路径（含末段上摇至 +8.3°）扩展天空覆盖并画入冷暖夕云与空气层；远处补林带与农舍罩在暖紫雾（#b49aa8）中；稻田去掉细直地块线，改用大片风吹明暗稻浪与地块色相/稻行方向变化，田埂改成手画不规则宽窄、弯折、缺口与边草。#190 追加：天空分暖冷两侧（画左上靠太阳最亮最暖，画右上偏冷紫），太阳方位正下方远处一条逆光发亮的反光带，近处更深更饱和并压一片云影，稻行加影子线，风浪暗槽加深。
  */
 import { project, toCamera } from "../../src/kit/engine/camera.ts";
 import type { Camera, Vec3 } from "../../src/kit/engine/camera.ts";
@@ -2168,7 +2168,13 @@ const paintPaddyWide = (plate: ViewPlate): Paper => {
   const silCol = rgb(paddyWide.silhouette);
   const greenGold = rgb(dusk.paddyLit[1]);
   const brightGold = rgb(dusk.cloudGap[1]);
-  const zenithCool = mixRgb(skyCool, rgb(houseTwilight.skyHigh), 0.34);
+  const zenithCool = mixRgb(skyCool, rgb(houseTwilight.skyHigh), 0.46);
+  const coolViolet = mixRgb(rgb(houseTwilight.skyHigh), rgb(rain.sky[0]), 0.5);
+  const shadowViolet = rgb(dusk.shadowViolet);
+  const smoothstep = (a: number, b: number, x: number) => {
+    const t = Math.max(0, Math.min(1, (x - a) / (b - a)));
+    return t * t * (3 - 2 * t);
+  };
 
   const sunAz = (28.3 * Math.PI) / 180;
   const sunEl = (16.0 * Math.PI) / 180;
@@ -2180,26 +2186,30 @@ const paintPaddyWide = (plate: ViewPlate): Paper => {
 
   const skyAt = (x: number, y: number): RGB => {
     const t = Math.max(0, Math.min(1, (y - rect.y0) / Math.max(1, horizonY - rect.y0)));
-    const sideWarm = Math.max(0, Math.min(1, 1 - (x - (sunScreen.x - 160)) / 1420));
+    const sideWarm = Math.max(0, Math.min(1, 1 - (x - (sunScreen.x + 40)) / 760));
+    const sideCool = Math.max(0, Math.min(1, (x - (sunScreen.x + 250)) / 700));
     const dSun = Math.hypot((x - sunScreen.x) / 1.5, (y - sunScreen.y) / 1.08);
     const glow = Math.exp(-dSun / 880);
+    const glowNear = Math.exp(-dSun / 430);
     const core = Math.exp(-dSun / 360);
     let c = t < 0.46 ? mixRgb(zenithCool, skyCool, t / 0.46) : mixRgb(skyCool, mistCol, Math.pow((t - 0.46) / 0.54, 1.28) * 0.72);
-    const warmMask = Math.max(glow * 0.88, Math.pow(sideWarm, 1.4) * (0.36 + 0.52 * t));
-    c = mixRgb(c, skyWarm, Math.min(0.88, warmMask));
-    c = mixRgb(c, rgb(dusk.cloudGap[0]), core * 0.46);
+    c = mixRgb(c, coolViolet, Math.min(1, sideCool * (0.92 - 0.42 * Math.max(0, (t - 0.62) / 0.38))));
+    const warmGlow = 1 - sideCool * 0.7;
+    c = mixRgb(c, skyWarm, Math.min(1, sideWarm * (0.44 + 0.5 * (1 - t)) + glowNear * 0.45 * warmGlow));
+    c = mixRgb(c, brightGold, Math.min(1, glowNear * 0.6 * warmGlow));
+    c = mixRgb(c, rgb(dusk.cloudGap[0]), core * 0.7 * warmGlow);
 
     const cloudAlt = Math.sin(Math.PI * Math.max(0, Math.min(1, (t - 0.04) / 0.82)));
     const warp = fbm2(x / 460, y / 180, 7514, 2) * 1.4;
     const deck = fbm2(x / 520 + warp * 0.35, y / 115 - warp * 0.2, 7515, 4);
     const under = fbm2(x / 520 + warp * 0.35, (y - 26) / 115 - warp * 0.2, 7515, 4);
-    const cloudMask = Math.max(0, Math.min(1, (deck - 0.48) * 2.5)) * cloudAlt;
+    const cloudMask = Math.max(0, Math.min(1, (deck - 0.46) * 2.6)) * cloudAlt;
     if (cloudMask > 0.01) {
       const litEdge = Math.max(0, Math.min(1, (under - deck) * 2.4 + 0.32));
-      const cloudShade = mixRgb(mixRgb(skyCool, mistCol, 0.45), rgb(dusk.cloud.shadow), 0.22);
+      const cloudShade = mixRgb(mixRgb(skyCool, mistCol, 0.3), rgb(dusk.cloud.shadow), 0.42);
       const cloudSun = mixRgb(skyWarm, brightGold, 0.35 + glow * 0.45);
-      const cloudCol = mixRgb(cloudShade, cloudSun, Math.min(1, litEdge * (0.28 + sideWarm * 0.62)));
-      c = mixRgb(c, cloudCol, cloudMask * 0.58);
+      const cloudCol = mixRgb(cloudShade, cloudSun, Math.min(1, litEdge * (0.2 + sideWarm * 0.74)));
+      c = mixRgb(c, cloudCol, cloudMask * 0.68);
     }
     return c;
   };
@@ -2272,8 +2282,24 @@ const paintPaddyWide = (plate: ViewPlate): Paper => {
     return { id, rowMode };
   };
 
-  const deepWaveShadow = mixRgb(rowShadow, silCol, 0.16);
+  const deepWaveShadow = mixRgb(rowShadow, silCol, 0.36);
   const richGold = mixRgb(nearGold, rgb(dusk.paddyLit[0]), 0.42);
+
+  const backlitBand = (wx: number, wy: number, dist: number) => {
+    const bearing = Math.atan2(wx - cam.position[0], wy - cam.position[1]);
+    const lateral = Math.exp(-Math.pow(Math.abs(bearing - sunAz) / 0.13, 2));
+    return lateral * Math.max(0, Math.min(1, (dist - 18) / 36));
+  };
+  const cloudShadow = (wx: number, wy: number) => {
+    const dx = wx - 19.2;
+    const dy = wy - 17.6;
+    const along = (dx * Math.sin(1.187) + dy * Math.cos(1.187)) / 7.6;
+    const across = (dx * Math.cos(1.187) - dy * Math.sin(1.187)) / 4.2;
+    const r = Math.hypot(along, across) + (fbm2(wx / 5.5, wy / 5.5, 7561, 3) - 0.5) * 0.5;
+    return 1 - smoothstep(0.62, 1.05, r);
+  };
+  const underCloud = (col: RGB, shadow: number) =>
+    shadow > 0.01 ? mixRgb(col, shadeRgb(mixRgb(col, shadowViolet, 0.36), 0.7), shadow * 0.94) : col;
 
   paintWash(
     b,
@@ -2297,16 +2323,20 @@ const paintPaddyWide = (plate: ViewPlate): Paper => {
             ? mixRgb(richGold, farGold, 0.44)
             : mixRgb(richGold, rowShadow, 0.18);
       col = mixRgb(col, farGold, Math.pow(1 - u, 1.38) * 0.48);
+      col = mixRgb(col, nearGold, 0.26 + 0.34 * u);
+      col = shadeRgb(col, 1 - 0.14 * Math.pow(u, 1.3));
       if (wave < 0.5) {
         const trough = Math.pow((0.5 - wave) / 0.5, 0.92);
-        col = mixRgb(col, deepWaveShadow, Math.min(0.84, trough * (0.58 + 0.38 * u)));
+        col = mixRgb(col, deepWaveShadow, Math.min(0.9, trough * (0.66 + 0.4 * u)));
       } else {
         const crest = Math.pow((wave - 0.5) / 0.5, 0.92);
-        col = mixRgb(col, brightGold, Math.min(0.76, crest * 0.68));
+        col = mixRgb(col, brightGold, Math.min(0.8, crest * 0.72));
       }
-      col = mixRgb(col, brightGold, sunBand * 0.16);
+      col = mixRgb(col, brightGold, sunBand * 0.14);
+      if (gw) col = mixRgb(col, brightGold, backlitBand(wx, wy, dist) * 0.78 * (0.5 + 0.5 * (1 - u)));
+      if (gw) col = underCloud(col, cloudShadow(wx, wy));
       const hazeCol = mixRgb(mistCol, farGold, 0.24 + sunBand * 0.3);
-      return mixRgb(col, hazeCol, farMist);
+      return mixRgb(col, hazeCol, Math.min(0.72, farMist));
     },
     0.015,
     7512,
@@ -2330,6 +2360,7 @@ const paintPaddyWide = (plate: ViewPlate): Paper => {
       const wave = windWaveAt(wx, wy);
       const sunBand = Math.exp(-Math.abs(xm - sunScreen.x - 140) / 1080) * (1 - u * 0.38);
 
+      const trough = wave < 0.5 ? 1 - wave * 2 : 0;
       let col =
         id < 0.34
           ? mixRgb(richGold, greenGold, 0.5)
@@ -2337,14 +2368,18 @@ const paintPaddyWide = (plate: ViewPlate): Paper => {
             ? mixRgb(richGold, farGold, 0.44)
             : mixRgb(richGold, rowShadow, 0.18);
       col = mixRgb(col, farGold, Math.pow(1 - u, 1.38) * 0.46);
+      col = mixRgb(col, nearGold, 0.24 + 0.3 * u);
+      col = shadeRgb(col, 1 - 0.14 * Math.pow(u, 1.3));
       if (wave < 0.5) {
-        const trough = Math.pow((0.5 - wave) / 0.5, 0.92);
-        col = mixRgb(col, deepWaveShadow, Math.min(0.84, trough * (0.6 + 0.38 * u)));
+        col = mixRgb(col, deepWaveShadow, Math.min(0.9, trough * (0.66 + 0.4 * u)));
       } else {
-        const crest = Math.pow((wave - 0.5) / 0.5, 0.92);
-        col = mixRgb(col, brightGold, Math.min(0.76, crest * 0.7));
+        col = mixRgb(col, brightGold, Math.min(0.78, ((wave - 0.5) / 0.5) * 0.7));
       }
       col = mixRgb(col, brightGold, sunBand * 0.14);
+      if (gw && dist < 210) {
+        col = mixRgb(col, brightGold, backlitBand(wx, wy, dist) * 0.68 * (0.5 + 0.5 * (1 - u)));
+        col = underCloud(col, cloudShadow(wx, wy));
+      }
       const hazeCol = mixRgb(mistCol, farGold, 0.24 + sunBand * 0.3);
       col = mixRgb(col, hazeCol, farMist);
 
@@ -2367,13 +2402,24 @@ const paintPaddyWide = (plate: ViewPlate): Paper => {
       }
       const x1 = sx + len * dxDir;
       const y1 = sy + len * dyDir + b.r.range(-1.4, 1.4);
-      line(b, curve([sx, sy], [x1, y1], b.r.range(-0.025, 0.025), 4), thick, jitter(b, col, 0.028), {
+      const bend = b.r.range(-0.025, 0.025);
+      line(b, curve([sx, sy], [x1, y1], bend, 4), thick, jitter(b, col, 0.028), {
         dry: 0.38,
         body: 0.56,
         alpha: 0.72,
         taper: [0.34, 0.34],
         streak: 0.14,
       });
+      const shadeT = Math.max(0, Math.min(1, (78 - dist) / 60));
+      if (shadeT > 0.04) {
+        const shadowCol = mixRgb(mixRgb(rowShadow, silCol, 0.16), mistCol, farMist * 0.8);
+        line(b, curve([sx, sy + thick * 0.6], [x1, y1 + thick * 0.6], bend * 0.6, 4), Math.max(1.2, thick * 0.36), jitter(b, shadowCol, 0.02), {
+          dry: 0.42,
+          body: 0.5,
+          alpha: (0.42 + 0.24 * trough) * shadeT,
+          taper: [0.3, 0.3],
+        });
+      }
       sx += len * b.r.range(0.58, 0.88);
     }
     sy += stepY;

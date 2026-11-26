@@ -653,39 +653,39 @@
       "localFrame": 57
     },
     {
-      "frame": 1150,
+      "frame": 1151,
       "kind": "wingbeat",
       "description": "起飞第一下大下扑",
       "shotId": "s10",
-      "localFrame": 58
+      "localFrame": 59
     },
     {
-      "frame": 1154,
+      "frame": 1155,
       "kind": "wingbeat",
       "description": "迎面冲向镜头第 2 下扑翅",
       "shotId": "s10",
-      "localFrame": 62
+      "localFrame": 63
     },
     {
-      "frame": 1158,
+      "frame": 1159,
       "kind": "wingbeat",
       "description": "迎面冲向镜头第 3 下扑翅",
       "shotId": "s10",
-      "localFrame": 66
+      "localFrame": 67
     },
     {
-      "frame": 1162,
+      "frame": 1163,
       "kind": "wingbeat",
       "description": "迎面冲向镜头第 4 下扑翅",
       "shotId": "s10",
-      "localFrame": 70
+      "localFrame": 71
     },
     {
-      "frame": 1165,
+      "frame": 1167,
       "kind": "wingbeat",
       "description": "迎面冲向镜头第 5 下扑翅",
       "shotId": "s10",
-      "localFrame": 73
+      "localFrame": 75
     },
     {
       "frame": 1168,
@@ -695,165 +695,361 @@
       "localFrame": 76
     },
     {
-      "frame": 1188,
+      "frame": 1170,
       "kind": "wingbeat",
-      "description": "稻田上空波浪式飞行扑翅段下扑",
-      "shotId": "s11",
-      "localFrame": 12
+      "description": "迎面冲向镜头第 6 下扑翅",
+      "shotId": "s10",
+      "localFrame": 78
     },
     {
-      "frame": 1192,
+      "frame": 1173,
       "kind": "wingbeat",
-      "description": "稻田上空波浪式飞行扑翅段下扑",
-      "shotId": "s11",
-      "localFrame": 16
+      "description": "迎面冲向镜头第 7 下扑翅",
+      "shotId": "s10",
+      "localFrame": 81
     },
     {
-      "frame": 1196,
+      "frame": 1187,
       "kind": "wingbeat",
       "description": "稻田上空波浪式飞行扑翅段下扑",
       "shotId": "s11",
-      "localFrame": 20
+      "localFrame": 11
     },
     {
-      "frame": 1206,
+      "frame": 1189,
       "kind": "wingbeat",
       "description": "稻田上空波浪式飞行扑翅段下扑",
       "shotId": "s11",
-      "localFrame": 30
+      "localFrame": 13
     },
     {
-      "frame": 1210,
+      "frame": 1191,
       "kind": "wingbeat",
       "description": "稻田上空波浪式飞行扑翅段下扑",
       "shotId": "s11",
-      "localFrame": 34
+      "localFrame": 15
     },
     {
-      "frame": 1214,
+      "frame": 1193,
       "kind": "wingbeat",
       "description": "稻田上空波浪式飞行扑翅段下扑",
       "shotId": "s11",
-      "localFrame": 38
+      "localFrame": 17
     },
     {
-      "frame": 1224,
+      "frame": 1195,
       "kind": "wingbeat",
       "description": "稻田上空波浪式飞行扑翅段下扑",
       "shotId": "s11",
-      "localFrame": 48
+      "localFrame": 19
     },
     {
-      "frame": 1228,
+      "frame": 1197,
       "kind": "wingbeat",
       "description": "稻田上空波浪式飞行扑翅段下扑",
       "shotId": "s11",
-      "localFrame": 52
+      "localFrame": 21
     },
     {
-      "frame": 1232,
+      "frame": 1205,
       "kind": "wingbeat",
       "description": "稻田上空波浪式飞行扑翅段下扑",
       "shotId": "s11",
-      "localFrame": 56
+      "localFrame": 29
     },
     {
-      "frame": 1242,
+      "frame": 1207,
       "kind": "wingbeat",
       "description": "稻田上空波浪式飞行扑翅段下扑",
       "shotId": "s11",
-      "localFrame": 66
+      "localFrame": 31
     },
     {
-      "frame": 1246,
+      "frame": 1209,
       "kind": "wingbeat",
       "description": "稻田上空波浪式飞行扑翅段下扑",
       "shotId": "s11",
-      "localFrame": 70
+      "localFrame": 33
     },
     {
-      "frame": 1250,
+      "frame": 1211,
       "kind": "wingbeat",
       "description": "稻田上空波浪式飞行扑翅段下扑",
       "shotId": "s11",
-      "localFrame": 74
+      "localFrame": 35
     },
     {
-      "frame": 1260,
+      "frame": 1213,
       "kind": "wingbeat",
       "description": "稻田上空波浪式飞行扑翅段下扑",
       "shotId": "s11",
-      "localFrame": 84
+      "localFrame": 37
     },
     {
-      "frame": 1264,
+      "frame": 1215,
       "kind": "wingbeat",
       "description": "稻田上空波浪式飞行扑翅段下扑",
       "shotId": "s11",
-      "localFrame": 88
+      "localFrame": 39
     },
     {
-      "frame": 1268,
+      "frame": 1223,
       "kind": "wingbeat",
       "description": "稻田上空波浪式飞行扑翅段下扑",
       "shotId": "s11",
-      "localFrame": 92
+      "localFrame": 47
     },
     {
-      "frame": 1278,
+      "frame": 1225,
       "kind": "wingbeat",
       "description": "稻田上空波浪式飞行扑翅段下扑",
       "shotId": "s11",
-      "localFrame": 102
+      "localFrame": 49
     },
     {
-      "frame": 1282,
+      "frame": 1227,
       "kind": "wingbeat",
       "description": "稻田上空波浪式飞行扑翅段下扑",
       "shotId": "s11",
-      "localFrame": 106
+      "localFrame": 51
     },
     {
-      "frame": 1286,
+      "frame": 1229,
       "kind": "wingbeat",
       "description": "稻田上空波浪式飞行扑翅段下扑",
       "shotId": "s11",
-      "localFrame": 110
+      "localFrame": 53
     },
     {
-      "frame": 1296,
+      "frame": 1231,
       "kind": "wingbeat",
       "description": "稻田上空波浪式飞行扑翅段下扑",
       "shotId": "s11",
-      "localFrame": 120
+      "localFrame": 55
+    },
+    {
+      "frame": 1233,
+      "kind": "wingbeat",
+      "description": "稻田上空波浪式飞行扑翅段下扑",
+      "shotId": "s11",
+      "localFrame": 57
+    },
+    {
+      "frame": 1241,
+      "kind": "wingbeat",
+      "description": "稻田上空波浪式飞行扑翅段下扑",
+      "shotId": "s11",
+      "localFrame": 65
+    },
+    {
+      "frame": 1243,
+      "kind": "wingbeat",
+      "description": "稻田上空波浪式飞行扑翅段下扑",
+      "shotId": "s11",
+      "localFrame": 67
+    },
+    {
+      "frame": 1245,
+      "kind": "wingbeat",
+      "description": "稻田上空波浪式飞行扑翅段下扑",
+      "shotId": "s11",
+      "localFrame": 69
+    },
+    {
+      "frame": 1247,
+      "kind": "wingbeat",
+      "description": "稻田上空波浪式飞行扑翅段下扑",
+      "shotId": "s11",
+      "localFrame": 71
+    },
+    {
+      "frame": 1249,
+      "kind": "wingbeat",
+      "description": "稻田上空波浪式飞行扑翅段下扑",
+      "shotId": "s11",
+      "localFrame": 73
+    },
+    {
+      "frame": 1251,
+      "kind": "wingbeat",
+      "description": "稻田上空波浪式飞行扑翅段下扑",
+      "shotId": "s11",
+      "localFrame": 75
+    },
+    {
+      "frame": 1259,
+      "kind": "wingbeat",
+      "description": "稻田上空波浪式飞行扑翅段下扑",
+      "shotId": "s11",
+      "localFrame": 83
+    },
+    {
+      "frame": 1261,
+      "kind": "wingbeat",
+      "description": "稻田上空波浪式飞行扑翅段下扑",
+      "shotId": "s11",
+      "localFrame": 85
+    },
+    {
+      "frame": 1263,
+      "kind": "wingbeat",
+      "description": "稻田上空波浪式飞行扑翅段下扑",
+      "shotId": "s11",
+      "localFrame": 87
+    },
+    {
+      "frame": 1265,
+      "kind": "wingbeat",
+      "description": "稻田上空波浪式飞行扑翅段下扑",
+      "shotId": "s11",
+      "localFrame": 89
+    },
+    {
+      "frame": 1267,
+      "kind": "wingbeat",
+      "description": "稻田上空波浪式飞行扑翅段下扑",
+      "shotId": "s11",
+      "localFrame": 91
+    },
+    {
+      "frame": 1269,
+      "kind": "wingbeat",
+      "description": "稻田上空波浪式飞行扑翅段下扑",
+      "shotId": "s11",
+      "localFrame": 93
+    },
+    {
+      "frame": 1277,
+      "kind": "wingbeat",
+      "description": "稻田上空波浪式飞行扑翅段下扑",
+      "shotId": "s11",
+      "localFrame": 101
+    },
+    {
+      "frame": 1279,
+      "kind": "wingbeat",
+      "description": "稻田上空波浪式飞行扑翅段下扑",
+      "shotId": "s11",
+      "localFrame": 103
+    },
+    {
+      "frame": 1281,
+      "kind": "wingbeat",
+      "description": "稻田上空波浪式飞行扑翅段下扑",
+      "shotId": "s11",
+      "localFrame": 105
+    },
+    {
+      "frame": 1283,
+      "kind": "wingbeat",
+      "description": "稻田上空波浪式飞行扑翅段下扑",
+      "shotId": "s11",
+      "localFrame": 107
+    },
+    {
+      "frame": 1285,
+      "kind": "wingbeat",
+      "description": "稻田上空波浪式飞行扑翅段下扑",
+      "shotId": "s11",
+      "localFrame": 109
+    },
+    {
+      "frame": 1287,
+      "kind": "wingbeat",
+      "description": "稻田上空波浪式飞行扑翅段下扑",
+      "shotId": "s11",
+      "localFrame": 111
+    },
+    {
+      "frame": 1295,
+      "kind": "wingbeat",
+      "description": "稻田上空波浪式飞行扑翅段下扑",
+      "shotId": "s11",
+      "localFrame": 119
     },
     {
       "frame": 1296,
       "kind": "companion_call",
-      "description": "画外/远处电线上同伴的叫声渐近",
+      "description": "画外：电线上同伴的叫声越飞越近",
       "shotId": "s11",
       "localFrame": 120
     },
     {
-      "frame": 1300,
+      "frame": 1297,
       "kind": "wingbeat",
       "description": "稻田上空波浪式飞行扑翅段下扑",
       "shotId": "s11",
-      "localFrame": 124
+      "localFrame": 121
     },
     {
-      "frame": 1304,
+      "frame": 1299,
       "kind": "wingbeat",
       "description": "稻田上空波浪式飞行扑翅段下扑",
       "shotId": "s11",
-      "localFrame": 128
+      "localFrame": 123
     },
     {
-      "frame": 1312,
+      "frame": 1301,
+      "kind": "wingbeat",
+      "description": "稻田上空波浪式飞行扑翅段下扑",
+      "shotId": "s11",
+      "localFrame": 125
+    },
+    {
+      "frame": 1303,
+      "kind": "wingbeat",
+      "description": "稻田上空波浪式飞行扑翅段下扑",
+      "shotId": "s11",
+      "localFrame": 127
+    },
+    {
+      "frame": 1305,
+      "kind": "wingbeat",
+      "description": "稻田上空波浪式飞行扑翅段下扑",
+      "shotId": "s11",
+      "localFrame": 129
+    },
+    {
+      "frame": 1308,
       "kind": "companion_call",
-      "description": "画外/远处电线上同伴的叫声渐近",
+      "description": "画外：电线上同伴的叫声越飞越近",
       "shotId": "s11",
-      "localFrame": 136
+      "localFrame": 132
+    },
+    {
+      "frame": 1313,
+      "kind": "wingbeat",
+      "description": "稻田上空波浪式飞行扑翅段下扑",
+      "shotId": "s11",
+      "localFrame": 137
+    },
+    {
+      "frame": 1315,
+      "kind": "wingbeat",
+      "description": "稻田上空波浪式飞行扑翅段下扑",
+      "shotId": "s11",
+      "localFrame": 139
+    },
+    {
+      "frame": 1317,
+      "kind": "wingbeat",
+      "description": "落地前刹车扑翅",
+      "shotId": "s11",
+      "localFrame": 141
+    },
+    {
+      "frame": 1319,
+      "kind": "wingbeat",
+      "description": "落地前刹车扑翅",
+      "shotId": "s11",
+      "localFrame": 143
+    },
+    {
+      "frame": 1321,
+      "kind": "wingbeat",
+      "description": "落地前刹车扑翅",
+      "shotId": "s11",
+      "localFrame": 145
     },
     {
       "frame": 1326,
@@ -863,16 +1059,9 @@
       "localFrame": 150
     },
     {
-      "frame": 1328,
-      "kind": "companion_call",
-      "description": "落地后旁边同伴回应的接触叫",
-      "shotId": "s11",
-      "localFrame": 152
-    },
-    {
       "frame": 1332,
       "kind": "flock_shift",
-      "description": "旁边的一只同伴在电线上挪一下",
+      "description": "旁边的同伴（第 5 只）双脚离线挪开",
       "shotId": "s11",
       "localFrame": 156
     },
@@ -884,32 +1073,39 @@
       "localFrame": 158
     },
     {
+      "frame": 1336,
+      "kind": "flock_shift",
+      "description": "旁边的同伴（第 6 只）双脚离线挪开",
+      "shotId": "s11",
+      "localFrame": 160
+    },
+    {
       "frame": 1338,
+      "kind": "flock_shift",
+      "description": "旁边的同伴（第 2 只）双脚离线挪开",
+      "shotId": "s11",
+      "localFrame": 162
+    },
+    {
+      "frame": 1340,
       "kind": "companion_call",
-      "description": "落地后旁边同伴回应的接触叫",
+      "description": "电线上旁边的同伴回应的接触叫",
       "shotId": "s11",
-      "localFrame": 162
-    },
-    {
-      "frame": 1338,
-      "kind": "flock_shift",
-      "description": "旁边的一只同伴在电线上挪一下",
-      "shotId": "s11",
-      "localFrame": 162
-    },
-    {
-      "frame": 1344,
-      "kind": "flock_shift",
-      "description": "旁边的一只同伴在电线上挪一下",
-      "shotId": "s11",
-      "localFrame": 168
+      "localFrame": 164
     },
     {
       "frame": 1346,
       "kind": "companion_call",
-      "description": "落地后旁边同伴回应的接触叫",
+      "description": "电线上旁边的同伴回应的接触叫",
       "shotId": "s11",
       "localFrame": 170
+    },
+    {
+      "frame": 1352,
+      "kind": "companion_call",
+      "description": "电线上旁边的同伴回应的接触叫",
+      "shotId": "s11",
+      "localFrame": 176
     },
     {
       "frame": 1384,
