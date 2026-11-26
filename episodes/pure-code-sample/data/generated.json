@@ -6,8 +6,8 @@
     "episodes/pure-code-sample/generate.ts"
   ],
   "status": "complete",
-  "cacheKey": "fba7c275e7311fa0200a5be20eb18589ff6f926ad8415b2c3a01cf1a2b1e31b3",
-  "plateKey": "e991eb55d33806f95de71f039570de15cb7870dd148ff53b5db161153847ae17",
+  "cacheKey": "a704c8386ce524369cc87fee99bd6b9e88d49ebfc60382a6ab27f7a870b6b8f3",
+  "plateKey": "84381b63200871c1e48c46e74ce7985d8610b2891baf9b4505f0a65ac6c56a35",
   "inputs": [
     {
       "path": "episodes/pure-code-sample/generate.ts",
@@ -31,7 +31,7 @@
     },
     {
       "path": "episodes/after-rain/tokens.ts",
-      "sha256": "ecd81a974e9a955e0cb8f1f42dcf5d5dc0f8d2e14a52dd3d09a6a88fe6396d86"
+      "sha256": "8b6e6d55805c850c92e5455a3117803633a30e52b7959ba4d294bd9716aa539d"
     },
     {
       "path": "src/kit/engine/paint.ts",

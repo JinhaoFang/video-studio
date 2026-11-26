@@ -1,7 +1,7 @@
 /**
  * 本期令牌：色彩剧本（episodes/after-rain/art.md 与小样 contract.md 第 6 节）、线条、设定样张底色、摄影后期默认值。
  * 镜头、底图与引擎只从这里取色，不写散落的色值。
- * 小样既有的导出字段（ink、darkest、defaultPost、rain、dusk、warm、sparrow、sheet）保持兼容，新增正片各场和机位色值。
+ * 小样既有的导出字段（ink、darkest、defaultPost、rain、dusk、warm、sheet）保持兼容，新增正片各场和机位色值；麻雀和鸟群的色值在 tokens-sparrow.ts。
  */
 import type { Post } from "../../src/kit/engine/post-settings.ts";
 
@@ -178,20 +178,6 @@ export const props = {
     twilight: { lit: "#786756", shade: "#47435d" },
   },
 } as const;
-
-export const sparrow = {
-  crown: { lit: "#8a4b2f", shade: "#5e3328" },
-  cheek: { lit: "#efe4cf", shade: "#b8adb4" },
-  patch: { lit: "#2c2226", shade: "#241d24" },
-  mantle: { lit: "#7a5a3c", shade: "#503b36" },
-  streak: { lit: "#4a3528", shade: "#382a2a" },
-  wingBar: { lit: "#e7d8b8", shade: "#a8a0a8" },
-  belly: { lit: "#cfc3ad", shade: "#918aa0" },
-  beak: { lit: "#3a2f2c", shade: "#2a2326" },
-  foot: { lit: "#b88c78", shade: "#80666a" },
-  eye: "#1c1618",
-  glint: "#fff6e0",
-};
 
 export const sheet = {
   ground: "#e4ddcf",
