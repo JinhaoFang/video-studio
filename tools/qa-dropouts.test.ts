@@ -16,6 +16,13 @@ const run = (cwd: string, args: string[]) =>
 const readReport = (out: string) =>
   JSON.parse(readFileSync(join(out, "dropouts.json"), "utf8")) as {
     frameCount: number;
+    zeroWidthFrames: {
+      frame: number;
+      timecode: string;
+      dbfs: number | string;
+      inheritedFrom: number;
+    }[];
+    minimumFrame: { frame: number };
     passed: boolean | null;
     checkedFrames: { first: number; last: number };
     findings: {
@@ -207,6 +214,67 @@ test("按变帧率视频的实际帧编号和时间码读延迟的第一条音�
   const missing = run(root, [picture]);
   assert.equal(missing.status, 2);
   assert.match(missing.stderr, /^出错：没有音轨/);
+});
+
+test("重复呈现时间戳沿用同时间码的实测电平，断音仍定位到原始帧", (context) => {
+  const root = temporaryDirectory(context),
+    video = join(root, "pairs.mkv");
+  media([
+    "-f",
+    "lavfi",
+    "-i",
+    "color=size=16x16:rate=24:duration=1",
+    "-f",
+    "lavfi",
+    "-i",
+    "aevalsrc='if(between(t,0.5,0.75),0,0.5)':s=48000:d=1",
+    "-vf",
+    "setpts=2*floor(N/2)",
+    "-vsync",
+    "0",
+    "-c:v",
+    "ffv1",
+    "-threads",
+    "1",
+    "-c:a",
+    "pcm_f32le",
+    video,
+  ]);
+  const result = run(root, [video, "--ignore-tail", "0", "--out", root]);
+  assert.equal(result.status, 0, result.stderr);
+  const report = readReport(root);
+  assert.equal(report.frameCount, 24);
+  assert.deepEqual(
+    report.zeroWidthFrames.map(({ frame, timecode, inheritedFrom }) => [
+      frame,
+      timecode,
+      inheritedFrom,
+    ]),
+    Array.from({ length: 12 }, (_, i) => [
+      2 * i,
+      `00:00.${String(Math.round((i * 1000) / 12)).padStart(3, "0")}`,
+      2 * i + 1,
+    ]),
+  );
+  assert.ok(
+    Math.abs(Number(report.zeroWidthFrames[0].dbfs) - 20 * Math.log10(0.5)) <
+      1e-6,
+  );
+  assert.equal(report.zeroWidthFrames[6].dbfs, "-Infinity");
+  assert.equal(report.minimumFrame.frame, 13);
+  assert.deepEqual(
+    report.findings.map((f) => [
+      f.type,
+      f.startFrame,
+      f.endFrame,
+      f.startTimecode,
+      f.endTimecode,
+    ]),
+    [
+      ["drop", 13, 13, "00:00.500", "00:00.583"],
+      ["silence", 13, 17, "00:00.500", "00:00.750"],
+    ],
+  );
 });
 
 test("按音频包时间戳保留丢失一帧造成的空隙", (context) => {

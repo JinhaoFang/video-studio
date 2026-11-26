@@ -40,11 +40,15 @@ type Finding = Mark & {
 const analyze = (frames: LevelFrame[], settings: typeof defaults) => {
   const { floor, minDuration, maxDrop, quietDbfs, ignoreHead, ignoreTail } =
     settings;
-  const first = frames.findIndex((f) => f.start >= ignoreHead);
   const scanEnd = frames.at(-1)!.end - ignoreTail;
-  let last = frames.length - 1;
-  while (last >= 0 && frames[last].end > scanEnd + 1e-9) last--;
-  if (first < 0 || last < first)
+  const measured = frames.flatMap((f, i) =>
+    f.inheritedFrom === undefined &&
+    f.start >= ignoreHead &&
+    f.end <= scanEnd + 1e-9
+      ? [i]
+      : [],
+  );
+  if (!measured.length)
     throw new Error(
       "排除片头片尾后没有完整帧可检查，请减小 --ignore-head 或 --ignore-tail。",
     );
@@ -74,24 +78,30 @@ const analyze = (frames: LevelFrame[], settings: typeof defaults) => {
       maxDbfs,
     };
   };
-  let lowStart = first;
-  for (let i = first; i <= last; i++) {
+  let lowStart: number | undefined;
+  for (const [position, i] of measured.entries()) {
     const { dbfs, end } = frames[i];
-    if (i > first && dbfs <= quietDbfs && dbfs < frames[i - 1].dbfs) {
-      const previousDbfs = frames[i - 1].dbfs,
+    const previous = frames[measured[position - 1]];
+    if (previous && dbfs <= quietDbfs && dbfs < previous.dbfs) {
+      const previousDbfs = previous.dbfs,
         dropDb = previousDbfs - dbfs;
       if (dropDb > maxDrop)
         findings.push({ ...finding("drop", i, i), previousDbfs, dropDb });
     }
-    if (dbfs >= floor) lowStart = i + 1;
-    else if (
-      (i === last || frames[i + 1].dbfs >= floor) &&
+    if (dbfs >= floor) {
+      lowStart = undefined;
+      continue;
+    }
+    lowStart ??= i;
+    const next = frames[measured[position + 1]];
+    if (
+      (!next || next.dbfs >= floor) &&
       end - frames[lowStart].start > minDuration + 1e-9
     )
       findings.push(finding("silence", lowStart, i));
   }
   findings.sort((a, b) => a.startFrame - b.startFrame);
-  return { first, last, findings };
+  return { first: measured[0], last: measured.at(-1)!, findings };
 };
 
 export const runDropouts = (args: string[]) => {
@@ -104,6 +114,7 @@ export const runDropouts = (args: string[]) => {
   if (help) {
     console.log(`用法：${dropoutsUsage}
 文件为视频或音频，分析第一条音轨。每帧取全部声道、全部采样的均方根（RMS），单位 dBFS。视频按实际呈现帧计，时间轴上缺音的采样按零计。
+同一时间戳的零宽帧沿用该时刻有时长帧的 RMS。JSON 的 zeroWidthFrames 列出原帧号、时间码、借用电平和来源帧号。检测和最低值取自实测帧。
 --fps 指定纯音频的分析帧率（正整数），默认 ${defaults.fps}。视频始终使用自身帧时间。
 --floor 指定低电平下限，默认 ${defaults.floor} dBFS。连续帧严格低于该值才累计。
 --min-duration 指定最短持续时间，默认 ${defaults.minDuration} 秒。持续时间超过该值才报告低电平段。
@@ -147,9 +158,13 @@ export const runDropouts = (args: string[]) => {
   );
   const { first, last, findings } = analyze(frames, settings);
   const minimum = (from: number, to: number) => {
-    let frame = from;
-    for (let i = from + 1; i <= to; i++)
-      if (frames[i].dbfs < frames[frame].dbfs) frame = i;
+    let frame = frames[from].inheritedFrom ?? from;
+    for (let i = frame + 1; i <= to; i++)
+      if (
+        frames[i].inheritedFrom === undefined &&
+        frames[i].dbfs < frames[frame].dbfs
+      )
+        frame = i;
     return {
       frame,
       timecode: timecode(frames[frame].start),
@@ -166,6 +181,11 @@ export const runDropouts = (args: string[]) => {
     channels,
     audioFps,
     frameCount: frames.length,
+    zeroWidthFrames: frames.flatMap(({ start, dbfs, inheritedFrom }, frame) =>
+      inheritedFrom === undefined
+        ? []
+        : [{ frame, timecode: timecode(start), dbfs, inheritedFrom }],
+    ),
     durationSeconds: frames.at(-1)!.end,
     thresholds: {
       floorDbfs: settings.floor,

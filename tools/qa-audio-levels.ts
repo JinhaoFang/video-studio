@@ -13,7 +13,12 @@ import { runMedia } from "./qa-common.ts";
 import { probeVideo } from "./qa-video.ts";
 import type { Time } from "./qa-time.ts";
 
-export type LevelFrame = { start: number; end: number; dbfs: number };
+export type LevelFrame = {
+  start: number;
+  end: number;
+  dbfs: number;
+  inheritedFrom?: number;
+};
 
 const seconds = (time: Time) =>
   Number(time.numerator) / Number(time.denominator);
@@ -80,8 +85,10 @@ export const measureFrames = (input: string, audioFps: number) => {
     const fd = openSync(raw, "r");
     try {
       const chunk = Buffer.alloc(64 * 1024);
-      const frames = starts.map((start, i): LevelFrame => {
+      const frames: LevelFrame[] = [];
+      for (const [i, start] of starts.entries()) {
         const end = starts[i + 1] ?? duration;
+        if (end === start) continue;
         const first = Math.round(start * rate);
         const stop = Math.round(end * rate);
         const count = (stop - first) * channels;
@@ -104,8 +111,11 @@ export const measureFrames = (input: string, audioFps: number) => {
         }
         if (!Number.isFinite(energy))
           throw new Error(`第 ${i} 帧的音频采样无效。`);
-        return { start, end, dbfs: 10 * Math.log10(energy / count) };
-      });
+        const dbfs = 10 * Math.log10(energy / count);
+        while (frames.length < i)
+          frames.push({ start, end: start, dbfs, inheritedFrom: i });
+        frames.push({ start, end, dbfs });
+      }
       return {
         frames,
         sampleRate: rate,
