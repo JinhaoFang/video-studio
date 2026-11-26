@@ -1,8 +1,9 @@
 /**
- * 《雨后》全片装配预演（#185）的临时音效、环境床与哼唱合成：
- * 沿用小样音效配方与 kit 的 synthesizeChirp / synthesizeVoice，为全部 49 种画面事件里的有声事件和环境床提供对齐到事件帧的临时声音；
- * 保证院子空气底噪全程不断、静默段不掉到数字静音。
- * 待定事项：正式拟音、隔墙交谈与空间混响由 #193 替换。
+ * 《雨后》的临时音效、环境床与哼唱合成（#185 建，#202 换掉其中的雨）：
+ * 沿用小样音效配方与 kit 的 synthesizeChirp / synthesizeVoice，为有声画面事件和环境床（檐下滴水、暮蝉、稻田风、院子空气声）提供对齐到事件帧的临时声音；
+ * 保证院子空气底噪全程不断、静默段不掉到数字静音。哼唱把 score.json 的 hum 乐句变成连续的闭口人声（#184 的配方），远近由 render.ts 处理。
+ * 雨由 rain.ts 合成，屋里的说话由 walla.ts 合成。
+ * 待定事项：正式拟音、叫声与空间混响由 #193 替换。
  */
 import { synthesizeChirp } from "../../../src/kit/sound/chirp.ts";
 import {
@@ -19,8 +20,6 @@ import {
 } from "../../../src/kit/sound/voice.ts";
 
 export type TempSfxName =
-  | "heavy_rain"
-  | "rain_tail"
   | "eave_drips"
   | "higurashi"
   | "paddy_wind"
@@ -54,8 +53,6 @@ export type TempSfxName =
   | "companion_call";
 
 const sfxTiming: Record<TempSfxName, readonly [number, number]> = {
-  heavy_rain: [4, 0],
-  rain_tail: [4.5, 0],
   eave_drips: [4, 0],
   higurashi: [4, 0],
   paddy_wind: [4, 0],
@@ -180,38 +177,6 @@ export const synthesizeTempSfx = (
     let value = 0;
 
     switch (name) {
-      case "heavy_rain": {
-        const dens = curve(
-          options.density ?? [
-            [0, 1.5],
-            [seconds, 1.0],
-          ],
-          t,
-        );
-        if (rng() < (90 * dens) / rate) {
-          const f = 500 + rng() * 3400;
-          const level = 0.08 + rng() * 0.35;
-          for (let j = 0; j < rate * 0.022 && i + j < samples.length; j++) {
-            const dt = j / rate;
-            samples[i + j] += Math.cos(twoPi * f * dt) * Math.exp(-dt * 230) * level;
-          }
-        }
-        value = (low * 0.22 + dark * 0.14) * dens * (0.9 + 0.1 * Math.sin(twoPi * 0.45 * t));
-        break;
-      }
-      case "rain_tail": {
-        const progress = t / seconds;
-        if (rng() < (100 * (1 - progress) ** 2 + 2) / rate) {
-          const f = 450 + rng() * 4200;
-          const level = 0.1 + rng() * 0.55;
-          for (let j = 0; j < rate * 0.024 && i + j < samples.length; j++) {
-            const dt = j / rate;
-            samples[i + j] += Math.cos(twoPi * f * dt) * Math.exp(-dt * 220) * level;
-          }
-        }
-        value = low * 0.1 * (1 - progress) ** 2;
-        break;
-      }
       case "eave_drips": {
         const dens =
           2.0 *

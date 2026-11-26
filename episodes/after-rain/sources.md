@@ -47,3 +47,22 @@
 | `pole-stand.ts` | 按三维世界坐标实时绘制木质叉口晾衣架（后叉—竹竿—前叉分层，与 `pole.ts` 同款色块与墨线画法）。 |
 
 全部画面与工具均为本仓库纯代码生成，未引入第三方代码、外部图片或素材。重建命令与 SHA-256 哈希见 [正片生成清单](data/generated.json) 与 [小样生成清单](../pure-code-sample/data/generated.json)。
+
+## #202 雨和屋里说话的正式配方
+
+从仓库根目录运行 `node episodes/after-rain/generate.ts`，正片生成器调用 `episodes/after-rain/sound/render.ts` 重建 `mix.wav` 并刷新本清单；单独导出雨的每一层、人声子组和验收片段用 `node episodes/after-rain/sound/render.ts --out <目录> --stems`。本次在 `episodes/after-rain/sound/` 里新增 `rain.ts`、`walla.ts`、`analyze.ts`，改了 `render.ts`、`sfx.ts`、`inputs.ts`。
+
+| 文件 | 内容与来源 |
+|---|---|
+| `rain.ts` | 雨的八条层：远处雨幕（成形噪声，左右去相关，随阵风成片起伏）、瓦顶、檐廊木板、树篱叶子、竹竿四种表面的近处撞击（泊松过程，每下的大小、音色、声像随机）、落在水洼上的气泡声（Minnaert 共振，频率由气泡半径定）、檐口流水和雨尾声里最后停的大水滴。雨量按场次取自时间表，第 3 镜接小样 S1 的 `rainAmount`。 |
+| `walla.ts` | 屋里两个人的无词语流：沿用 #184 试听样的源—滤波配方（kit 的 `synthesizeVoice`），加隔墙的低通、高通和木头小房间的反射。 |
+| `analyze.ts` | 分轨测量和语谱图工具（FFmpeg `ebur128`、`showspectrumpic`）。 |
+| `mix.wav` | 由以上各层、#185 的临时拟音与配乐混成的 48 kHz PCM16 混音。 |
+
+全部由本仓库的代码算得，没有录音、音色库或第三方声音代码。雨的物理模型和参数出处：
+
+- 雨幕与撞击的叠加：大雨里每平方米每秒有数千次雨滴撞击，远处大片表面的撞击统计叠加成宽带噪声，谱能量集中在约 1–8 kHz；近处的少数撞击能听出单独的瞬态。参数（密度、频带）据 Marshall–Palmer 雨滴谱分布（Marshall & Palmer 1948, *J. Meteorol.* 5(4):165–166）对大雨（约 50 mm/h）的数浓度和 Atlas–Ulbrich 落速公式估算量级，再按听感调准。
+- 水面气泡声：Minnaert 共振 f = 3.26 / R（R 为气泡半径，米；Minnaert 1933, *Phil. Mag.* 16:235–248），雨滴入水带进的气泡半径约 0.75–4 mm，对应 0.8–4 kHz；上滑的短音按 van den Doel 2005, *Physically-based models for liquid sounds*, ACM TOMM 1(4):341–355 的做法（气泡起振后频率在几毫秒内往上滑）。
+- 隔墙人声的高频衰减和距离线索：`docs/video/sound.md`「声音远近与景别」（Kolarik 等 2016 的距离线索综述）。
+
+验收产物（分层试听、合成试听、第 1–2 镜和第 6–7 镜的混音片段、语谱图、分轨电平测量）在 `out/qa/spec-168/202/`，不进 git。

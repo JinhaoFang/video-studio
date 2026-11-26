@@ -38,7 +38,7 @@ const eventTable = (rows: readonly ShotRow[]): EventTable => ({
   events: collectFilmEvents(rows, shotTimings),
 });
 
-test("首镜延长 12 帧时，后续画面事件、环境床边界、密度与静默整段顺延", (t) => {
+test("首镜延长 12 帧时，后续画面事件、环境床边界、密度、雨的范围与静默整段顺延", (t) => {
   const before = eventTable(shotTable);
   const delayedRows = shotTable.map((row) =>
     row.id === "s01"
@@ -67,7 +67,7 @@ test("首镜延长 12 帧时，后续画面事件、环境床边界、密度与�
   t.diagnostic(`第 8 镜环境声压低：[${original.hush.from}, ${original.hush.to}) → [${shifted.hush.from}, ${shifted.hush.to})`);
 });
 
-test("单独推迟雨尾事件时，大雨交叉淡出与雨尾跟随事件，屋檐和稻田环境仍按场次走", () => {
+test("单独推迟雨尾事件时，雨的范围跟着事件走，屋檐和稻田环境仍按场次走", () => {
   const table = eventTable(shotTable);
   const before = ambienceTiming(table);
   const after = ambienceTiming({
@@ -76,9 +76,9 @@ test("单独推迟雨尾事件时，大雨交叉淡出与雨尾跟随事件，�
       ? { ...event, frame: event.frame + 4, localFrame: event.localFrame + 4 }
       : event),
   });
-  assert.equal(after.beds.heavy_rain.to, before.beds.heavy_rain.to + 4);
-  assert.equal(after.beds.rain_tail.from, before.beds.rain_tail.from + 4);
-  assert.equal(after.beds.rain_tail.to, before.beds.rain_tail.to + 4);
+  assert.equal(after.rain.to, before.rain.to + 4);
+  assert.equal(after.rain.from, before.rain.from);
+  assert.equal(after.rain.rainTail, before.rain.rainTail + 4);
   assert.deepEqual(after.beds.eave_drips, before.beds.eave_drips);
   assert.deepEqual(after.beds.paddy_wind, before.beds.paddy_wind);
 });
