@@ -6,6 +6,7 @@
  */
 import { directionToView, layer, project } from "../../src/kit/engine/camera.ts";
 import type { Camera, Vec3 } from "../../src/kit/engine/camera.ts";
+import { mix } from "../../src/kit/engine/timing.ts";
 import { plateSize, plates, reference, sun, UNIT, viewPlates } from "./scene.ts";
 import type { PlateId, ViewPlateId } from "./scene.ts";
 import { FOOT_Z } from "./sparrow.ts";
@@ -19,6 +20,19 @@ export type Surface = {
   rain: PlateImages;
   views?: ViewPlateImages;
 };
+
+export const mixCamera = (a: Camera, b: Camera, t: number): Camera => ({
+  position: [
+    mix(a.position[0], b.position[0], t),
+    mix(a.position[1], b.position[1], t),
+    mix(a.position[2], b.position[2], t),
+  ],
+  yaw: mix(a.yaw, b.yaw, t),
+  pitch: mix(a.pitch, b.pitch, t),
+  focal: mix(a.focal, b.focal, t),
+  width: a.width,
+  height: a.height,
+});
 
 export const viewImage = (surface: Surface, id: ViewPlateId): HTMLImageElement => {
   const image = surface.views?.[id];

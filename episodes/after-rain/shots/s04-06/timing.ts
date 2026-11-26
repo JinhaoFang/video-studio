@@ -4,9 +4,8 @@
  * 待定事项：无。
  */
 import { ease, progress } from "../../../../src/kit/engine/timing.ts";
-import type { ShotTiming } from "../../../../src/kit/shots.ts";
+import { timeShot } from "../../model.ts";
 
-export const S04_DURATION = 96;
 export const S04_MUD_STEPS = [14, 38, 62] as const;
 export const S04_MUD_PULLS = [26, 50, 74] as const;
 export const S04_BASKET_CREAKS = [20, 44, 68] as const;
@@ -14,11 +13,10 @@ export const S04_PUDDLE_STEP = 86;
 export const S04_SPLASH_PEAK = 95;
 
 export const s04CameraProgress = (frame: number) =>
-  ease(progress(frame, 0, S04_DURATION - 1), 1.8, 1.8);
+  ease(progress(frame, 0, s04Timing.durationInFrames - 1), 1.8, 1.8);
 
-export const s04Timing: ShotTiming = {
+export const s04Timing = timeShot({
   id: "s04",
-  durationInFrames: S04_DURATION,
   events: [
     ...S04_MUD_STEPS.map((frame, i) => ({
       frame,
@@ -38,9 +36,8 @@ export const s04Timing: ShotTiming = {
     { frame: S04_PUDDLE_STEP, kind: "puddle_step", description: "最后一步踩进水洼，倒影碎开" },
     { frame: S04_SPLASH_PEAK, kind: "splash_peak", description: "水花溅到最高，4→5 切点" },
   ].sort((a, b) => a.frame - b.frame),
-};
+});
 
-export const S05_DURATION = 120;
 export const S05_FLINCH = 0;
 export const S05_CALL_ALARM = 1;
 export const S05_WINDUP = 4;
@@ -54,9 +51,8 @@ export const S05_POLE_SPRING = 59;
 export const S05_STEADY = 90;
 export const S05_CALL_SMALL = 100;
 
-export const s05Timing: ShotTiming = {
+export const s05Timing = timeShot({
   id: "s05",
-  durationInFrames: S05_DURATION,
   events: [
     { frame: S05_FLINCH, kind: "flinch", description: "溅水声一响，麻雀一缩" },
     { frame: S05_CALL_ALARM, kind: "call_alarm", description: "麻雀叫声第 2 声：两个音的警报叫" },
@@ -79,9 +75,8 @@ export const s05Timing: ShotTiming = {
     { frame: S05_STEADY, kind: "steady", description: "在竹竿上稳住并转向画右" },
     { frame: S05_CALL_SMALL, kind: "call_small", description: "麻雀叫声第 3 声：喘着气的一小声" },
   ].sort((a, b) => a.frame - b.frame),
-};
+});
 
-export const S06_DURATION = 120;
 export const S06_STEP_STOP = 4;
 export const S06_TOE_TURNS = [14, 26, 62, 70] as const;
 export const S06_HUM_START = 74;
@@ -89,9 +84,8 @@ export const S06_STEPS = [78, 98, 118] as const;
 export const S06_PULLS = [90, 110] as const;
 export const S06_BASKET_CREAKS = [10, 84, 104] as const;
 
-export const s06Timing: ShotTiming = {
+export const s06Timing = timeShot({
   id: "s06",
-  durationInFrames: S06_DURATION,
   events: [
     { frame: S06_STEP_STOP, kind: "step_stop", description: "停步的最后一脚" },
     ...S06_TOE_TURNS.map((frame, i) => ({
@@ -116,4 +110,4 @@ export const s06Timing: ShotTiming = {
       description: "竹篮摆到头吱呀一声",
     })),
   ].sort((a, b) => a.frame - b.frame),
-};
+});

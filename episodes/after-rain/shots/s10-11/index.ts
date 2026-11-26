@@ -28,13 +28,12 @@ import {
 } from "../../scene.ts";
 import { drawSparrow, restPose, sparrowLight, sparrowPoses } from "../../sparrow.ts";
 import type { Pose } from "../../sparrow.ts";
-import { drawViewPlate, placeSparrow, viewImage } from "../../stage.ts";
+import { drawViewPlate, mixCamera, placeSparrow, viewImage } from "../../stage.ts";
 import type { Surface } from "../../stage.ts";
 import { darkestByMood, houseTakeoff, paddyWide } from "../../tokens.ts";
 import { flockColors, sparrowCommon, sparrowPalettes } from "../../tokens-sparrow.ts";
 import {
   S10_CROUCH,
-  S10_DURATION,
   S10_HOLD,
   S10_POLE_SPRING,
   S10_PUSH,
@@ -43,7 +42,6 @@ import {
   S10_WING_PASS,
   s10CameraProgress,
   s10Timing,
-  S11_DURATION,
   S11_LAND,
   S11_WIPE_END,
   s11CameraProgress,
@@ -51,19 +49,6 @@ import {
 } from "./timing.ts";
 
 const deg = (v: number) => (v * Math.PI) / 180;
-
-const mixCamera = (a: Camera, b: Camera, t: number): Camera => ({
-  position: [
-    mix(a.position[0], b.position[0], t),
-    mix(a.position[1], b.position[1], t),
-    mix(a.position[2], b.position[2], t),
-  ],
-  yaw: mix(a.yaw, b.yaw, t),
-  pitch: mix(a.pitch, b.pitch, t),
-  focal: mix(a.focal, b.focal, t),
-  width: a.width,
-  height: a.height,
-});
 
 const viewYawForAzimuth = (camera: Camera, target: Vec3, azimuthRad: number) => {
   const bearing = Math.atan2(target[0] - camera.position[0], target[1] - camera.position[1]);
@@ -211,7 +196,7 @@ const drawS10 = (surface: Surface, frame: number) => {
   }
 
   if (frame >= S10_WING_PASS) {
-    const u = progress(frame, S10_WING_PASS, S10_DURATION - 1);
+    const u = progress(frame, S10_WING_PASS, s10Timing.durationInFrames - 1);
     drawWingWipe(ctx, camera.width, camera.height, mix(0.18, 0.5, u));
   }
 };
@@ -287,7 +272,7 @@ const drawS11 = (surface: Surface, frame: number) => {
   }
   drawViewPlate(ctx, paddyImg, "paddy-wide", camera);
 
-  const personStep = Math.floor(progress(frame, 0, S11_DURATION - 1) * 8) / 8;
+  const personStep = Math.floor(progress(frame, 0, s11Timing.durationInFrames - 1) * 8) / 8;
   const personPos: Vec3 = [mix(20.0, 31.0, personStep), paddyWorld.farmerRidgeY, 0];
   const distant = placeDistantPerson(camera, personPos, 1.55);
   if (distant.x > -40 && distant.x < camera.width + 40 && distant.y > -40 && distant.y < camera.height - 20) {

@@ -9,29 +9,15 @@ import { mix, progress } from "../../../../src/kit/engine/timing.ts";
 import type { Shot } from "../../../../src/kit/shots.ts";
 import { drawPole } from "../../pole.ts";
 import { house, shotCameras } from "../../scene.ts";
-import { drawViewPlate, viewImage } from "../../stage.ts";
+import { drawViewPlate, mixCamera, viewImage } from "../../stage.ts";
 import type { Surface } from "../../stage.ts";
 import { darkestByMood, houseTwilight } from "../../tokens.ts";
 import {
-  S12_DURATION,
   S12_FADE_OUT,
   S12_LAMP_ON,
   s12CameraProgress,
   s12Timing,
 } from "./timing.ts";
-
-const mixCamera = (a: Camera, b: Camera, t: number): Camera => ({
-  position: [
-    mix(a.position[0], b.position[0], t),
-    mix(a.position[1], b.position[1], t),
-    mix(a.position[2], b.position[2], t),
-  ],
-  yaw: mix(a.yaw, b.yaw, t),
-  pitch: mix(a.pitch, b.pitch, t),
-  focal: mix(a.focal, b.focal, t),
-  width: a.width,
-  height: a.height,
-});
 
 const s12CameraAt = (frame: number): Camera =>
   mixCamera(shotCameras.s12Start, shotCameras.s12End, s12CameraProgress(frame));
@@ -116,7 +102,7 @@ const drawS12 = (surface: Surface, frame: number) => {
   });
 
   if (frame >= S12_FADE_OUT) {
-    const fade = progress(frame, S12_FADE_OUT, S12_DURATION - 1);
+    const fade = progress(frame, S12_FADE_OUT, s12Timing.durationInFrames - 1);
     ctx.save();
     ctx.globalAlpha = fade;
     ctx.fillStyle = darkestByMood.twilight;

@@ -7,7 +7,7 @@
  */
 import { project } from "../../../../src/kit/engine/camera.ts";
 import type { Camera, Vec3 } from "../../../../src/kit/engine/camera.ts";
-import { ease, hold, mix, progress } from "../../../../src/kit/engine/timing.ts";
+import { ease, hold, progress } from "../../../../src/kit/engine/timing.ts";
 import type { Shot } from "../../../../src/kit/shots.ts";
 import {
   drawPerson,
@@ -21,7 +21,7 @@ import { drawPole, poleScreen } from "../../pole.ts";
 import { perchT, pole, poleAt, puddleW1, shotCameras, sun } from "../../scene.ts";
 import { drawSparrow, sparrowLight, sparrowPoses } from "../../sparrow.ts";
 import type { Pose } from "../../sparrow.ts";
-import { drawViewPlate, placeSparrow, viewImage } from "../../stage.ts";
+import { drawViewPlate, mixCamera, placeSparrow, viewImage } from "../../stage.ts";
 import type { Surface } from "../../stage.ts";
 import { closeup, darkestByMood, lowYard, warm } from "../../tokens.ts";
 import {
@@ -33,7 +33,6 @@ import {
   s04Timing,
   S05_CALL_SMALL,
   S05_DROP,
-  S05_DURATION,
   S05_FALL_BACK,
   S05_FLAPS,
   S05_FLINCH,
@@ -42,7 +41,6 @@ import {
   S05_STEADY,
   S05_WINDUP,
   s05Timing,
-  S06_DURATION,
   S06_HUM_START,
   S06_STEPS,
   S06_TOE_TURNS,
@@ -53,19 +51,6 @@ const deg = (v: number) => (v * Math.PI) / 180;
 
 const transparentHex = (hex: string) =>
   `rgba(${parseInt(hex.slice(1, 3), 16)},${parseInt(hex.slice(3, 5), 16)},${parseInt(hex.slice(5, 7), 16)},0)`;
-
-const mixCamera = (a: Camera, b: Camera, t: number): Camera => ({
-  position: [
-    mix(a.position[0], b.position[0], t),
-    mix(a.position[1], b.position[1], t),
-    mix(a.position[2], b.position[2], t),
-  ],
-  yaw: mix(a.yaw, b.yaw, t),
-  pitch: mix(a.pitch, b.pitch, t),
-  focal: mix(a.focal, b.focal, t),
-  width: a.width,
-  height: a.height,
-});
 
 const viewYawForAzimuth = (camera: Camera, target: Vec3, azimuthRad: number) => {
   const bearing = Math.atan2(target[0] - camera.position[0], target[1] - camera.position[1]);
@@ -199,7 +184,7 @@ const s05CameraAt = (frame: number): Camera => {
       : frame < S05_DROP
         ? ease(progress(frame, S05_PUSH_OFF, S05_HUSH), 1.6, 1.8)
         : 1 - ease(progress(frame, S05_DROP, S05_FALL_BACK + 10), 1.6, 1.6);
-  const drift = ease(progress(frame, 0, S05_DURATION - 1), 1.8, 1.8);
+  const drift = ease(progress(frame, 0, s05Timing.durationInFrames - 1), 1.8, 1.8);
   return {
     ...base,
     pitch: base.pitch + deg(2.2 * up + 0.35 * drift),
@@ -330,7 +315,7 @@ const s06CameraAt = (frame: number): Camera => {
   return mixCamera(
     s06MidCam,
     s06EndCam,
-    ease(progress(frame, S06_HUM_START, S06_DURATION - 1), 1.8, 1.8),
+    ease(progress(frame, S06_HUM_START, s06Timing.durationInFrames - 1), 1.8, 1.8),
   );
 };
 

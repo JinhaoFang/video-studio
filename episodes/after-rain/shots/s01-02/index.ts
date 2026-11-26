@@ -6,13 +6,13 @@
  */
 import { directionToView } from "../../../../src/kit/engine/camera.ts";
 import type { Camera, Vec3 } from "../../../../src/kit/engine/camera.ts";
-import { hold, mix, progress } from "../../../../src/kit/engine/timing.ts";
+import { hold, progress } from "../../../../src/kit/engine/timing.ts";
 import type { Shot } from "../../../../src/kit/shots.ts";
 import { drawPole, poleScreen } from "../../pole.ts";
 import { perchT, pole, poleAt, shotCameras, sky } from "../../scene.ts";
 import { drawSparrow, restPose, sparrowLight } from "../../sparrow.ts";
 import type { Pose } from "../../sparrow.ts";
-import { drawViewPlate, placeSparrow, viewImage } from "../../stage.ts";
+import { drawViewPlate, mixCamera, placeSparrow, viewImage } from "../../stage.ts";
 import type { Surface } from "../../stage.ts";
 import { closeup, darkestByMood, houseRain } from "../../tokens.ts";
 import {
@@ -32,19 +32,6 @@ import {
 } from "./timing.ts";
 
 const deg = (v: number) => (v * Math.PI) / 180;
-
-const mixCamera = (a: Camera, b: Camera, t: number): Camera => ({
-  position: [
-    mix(a.position[0], b.position[0], t),
-    mix(a.position[1], b.position[1], t),
-    mix(a.position[2], b.position[2], t),
-  ],
-  yaw: mix(a.yaw, b.yaw, t),
-  pitch: mix(a.pitch, b.pitch, t),
-  focal: mix(a.focal, b.focal, t),
-  width: a.width,
-  height: a.height,
-});
 
 const viewYawForAzimuth = (camera: Camera, target: Vec3, azimuthRad: number) => {
   const bearing = Math.atan2(target[0] - camera.position[0], target[1] - camera.position[1]);

@@ -4,28 +4,25 @@
  * 待定事项：无。
  */
 import { ease, progress } from "../../../../src/kit/engine/timing.ts";
-import type { ShotTiming } from "../../../../src/kit/shots.ts";
+import { timeShot } from "../../model.ts";
 
-export const S01_DURATION = 144;
 export const S01_FADE_START = 8;
 export const S01_FADE_END = 30;
 export const S01_LIGHTNING = 84;
 export const S01_THUNDER = 110;
 
 export const s01CameraProgress = (frame: number) =>
-  ease(progress(frame, 0, S01_DURATION - 1), 2.2, 2.2);
+  ease(progress(frame, 0, s01Timing.durationInFrames - 1), 2.2, 2.2);
 
-export const s01Timing: ShotTiming = {
+export const s01Timing = timeShot({
   id: "s01",
-  durationInFrames: S01_DURATION,
   events: [
     { frame: 0, kind: "open", description: "全片第 0 帧，雨声先进" },
     { frame: S01_LIGHTNING, kind: "lightning", description: "云里闪一次闪电" },
     { frame: S01_THUNDER, kind: "thunder", description: "画外：远雷，闪电后约 1.1 秒" },
   ],
-};
+});
 
-export const S02_DURATION = 144;
 export const S02_COMPANION_1 = 24;
 export const S02_GLANCE = 28;
 export const S02_COMPANION_2 = 60;
@@ -36,11 +33,10 @@ export const S02_SHIVER = 92;
 export const S02_HUDDLE = 104;
 
 export const s02CameraProgress = (frame: number) =>
-  ease(progress(frame, 0, S02_DURATION - 1), 2.0, 2.0);
+  ease(progress(frame, 0, s02Timing.durationInFrames - 1), 2.0, 2.0);
 
-export const s02Timing: ShotTiming = {
+export const s02Timing = timeShot({
   id: "s02",
-  durationInFrames: S02_DURATION,
   events: [
     { frame: S02_COMPANION_1, kind: "companion_call", description: "画外：画右远处同伴的第一串接触叫" },
     { frame: S02_GLANCE, kind: "glance", description: "抬头转向画右张望，开始转的那一帧" },
@@ -51,4 +47,4 @@ export const s02Timing: ShotTiming = {
     { frame: S02_SHIVER, kind: "shiver", description: "打寒战，抖落水珠" },
     { frame: S02_HUDDLE, kind: "huddle", description: "缩回去，开始缩的那一帧" },
   ],
-};
+});

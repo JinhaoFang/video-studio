@@ -4,9 +4,8 @@
  * 待定事项：无。
  */
 import { ease, progress } from "../../../../src/kit/engine/timing.ts";
-import type { ShotTiming } from "../../../../src/kit/shots.ts";
+import { timeShot } from "../../model.ts";
 
-export const S10_DURATION = 84;
 export const S10_CROUCH = 12;
 export const S10_HOLD = 44;
 export const S10_PUSH = 54;
@@ -18,9 +17,8 @@ export const S10_WING_PASS = 76;
 export const s10CameraProgress = (frame: number) =>
   ease(progress(frame, 0, S10_TAKEOFF), 2.0, 2.2);
 
-export const s10Timing: ShotTiming = {
+export const s10Timing = timeShot({
   id: "s10",
-  durationInFrames: S10_DURATION,
   events: [
     { frame: S10_CROUCH, kind: "crouch", description: "起飞前开始压身" },
     { frame: S10_TAKEOFF, kind: "takeoff", description: "脚离开竹竿" },
@@ -32,9 +30,8 @@ export const s10Timing: ShotTiming = {
     })),
     { frame: S10_WING_PASS, kind: "wing_pass", description: "翅膀开始遮满画面，掠过镜头的风声起" },
   ].sort((a, b) => a.frame - b.frame),
-};
+});
 
-export const S11_DURATION = 192;
 export const S11_WIPE_END = 10;
 export const S11_WINGBEATS = [
   12, 16, 20,
@@ -54,9 +51,8 @@ export const S11_CAMERA_STOP = 172;
 export const s11CameraProgress = (frame: number) =>
   ease(progress(frame, S11_WIPE_END, S11_CAMERA_STOP), 1.8, 2.4);
 
-export const s11Timing: ShotTiming = {
+export const s11Timing = timeShot({
   id: "s11",
-  durationInFrames: S11_DURATION,
   events: [
     ...S11_WINGBEATS.map((frame) => ({
       frame,
@@ -76,4 +72,4 @@ export const s11Timing: ShotTiming = {
     })),
     { frame: S11_CALL_HOME, kind: "call_home", description: "麻雀叫声第 5 声：回到同伴中间的接触叫" },
   ].sort((a, b) => a.frame - b.frame),
-};
+});

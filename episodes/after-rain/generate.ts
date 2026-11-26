@@ -20,10 +20,9 @@ import { parseArgs } from "node:util";
 import { Worker, isMainThread, parentPort, workerData } from "node:worker_threads";
 import { bakePlate } from "../../src/kit/generation/bake.ts";
 import { digest, generation, json } from "../../src/kit/generation/manifest.ts";
-import { collectEvents } from "../../src/kit/shots.ts";
 import { MeasurementFailure } from "../../src/kit/sound/measure.ts";
 import { reportError, usageError } from "../../tools/cli.ts";
-import { fps, shotTable } from "./model.ts";
+import { collectFilmEvents, fps, shotTable } from "./model.ts";
 import { paintPlate } from "./plates.ts";
 import type { LightState } from "./plates.ts";
 import { paintViewPlate } from "./plates-views.ts";
@@ -142,7 +141,7 @@ const generate = async (force: boolean) => {
     fps,
     sampleRate: 48000,
     shotTable,
-    events: collectEvents(shotTable, shotTimings),
+    events: collectFilmEvents(shotTable, shotTimings),
   });
 
   const sharedJobs: BakeJob[] = plates.flatMap((plate) =>

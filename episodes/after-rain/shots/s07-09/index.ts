@@ -20,7 +20,7 @@ import {
   transitionSparrowState,
 } from "../../sparrow.ts";
 import type { Pose } from "../../sparrow.ts";
-import { drawViewPlate, placeSparrow, viewImage } from "../../stage.ts";
+import { drawViewPlate, mixCamera, placeSparrow, viewImage } from "../../stage.ts";
 import type { Surface } from "../../stage.ts";
 import { closeup, darkestByMood } from "../../tokens.ts";
 import {
@@ -33,7 +33,6 @@ import {
   s07Timing,
   S08_BLINK_1,
   S08_BLINK_2,
-  S08_DURATION,
   s08CameraProgress,
   s08Timing,
   S09_CALL_CLEAR,
@@ -46,19 +45,6 @@ import {
 } from "./timing.ts";
 
 const deg = (v: number) => (v * Math.PI) / 180;
-
-const mixCamera = (a: Camera, b: Camera, t: number): Camera => ({
-  position: [
-    mix(a.position[0], b.position[0], t),
-    mix(a.position[1], b.position[1], t),
-    mix(a.position[2], b.position[2], t),
-  ],
-  yaw: mix(a.yaw, b.yaw, t),
-  pitch: mix(a.pitch, b.pitch, t),
-  focal: mix(a.focal, b.focal, t),
-  width: a.width,
-  height: a.height,
-});
 
 const mixVec3 = (a: Vec3, b: Vec3, t: number): Vec3 => {
   const x = mix(a[0], b[0], t);
@@ -267,7 +253,7 @@ const s08Beats: readonly [number, S08Beat][] = [
 const drawS08 = (surface: Surface, frame: number) => {
   const ctx = surface.context;
   const camera = s08CameraAt(frame);
-  const tLight = progress(frame, 0, S08_DURATION - 1);
+  const tLight = progress(frame, 0, s08Timing.durationInFrames - 1);
 
   ctx.fillStyle = closeup.s8Start.bokehMid;
   ctx.fillRect(0, 0, camera.width, camera.height);

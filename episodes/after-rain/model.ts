@@ -4,7 +4,7 @@
  * 供合成入口、生成器、声音管线和测试共同取用；不依赖浏览器 API。
  * 待定事项：无。
  */
-import { filmDuration, type ShotRow } from "../../src/kit/shots.ts";
+import { collectEvents, filmDuration, type ShotRow, type ShotTiming } from "../../src/kit/shots.ts";
 
 export const fps = 24;
 export const width = 1920;
@@ -24,6 +24,22 @@ export const shotTable: readonly ShotRow[] = [
   { id: "s11", startFrame: 1236, durationInFrames: 192 },
   { id: "s12", startFrame: 1404, durationInFrames: 216 },
 ];
+
+export const shotRow = (table: readonly ShotRow[], id: string) => {
+  const row = table.find((shot) => shot.id === id);
+  if (!row) throw new Error(`时间表里没有镜头：${id}`);
+  return row;
+};
+
+type LocalTiming = Pick<ShotTiming, "id" | "events">;
+
+export const timeShot = (
+  { id, events }: LocalTiming,
+  table: readonly ShotRow[] = shotTable,
+): ShotTiming => ({ id, durationInFrames: shotRow(table, id).durationInFrames, events });
+
+export const collectFilmEvents = (table: readonly ShotRow[], timings: readonly LocalTiming[]) =>
+  collectEvents(table, timings.map((timing) => timeShot(timing, table)));
 
 export const durationInFrames = filmDuration(shotTable);
 

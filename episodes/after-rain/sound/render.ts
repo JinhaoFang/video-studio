@@ -11,7 +11,7 @@ import { mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { join, relative, resolve } from "node:path";
 import process from "node:process";
 import { parseArgs } from "node:util";
-import { frameToSample } from "../../../src/kit/shots.ts";
+import { filmDuration, frameToSample } from "../../../src/kit/shots.ts";
 import {
   add,
   curve,
@@ -29,9 +29,10 @@ import {
   measure,
   MeasurementFailure,
 } from "../../../src/kit/sound/measure.ts";
-import { compileScore } from "../../../src/kit/sound/score.ts";
+import { compileScore, resolveAnchor } from "../../../src/kit/sound/score.ts";
 import type { EventTable, Scene, Score, Stereo } from "../../../src/kit/sound/types.ts";
 import { reportError, usageError } from "../../../tools/cli.ts";
+import { shotRow } from "../model.ts";
 import {
   synthesizeHumClip,
   synthesizeTempSfx,
@@ -118,10 +119,34 @@ const eventSfxMap: Record<string, EventMapping | undefined> = {
 const hash = (data: string | Uint8Array) =>
   createHash("sha256").update(data).digest("hex");
 
+export const ambienceTiming = (table: EventTable) => {
+  const start = (id: string) => shotRow(table.shotTable, id).startFrame;
+  const end = (id: string) => {
+    const row = shotRow(table.shotTable, id);
+    return row.startFrame + row.durationInFrames;
+  };
+  const bed = (from: number, to: number, density?: [number, number][]) => ({ from, to, density });
+  const durationFrames = filmDuration(table.shotTable);
+  const open = resolveAnchor({ event: "open" }, table);
+  const rainTail = resolveAnchor({ event: "rain_tail" }, table);
+  const hush = { from: start("s08"), to: end("s08") };
+  const beds = {
+    garden_air: bed(start("s01"), durationFrames),
+    heavy_rain: bed(open, rainTail + 6, [[open, 1.5], [start("s02"), 1.35], [rainTail, 0.95]]),
+    rain_tail: bed(rainTail, rainTail + 108),
+    eave_drips: bed(start("s03"), hush.to, [
+      [start("s03"), 1.0], [start("s04"), 0.45], [hush.from, 0.18], [hush.to, 0.12],
+    ]),
+    higurashi: bed(start("s03") + 72, durationFrames),
+    paddy_wind: bed(start("s04"), durationFrames, [
+      [start("s04"), 0.4], [hush.from, 0.35], [start("s11"), 1.1], [end("s11"), 0.45], [durationFrames, 0.35],
+    ]),
+  };
+  return { durationFrames, beds, hush };
+};
+
 const renderTempMix = (table: EventTable, rawScore: Score & { phrases: { id: string; notes: { instrument: string }[] }[] }, seed: number) => {
-  const durationFrames = Math.max(
-    ...table.shotTable.map((row) => row.startFrame + row.durationInFrames),
-  );
+  const { durationFrames, beds, hush } = ambienceTiming(table);
   const count = frameToSample(durationFrames, rate, table.fps);
   const toSample = (frame: number) => frameToSample(frame, rate, table.fps);
 
@@ -193,15 +218,13 @@ const renderTempMix = (table: EventTable, rawScore: Score & { phrases: { id: str
   }
 
   const addBed = (
-    name: TempSfxName,
-    fromFrame: number,
-    toFrame: number,
+    name: keyof typeof beds,
     db: number,
     sceneKey: "garden" | "open",
     fadeInFrames: number,
     fadeOutFrames: number,
-    density?: [number, number][],
   ) => {
+    const { from: fromFrame, to: toFrame, density } = beds[name];
     const start = toSample(fromFrame);
     const end = toSample(toFrame);
     const clip = synthesizeTempSfx(name, seedFor(seed, `bed/${name}/${fromFrame}`), {
@@ -227,30 +250,15 @@ const renderTempMix = (table: EventTable, rawScore: Score & { phrases: { id: str
     add(stems.ambience, wet);
   };
 
-  addBed("garden_air", 0, durationFrames, -30, "garden", 0, 0);
-  addBed("heavy_rain", 0, 294, -18, "garden", 2, 12, [
-    [0, 1.5],
-    [144, 1.35],
-    [288, 0.95],
-  ]);
-  addBed("rain_tail", 288, 396, -22, "garden", 4, 48);
-  addBed("eave_drips", 288, 1056, -27, "garden", 12, 36, [
-    [288, 1.0],
-    [456, 0.45],
-    [912, 0.18],
-    [1056, 0.12],
-  ]);
-  addBed("higurashi", 360, durationFrames, -29, "garden", 48, 20);
-  addBed("paddy_wind", 456, durationFrames, -26, "open", 36, 20, [
-    [456, 0.4],
-    [912, 0.35],
-    [1236, 1.1],
-    [1428, 0.45],
-    [durationFrames, 0.35],
-  ]);
+  addBed("garden_air", -30, "garden", 0, 0);
+  addBed("heavy_rain", -18, "garden", 2, 12);
+  addBed("rain_tail", -22, "garden", 4, 48);
+  addBed("eave_drips", -27, "garden", 12, 36);
+  addBed("higurashi", -29, "garden", 48, 20);
+  addBed("paddy_wind", -26, "open", 36, 20);
 
-  const s08Start = toSample(912);
-  const s08End = toSample(1056);
+  const s08Start = toSample(hush.from);
+  const s08End = toSample(hush.to);
   const edge = Math.round(rate * 0.04);
   for (let i = Math.max(0, s08Start - edge); i < Math.min(count, s08End + edge); i++) {
     const g = curve(
@@ -292,8 +300,7 @@ const renderTempMix = (table: EventTable, rawScore: Score & { phrases: { id: str
     stems.music[1][i] *= gain;
   }
 
-  const fadeOutEvent = table.events.find((e) => e.kind === "fade_out");
-  const fadeStart = fadeOutEvent ? toSample(fadeOutEvent.frame) : toSample(durationFrames - 20);
+  const fadeStart = toSample(resolveAnchor({ event: "fade_out" }, table));
   const fadeSpan = Math.max(1, count - fadeStart);
   const mix = stereo(count);
   for (const bus of Object.values(stems)) {
@@ -308,7 +315,7 @@ const renderTempMix = (table: EventTable, rawScore: Score & { phrases: { id: str
   return { mix, stems, voices, placements, durationFrames };
 };
 
-try {
+const main = () => {
   let values: { events?: string; out?: string; seed?: string; help?: boolean };
   try {
     ({ values } = parseArgs({
@@ -387,7 +394,13 @@ try {
       `临时声音生成完成：${outDir}\n混音 ${mastered.after.integratedLufs.toFixed(1)} LUFS，真峰值 ${mastered.after.truePeakDbtp.toFixed(1)} dBTP；${rendered.voices.length} 颗乐音、${rendered.placements.length} 次事件音效；耗时 ${report.seconds.toFixed(2)} 秒。`,
     );
   }
-} catch (error) {
-  reportError(error);
-  if (error instanceof MeasurementFailure) process.exitCode = 1;
+};
+
+if (import.meta.main) {
+  try {
+    main();
+  } catch (error) {
+    reportError(error);
+    if (error instanceof MeasurementFailure) process.exitCode = 1;
+  }
 }
