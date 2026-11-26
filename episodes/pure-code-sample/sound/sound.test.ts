@@ -135,12 +135,21 @@ test("非零镜头起点、乱序重复事件取首现，extra 只跟第一次 s
       row.startSample + row.alignmentSample,
       frameToSample(row.eventFrame, rate, 24),
     );
-  const hushStart = frameToSample(192, rate, 24),
+  const musicSilence = frameToSample(202, rate, 24),
     hushEnd = frameToSample(216, rate, 24);
   for (const channel of mix.stems.music)
     assert.ok(
-      channel.subarray(hushStart, hushEnd).every((sample) => sample === 0),
+      channel.subarray(musicSilence, hushEnd).every((sample) => sample === 0),
     );
+  const peakIn = (from: number, to: number) =>
+    Math.max(
+      ...mix.stems.music.map((channel) =>
+        channel
+          .subarray(frameToSample(from, rate, 24), frameToSample(to, rate, 24))
+          .reduce((peak, sample) => Math.max(peak, Math.abs(sample)), 0),
+      ),
+    );
+  assert.ok(peakIn(201, 202) < peakIn(190, 193) * 0.1);
   for (const channel of mix.stems.music)
     assert.ok(
       channel

@@ -183,20 +183,20 @@
           "pitch": "F2",
           "beat": 0,
           "beats": 0.33,
-          "velocity": 0.5
+          "velocity": 0.4
         },
         {
           "instrument": "harp",
           "pitch": "F4",
           "beat": 0,
           "beats": 0.33,
-          "velocity": 0.35
+          "velocity": 0.28
         }
       ],
-      "articulation": "止音：拨完立刻按住琴弦",
+      "articulation": "止音：拨完按住琴弦，余音和厅堂尾声在约 0.4 秒内收干净，再进入静默",
       "mustEndBefore": {
         "event": "hush",
-        "offsetFrames": 6
+        "offsetFrames": 10
       }
     },
     {

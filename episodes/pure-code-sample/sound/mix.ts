@@ -110,7 +110,7 @@ export const renderMix = (
     const wet = reverb(dry, design.scenes.music, 0.2);
     for (let c = 0; c < 2; c++)
       for (let i = 0; i < count; i++)
-        wet[c][i] *= Math.max(0, Math.min(1, (cutoff - 1 - i) / (rate * 0.04)));
+        wet[c][i] *= Math.max(0, Math.min(1, (cutoff - 1 - i) / (rate * 0.15)));
     add(stems.music, wet);
   }
   const silences = design.silences.map((item) => ({

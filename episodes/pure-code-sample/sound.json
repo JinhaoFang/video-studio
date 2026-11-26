@@ -325,11 +325,22 @@
       "to": {
         "event": "look_up"
       },
-      "mute": ["eave_drips", "music"],
+      "mute": ["eave_drips"],
       "duck": {
         "higurashi": -6
       },
       "notes": "蓬起之后故意留一拍静默：只剩压低的暮蝉"
+    },
+    {
+      "from": {
+        "event": "hush",
+        "offsetFrames": 10
+      },
+      "to": {
+        "event": "look_up"
+      },
+      "mute": ["music"],
+      "notes": "配乐等蓬起那一下竖琴的余音自然收干净（score.json 的 puff 乐句在 hush + 10 之前退完）才静音；从 hush 当帧硬切会把竖琴拦腰截断，听起来像卡了一下"
     }
   ],
   "ducking": {

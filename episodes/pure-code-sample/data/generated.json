@@ -6,7 +6,7 @@
     "episodes/pure-code-sample/generate.ts"
   ],
   "status": "complete",
-  "cacheKey": "53fe1b9254f855b93d413a112e352a3ff6584ff03c1909181e67af171cd98cda",
+  "cacheKey": "77f3ac2444553961edbaaf75348ba27ef7b252c46bb9788ef9d70ecfb48caa16",
   "plateKey": "14bcf98175da2ace59e6165cc1bd837852205dc94234c93dce4e29ed822ec006",
   "inputs": [
     {
@@ -79,7 +79,7 @@
     },
     {
       "path": "episodes/pure-code-sample/sound/mix.ts",
-      "sha256": "5e98bc28bc81b0568ada05816fb3bdc103ec677c19288ff2902dfff4b4826988"
+      "sha256": "c6642064ead912485ccec9fff014bb048ee3601549442de45adaa7a82bba9b2b"
     },
     {
       "path": "episodes/pure-code-sample/sound/measure.ts",
@@ -87,7 +87,7 @@
     },
     {
       "path": "episodes/pure-code-sample/sound/render.ts",
-      "sha256": "99907b3a26fe34526b567e6a86c243d7fb9b13596e6758ab1effe22ab7c9035e"
+      "sha256": "7534d1abd9f73a92a5750b8315a08c938eaff17b838ae59a37e78a8bafbb5043"
     },
     {
       "path": "tools/cli.ts",
@@ -97,11 +97,11 @@
   "dataInputs": [
     {
       "path": "episodes/pure-code-sample/score.json",
-      "sha256": "af841ea0d40263e677ae91c3c5401c510a4be453d95bdf900966629a82944191"
+      "sha256": "d9f7d21e09e3aaaa2a3088eadde954b984de3ac0773b93ac38cfaba342fca621"
     },
     {
       "path": "episodes/pure-code-sample/sound.json",
-      "sha256": "89cae890f0221b5281c8d1cf1b210e721e591b19b4e5751c26a1c1b3dcd1c0f1"
+      "sha256": "acea19438f60b8a1d23f20539094b7618fdc9abe13dc3cd5762d6416c67ba99e"
     }
   ],
   "runtime": {
@@ -159,11 +159,11 @@
     },
     {
       "path": "episodes/pure-code-sample/mix-a.wav",
-      "sha256": "35e2f0ad8945bb96ac367d5bca95803d0d54eadf0cd6f2c6a72e10944cad01fc"
+      "sha256": "c72db66f938b1d1945955f188eb0ce2f56055faec781729c1b0cf775b93b0e8e"
     },
     {
       "path": "episodes/pure-code-sample/mix-b.wav",
-      "sha256": "d8daf8d3f3e18defe8634913ab8491173904bdab6626a2e80c4881940806e94e"
+      "sha256": "3d1b33969e5406b5d0184a8fa80ad7832eea6e5c43134f6488d9941110220bdf"
     }
   ],
   "eventTables": [
