@@ -21,11 +21,14 @@ import {
   drawPerson,
   mudWalkPose,
   personBacklight,
+  personRoute,
   personSheetLight,
+  placePerson,
   restPersonPose,
   stopTurnPose,
 } from "../person.ts";
 import type { PersonLight, PersonLighting } from "../person.ts";
+import { shotCameras } from "../scene.ts";
 import { defaultPost, sheet } from "../tokens.ts";
 import { distantPersonColors } from "../tokens-person.ts";
 
@@ -106,6 +109,8 @@ const drawDistantStrip = (
   ctx.strokeRect(x, y, w, h);
   ctx.restore();
 };
+
+const stopView = placePerson(shotCameras.s6, personRoute.stopPoint, personRoute.stopAzimuth);
 
 const turnaroundAngles = [Math.PI / 2, 0.68, 0, -Math.PI / 2];
 
@@ -275,8 +280,7 @@ export const PersonSheet = () => {
 
         const row2Base = 995;
         const row2Ppu = 325;
-        const row2Pitch = 0.06;
-        const cos2 = Math.cos(row2Pitch);
+        const cos2 = Math.cos(stopView.pitch);
         drawGuides(ctx, 56, 1864, [WAIST_Z, KNEE_Z, ANKLE_Z, 0].map((z) => row2Base - z * row2Ppu * cos2));
 
         const stopKeyFrames = [4, 12, 36];
@@ -287,8 +291,8 @@ export const PersonSheet = () => {
               x: 205 + i * 285,
               y: row2Base,
               ppu: row2Ppu,
-              yaw: -0.18,
-              pitch: row2Pitch,
+              yaw: stopView.yaw,
+              pitch: stopView.pitch,
               lighting: personSheetLight,
               drawing: drawIdx,
               seed: 701 + i * 11,
@@ -300,12 +304,10 @@ export const PersonSheet = () => {
         drawPerson(
           ctx,
           {
+            ...stopView,
             x: 1185,
             y: row2Base,
             ppu: row2Ppu,
-            yaw: -0.18,
-            pitch: -0.08,
-            lighting: personBacklight("dusk", [0.22, -0.35, 0.91]),
             drawing: drawIdx,
             seed: 751,
           },
@@ -315,12 +317,10 @@ export const PersonSheet = () => {
         drawPerson(
           ctx,
           {
+            ...stopView,
             x: 1590,
             y: row2Base,
             ppu: row2Ppu,
-            yaw: -0.18,
-            pitch: -0.08,
-            lighting: personBacklight("dusk", [0.22, -0.35, 0.91]),
             drawing: drawIdx,
             seed: 757,
           },

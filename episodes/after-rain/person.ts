@@ -4,7 +4,7 @@
  * 用 kit 的距离场正交投影、赛璐璐分色和手绘线条绘制，保证正面、四分之三、侧面、背面都是同一套衣鞋。
  * 公开接口：drawPerson、drawBasket、drawDistantPerson、mudWalkPose、stopTurnPose、placePerson、placeDistantPerson、personRoute。
  * 走路循环按 motion.md「人的腿脚表演」实现：泥地 24 帧一步、硬路 20 帧一步，含陷泥 2–3 厘米、重心下沉、拔泥延迟与泥丝泥点、裤脚与竹篮滞后跟随。
- * 停步转向按第 6 镜规则实现：先移重心再以脚跟为轴分两小步向画右下（麻雀方向）转约 30°、活的停顿换重心、两小步干脆转回、接走远。
+ * 停步朝向取停步点出发的路段；场景方位从 +Y 向 +X 顺时针为正，人物绕 +Z 的正转则从前方转向左侧。骨盆跟随两脚的局部转角，一起对准栖点。
  * 待定事项：TODO(design) 1) 竹篮默认挎在右手（-Y，即第 4、6 镜朝向镜头一侧，可用 basketSide 切换）；2) 远处小人影的斗笠暂用竹篮色族；3) 裤腰以上只留靛蓝裤腰截齐，不另加衣色。
  */
 import { createLayer, drawCel, placeLayer, tracePath } from "../../src/kit/engine/cel.ts";
@@ -36,7 +36,7 @@ import { boil, drawStrokes, jitterSeed, strokes } from "../../src/kit/engine/ink
 import type { Stroke, StrokeStyle } from "../../src/kit/engine/ink.ts";
 import { hash, noise1, noise2 } from "../../src/kit/engine/random.ts";
 import { clamp01, drawing, ease, mix, progress } from "../../src/kit/engine/timing.ts";
-import { sun } from "./scene.ts";
+import { paddyWorld, perchPoint, puddleW1, sun, yardPath } from "./scene.ts";
 import { ink } from "./tokens.ts";
 import { distantPersonColors, personPalettes } from "./tokens-person.ts";
 import type { PersonLight, PersonPalette } from "./tokens-person.ts";
@@ -173,21 +173,18 @@ export const personBacklight = (
   threshold: 0.18,
 });
 
+const azimuthBetween = (a: Vec3, b: Vec3) => Math.atan2(b[0] - a[0], b[1] - a[1]);
+const courtyard: readonly Vec3[] = yardPath.map(([x, y]) => [x, y, GROUND_Z]);
+const stopPoint = courtyard[3];
+
 export const personRoute = {
-  courtyard: [
-    [-6.5, -0.4, 0],
-    [-4.5, 2.6, 0],
-    [-1.9, 5.3, 0],
-    [-1.5, 5.45, 0],
-    [0.5, 6.0, 0],
-    [2.5, 6.6, 0],
-    [5.5, 11.0, 0],
-  ] as readonly Vec3[],
-  puddleW1: [-1.9, 5.3, 0] as Vec3,
-  stopPoint: [-1.5, 5.45, 0] as Vec3,
-  sparrowPerch: [0.66, 2.96, 1.76] as Vec3,
-  distantRidgeStart: [6, 30, 0] as Vec3,
-  distantRidgeEnd: [40, 30, 0] as Vec3,
+  courtyard,
+  puddleW1: [puddleW1.x, puddleW1.y, GROUND_Z] as Vec3,
+  stopPoint,
+  stopAzimuth: azimuthBetween(stopPoint, courtyard[4]),
+  sparrowPerch: perchPoint,
+  distantRidgeStart: [paddyWorld.farmerRidgeXMin, paddyWorld.farmerRidgeY, GROUND_Z] as Vec3,
+  distantRidgeEnd: [paddyWorld.farmerRidgeXMax, paddyWorld.farmerRidgeY, GROUND_Z] as Vec3,
 };
 
 export const personAtPath = (t: number, path: readonly Vec3[] = personRoute.courtyard): { position: Vec3; azimuth: number } => {
@@ -209,7 +206,7 @@ export const personAtPath = (t: number, path: readonly Vec3[] = personRoute.cour
       const b = path[i + 1];
       return {
         position: [mix(a[0], b[0], u), mix(a[1], b[1], u), mix(a[2], b[2], u)],
-        azimuth: Math.atan2(b[0] - a[0], b[1] - a[1]),
+        azimuth: azimuthBetween(a, b),
       };
     }
     acc += l;
@@ -225,10 +222,9 @@ export const placePerson = (
   sunDirection: Vec3 = sun,
 ) => {
   const p = project(camera, feet);
-  const mid: Vec3 = [feet[0], feet[1], feet[2] + 0.5];
-  const horizontal = Math.hypot(mid[0] - camera.position[0], mid[1] - camera.position[1]);
-  const elevation = Math.atan2(camera.position[2] - mid[2], horizontal);
-  const bearing = Math.atan2(mid[0] - camera.position[0], mid[1] - camera.position[1]);
+  const horizontal = Math.hypot(feet[0] - camera.position[0], feet[1] - camera.position[1]);
+  const elevation = Math.atan2(camera.position[2] - feet[2], horizontal);
+  const bearing = azimuthBetween(camera.position, feet);
   const lightDir = directionToView(camera, sunDirection);
   const backlit = lightDir[2] > 0.15;
   return {
@@ -484,24 +480,27 @@ export const stopTurnPose = (
     };
   }
 
-  const targetTurn = (34 * Math.PI) / 180;
+  const pelvisFollow = 0.82;
+  const localTurn = personRoute.stopAzimuth - azimuthBetween(stopPoint, perchPoint);
+  const targetFootYaw = Math.atan2(Math.sin(localTurn), Math.cos(localTurn));
+  const targetPelvisYaw = targetFootYaw * pelvisFollow / (1 + pelvisFollow);
   const rightYaw =
     f < 8
       ? -0.05
       : f <= 14
-        ? mix(-0.05, targetTurn, ease(progress(f, 10, 14), 1.8, 1.5))
+        ? mix(-0.05, targetFootYaw, ease(progress(f, 10, 14), 1.8, 1.5))
         : f < 62
-          ? targetTurn
-          : mix(targetTurn, -0.05, ease(progress(f, 62, 68), 1.4, 1.2));
+          ? targetFootYaw
+          : mix(targetFootYaw, -0.05, ease(progress(f, 62, 68), 1.4, 1.2));
 
   const leftYaw =
     f < 20
       ? 0.04
       : f <= 26
-        ? mix(0.04, targetTurn + 0.06, ease(progress(f, 22, 26), 1.8, 1.5))
+        ? mix(0.04, targetFootYaw + 0.06, ease(progress(f, 22, 26), 1.8, 1.5))
         : f < 70
-          ? targetTurn + 0.06
-          : mix(targetTurn + 0.06, 0.04, ease(progress(f, 70, 74), 1.4, 1.2));
+          ? targetFootYaw + 0.06
+          : mix(targetFootYaw + 0.06, 0.04, ease(progress(f, 70, 74), 1.4, 1.2));
 
   const rightLift =
     f >= 10 && f <= 14
@@ -546,10 +545,10 @@ export const stopTurnPose = (
     f < 8
       ? 0
       : f <= 28
-        ? mix(0, targetTurn * 0.82, ease(progress(f, 8, 26), 1.4, 1.4))
+        ? mix(0, targetPelvisYaw, ease(progress(f, 8, 26), 1.4, 1.4))
         : f < 61
-          ? targetTurn * 0.82
-          : mix(targetTurn * 0.82, 0, ease(progress(f, 61, 73), 1.3, 1.2));
+          ? targetPelvisYaw
+          : mix(targetPelvisYaw, 0, ease(progress(f, 61, 73), 1.3, 1.2));
 
   const pelvisRoll = -pelvisY * 1.25;
 
@@ -592,7 +591,7 @@ export const stopTurnPose = (
       hipRoll: (leftHeelY - HIP_HALF_Y - pelvisY) * 0.32,
       kneeBend: lIk.kneeBend,
       anklePitch: leftLift > 0.002 ? 0.22 : 0,
-      footYaw: leftYaw,
+      footYaw: leftYaw - pelvisYaw,
       cuffSwing: f < 6 ? 0.06 * (1 - f / 6) : 0,
       mudSink: leftLift > 0.002 ? 0 : f < 10 ? 0.45 : 0.2,
       mudPull: 0,
@@ -602,7 +601,7 @@ export const stopTurnPose = (
       hipRoll: (rightHeelY + HIP_HALF_Y - pelvisY) * 0.32,
       kneeBend: rIk.kneeBend + relaxRightKnee,
       anklePitch: rightLift > 0.002 ? 0.26 : f <= 4 ? 0.12 * (1 - f / 4) : 0,
-      footYaw: rightYaw,
+      footYaw: rightYaw - pelvisYaw,
       cuffSwing: f <= 8 ? 0.14 * Math.sin((f / 8) * Math.PI) : 0,
       mudSink: rightLift > 0.002 ? 0 : stopSink * 0.8,
       mudPull: 0,
