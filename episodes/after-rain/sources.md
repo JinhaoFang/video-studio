@@ -1,4 +1,8 @@
-# 试听样的生成来源
+# 《雨后》的来源与生成记录
+
+画面和声音全部由本仓库的代码生成（`GLOSSARY.md`「纯代码」）。每张工单在末尾加一节，标题写工单号，写清生成命令、产物、用到的第三方代码和许可；不改别人的节（本期约定第 2 节「登记处」）。
+
+## #184 试听样
 
 从仓库根目录运行 `node episodes/after-rain/auditions/generate.ts`。生成器按源码、乐谱、运行版本和输出的 SHA-256 判断能否复用三个 WAV。媒体放在 `public/episodes/after-rain/`，48 kHz、PCM16、双声道。重建命令和哈希见[试听生成清单](data/auditions.json)。
 
@@ -11,3 +15,7 @@
 人声的声门脉冲、气流噪声和鼻音／开口的共振峰滤波，鸟叫的调频与谐波，以及雨声和空间处理，均由本仓库的代码计算。第三方声音实现、外部录音和音色库的使用量均为零。方法和树麻雀的频率、时长依据见[声音知识的纯代码人声合成](../../docs/video/sound.md#纯代码人声合成)和[树麻雀叫声](../../docs/video/sound.md#树麻雀叫声)。
 
 每段试听的电平图 `levels.svg`、语谱图 `spectrum.png` 和测量 `dropouts.json`、`loudness.json` 在 `out/qa/spec-168/184/{hum,walla,calls}/`。听感定稿由设计负责人和用户在预演时完成。
+
+## #182 正片底图
+
+从仓库根目录运行 `node episodes/after-rain/generate.ts`（加 `--force` 跳过缓存）。生成器用 `plates.ts`（院子五层，雨和夕光两种状态，第 3 镜用）和 `plates-views.ts`（正片新机位和近景的虚化背景）里的水粉画法，烘焙全部底图到 `public/episodes/after-rain/plate-*.png`，按源码、运行版本和产物的 SHA-256 判断能否复用。每张底图对应哪个镜头、生成命令和哈希见[底图生成清单](data/generated.json)。笔刷、斑驳、相机投影都来自 `src/kit/engine/`，没有用第三方代码、照片或素材。
