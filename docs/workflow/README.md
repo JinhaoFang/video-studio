@@ -68,7 +68,7 @@ pnpm 的版本由 `package.json` 的 `packageManager` 固定，本机装的 pnpm
 | 编剧 | 讲什么，按什么顺序讲 | ④ 叙事结构与文案 | `planning.md` |
 | 美术 | 画面静止时长什么样 | ⑤ 画面风格（含色彩、字体）　⑥ 素材来源　⑪ 调色与质感 | `visual-style.md`、`editing.md`「⑪」 |
 | 摄影 | 从哪里看，镜头怎么动 | ⑦ 镜头语言 | `camera.md` |
-| 动作 | 画面里的东西怎么动 | ⑭ 动作（动法、节奏、表演、特效动画） | `visual-style.md` 各动画条目的关键技法；`motion.md` 由纯代码动画正片 spec 补 |
+| 动作 | 画面里的东西怎么动 | ⑭ 动作（动法、节奏、表演、特效动画） | `visual-style.md` 各动画条目的关键技法；[motion.md](../video/motion.md) |
 | 剪辑 | 多长，在哪里切，怎么接 | ⑨ 剪辑（节奏、转场、剪辑手法）　⑩ 画面文字 | `editing.md` |
 | 声音 | 听到什么 | ⑧ 声音（旁白、配乐、音效）　⑫ 混音与响度 | `sound.md` |
 
