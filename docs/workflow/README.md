@@ -147,6 +147,8 @@ pnpm 的版本由 `package.json` 的 `packageManager` 固定，本机装的 pnpm
 | `engine/ink.ts` | `boil`、`strokes`、`drawStrokes` 把折线画成有压感、带画张抖动的笔画。 |
 | `engine/cel.ts` | `createLayer`、`drawCel`、`placeLayer` 用指定色区、硬边阴影和线条绘制体块。 |
 | `engine/paint.ts` | `paper`、`stroke`、`polygon`、`mottle` 在浮点画布上刷水粉，`toBytes` 输出 RGBA。 |
+| `engine/calligraphy.ts` | `sampleStroke`、`pressureProfile`、`paintCalligraphyStroke`、`paintDropDot` 沿笔画路径刷行楷毛笔字与落墨点。 |
+| `engine/seal.ts` | `sealOutline`、`renderSeal`、`stampStateAt` 刻制带残破与印泥不匀的白文或朱文篆刻印章。 |
 | `engine/camera.ts` | `project`、`directionToView` 和 `layer` 将世界点、光向和不同纵深的底图投到机位。 |
 | `engine/post.ts`、`post-settings.ts` | `createPost(canvas)` 创建摄影链。每帧用 `draw(image, frame, post)` 传入包含 `darkest` 的全部后期参数，用完调用 `dispose`。 |
 | `shots.ts` | `Shot<Surface>` 声明镜头，`filmDuration`、`locateShot`、`collectEvents` 和 `frameToSample` 共用镜头时间表。 |
