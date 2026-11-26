@@ -1,15 +1,15 @@
 /**
- * 片名与印章令牌：复用本期 ../tokens.ts 的墨色（#3a2a28）与白文字口色（#efe4cf），
- * 补充 art.md「片名与印章的颜色」和第 12 镜暮色分层与后期参数。
- * 未直接改写 ../tokens.ts，避免破坏 pure-code-sample/data/generated.json 的输入哈希并减少与并行工单冲突；待合入时由设计负责人统一归并。
+ * 片名与印章令牌：复用 ../tokens.ts 的墨色（#3a2a28）与 defaultPost，
+ * 在本文件独立定义印泥（#b0473a）、白文字口（#efe4cf）与第 12 镜暮色分层及后期参数（art.md 第 12 镜）。
+ * 不引用已移除的 sparrow 色值，也不改动 ../tokens.ts。待定事项：无。
  */
 import type { Post } from "../../../src/kit/engine/post-settings.ts";
-import { defaultPost, ink, sparrow } from "../tokens.ts";
+import { defaultPost, ink } from "../tokens.ts";
 
 export const titlePalette = {
   ink: ink.color,
   paste: "#b0473a",
-  carve: sparrow.cheek.lit,
+  carve: "#efe4cf",
 } as const;
 
 export const twilightSky = {

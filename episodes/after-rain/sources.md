@@ -31,3 +31,7 @@
 | `mix.wav` | 由 `sound/render.ts` 与 `sound/sfx.ts` 基于 `score.json`、kit 乐器/鸟叫/哼唱人声与临时拟音/环境床合成的 48 kHz PCM16 临时混音（−16 LUFS ±1 LU，真峰值不超过 −1 dBTP）。 |
 
 所有画面与声音均由本仓库纯代码算得，无外部录音、音色库、图片或字体依赖。正式声音与混音由 #193 替换。
+
+## #183 片名「雨后」与署名「遡游」印章
+
+片名「雨后」行楷字骨与署名「遡游」汉印满白文印字骨均在 `episodes/after-rain/title/glyphs.ts` 以手写归一化坐标定义，未使用任何字体文件或外部图片素材。通用毛笔水粉书写引擎与篆刻印章引擎位于 `src/kit/engine/calligraphy.ts`、`src/kit/engine/seal.ts`。笔顺依据 GF 0023—2020《通用规范汉字笔顺规范》，行楷笔法与《说文解字》小篆「遡」「游」字形依据见 [画面风格与素材来源](../../docs/video/visual-style.md)。透明底封面静帧与 4 倍放大印章检查图由 `node episodes/after-rain/title/export-cover.ts` 生成，未引入第三方代码。

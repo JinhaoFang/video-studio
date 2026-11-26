@@ -1,7 +1,9 @@
 /**
  * 片名「雨后」与署名「遡游」印章的纯 Paper 渲染与布局计算（不依赖浏览器，Node 与浏览器共用）。
+ * 所有帧参数均为「片名起点之后第几帧」（titleFrame < 0 时不落笔，0 为第一笔起笔，84 为盖印帧），
+ * 方便第 12 镜（#191）与预览合成自由传入各自的片名起始偏移。
  * 已落定笔画与印章按不可变键缓存（不依赖帧序，确保同一帧两次渲染逐像素一致），控制每帧作画耗时远低于预算。
- * 供 canvas.ts（浏览器 Canvas 2D / Remotion）与 export-cover.ts（Node 透明底封面烘焙）共用。
+ * 另导出 renderSealPaper 供导出 4 倍放大印章检查图。待定事项：无。
  */
 import {
   mixColor,
@@ -16,11 +18,12 @@ import { renderSeal, stampStateAt, type StampState } from "../../../src/kit/engi
 import { clamp01, ease, progress } from "../../../src/kit/engine/timing.ts";
 import { buildTitleGeometry, suYouSealSpec } from "./glyphs.ts";
 import {
-  FADE_END_FRAME,
-  FADE_START_FRAME,
+  SEAL_PRESS_FRAME,
   SEAL_SETTLE_FRAMES,
-  SEAL_STAMP_FRAME,
+  TITLE_FADE_END_FRAME,
+  TITLE_FADE_START_FRAME,
   titleDropTimings,
+  titleLigatureTimings,
   titleStrokeTimings,
 } from "./timing.ts";
 import { titlePalette, twilightSky } from "./tokens.ts";
@@ -64,20 +67,20 @@ const resolveLayout = (override?: Partial<TitleLayout>): TitleLayout => ({
 
 const brushStyle = (charSize: number, inkHex: string): BrushStyle => ({
   color: rgb(inkHex),
-  baseWidth: charSize * 0.092,
-  bristles: 9,
-  dry: 0.44,
-  rough: 0.42,
-  streak: 0.09,
-  nibAngle: Math.PI * 0.24,
-  oblique: 0.22,
-  wobble: 0.072,
+  baseWidth: charSize * 0.104,
+  bristles: 15,
+  dry: 0.48,
+  rough: 0.56,
+  streak: 0.16,
+  nibAngle: Math.PI * 0.5,
+  oblique: 0.44,
+  wobble: 0.085,
 });
 
-export const titleOpacityAt = (frame: number, enableFade = true): number => {
-  if (!enableFade || frame < FADE_START_FRAME) return 1;
-  if (frame >= FADE_END_FRAME) return 0;
-  return 1 - ease(progress(frame, FADE_START_FRAME, FADE_END_FRAME), 1.2, 1.4);
+export const titleOpacityAt = (titleFrame: number, enableFade = true): number => {
+  if (!enableFade || titleFrame < TITLE_FADE_START_FRAME) return 1;
+  if (titleFrame >= TITLE_FADE_END_FRAME) return 0;
+  return 1 - ease(progress(titleFrame, TITLE_FADE_START_FRAME, TITLE_FADE_END_FRAME), 1.2, 1.4);
 };
 
 export const twilightSkyColorAt = (yNorm: number): RGB => {
@@ -133,10 +136,10 @@ const getFullStrokePaper = (
   return p;
 };
 
-const getSealPaper = (
+export const renderSealPaper = (
   size: number,
-  pasteHex: string,
-  carveHex: string,
+  pasteHex: string = titlePalette.paste,
+  carveHex: string = titlePalette.carve,
 ): Paper => {
   const key = `${size}:${pasteHex}:${carveHex}`;
   const hit = sealCache.get(key);
@@ -146,10 +149,10 @@ const getSealPaper = (
     pasteColor: rgb(pasteHex),
     carveColor: rgb(carveHex),
     mottleScale: 0.22,
-    mottleAmount: 0.62,
+    mottleAmount: 0.64,
     drySpots: 0.66,
-    edgeRoughness: 0.015,
-    carveRoughness: 0.36,
+    edgeRoughness: 0.013,
+    carveRoughness: 0.34,
   });
   sealCache.set(key, rendered);
   return rendered;
@@ -161,11 +164,14 @@ const sealCenterOf = (layout: TitleLayout) => ({
 });
 
 const renderLocalCalligraphy = (
-  frame: number,
+  titleFrame: number,
   layout: TitleLayout,
   inkHex: string,
 ): { box: ReturnType<typeof boundsOfLayout>; art: Paper } => {
   const box = boundsOfLayout(layout);
+  const art = paper(box.width, box.height);
+  if (titleFrame < 0) return { box, art };
+
   const style = brushStyle(layout.charSize, inkHex);
   const geom = buildTitleGeometry(
     layout.centerX,
@@ -173,11 +179,10 @@ const renderLocalCalligraphy = (
     layout.charSize,
     layout.charGap,
   );
-  const art = paper(box.width, box.height);
   const strokeTimingMap = new Map(titleStrokeTimings.map((t) => [t.id, t]));
   for (const stroke of geom.strokes) {
     const timing = strokeTimingMap.get(stroke.id);
-    const p = timing ? strokeProgressAt(frame, timing) : 1;
+    const p = timing ? strokeProgressAt(titleFrame, timing) : 1;
     if (p <= 0) continue;
     const local = shiftStroke(stroke, box.x0, box.y0);
     if (p >= 1) {
@@ -185,6 +190,26 @@ const renderLocalCalligraphy = (
       over(art, getFullStrokePaper(local, style, box.width, box.height, key));
     } else {
       paintCalligraphyStroke(art, local, style, p);
+    }
+  }
+  const ligatureTimingMap = new Map(titleLigatureTimings.map((t) => [t.id, t]));
+  const ligStyle: BrushStyle = {
+    ...style,
+    bristles: 8,
+    oblique: 0.15,
+    rough: 0.45,
+    wobble: 0.06,
+  };
+  for (const lig of geom.ligatures) {
+    const timing = ligatureTimingMap.get(lig.id);
+    const p = timing ? strokeProgressAt(titleFrame, timing) : 1;
+    if (p <= 0) continue;
+    const local = shiftStroke(lig, box.x0, box.y0);
+    if (p >= 1) {
+      const key = `${lig.id}:${layout.centerX}:${layout.topY}:${layout.charSize}:${layout.charGap}:${inkHex}`;
+      over(art, getFullStrokePaper(local, ligStyle, box.width, box.height, key));
+    } else {
+      paintCalligraphyStroke(art, local, ligStyle, p);
     }
   }
   const dropTimingMap = new Map(titleDropTimings.map((t) => [t.id, t]));
@@ -196,25 +221,26 @@ const renderLocalCalligraphy = (
       nodes: drop.nodes.map((n) => ({ ...n, x: n.x - box.x0, y: n.y - box.y0 })),
     };
     if (timing) {
-      if (frame >= timing.landFrame + (timing.settleFrames ?? 2)) {
+      if (titleFrame >= timing.landFrame + (timing.settleFrames ?? 2)) {
         const fullStroke: CalligraphyStroke = {
           id: localDrop.id,
           nodes: localDrop.nodes,
           width: localDrop.width ?? style.baseWidth * 0.92,
           entry: "exposed",
           exit: "press",
-          dry: 0.08,
+          dry: 0.1,
           seed: localDrop.seed,
         };
         const dotStyle: BrushStyle = {
           ...style,
-          rough: (style.rough ?? 0.42) * 0.45,
-          wobble: (style.wobble ?? 0.072) * 0.5,
+          oblique: 0.2,
+          rough: (style.rough ?? 0.56) * 0.55,
+          wobble: (style.wobble ?? 0.085) * 0.5,
         };
         const key = `${drop.id}:${layout.centerX}:${layout.topY}:${layout.charSize}:${layout.charGap}:${inkHex}`;
         over(art, getFullStrokePaper(fullStroke, dotStyle, box.width, box.height, key));
       } else {
-        paintDropDot(art, localDrop, style, frame, timing);
+        paintDropDot(art, localDrop, style, titleFrame, timing);
       }
     }
   }
@@ -222,19 +248,19 @@ const renderLocalCalligraphy = (
 };
 
 export const renderTitleFrameParts = (
-  frame: number,
+  titleFrame: number,
   options: TitleDrawOptions = {},
 ): TitleFrameParts => {
   const layout = resolveLayout(options.layout);
   const inkHex = options.inkColor ?? titlePalette.ink;
   const pasteHex = options.pasteColor ?? titlePalette.paste;
   const carveHex = options.carveColor ?? titlePalette.carve;
-  const fadeAlpha = titleOpacityAt(frame, options.fade ?? true);
-  const { box, art } = renderLocalCalligraphy(frame, layout, inkHex);
-  const state = stampStateAt(frame, SEAL_STAMP_FRAME, SEAL_SETTLE_FRAMES);
+  const fadeAlpha = titleOpacityAt(titleFrame, options.fade ?? true);
+  const { box, art } = renderLocalCalligraphy(titleFrame, layout, inkHex);
+  const state = stampStateAt(titleFrame, SEAL_PRESS_FRAME, SEAL_SETTLE_FRAMES);
   const { cx, cy } = sealCenterOf(layout);
   const seal = state.visible
-    ? { cx, cy, art: getSealPaper(layout.sealSize, pasteHex, carveHex), state }
+    ? { cx, cy, art: renderSealPaper(layout.sealSize, pasteHex, carveHex), state }
     : null;
   return {
     fadeAlpha,
@@ -268,13 +294,13 @@ const blitPaper = (dst: Paper, src: Paper, dx: number, dy: number) => {
 };
 
 export const renderTitleCardPaper = (
-  frame: number,
+  titleFrame: number,
   width = 1920,
   height = 1080,
   options: TitleDrawOptions = {},
 ): Paper => {
   const out = paper(width, height);
-  const parts = renderTitleFrameParts(frame, options);
+  const parts = renderTitleFrameParts(titleFrame, options);
   blitPaper(out, parts.calligraphy.art, parts.calligraphy.x, parts.calligraphy.y);
   if (parts.seal) {
     blitPaper(
