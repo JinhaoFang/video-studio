@@ -40,7 +40,7 @@ spec #S     ─ 确认基线（verify）；由用户决定是否启动派发前�
 能机械判断的规则交给护栏，不靠自觉：
 
 - `pnpm verify`：步骤见 `tools/verify.ts`，运行时每步先打印 `[verify]` 标签；`pnpm verify --static` 跑除测试以外的全部步骤。合并前跑哪一层由工单脚本按改动路径选，配置见 `docs/agents/run-spec.md`。设计负责人用工单脚本的 `verify` 子命令跑它：屏幕只看尾部和一行结论，完整输出进日志，退出码照实，不用 `| tail` 这种会吞掉退出码的写法。
-- 纯代码合成：`node tools/check-guardrails.ts pure-code` 已进入 verify 的静态步骤，检查 `PureCodeSampleA`、`PureCodeSampleB` 及启动入口的即时依赖，拒绝外部媒体、字体和未登记的动态素材路径；本地生成媒体存在时核对哈希。生成清单与重建命令见 `episodes/pure-code-sample/sources.md`，渲染前先运行本期生成器。
+- 纯代码合成：`node tools/check-guardrails.ts pure-code` 已进入 verify 的静态步骤，按 `episodes/pure-code.json` 的登记逐项检查各期纯代码合成及启动入口的即时依赖，拒绝外部媒体、字体和未登记的动态素材路径；本地生成媒体存在时核对哈希。新的纯代码合成在登记表加一项即被检查（写法见下文「工具」的 kit 一段）。生成清单与重建命令见各期的 `sources.md`，渲染前先运行该期的生成器。
 - commit-msg 钩子：按 `AGENTS.md` 的格式检查提交信息。
 - CI：开 PR、推送 `ticket/**` 和手动触发时跑 `pnpm verify`，并逐条检查分支上的提交信息，兜住绕过本地钩子的提交。工单分支只有派发时加了 `--allow-push` 才会被推上去。集成分支 `spec/**` 推送时不跑：`land` 合并每张工单前已在本机跑过同样的验证。同一个 PR 的新运行会取消还没跑完的旧运行。本地复现：`pnpm verify`，再 `pnpm check:commits origin/main <分支>`。收尾时工单脚本的 `pr-check` 等 PR 的检查跑完。CI 启动不了时（用户 10-31）：GitHub Actions 的设定不动，改为本机验证。判断办法：`gh run view <运行号>` 里作业一步都没跑就失败，注解写 `The job was not started`（例如 10-29 起的账号计费问题）。在 PR 分支上跑上面两条本地复现命令，把结论评论到 PR，代替这次的 CI 结果。
 
