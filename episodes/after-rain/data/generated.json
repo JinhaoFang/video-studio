@@ -6,8 +6,8 @@
     "episodes/after-rain/generate.ts"
   ],
   "status": "complete",
-  "cacheKey": "ed3e709ab601c4f8cb2b9ba56b68674171022b9d772680f758229c1c88bd3795",
-  "plateKey": "a4d569e70188aefff3ac34f4459e509b7f5b2fa9cc776c41593239141f720772",
+  "cacheKey": "94c735d28ad8eaf02f67553907ed085d633354ea54c3fa81ef7694fe299c32c1",
+  "plateKey": "aaba791e93fcf70678acc335f4f466862609ce5651a7a896a178322048c7005a",
   "inputs": [
     {
       "path": "episodes/after-rain/generate.ts",
@@ -23,11 +23,11 @@
     },
     {
       "path": "episodes/after-rain/plates.ts",
-      "sha256": "1bfdfe1d7c7da471e66ef9e43e29ee6301518e7aabc18abf891e98f47049149e"
+      "sha256": "ccf975df93fa56d7764d645dd3f15d1cfdc62b47b6bca1c61a9de85f01b93145"
     },
     {
       "path": "episodes/after-rain/plates-views.ts",
-      "sha256": "58ba04ba1a17820f2546d7b0e015fe77fbfc742f0e405282f098ebe854ff69e5"
+      "sha256": "2ec7fdb261c9e933b80e68befb0a556097aaad7074e19c7b7bcc0366bed8d776"
     },
     {
       "path": "episodes/after-rain/scene.ts",
@@ -66,11 +66,11 @@
   "files": [
     {
       "path": "episodes/after-rain/plate-far-rain.png",
-      "sha256": "78386768bffdd07ad087edb7dc290a6cdc5870b173b5ca97a8a1cf9e11fa9a0a"
+      "sha256": "6abc499af05e086a2651a9d80a334539a4b160548344b2fa248e9cbbf0f1d88d"
     },
     {
       "path": "episodes/after-rain/plate-far-dusk.png",
-      "sha256": "08aff3b91ac4e850836cf0bc027cf5c65f82742b597518e1ac7ea1ddfedd2458"
+      "sha256": "fb670c8fd4e51221ed2225ccf817d1d9dcc2219c1d8d4ba728de255683121e5f"
     },
     {
       "path": "episodes/after-rain/plate-field-rain.png",
@@ -106,35 +106,35 @@
     },
     {
       "path": "episodes/after-rain/plate-house-sky-rain.png",
-      "sha256": "1926f6c2cb81532cf2b7baded0068729fc3db4b0846cc2fb6a0a06b1268dcc12"
+      "sha256": "033758c5209ecaf4033f95f0ef6b8b719af1fb918fadb8bdac9b2cf67d2d600f"
     },
     {
       "path": "episodes/after-rain/plate-house-front-rain.png",
-      "sha256": "d76cdb018fc762d4bd3efeb6c1e63646f65382d1b622c8a9e3620a42e3ad051f"
+      "sha256": "d31f9cd6891dedf9e89d66758ad54d195bd3c43e7e92bbfd74849c211b62bab9"
     },
     {
       "path": "episodes/after-rain/plate-house-sky-twilight.png",
-      "sha256": "42eb1f0bf5cd1dd3c07db2692aec319345777377717e233124becd62dcc553e9"
+      "sha256": "5cc3b9def5ceb87bbac01c8950e75534120f45cda0cd27bfb164335236bc8419"
     },
     {
       "path": "episodes/after-rain/plate-house-front-twilight.png",
-      "sha256": "54e2d41b7171923e457e2ea9f56441a4d26848376be79c79c048846ee5803539"
+      "sha256": "ef87ed029906d457186e07bc124eb4939c5c461e099972423b1309a26282ebbc"
     },
     {
       "path": "episodes/after-rain/plate-house-takeoff.png",
-      "sha256": "29bbf05e038701f77f6f18639fcc2b29793b56fa2674415fc6dc05b28b076099"
+      "sha256": "e91e3d418a154ffeb49203e89d7dfe149da761435b273a37f6a04d40f562a9ab"
     },
     {
       "path": "episodes/after-rain/plate-low-s4.png",
-      "sha256": "7fba1081b94e1d21f81a0773f20ad4db2c1810b6f8e8a8c203d22d67477a53ef"
+      "sha256": "35e754ce26aa4e8a2eb6299802f198033772a28ab44dc146fc57e928aae6196f"
     },
     {
       "path": "episodes/after-rain/plate-low-s6.png",
-      "sha256": "28b2ecd8f6fd012ee796a52df66b13f9343b845acfabcc586975ce85b1e40fa8"
+      "sha256": "534165a5d4a57beba7e4854a976a94bcd53e468679febb8ecae4a26105f6e52e"
     },
     {
       "path": "episodes/after-rain/plate-paddy-wide.png",
-      "sha256": "5b50f1f90fbeaf5d2bb8639eaaefbfc443bf11340cca829c1b2b845ac1110865"
+      "sha256": "b369610a7238372efe0212efaa9f668c57f94c3d52520d892969f10599f6ada6"
     },
     {
       "path": "episodes/after-rain/plate-closeup-s2.png",

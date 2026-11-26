@@ -1,9 +1,7 @@
 /**
- * 《雨后》的水粉底图（院子五层共用底图与通用水粉画法）：远景（天空、积雨云、云缝、远山）、稻田、树篱和树、院子、檐口。
- * 修正小样镜头 1 的两处弱点：
- * 1. 云团不再用一圈圈弧线笔触（一道道笔触），改为统一体积场分层铺设水粉明暗面，仅在明暗交界与受光缘用顺形干笔衔接；
- * 2. 夕光不再混入过多雨天冷灰紫，天光、云缝、云体反光、远山空气感、受光稻田与院子湿地整体转向色彩剧本的暖金与紫蓝阴影对比。
- * 同一套种子在雨色和夕光下落笔布局一致，镜头可按光照遮罩无缝过渡；同时导出通用水粉辅助函数供各新机位底图复用。
+ * 《雨后》的水粉底图（院子五层共用底图与通用水粉画法）：远景（天空、花椰菜状积云、云缝、远山）、稻田、树篱和树、院子、檐口。
+ * 积云按花椰菜状层层云团组织，明暗完全由顺形水粉笔触堆叠（不用一圈圈等值色阶），朝太阳一侧留出清楚的亮边，阴影侧底部碎成小云团、不留直底边。
+ * 夕光保持暖金与紫蓝阴影对比；同一套种子在雨色和夕光下落笔布局一致，镜头可按光照遮罩无缝过渡；同时导出通用水粉笔刷与手绘线辅助函数供各新机位底图复用。
  */
 import { project } from "../../src/kit/engine/camera.ts";
 import type { Vec3 } from "../../src/kit/engine/camera.ts";
@@ -59,6 +57,57 @@ export const line = (b: Brush, pts: readonly [number, number][], width: number, 
     pts.map(([x, y]) => b.P(x, y)),
     { width: width * b.k, color, seed: Math.floor(b.r.next() * 1e6), ...extra },
   );
+
+export const handPath = (
+  b: Brush,
+  a: [number, number],
+  c: [number, number],
+  jitterPx = 1.6,
+  sagPx = 0,
+  steps = 5,
+): [number, number][] => {
+  const dx = c[0] - a[0];
+  const dy = c[1] - a[1];
+  const len = Math.hypot(dx, dy) || 1;
+  const nx = -dy / len;
+  const ny = dx / len;
+  const seed = Math.floor(b.r.next() * 1e5);
+  const pts: [number, number][] = [];
+  for (let i = 0; i <= steps; i++) {
+    const t = i / steps;
+    const mid = Math.sin(Math.PI * t);
+    const wave = (noise1(t * 3.1 + seed * 0.01, seed) - 0.5) * 2 * jitterPx * (0.25 + 0.75 * mid);
+    pts.push([a[0] + dx * t + nx * wave, a[1] + dy * t + ny * wave + sagPx * mid]);
+  }
+  return pts;
+};
+
+export const handLine = (
+  b: Brush,
+  a: [number, number],
+  c: [number, number],
+  width: number,
+  color: RGB,
+  opts: Partial<Parameters<typeof stroke>[2]> & { jitterPx?: number; sagPx?: number; steps?: number } = {},
+) => {
+  const { jitterPx = 1.5, sagPx = 0, steps = 5, ...extra } = opts;
+  line(b, handPath(b, a, c, jitterPx, sagPx, steps), width, color, extra);
+};
+
+export const bilerp = (
+  tl: [number, number],
+  tr: [number, number],
+  br: [number, number],
+  bl: [number, number],
+  u: number,
+  v: number,
+): [number, number] => {
+  const tx = tl[0] + (tr[0] - tl[0]) * u;
+  const ty = tl[1] + (tr[1] - tl[1]) * u;
+  const bx = bl[0] + (br[0] - bl[0]) * u;
+  const by = bl[1] + (br[1] - bl[1]) * u;
+  return [tx + (bx - tx) * v, ty + (by - ty) * v];
+};
 
 export const fill = (b: Brush, pts: readonly [number, number][], color: RGB, rough = 3, alpha = 1) =>
   polygon(
@@ -268,32 +317,66 @@ export const mass = (b: Brush, puffs: Puff[], st: MassStyle) => {
   }
 };
 
-export const billows = (r: Rng, cx: number, base: number, width: number, height: number, flat = 0.3): Puff[] => {
+export const billows = (r: Rng, cx: number, base: number, width: number, height: number, flat = 0.22): Puff[] => {
   const out: Puff[] = [];
-  const crown = (t: number) => Math.pow(Math.max(0, Math.sin(Math.PI * t)), 0.72);
-  const peakWave = (t: number) => 0.66 + 0.34 * noise1(t * 4.4, Math.floor(cx * 0.13 + 7));
-  const shelves = Math.max(4, Math.round(width / (height * 0.48)));
-  for (let i = 0; i < shelves; i++) {
-    const t = (i + 0.5) / shelves + r.range(-0.06, 0.06);
-    const tc = Math.max(0.06, Math.min(0.94, t));
-    const hHere = height * crown(tc) * peakWave(tc);
-    const rad = Math.max(28, hHere * r.range(0.42, 0.58));
-    out.push([cx + (tc - 0.5) * width, base - rad * (0.42 + flat * 0.25), rad * 1.12]);
+  const seed = Math.floor(Math.abs(cx) * 0.31 + Math.abs(base) * 0.17 + 19);
+  const peakA = r.range(0.3, 0.44);
+  const peakB = r.range(0.58, 0.74);
+  const profile = (t: number) => {
+    const env = Math.pow(Math.max(0, Math.sin(Math.PI * t)), 0.58);
+    const towerA = Math.exp(-Math.pow((t - peakA) / 0.22, 2));
+    const towerB = 0.86 * Math.exp(-Math.pow((t - peakB) / 0.19, 2));
+    const ripple = 0.82 + 0.24 * noise1(t * 6.8 + seed * 0.1, seed);
+    return env * (0.44 + 0.64 * Math.max(towerA, towerB)) * ripple;
+  };
+  const baseWave = (t: number) => base + (noise1(t * 5.4 + seed * 0.2, seed + 3) - 0.46) * height * (0.14 + (1 - flat) * 0.14);
+
+  const bellyCount = Math.max(7, Math.round(width / (height * 0.36)));
+  for (let i = 0; i < bellyCount; i++) {
+    const t = Math.max(0.05, Math.min(0.95, (i + 0.5) / bellyCount + r.range(-0.04, 0.04)));
+    const hHere = height * profile(t);
+    const rad = Math.max(28, hHere * r.range(0.34, 0.48));
+    const by = baseWave(t);
+    out.push([cx + (t - 0.5) * width, by - rad * r.range(0.32, 0.56), rad]);
   }
-  const shoulders = Math.max(5, Math.round((width / height) * 4.5 + 3));
-  for (let i = 0; i < shoulders; i++) {
-    const t = (i + 0.4 + r.range(-0.18, 0.18)) / shoulders;
-    const tc = Math.max(0.08, Math.min(0.92, t));
-    const hHere = height * crown(tc) * peakWave(tc);
-    const rad = Math.max(22, hHere * r.range(0.26, 0.4));
-    out.push([cx + (tc - 0.5) * width, base - hHere * r.range(0.55, 0.85) + rad * 0.35, rad]);
+
+  const midCount = Math.max(9, Math.round((width / height) * 4.8 + 5));
+  for (let i = 0; i < midCount; i++) {
+    const t = Math.max(0.08, Math.min(0.92, (i + 0.45 + r.range(-0.18, 0.18)) / midCount));
+    const hHere = height * profile(t);
+    const rad = Math.max(24, hHere * r.range(0.26, 0.4));
+    const px = cx + (t - 0.5) * width;
+    const py = baseWave(t) - hHere * r.range(0.45, 0.78) + rad * 0.22;
+    out.push([px, py, rad]);
+    const sub = 2;
+    for (let s = 0; s < sub; s++) {
+      const a = r.range(-Math.PI * 0.88, -Math.PI * 0.12);
+      const dist = rad * r.range(0.42, 0.7);
+      out.push([px + Math.cos(a) * dist * 1.08, py + Math.sin(a) * dist * 0.88, rad * r.range(0.5, 0.72)]);
+    }
   }
-  const crowns = Math.round((width / height) * 5 + 5);
-  for (let i = 0; i < crowns; i++) {
+
+  const crownCount = Math.max(11, Math.round((width / height) * 6.0 + 6));
+  for (let i = 0; i < crownCount; i++) {
     const t = r.range(0.08, 0.92);
-    const hHere = height * crown(t) * peakWave(t);
-    const rad = Math.max(16, hHere * r.range(0.16, 0.28));
-    out.push([cx + (t - 0.5) * width, base - hHere + rad * r.range(0.35, 0.75), rad]);
+    const hHere = height * profile(t);
+    const rad = Math.max(18, hHere * r.range(0.17, 0.28));
+    const px = cx + (t - 0.5) * width;
+    const py = baseWave(t) - hHere * r.range(0.76, 1.0) + rad * r.range(0.18, 0.46);
+    out.push([px, py, rad]);
+    const a = r.range(-Math.PI * 0.9, 0.05);
+    const dist = rad * r.range(0.45, 0.76);
+    out.push([px + Math.cos(a) * dist * 1.08, py + Math.sin(a) * dist * 0.82, rad * r.range(0.48, 0.7)]);
+  }
+
+  const underCount = Math.max(11, Math.round(width / 88));
+  for (let i = 0; i < underCount; i++) {
+    const t = r.range(0.01, 0.96);
+    const by = baseWave(t);
+    const px = cx + (t - 0.5) * width;
+    const rad = Math.max(12, height * r.range(0.06, 0.13));
+    const drop = r.range(-rad * 0.1, rad * 1.25);
+    out.push([px, by + drop, rad]);
   }
   return out;
 };
@@ -307,12 +390,232 @@ const cloudTones = (state: LightState, x: number, y: number, weight: number): Ma
     const rim = rgb(rain.cloud.edge);
     return { shadow, mid, lit, rim };
   }
-  const baseShadow = mixRgb(rgb(dusk.cloud.shadow), rgb(dusk.shadowViolet), 0.22 + weight * 0.24);
-  const shadow = mixRgb(baseShadow, rgb(dusk.cloud.warm), sunness * 0.2);
-  const mid = mixRgb(shadow, rgb(dusk.cloud.warm), 0.52 + sunness * 0.28);
-  const lit = mixRgb(rgb(dusk.cloud.warm), rgb(dusk.cloud.edge), 0.58 + sunness * 0.34);
-  const rim = mixRgb(rgb(dusk.cloudGap[1]), rgb(dusk.cloudGap[0]), 0.45 + sunness * 0.5);
+  const baseShadow = mixRgb(rgb(dusk.cloud.shadow), rgb(dusk.shadowViolet), 0.2 + weight * 0.22);
+  const shadow = mixRgb(baseShadow, rgb(dusk.cloud.warm), sunness * 0.16);
+  const mid = mixRgb(shadow, rgb(dusk.cloud.warm), 0.54 + sunness * 0.26);
+  const lit = mixRgb(rgb(dusk.cloud.warm), rgb(dusk.cloud.edge), 0.64 + sunness * 0.3);
+  const rim = mixRgb(rgb(dusk.cloudGap[1]), rgb(dusk.cloudGap[0]), 0.54 + sunness * 0.44);
   return { shadow, mid, lit, rim };
+};
+
+export const cloudCauliflower = (
+  b: Brush,
+  puffs: Puff[],
+  tones: MassTones,
+  sunPt: { x: number; y: number },
+  isWarm: boolean,
+) => {
+  if (puffs.length === 0) return;
+  let minY = Infinity;
+  let maxY = -Infinity;
+  let minX = Infinity;
+  let maxX = -Infinity;
+  for (const [x, y, r] of puffs) {
+    minX = Math.min(minX, x - r);
+    maxX = Math.max(maxX, x + r);
+    minY = Math.min(minY, y - r);
+    maxY = Math.max(maxY, y + r);
+  }
+  const spanY = Math.max(40, maxY - minY);
+  const spanX = Math.max(80, maxX - minX);
+  const cxAll = (minX + maxX) * 0.5;
+  const cyAll = (minY + maxY) * 0.5;
+  const baseSunX = sunPt.x - cxAll;
+  const baseSunY = sunPt.y - cyAll;
+  const baseSunLen = Math.hypot(baseSunX, baseSunY) || 1;
+  const sunDirX = baseSunX / baseSunLen;
+  const sunDirY = baseSunY / baseSunLen;
+
+  const densityAt = (x: number, y: number, skipIdx: number) => {
+    let s = 0;
+    for (let i = 0; i < puffs.length; i++) {
+      if (i === skipIdx) continue;
+      const [px, py, r] = puffs[i];
+      const dx = (x - px) / 1.16;
+      const dy = y - py;
+      const d2 = dx * dx + dy * dy;
+      if (d2 < r * r * 2.2) s += Math.exp(-d2 / (r * r));
+    }
+    return s;
+  };
+
+  type RichPuff = {
+    x: number;
+    y: number;
+    r: number;
+    wide: number;
+    exposure: number;
+    rimFactor: number;
+    isFragment: boolean;
+    sx: number;
+    sy: number;
+  };
+
+  const rich: RichPuff[] = puffs.map(([x, y, r], idx) => {
+    const dx = sunPt.x - x;
+    const dy = sunPt.y - y;
+    const dl = Math.hypot(dx, dy) || 1;
+    const sx = dx / dl;
+    const sy = dy / dl;
+    const occ1 = densityAt(x + sx * r * 1.15, y + sy * r * 1.15, idx);
+    const occ2 = densityAt(x + sx * r * 2.1, y + sy * r * 2.1, idx);
+    const occUp = densityAt(x, y - r * 1.15, idx);
+    const up = Math.max(0, Math.min(1, (maxY - y) / spanY));
+    const sideToSun = ((x - cxAll) * sunDirX + (y - cyAll) * sunDirY) / (spanX * 0.5);
+    const sunProx = Math.exp(-dl / 960);
+    const isFragment = y > maxY - spanY * 0.25 && r < spanY * 0.16 && sideToSun < 0.35;
+    const clearSun = Math.max(0, 1 - occ1 * 0.48 - occ2 * 0.25);
+    const clearTop = Math.max(0, 1 - occUp * 0.42);
+    const exposure = Math.max(
+      0,
+      Math.min(1, clearSun * 0.54 + clearTop * 0.2 + up * 0.24 + sideToSun * 0.32 + sunProx * 0.2 - (isFragment ? 0.6 : 0.18)),
+    );
+    const rimFactor = Math.max(0, Math.min(1, clearSun * 0.9 + Math.max(0, sideToSun) * 0.32 + up * 0.22 - 0.54));
+    const wide = isFragment ? 1.48 + b.r.range(-0.1, 0.24) : 1.12 + 0.16 * noise1(x * 0.013 + y * 0.017, 61);
+    return { x, y, r, wide, exposure, rimFactor, isFragment, sx, sy };
+  });
+
+  const deepShadow = shadeRgb(tones.shadow, isWarm ? 0.9 : 0.88);
+  const softShadow = mixRgb(tones.shadow, tones.mid, 0.32);
+  const warmMid = mixRgb(tones.shadow, tones.mid, 0.78);
+  const warmLit = mixRgb(tones.mid, tones.lit, 0.82);
+
+  const puffPoly = (p: RichPuff, scale = 1, ox = 0, oy = 0) =>
+    arc(p.x + ox, p.y + oy, p.r * scale, 0, Math.PI * 2, 16)
+      .slice(0, -1)
+      .map(([px, py]) => [p.x + ox + (px - (p.x + ox)) * p.wide, py] as [number, number]);
+
+  for (const p of rich) {
+    if (p.isFragment) continue;
+    const baseCol = mixRgb(deepShadow, tones.shadow, Math.min(1, 0.35 + p.exposure * 0.55));
+    fill(b, puffPoly(p, 1.03), jitter(b, baseCol, 0.014), Math.max(2, p.r * 0.11), 0.98);
+  }
+
+  for (const p of rich) {
+    if (!p.isFragment) continue;
+    const sunNear = Math.exp(-Math.hypot(p.x - sunPt.x, p.y - sunPt.y) / 620);
+    const wisps = 2 + Math.floor(b.r.next() * 2);
+    for (let i = 0; i < wisps; i++) {
+      const ox = b.r.range(-p.r * 0.7, p.r * 0.7);
+      const oy = b.r.range(-p.r * 0.35, p.r * 0.4);
+      const len = p.r * b.r.range(1.15, 2.0);
+      const baseWisp = mixRgb(deepShadow, tones.shadow, b.r.range(0.18, 0.62));
+      const col = isWarm ? mixRgb(baseWisp, tones.mid, sunNear * 0.45) : baseWisp;
+      line(
+        b,
+        curve([p.x + ox - len * 0.5, p.y + oy], [p.x + ox + len * 0.5, p.y + oy + b.r.range(-4, 4)], b.r.range(-0.07, 0.07), 4),
+        p.r * b.r.range(0.45, 0.85),
+        jitter(b, col, 0.022),
+        { dry: 0.46, body: 0.52, alpha: b.r.range(0.54, 0.8), taper: [0.38, 0.38], streak: 0.05 },
+      );
+    }
+  }
+
+  const shadowSweepCount = Math.max(12, Math.round(spanX / 95));
+  for (let i = 0; i < shadowSweepCount; i++) {
+    const p = rich[Math.floor(b.r.next() * rich.length)];
+    if (p.isFragment || p.exposure > 0.65) continue;
+    const len = p.r * b.r.range(1.1, 1.9);
+    const col = b.r.next() < 0.45 ? deepShadow : softShadow;
+    line(
+      b,
+      curve([p.x - len * 0.5, p.y + b.r.range(-p.r * 0.2, p.r * 0.3)], [p.x + len * 0.5, p.y + b.r.range(-p.r * 0.2, p.r * 0.3)], b.r.range(-0.08, 0.08), 4),
+      p.r * b.r.range(0.32, 0.48),
+      jitter(b, col, 0.014),
+      { dry: 0.48, body: 0.46, alpha: b.r.range(0.16, 0.28), taper: [0.42, 0.42], streak: 0.04 },
+    );
+  }
+
+  const bodyPuffs = rich
+    .filter((p) => !p.isFragment && p.exposure > 0.2)
+    .sort((a, c) => a.exposure - c.exposure);
+
+  for (const p of bodyPuffs) {
+    const sunAngle = Math.atan2(p.sy - 0.36, p.sx);
+    const shift = p.r * 0.22;
+    const colMid = isWarm
+      ? mixRgb(softShadow, warmMid, Math.min(1, (p.exposure - 0.16) / 0.5))
+      : mixRgb(tones.shadow, tones.mid, Math.min(0.85, (p.exposure - 0.18) / 0.55));
+    fill(b, puffPoly(p, 0.86, Math.cos(sunAngle) * shift * p.wide, Math.sin(sunAngle) * shift), jitter(b, colMid, 0.015), Math.max(2, p.r * 0.15), 0.78);
+
+    const midStrokes = p.r > 48 ? 5 : 3;
+    for (let i = 0; i < midStrokes; i++) {
+      const a = sunAngle + b.r.range(-1.15, 1.15);
+      const dist = p.r * b.r.range(0.15, 0.56);
+      const mx = p.x + Math.cos(a) * dist * p.wide;
+      const my = p.y + Math.sin(a) * dist;
+      const tx = -Math.sin(a);
+      const ty = Math.cos(a);
+      const half = p.r * b.r.range(0.28, 0.54);
+      line(
+        b,
+        curve([mx - tx * half, my - ty * half], [mx + tx * half, my + ty * half], b.r.range(-0.14, 0.14), 4),
+        p.r * b.r.range(0.36, 0.58),
+        jitter(b, colMid, 0.018),
+        { dry: 0.36, body: 0.62, alpha: b.r.range(0.46, 0.72), taper: [0.38, 0.38], streak: 0.05 },
+      );
+    }
+  }
+
+  const litPuffs = rich
+    .filter((p) => !p.isFragment && p.exposure > 0.36)
+    .sort((a, c) => a.exposure - c.exposure);
+
+  for (const p of litPuffs) {
+    const sunAngle = Math.atan2(p.sy - 0.36, p.sx);
+    const strength = Math.min(1, (p.exposure - 0.34) / 0.5);
+    const shift = p.r * 0.3;
+    const colLit = isWarm
+      ? mixRgb(warmMid, warmLit, 0.42 + strength * 0.58)
+      : mixRgb(tones.mid, tones.lit, 0.38 + strength * 0.48);
+    fill(b, puffPoly(p, 0.72, Math.cos(sunAngle) * shift * p.wide, Math.sin(sunAngle) * shift), jitter(b, colLit, 0.015), Math.max(1.8, p.r * 0.15), 0.74);
+
+    const litStrokes = p.r > 46 ? 5 : 3;
+    for (let i = 0; i < litStrokes; i++) {
+      const a = sunAngle + b.r.range(-0.88, 0.88);
+      const dist = p.r * b.r.range(0.3, 0.68);
+      const mx = p.x + Math.cos(a) * dist * p.wide;
+      const my = p.y + Math.sin(a) * dist;
+      const tx = -Math.sin(a);
+      const ty = Math.cos(a);
+      const half = p.r * b.r.range(0.26, 0.46);
+      const c = isWarm ? mixRgb(colLit, tones.lit, b.r.range(0.28, 0.82)) : colLit;
+      line(
+        b,
+        curve([mx - tx * half, my - ty * half], [mx + tx * half, my + ty * half], b.r.range(0.06, 0.18), 4),
+        p.r * b.r.range(0.28, 0.46),
+        jitter(b, c, 0.014),
+        { dry: 0.3, body: 0.7, alpha: b.r.range(0.56, 0.82), taper: [0.36, 0.36], streak: 0.04 },
+      );
+    }
+  }
+
+  const rimPuffs = rich
+    .filter((p) => !p.isFragment && p.rimFactor > 0.22)
+    .sort((a, c) => a.rimFactor - c.rimFactor);
+
+  for (const p of rimPuffs) {
+    const sunAngle = Math.atan2(p.sy - 0.38, p.sx);
+    const rimCount = p.r > 40 ? 3 : 2;
+    for (let i = 0; i < rimCount; i++) {
+      const a = sunAngle + b.r.range(-0.62, 0.62);
+      const span = b.r.range(0.26, 0.52);
+      const rr = p.r * b.r.range(0.74, 0.94);
+      const pts = arc(p.x, p.y, rr, a - span, a + span, 5).map(
+        ([px, py]) => [p.x + (px - p.x) * p.wide, py] as [number, number],
+      );
+      const rimCol = isWarm
+        ? mixRgb(tones.lit, tones.rim, Math.min(1, 0.46 + p.rimFactor * 0.54))
+        : mixRgb(tones.mid, tones.rim, Math.min(0.7, 0.3 + p.rimFactor * 0.42));
+      line(b, pts, Math.max(4.5, p.r * b.r.range(0.14, 0.24)), jitter(b, rimCol, 0.012), {
+        dry: 0.22,
+        body: 0.84,
+        alpha: isWarm ? b.r.range(0.76, 0.94) : b.r.range(0.42, 0.64),
+        taper: [0.36, 0.36],
+        streak: 0.04,
+      });
+    }
+  }
 };
 
 export const cloudVolumetric = (
@@ -321,251 +624,40 @@ export const cloudVolumetric = (
   tones: MassTones,
   sunPt: { x: number; y: number },
   isWarm: boolean,
-  floor?: number,
 ) => {
-  let x0 = Infinity;
-  let y0 = Infinity;
-  let x1 = -Infinity;
-  let y1 = -Infinity;
-  for (const [x, y, r] of puffs) {
-    x0 = Math.min(x0, x - r * 1.45);
-    y0 = Math.min(y0, y - r * 1.18);
-    x1 = Math.max(x1, x + r * 1.45);
-    y1 = Math.max(y1, y + r * 1.18);
-  }
-  if (floor !== undefined) y1 = Math.min(y1, floor + 10);
-  const smax = (a: number, c: number, k: number) => {
-    const h = Math.max(k - Math.abs(a - c), 0) / k;
-    return Math.max(a, c) + h * h * k * 0.25;
-  };
-  const heightAt = (x: number, y: number) => {
-    if (floor !== undefined && y > floor + 4) return 0;
-    let hMax = 0;
-    for (const [px, py, r] of puffs) {
-      const dx = (x - px) / 1.32;
-      const dy = y - py;
-      const d2 = dx * dx + dy * dy;
-      const r2 = r * r;
-      if (d2 < r2) {
-        const h = Math.sqrt(r2 - d2);
-        hMax = hMax > 0 ? smax(hMax, h, Math.min(26, r * 0.42)) : h;
-      }
-    }
-    if (floor !== undefined && hMax > 0) {
-      const fCut = Math.max(0, Math.min(1, (floor + 4 - y) / 22));
-      hMax *= fCut;
-    }
-    return hMax;
-  };
-  const cell = 7;
-  const nx = Math.ceil((x1 - x0) / cell) + 1;
-  const ny = Math.ceil((y1 - y0) / cell) + 1;
-  const grid = { x0, y0, cell, nx, ny };
-  const hv = new Float32Array(nx * ny);
-  const fv = new Float32Array(nx * ny);
-  for (let j = 0; j < ny; j++) {
-    const y = y0 + j * cell;
-    for (let i = 0; i < nx; i++) {
-      const x = x0 + i * cell;
-      const h = heightAt(x, y);
-      hv[j * nx + i] = h;
-      fv[j * nx + i] = 4.5 - h;
-    }
-  }
-  const lv = new Float32Array(nx * ny);
-  const rv = new Float32Array(nx * ny);
-  const hSpan = Math.max(1, y1 - y0);
-  for (let j = 0; j < ny; j++) {
-    const y = y0 + j * cell;
-    const j0 = Math.max(0, j - 1);
-    const j1 = Math.min(ny - 1, j + 1);
-    for (let i = 0; i < nx; i++) {
-      const k = j * nx + i;
-      const h = hv[k];
-      if (h <= 2.0) {
-        lv[k] = -2;
-        rv[k] = -2;
-        continue;
-      }
-      const x = x0 + i * cell;
-      const i0 = Math.max(0, i - 1);
-      const i1 = Math.min(nx - 1, i + 1);
-      const dhx = (hv[j * nx + i1] - hv[j * nx + i0]) / (2 * cell);
-      const dhy = (hv[j1 * nx + i] - hv[j0 * nx + i]) / (2 * cell);
-      const nl = Math.hypot(dhx, dhy, 1.05) || 1;
-      const nX = -dhx / nl;
-      const nY = -dhy / nl;
-      const nZ = 1.05 / nl;
-      const sx = sunPt.x - x;
-      const sy = sunPt.y - y;
-      const sl = Math.hypot(sx, sy, 360) || 1;
-      const sX = sx / sl;
-      const sY = sy / sl;
-      const sZ = 360 / sl;
-      const dot = nX * sX + nY * sY + nZ * sZ * 0.25;
-      const hAhead = heightAt(x + sX * 32, y + sY * 32);
-      const selfOcc = Math.max(0, Math.min(1, (hAhead - h + 4) / 48));
-      const sunProx = Math.exp(-Math.hypot(x - sunPt.x, y - sunPt.y) / 820);
-      const up = Math.max(0, Math.min(1, (y1 - y) / hSpan));
-      const softNoise = (fbm2(x / 130, y / 100, 83, 2) - 0.5) * 0.08;
-      const reach = isWarm ? 1 : 0.65;
-      const light = (dot * 0.68 + up * 0.42 + sunProx * 0.28 - selfOcc * 0.32 - 0.14 + softNoise) * reach;
-      const rimEdge = Math.exp(-Math.max(0, h - 4.5) / 20);
-      const rim = dot * 0.72 + Math.max(0, -nY) * 0.24 + rimEdge * 0.48 + sunProx * 0.26 - selfOcc * 0.45 - 0.48;
-      lv[k] = light;
-      rv[k] = rim;
-    }
-  }
-  const extract = (values: Float32Array) =>
-    contours(values, grid)
-      .map((loop) => resample(smooth(loop, 1), 4))
-      .filter((loop) => loop.length > 10);
-  const subZone = (field: Float32Array, threshold: number) => {
-    const out = new Float32Array(nx * ny);
-    for (let k = 0; k < out.length; k++) out[k] = Math.max(fv[k] * 2.5, threshold - field[k]);
-    return out;
-  };
-  const paintField = (loops: Point[][], color: RGB, rough: number, alpha = 1) => {
-    for (const loop of loops) {
-      polygon(
-        b.c,
-        roughen(
-          loop.map(([x, y]) => b.P(x, y)),
-          7 * b.k,
-          rough * b.k,
-          Math.floor(b.r.next() * 1e6),
-        ),
-        color,
-        alpha,
-      );
-    }
-  };
-  const baseLoops = extract(fv);
-  paintField(baseLoops, jitter(b, tones.shadow, 0.01), 1.6, 1);
-  if (isWarm) {
-    const bellyZone = new Float32Array(nx * ny);
-    for (let j = 0; j < ny; j++) {
-      const y = y0 + j * cell;
-      const nearBase = Math.max(0, 1 - Math.abs(y1 - 12 - y) / Math.max(36, hSpan * 0.26));
-      for (let i = 0; i < nx; i++) {
-        const x = x0 + i * cell;
-        const sunSide = Math.exp(-Math.hypot(x - sunPt.x, y - sunPt.y) / 960);
-        const k = j * nx + i;
-        bellyZone[k] = Math.max(fv[k] * 2.5, 0.42 - nearBase * (0.42 + 0.58 * sunSide));
-      }
-    }
-    paintField(extract(bellyZone), mixRgb(tones.shadow, tones.mid, 0.38), 2.4, 0.58);
-  }
-  const planes: [number, RGB, number][] = isWarm
-    ? [
-        [0.12, mixRgb(tones.shadow, tones.mid, 0.52), 0.94],
-        [0.28, tones.mid, 0.96],
-        [0.46, mixRgb(tones.mid, tones.lit, 0.8), 0.97],
-        [0.62, mixRgb(tones.lit, tones.rim, 0.3), 0.98],
-      ]
-    : [
-        [0.12, mixRgb(tones.shadow, tones.mid, 0.56), 0.92],
-        [0.3, tones.mid, 0.92],
-        [0.48, tones.lit, 0.86],
-      ];
-  for (const [th, col, alpha] of planes) {
-    paintField(extract(subZone(lv, th)), jitter(b, col, 0.01), 2.2, alpha);
-  }
-  if (isWarm) {
-    paintField(extract(subZone(rv, 0.46)), jitter(b, mixRgb(tones.lit, tones.rim, 0.62), 0.01), 1.8, 0.94);
-    paintField(extract(subZone(rv, 0.66)), jitter(b, tones.rim, 0.01), 1.4, 0.96);
-  }
-  const area = (x1 - x0) * (y1 - y0);
-  const dabs = Math.min(95, Math.floor(area / 4200));
-  for (let i = 0; i < dabs; i++) {
-    const x = b.r.range(x0, x1);
-    const y = b.r.range(y0, y1);
-    const gi = Math.max(1, Math.min(nx - 2, Math.round((x - x0) / cell)));
-    const gj = Math.max(1, Math.min(ny - 2, Math.round((y - y0) / cell)));
-    const k = gj * nx + gi;
-    if (hv[k] <= 8) continue;
-    const light = lv[k];
-    let bestDiff = Infinity;
-    let col = tones.shadow;
-    for (let p = 0; p < planes.length; p++) {
-      const diff = Math.abs(light - planes[p][0]);
-      if (diff < bestDiff) {
-        bestDiff = diff;
-        col = planes[p][1];
-      }
-    }
-    if (bestDiff > 0.1) continue;
-    const dhx = hv[gj * nx + gi + 1] - hv[gj * nx + gi - 1];
-    const dhy = hv[(gj + 1) * nx + gi] - hv[(gj - 1) * nx + gi];
-    const l = Math.hypot(dhx, dhy) || 1;
-    const tx = -dhy / l;
-    const ty = dhx / l;
-    const len = b.r.range(24, 52);
-    line(
-      b,
-      [
-        [x - tx * len * 0.45, y - ty * len * 0.45],
-        [x - (dhx / l) * 2.5, y - (dhy / l) * 2.5],
-        [x + tx * len * 0.45, y + ty * len * 0.45],
-      ],
-      b.r.range(10, 18),
-      jitter(b, col, 0.02),
-      { dry: 0.34, body: 0.48, alpha: 0.42, taper: [0.35, 0.35], streak: 0.05 },
-    );
-  }
-  if (isWarm) {
-    for (const loop of baseLoops) {
-      if (loop.length < 24) continue;
-      for (let i = 0; i < loop.length; i += 4) {
-        const [x, y] = loop[i];
-        const gi = Math.max(0, Math.min(nx - 1, Math.round((x - x0) / cell)));
-        const gj = Math.max(0, Math.min(ny - 1, Math.round((y - y0) / cell)));
-        if (rv[gj * nx + gi] < 0.58 || b.r.next() < 0.45) continue;
-        const seg = loop.slice(i, Math.min(loop.length, i + 2 + Math.floor(b.r.range(3, 8))));
-        if (seg.length < 2) continue;
-        line(
-          b,
-          seg.map(([px, py]) => [px, py] as [number, number]),
-          b.r.range(3.0, 5.8),
-          jitter(b, tones.rim, 0.012),
-          { dry: 0.25, body: 0.7, alpha: 0.86, taper: [0.35, 0.35] },
-        );
-        i += seg.length;
-      }
-    }
-  }
+  cloudCauliflower(b, puffs, tones, sunPt, isWarm);
 };
 
-const cloud = (b: Brush, state: LightState, puffs: Puff[], weight: number, floor?: number) => {
+const cloud = (b: Brush, state: LightState, puffs: Puff[], weight: number) => {
   const cx = puffs.reduce((a, p) => a + p[0], 0) / puffs.length;
   const cy = puffs.reduce((a, p) => a + p[1], 0) / puffs.length;
   const t = cloudTones(state, cx, cy, weight);
-  cloudVolumetric(b, puffs, t, SUN, state === "dusk", floor);
+  cloudCauliflower(b, puffs, t, SUN, state === "dusk");
 };
 
 const paintFar = (plate: Plate, state: LightState): Paper => {
   const b = makeBrush(plate, state === "dusk", 1601);
   const { rect } = plate;
-  paintWash(b, rect.y0, HORIZON + 45, (x, y) => skyColor(state, x, y), 0.016, 1601);
-  for (let i = 0; i < 18; i++) {
-    const y = b.r.range(rect.y0 + 20, HORIZON - 90);
-    const x = b.r.range(rect.x0, rect.x1 - 240);
-    const len = b.r.range(280, 620);
+  paintWash(b, rect.y0, HORIZON + 45, (x, y) => skyColor(state, x, y), 0.015, 1601);
+  for (let i = 0; i < 38; i++) {
+    const y = b.r.range(rect.y0 + 16, HORIZON - 70);
+    const x = b.r.range(rect.x0 - 80, rect.x1 - 180);
+    const len = b.r.range(240, 580);
     const mx = x + len * 0.5;
     const base = skyColor(state, mx, y);
-    const tint = state === "dusk" ? mixRgb(base, rgb(dusk.cloudGap[1]), 0.14) : mixRgb(base, rgb(rain.cloud.edge), 0.08);
+    const tint = state === "dusk" ? mixRgb(base, rgb(dusk.cloudGap[1]), 0.14) : mixRgb(base, rgb(rain.cloud.edge), 0.09);
     line(
       b,
-      curve([x, y], [x + len, y + b.r.range(-8, 8)], b.r.range(-0.02, 0.02)),
-      b.r.range(24, 46),
-      jitter(b, tint, 0.015),
-      { dry: 0.38, body: 0.42, alpha: 0.34, streak: 0.04, taper: [0.35, 0.35] },
+      curve([x, y], [x + len, y + b.r.range(-9, 9)], b.r.range(-0.02, 0.02)),
+      b.r.range(28, 56),
+      jitter(b, tint, 0.018),
+      { dry: 0.36, body: 0.45, alpha: 0.36, streak: 0.06, taper: [0.35, 0.35] },
     );
   }
   if (state === "dusk") {
-    for (let i = 0; i < 65; i++) {
+    for (let i = 0; i < 72; i++) {
       const a = b.r.range(0, Math.PI * 2);
-      const d = Math.abs(b.r.gauss()) * 160;
+      const d = Math.abs(b.r.gauss()) * 165;
       const x = SUN.x + Math.cos(a) * d * 1.8;
       const y = SUN.y + Math.sin(a) * d * 0.72;
       const fade = Math.max(0.22, 1 - d / 420);
@@ -602,24 +694,24 @@ const paintFar = (plate: Plate, state: LightState): Paper => {
       );
     }
   }
-  cloud(b, state, billows(b.r, 560, 420, 1250, 420), 1, 425);
-  cloud(b, state, billows(b.r, 60, 470, 600, 190), 1, 472);
-  cloud(b, state, billows(b.r, 1260, 210, 560, 190), 0.85, 212);
-  cloud(b, state, billows(b.r, 1960, 360, 520, 290), 0.8, 362);
-  for (let i = 0; i < 8; i++) {
-    const y = b.r.range(475, 540);
-    const x = b.r.range(940, 1980);
-    const len = b.r.range(180, 400);
+  cloud(b, state, billows(b.r, 560, 420, 1250, 420), 1);
+  cloud(b, state, billows(b.r, 60, 470, 600, 190), 1);
+  cloud(b, state, billows(b.r, 1260, 210, 560, 190), 0.85);
+  cloud(b, state, billows(b.r, 1960, 360, 520, 290), 0.8);
+  for (let i = 0; i < 10; i++) {
+    const y = b.r.range(468, 536);
+    const x = b.r.range(720, 1980);
+    const len = b.r.range(160, 380);
     const col = cloudTones(state, x, y, 0.45);
-    line(b, curve([x, y], [x + len, y + b.r.range(-4, 4)], 0.01), b.r.range(8, 16), jitter(b, mixRgb(col.shadow, col.mid, 0.6), 0.025), {
-      dry: 0.38,
+    line(b, curve([x, y], [x + len, y + b.r.range(-5, 5)], 0.015), b.r.range(8, 16), jitter(b, mixRgb(col.shadow, col.mid, 0.56), 0.025), {
+      dry: 0.4,
       body: 0.52,
-      alpha: 0.75,
-      taper: [0.35, 0.35],
+      alpha: 0.72,
+      taper: [0.36, 0.36],
     });
-    line(b, curve([x + len * 0.12, y - 5], [x + len * 0.82, y - 7], 0.01), b.r.range(3.5, 6.5), jitter(b, col.rim, 0.02), {
+    line(b, curve([x + len * 0.14, y - 5], [x + len * 0.82, y - 7], 0.01), b.r.range(3.5, 6.5), jitter(b, col.rim, 0.02), {
       dry: 0.32,
-      alpha: 0.85,
+      alpha: state === "dusk" ? 0.84 : 0.48,
       taper: [0.35, 0.35],
     });
   }
