@@ -42,6 +42,7 @@ export type SfxName =
   | "rain_tail"
   | "eave_drips"
   | "higurashi"
+  | "garden_air"
   | "drip_hit"
   | "feather_flinch"
   | "feather_shake"

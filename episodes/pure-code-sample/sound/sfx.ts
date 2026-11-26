@@ -1,4 +1,4 @@
-/** 十三种纯合成音效；对齐点按材质定义的接触/动作极值返回，环境床接受密度曲线；参考电平在混音前统一归一。 */
+/** 十四种纯合成音效；对齐点按材质定义的接触/动作极值返回，环境床接受密度曲线；参考电平在混音前统一归一。 */
 import { curve, normalizeReference, random, rate } from "./dsp.ts";
 import type { Clip, SfxName } from "./types.ts";
 
@@ -6,6 +6,7 @@ export const sfxTiming: Record<SfxName, [number, number]> = {
   rain_tail: [4.5, 0],
   eave_drips: [4, 0],
   higurashi: [4, 0],
+  garden_air: [4, 0],
   drip_hit: [0.28, 0.012],
   feather_flinch: [0.12, 0.065],
   feather_shake: [0.17, 0.085],
@@ -102,6 +103,11 @@ export const synthesizeSfx = (
         }
         break;
       }
+      case "garden_air":
+        value =
+          (dark * 0.9 + low * 0.06) *
+          (1 + 0.2 * Math.sin(twoPi * 0.13 * t) * Math.sin(twoPi * 0.07 * t + 1));
+        break;
       case "drip_hit":
       case "drip_land": {
         if (local >= 0) {

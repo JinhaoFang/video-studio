@@ -48,7 +48,7 @@
       "from": {
         "event": "puff"
       },
-      "notes": "抖水时不配乐，蓬起时竖琴拨一下，随后静默"
+      "notes": "抖水时不配乐，蓬起时竖琴拨一下，之后不再出新音，让余音自然响完，直到看光"
     },
     {
       "id": "look",
@@ -182,22 +182,18 @@
           "instrument": "harp",
           "pitch": "F2",
           "beat": 0,
-          "beats": 0.33,
+          "beats": 2,
           "velocity": 0.4
         },
         {
           "instrument": "harp",
           "pitch": "F4",
           "beat": 0,
-          "beats": 0.33,
+          "beats": 2,
           "velocity": 0.28
         }
       ],
-      "articulation": "止音：拨完按住琴弦，余音和厅堂尾声在约 0.4 秒内收干净，再进入静默",
-      "mustEndBefore": {
-        "event": "hush",
-        "offsetFrames": 10
-      }
+      "articulation": "让它自然响完：拨一下之后不止音、不再出新音，余音和厅堂尾声自然衰减，接进看光的弦乐"
     },
     {
       "id": "look",

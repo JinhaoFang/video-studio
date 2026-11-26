@@ -6,7 +6,7 @@
     "episodes/pure-code-sample/generate.ts"
   ],
   "status": "complete",
-  "cacheKey": "77f3ac2444553961edbaaf75348ba27ef7b252c46bb9788ef9d70ecfb48caa16",
+  "cacheKey": "09315a4c5a59dbdfbabbb6aa917d659763b77d3d77160514f4c62ab4740fb1df",
   "plateKey": "14bcf98175da2ace59e6165cc1bd837852205dc94234c93dce4e29ed822ec006",
   "inputs": [
     {
@@ -63,7 +63,7 @@
     },
     {
       "path": "episodes/pure-code-sample/sound/types.ts",
-      "sha256": "d7a28e87c0ff2b7ade7719d6c75d365786be1cec54ec6440b75c591b5074b936"
+      "sha256": "60a1f0576fb0f2fc61014b6eb2587dcec3c9bc47d0653d88e89cbe2689ce7d1e"
     },
     {
       "path": "episodes/pure-code-sample/sound/dsp.ts",
@@ -75,7 +75,7 @@
     },
     {
       "path": "episodes/pure-code-sample/sound/sfx.ts",
-      "sha256": "05053a8f7c6c238686a163a35fa180577d86d61cec567e9f9746a8109d8fc874"
+      "sha256": "fc0987427104f8976585f91152724871849e5ded8a41abf094dbc5e966587e71"
     },
     {
       "path": "episodes/pure-code-sample/sound/mix.ts",
@@ -87,7 +87,7 @@
     },
     {
       "path": "episodes/pure-code-sample/sound/render.ts",
-      "sha256": "7534d1abd9f73a92a5750b8315a08c938eaff17b838ae59a37e78a8bafbb5043"
+      "sha256": "76a0a067ba5922801dca74015e12fbc7abd1dfe5140261d76ecbe14440bdb51b"
     },
     {
       "path": "tools/cli.ts",
@@ -97,11 +97,11 @@
   "dataInputs": [
     {
       "path": "episodes/pure-code-sample/score.json",
-      "sha256": "d9f7d21e09e3aaaa2a3088eadde954b984de3ac0773b93ac38cfaba342fca621"
+      "sha256": "3ad39b53cc885436de7157452d1b448f3158df5c0711d62309f391b77a2bd6cd"
     },
     {
       "path": "episodes/pure-code-sample/sound.json",
-      "sha256": "acea19438f60b8a1d23f20539094b7618fdc9abe13dc3cd5762d6416c67ba99e"
+      "sha256": "a2b76cd848303a5ca34a3decf887eda3c8d221cd561c5a86f305eae7f9871401"
     }
   ],
   "runtime": {
@@ -159,11 +159,11 @@
     },
     {
       "path": "episodes/pure-code-sample/mix-a.wav",
-      "sha256": "c72db66f938b1d1945955f188eb0ce2f56055faec781729c1b0cf775b93b0e8e"
+      "sha256": "11aec1eaa6bd78bd0ef5078194a076db07948ad602045096b1b7d3808be92fce"
     },
     {
       "path": "episodes/pure-code-sample/mix-b.wav",
-      "sha256": "3d1b33969e5406b5d0184a8fa80ad7832eea6e5c43134f6488d9941110220bdf"
+      "sha256": "0d9d13b2c0979a50657ef8fcda3eed7fe0d8a17a2b44c19e2889c14cfd42c5e8"
     }
   ],
   "eventTables": [
@@ -194,15 +194,15 @@
       "channels": 2,
       "master": {
         "before": {
-          "integratedLufs": -19.7,
+          "integratedLufs": -19.8,
           "truePeakDbtp": -5.9
         },
         "after": {
           "integratedLufs": -16,
-          "truePeakDbtp": -2.2
+          "truePeakDbtp": -2.1
         },
-        "gainDb": 3.6999999999999993,
-        "maximumReductionDb": 4.440892098500626e-16,
+        "gainDb": 3.8000000000000007,
+        "maximumReductionDb": 0,
         "limiterCeilingDbfs": -1.3
       },
       "measurements": "out/qa/spec-147/159/sound-a/measurements.json"
@@ -222,15 +222,15 @@
       "channels": 2,
       "master": {
         "before": {
-          "integratedLufs": -19.7,
+          "integratedLufs": -19.8,
           "truePeakDbtp": -5.9
         },
         "after": {
           "integratedLufs": -16,
-          "truePeakDbtp": -2.2
+          "truePeakDbtp": -2.1
         },
-        "gainDb": 3.6999999999999993,
-        "maximumReductionDb": 4.440892098500626e-16,
+        "gainDb": 3.8000000000000007,
+        "maximumReductionDb": 0,
         "limiterCeilingDbfs": -1.3
       },
       "measurements": "out/qa/spec-147/159/sound-b/measurements.json"

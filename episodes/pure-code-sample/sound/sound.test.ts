@@ -135,26 +135,24 @@ test("非零镜头起点、乱序重复事件取首现，extra 只跟第一次 s
       row.startSample + row.alignmentSample,
       frameToSample(row.eventFrame, rate, 24),
     );
-  const musicSilence = frameToSample(202, rate, 24),
-    hushEnd = frameToSample(216, rate, 24);
-  for (const channel of mix.stems.music)
-    assert.ok(
-      channel.subarray(musicSilence, hushEnd).every((sample) => sample === 0),
-    );
-  const peakIn = (from: number, to: number) =>
-    Math.max(
-      ...mix.stems.music.map((channel) =>
-        channel
-          .subarray(frameToSample(from, rate, 24), frameToSample(to, rate, 24))
-          .reduce((peak, sample) => Math.max(peak, Math.abs(sample)), 0),
-      ),
-    );
-  const pluck = peakIn(190, 193);
-  const firstSilent = [...Array(216 - 190).keys()]
-    .map((offset) => 190 + offset)
-    .find((frame) => peakIn(frame, frame + 1) === 0);
-  assert.equal(firstSilent, 202);
-  assert.ok(peakIn(firstSilent - 1, firstSilent) < pluck * 0.1);
+  const frameDb = (stereo: Float64Array[], frame: number) => {
+    const from = frameToSample(frame, rate, 24),
+      to = frameToSample(frame + 1, rate, 24);
+    let energy = 0;
+    for (const channel of stereo)
+      for (let i = from; i < to; i++) energy += channel[i] ** 2;
+    return 10 * Math.log10(energy / (stereo.length * (to - from)) + 1e-30);
+  };
+  for (let frame = 190; frame < 216; frame++) {
+    assert.ok(frameDb(mix.stems.music, frame) > -60, `F${frame} 配乐被切断`);
+    if (frame > 190)
+      assert.ok(
+        frameDb(mix.stems.music, frame - 1) - frameDb(mix.stems.music, frame) < 6,
+        `F${frame} 竖琴余音不是自然衰减`,
+      );
+  }
+  for (let frame = 0; frame < 312 - design.master.fadeOutFrames; frame++)
+    assert.ok(frameDb(mix.mix, frame) > -60, `F${frame} 总线掉到近乎数字静音`);
   for (const channel of mix.stems.music)
     assert.ok(
       channel
@@ -192,7 +190,7 @@ test("内部对齐点实际落在正确采样，含非整数采样帧率和开�
   assert.equal(bus[0].indexOf(Math.max(...hit.samples)), target);
 });
 
-test("同种子完整混音、三分轨和十三音效 WAV 字节一致，换种子确实变化", () => {
+test("同种子完整混音、三分轨和十四音效 WAV 字节一致，换种子确实变化", () => {
   const first = renderMix(table, score, design, 158);
   const second = renderMix(table, score, design, 158);
   const firstMaster = master(first.mix, first.stems, -16, -1);

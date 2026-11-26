@@ -43,7 +43,7 @@ node episodes/pure-code-sample/sound/render.ts --events episodes/pure-code-sampl
 | `mix.wav` | S | `sound/render.ts`、`mix.ts`、`dsp.ts`；24 fps 事件换算成 48 kHz 采样、对齐、混响、静默、让位和共同总线增益，PCM16 双声道 |
 | `music.wav` | S | `sound/score.ts`、`mix.ts`；按 JSON 乐谱编译四件乐器，配乐小厅混响，截止帧前退完；总线处理后的配乐分轨 |
 | `sfx.wav` | S | `sound/sfx.ts`、`mix.ts`；音效按事件及内部对齐点落位，按镜头内序号变化，檐下/院子混响；总线处理后的音效分轨 |
-| `ambience.wav` | S | `sound/sfx.ts`、`mix.ts`；合成三个床音，密度、淡入淡出、静默/压低及院子混响；总线处理后的环境分轨 |
+| `ambience.wav` | S | `sound/sfx.ts`、`mix.ts`；合成四个床音（含全片不断的院子空气声），密度、淡入淡出、静默/压低及院子混响；总线处理后的环境分轨 |
 | `instruments/piano_felt.wav` | S | `sound/score.ts`；软起音、轻微非谐波的衰减谐波、乐句内延音，未进总线的双声道干轨 |
 | `instruments/strings_pad.wav` | S | `sound/score.ts`；每声部四个独立失谐/揉弦的谐波振荡器和 expression，双声道干轨 |
 | `instruments/harp.wav` | S | `sound/score.ts`；噪声激励加衰减弦模态、F 大调逐音刮奏，双声道干轨 |
@@ -51,6 +51,7 @@ node episodes/pure-code-sample/sound/render.ts --events episodes/pure-code-sampl
 | `sfx/rain_tail.wav` | S | `sound/sfx.ts`；固定种子颗粒脉冲和限带噪声，密度与亮度衰减 |
 | `sfx/eave_drips.wav` | S | `sound/sfx.ts`；不规则泊松滴水和随机共振频率，密度曲线逐渐下降 |
 | `sfx/higurashi.wav` | S | `sound/sfx.ts`；带停顿的下行调频/调幅颤音 |
+| `sfx/garden_air.wav` | S | `sound/sfx.ts`；低通噪声为主、少量宽带噪声，两个慢正弦相乘的轻微起伏 |
 | `sfx/drip_hit.wav` | S | `sound/sfx.ts`；闷湿共振、短噪声溅开，接触起音峰值为对齐点 |
 | `sfx/feather_flinch.wav` | S | `sound/sfx.ts`；0.12 秒限带摩擦噪声，收紧极值为对齐点 |
 | `sfx/feather_shake.wav` | S | `sound/sfx.ts`；干湿噪声和短调幅摩擦包络，甩动极值为对齐点 |
@@ -63,10 +64,10 @@ node episodes/pure-code-sample/sound/render.ts --events episodes/pure-code-sampl
 | `sfx/drip_land.wav` | S | `sound/sfx.ts`；短湿共振和高频溅开，接触峰值为对齐点 |
 | `spectra/mix.png`、`spectra/music.png`、`spectra/sfx.png`、`spectra/ambience.png` | S | `sound/measure.ts` 调 FFmpeg `showspectrumpic`，计算四条交付 WAV 的对数频率/强度检查图 |
 | `spectra/instruments-piano_felt.png`、`spectra/instruments-strings_pad.png`、`spectra/instruments-harp.png`、`spectra/instruments-glockenspiel.png` | S | 同上，计算四件乐器干轨的检查图 |
-| `spectra/sfx-rain_tail.png`、`spectra/sfx-eave_drips.png`、`spectra/sfx-higurashi.png`、`spectra/sfx-drip_hit.png`、`spectra/sfx-feather_flinch.png`、`spectra/sfx-feather_shake.png`、`spectra/sfx-water_spray.png`、`spectra/sfx-feather_puff.png`、`spectra/sfx-pole_creak.png`、`spectra/sfx-takeoff_push.png`、`spectra/sfx-pole_spring.png`、`spectra/sfx-wing_flap.png`、`spectra/sfx-drip_land.png` | S | 同上，逐项计算十三种参考音效的检查图 |
+| `spectra/sfx-rain_tail.png`、`spectra/sfx-eave_drips.png`、`spectra/sfx-higurashi.png`、`spectra/sfx-garden_air.png`、`spectra/sfx-drip_hit.png`、`spectra/sfx-feather_flinch.png`、`spectra/sfx-feather_shake.png`、`spectra/sfx-water_spray.png`、`spectra/sfx-feather_puff.png`、`spectra/sfx-pole_creak.png`、`spectra/sfx-takeoff_push.png`、`spectra/sfx-pole_spring.png`、`spectra/sfx-wing_flap.png`、`spectra/sfx-drip_land.png` | S | 同上，逐项计算十四种参考音效的检查图 |
 | `pitch.json` | S | `sound/measure.ts`；全部 53 颗实际独立干音的 Hann 窗、65536 点 FFT 全频域峰值及抛物线插值，记录音分误差与窗口 |
 | `placements.json` | S | `sound/mix.ts`；19 次事件音效的起点、对齐点、事件采样与变体参数 |
 | `measurements.json`、`measurements.md` | S | `sound/render.ts`、`measure.ts`；生成命令、源码/输入/媒体哈希、运行版本、参考电平、音高统计、各轨电平和总线响度报告 |
 | `loudness.json` | `pnpm qa loudness out/qa/spec-147/158/mix.wav --target-lufs -16 --tolerance 1 --max-true-peak -1 --out out/qa/spec-147/158` | 仓库响度工具独立读取交付 PCM16 WAV，EBU R128 与过采样真峰值检查 |
 
-十三种参考音效都在合成后归一至设计给定的最响 100 ms 电平，随后在场内施加 `db`；参考库不作为混音的采样输入。波形公式、未给定参数的解释、静默和延音处理见 [声音命令说明](sound/README.md)。频谱图里的检查字体不进入成片。
+十四种参考音效都在合成后归一至设计给定的最响 100 ms 电平，随后在场内施加 `db`；参考库不作为混音的采样输入。波形公式、未给定参数的解释、静默和延音处理见 [声音命令说明](sound/README.md)。频谱图里的检查字体不进入成片。

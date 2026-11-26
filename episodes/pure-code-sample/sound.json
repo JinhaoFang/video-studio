@@ -71,6 +71,16 @@
       "pan": -0.4,
       "width": 0.5
     },
+    "garden_air": {
+      "name": "院子的空气声",
+      "material": "雨后院子的底噪：极轻的宽带空气声，低频略多，带很慢的起伏；全片不断，静默时也在，保证任何时刻都不是数字静音",
+      "alignment": null,
+      "tier": "ambience",
+      "db": -32,
+      "scene": "garden",
+      "pan": 0,
+      "width": 1
+    },
     "drip_hit": {
       "name": "水珠打在羽毛上",
       "material": "一颗大水珠打在湿羽毛上：短促、偏闷的湿声，加极短的高频溅开",
@@ -304,6 +314,18 @@
       },
       "fadeInFrames": 36,
       "notes": "雨停后从远处响起"
+    },
+    {
+      "sfx": "garden_air",
+      "from": {
+        "shot": "S1",
+        "frame": 0
+      },
+      "to": {
+        "shot": "S2",
+        "frame": 144
+      },
+      "notes": "全片的底噪，不参与任何静默和压低；静默是安静，不是声音断掉"
     }
   ],
   "silences": [
@@ -329,18 +351,7 @@
       "duck": {
         "higurashi": -6
       },
-      "notes": "蓬起之后故意留一拍静默：只剩压低的暮蝉"
-    },
-    {
-      "from": {
-        "event": "hush",
-        "offsetFrames": 10
-      },
-      "to": {
-        "event": "look_up"
-      },
-      "mute": ["music"],
-      "notes": "配乐等蓬起那一下竖琴的余音自然收干净（score.json 的 puff 乐句在 hush + 10 之前退完）才静音；从 hush 当帧硬切会把竖琴拦腰截断，听起来像卡了一下"
+      "notes": "蓬起之后留一拍安静：滴水停、暮蝉压低，竖琴的余音自然响完，院子的空气声一直在。不静音配乐：静默靠乐谱里不出新音来做，切配乐会把余音截断；也不让总线掉到数字静音，那听起来像声音断了"
     }
   ],
   "ducking": {
