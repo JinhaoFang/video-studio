@@ -679,22 +679,51 @@ const paintFar = (plate: Plate, state: LightState): Paper => {
       state === "dusk"
         ? mixRgb(rgb(dusk.cloud.shadow), rgb(dusk.cloud.warm), 0.45)
         : mixRgb(rgb(rain.cloud.mid), skyColor(state, x, y), 0.38);
-    line(b, curve([x, y], [x + len, y + b.r.range(-5, 5)], 0.01), b.r.range(9, 18), jitter(b, c, 0.025), {
-      dry: 0.42,
-      alpha: 0.68,
-      taper: [0.35, 0.35],
-    });
-    if (state === "dusk") {
-      line(
-        b,
-        curve([x + 18, y - 5], [x + len * 0.75, y - 6], 0.01),
-        b.r.range(4, 8),
-        jitter(b, rgb(dusk.cloudGap[1]), 0.02),
-        { dry: 0.35, alpha: 0.82, taper: [0.35, 0.35] },
+    const hitsMountainGap = y < 548 && x < 760 && x + len > 640;
+    const dy = b.r.range(-5, 5);
+    const wMain = b.r.range(9, 18);
+    const cMain = jitter(b, c, 0.025);
+    const sMain = Math.floor(b.r.next() * 1e6);
+    if (!hitsMountainGap) {
+      stroke(
+        b.c,
+        curve([x, y], [x + len, y + dy], 0.01).map(([px, py]) => b.P(px, py)),
+        { width: wMain * b.k, color: cMain, seed: sMain, dry: 0.42, alpha: 0.68, taper: [0.35, 0.35] },
       );
+    }
+    if (state === "dusk") {
+      const wRim = b.r.range(4, 8);
+      const cRim = jitter(b, rgb(dusk.cloudGap[1]), 0.02);
+      const sRim = Math.floor(b.r.next() * 1e6);
+      if (!hitsMountainGap) {
+        stroke(
+          b.c,
+          curve([x + 18, y - 5], [x + len * 0.75, y - 6], 0.01).map(([px, py]) => b.P(px, py)),
+          { width: wRim * b.k, color: cRim, seed: sRim, dry: 0.35, alpha: 0.82, taper: [0.35, 0.35] },
+        );
+      }
     }
   }
   cloud(b, state, billows(b.r, 560, 420, 1250, 420), 1);
+  {
+    const patchR = rng(160103);
+    const patchBrush: Brush = { ...b, r: patchR };
+    const tPatch = cloudTones(state, 740, 520, 1);
+    const baseCol = mixRgb(shadeRgb(tPatch.shadow, state === "dusk" ? 0.9 : 0.88), tPatch.shadow, 0.52);
+    const notches: readonly [number, number, number, number][] = [
+      [668, 524, 52, 26],
+      [718, 522, 54, 28],
+      [776, 542, 46, 26],
+      [834, 546, 44, 22],
+      [882, 544, 34, 20],
+    ];
+    for (const [cx, cy, rx, ry] of notches) {
+      const pts = arc(cx, cy, rx, 0, Math.PI * 2, 18)
+        .slice(0, -1)
+        .map(([px, py]) => [cx + (px - cx), cy + (py - cy) * (ry / rx)] as [number, number]);
+      fill(patchBrush, pts, baseCol, 1.3, 0.99);
+    }
+  }
   cloud(b, state, billows(b.r, 60, 470, 600, 190), 1);
   cloud(b, state, billows(b.r, 1260, 210, 560, 190), 0.85);
   cloud(b, state, billows(b.r, 1960, 360, 520, 290), 0.8);

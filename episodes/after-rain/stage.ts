@@ -58,12 +58,20 @@ export const drawPlate = (ctx: CanvasRenderingContext2D, image: HTMLImageElement
   ctx.restore();
 };
 
-export const drawViewPlate = (ctx: CanvasRenderingContext2D, image: HTMLImageElement, id: ViewPlateId, camera: Camera) => {
+export const drawViewPlate = (
+  ctx: CanvasRenderingContext2D,
+  image: HTMLImageElement,
+  id: ViewPlateId,
+  camera: Camera,
+  alpha = 1,
+) => {
+  if (alpha <= 0) return;
   const plate = viewPlates.find((p) => p.id === id)!;
   const t = layer(plate.reference, camera, plate.distance);
   if (!(t.scale > 0 && t.scale < 40)) return;
   const size = plateSize(plate);
   ctx.save();
+  if (alpha < 1) ctx.globalAlpha *= Math.max(0, Math.min(1, alpha));
   ctx.imageSmoothingEnabled = true;
   ctx.imageSmoothingQuality = "high";
   ctx.drawImage(
@@ -74,6 +82,22 @@ export const drawViewPlate = (ctx: CanvasRenderingContext2D, image: HTMLImageEle
     (size.height / plate.k) * t.scale,
   );
   ctx.restore();
+};
+
+export const drawTwilightLamp = (
+  ctx: CanvasRenderingContext2D,
+  surface: Surface,
+  camera: Camera,
+  intensity: number,
+) => {
+  if (intensity <= 0) return;
+  drawViewPlate(
+    ctx,
+    viewImage(surface, "house-front-twilight-lamp"),
+    "house-front-twilight-lamp",
+    camera,
+    intensity,
+  );
 };
 
 export const placeSparrow = (camera: Camera, feet: Vec3, facing: number, lightWorld: Vec3 = sun) => {

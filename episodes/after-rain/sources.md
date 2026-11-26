@@ -35,3 +35,15 @@
 ## #183 片名「雨后」与署名「遡游」印章
 
 片名「雨后」行楷字骨与署名「遡游」汉印满白文印字骨均在 `episodes/after-rain/title/glyphs.ts` 以手写归一化坐标定义，未使用任何字体文件或外部图片素材。通用毛笔水粉书写引擎与篆刻印章引擎位于 `src/kit/engine/calligraphy.ts`、`src/kit/engine/seal.ts`。笔顺依据 GF 0023—2020《通用规范汉字笔顺规范》，行楷笔法与《说文解字》小篆「遡」「游」字形依据见 [画面风格与素材来源](../../docs/video/visual-style.md)。透明底封面静帧与 4 倍放大印章检查图由 `node episodes/after-rain/title/export-cover.ts` 生成，未引入第三方代码。
+
+## #200 补齐底图与实绘晾衣架、暮色灯层
+
+从仓库根目录运行 `node episodes/after-rain/generate.ts`（加 `--force` 全量重烘，总计 25 张水粉底图）并运行 `node episodes/pure-code-sample/generate.ts` 同步刷新小样院子清单。本次在 `episodes/after-rain/plates-views.ts`、`episodes/after-rain/plates.ts` 与 `episodes/after-rain/pole-stand.ts` 中完成了以下纯代码生成更新：
+
+| 文件 / 模块 | 变更说明 |
+|---|---|
+| `plate-house-front-twilight.png`、`plate-house-front-twilight-lamp.png` | 将暮色屋底图拆为灭灯底图与透明底独立亮灯层（含障子亮窗、窗格、窗边与门廊/地面/水洼暖光溢出及近窗柱子暖边），由 `stage.ts` 的 `drawTwilightLamp` 按亮度叠加。 |
+| `plate-house-front-rain.png`、`plate-house-takeoff.png`、`plate-paddy-wide.png`、`plate-far-dusk.png` | 移除烘死在房屋底图里的晾衣架；重绘第 1、10、12 镜和瓦顶与第 10 镜灰泥墙/木墙板/廊台/方柱；重绘第 11 镜手工弯折田埂、大块稻浪、远景树带与农舍及上抬视角落日天空；清理第 3 镜山前云脚竖柱与三角碎块。 |
+| `pole-stand.ts` | 按三维世界坐标实时绘制木质叉口晾衣架（后叉—竹竿—前叉分层，与 `pole.ts` 同款色块与墨线画法）。 |
+
+全部画面与工具均为本仓库纯代码生成，未引入第三方代码、外部图片或素材。重建命令与 SHA-256 哈希见 [正片生成清单](data/generated.json) 与 [小样生成清单](../pure-code-sample/data/generated.json)。

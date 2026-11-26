@@ -1,6 +1,6 @@
 /**
  * 《雨后》正片唯一生成入口：运行 `node episodes/after-rain/generate.ts [--force] [--help]`。
- * 1. 使用最多 4 个并发工作线程烘焙全片 24 张水粉底图到 `public/episodes/after-rain/`（命中 plateKey 缓存时跳过重绘）；
+ * 1. 使用最多 4 个并发工作线程烘焙全片 25 张水粉底图（含暮色屋灭灯底图与独立亮灯层）到 `public/episodes/after-rain/`（命中 plateKey 缓存时跳过重绘）；
  * 2. 汇总 12 个镜头的画面事件表写入 `episodes/after-rain/data/events.json` 与 `public/episodes/after-rain/events.json`；
  * 3. 调用 `episodes/after-rain/sound/render.ts` 生成 48 kHz 双声道临时混音并复制到 `public/episodes/after-rain/mix.wav`；
  * 4. 将入口 `episodes/after-rain/AfterRain.tsx`、全部输入与产物 SHA-256 哈希写入 `episodes/after-rain/data/generated.json`。
@@ -244,6 +244,22 @@ const generate = async (force: boolean) => {
   );
 };
 
+const formatArgError = (error: unknown): string => {
+  const err = error as NodeJS.ErrnoException & { message?: string };
+  const raw = err?.message ?? "";
+  const quoted = raw.match(/'([^']+)'/)?.[1];
+  if (err?.code === "ERR_PARSE_ARGS_UNKNOWN_OPTION") {
+    return quoted ? `不认识的参数 ${quoted}` : "存在不认识的参数";
+  }
+  if (err?.code === "ERR_PARSE_ARGS_UNEXPECTED_POSITIONAL") {
+    return quoted ? `不接受多余的位置参数 ${quoted}` : "不接受多余的位置参数";
+  }
+  if (err?.code === "ERR_PARSE_ARGS_INVALID_OPTION_VALUE") {
+    return quoted ? `参数取值无效 ${quoted}` : "参数取值无效";
+  }
+  return "命令行参数无效";
+};
+
 if (!isMainThread) {
   const batch = workerData as BakeJob[];
   for (const job of batch) {
@@ -258,14 +274,12 @@ if (!isMainThread) {
         allowPositionals: false,
       }));
     } catch (error) {
-      throw usageError(
-        error instanceof Error ? error.message : String(error),
-        usage,
-      );
+      throw usageError(formatArgError(error), usage);
     }
     if (values.help) {
+      const totalPlates = plates.length * 2 + viewPlates.length;
       console.log(
-        `用法：${usage}\n烘焙《雨后》全片 24 张水粉底图、汇总事件表并生成 48 kHz 临时混音到 public/episodes/after-rain/，记录哈希到 episodes/after-rain/data/generated.json。\n--force 忽略缓存强制重绘。`,
+        `用法：${usage}\n烘焙《雨后》全片 ${totalPlates} 张水粉底图、汇总事件表并生成 48 kHz 临时混音到 public/episodes/after-rain/，记录哈希到 episodes/after-rain/data/generated.json。\n--force 忽略缓存强制重绘。`,
       );
     } else {
       await generate(Boolean(values.force));

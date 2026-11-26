@@ -1,7 +1,7 @@
 /**
- * 按当前激活镜头按需载入并缓存《雨后》正片的 24 张烘焙底图（10 张共用院子五层雨/夕光底图 + 14 张正片新机位底图）。
+ * 按当前激活镜头按需载入并缓存《雨后》正片的 25 张烘焙底图（10 张共用院子五层雨/夕光底图 + 15 张正片新机位底图，含暮色屋灭灯底图与独立灯层）。
  * 所有路径均以字面量直接赋给 remotion 的 staticFile，满足纯代码护栏检查；模块级缓存保证整片渲染时每张底图最多解码一次，
- * 单帧出图时只解码当前镜头所需的 1–2 张底图（第 3 镜 10 张），显著降低单帧冷启动耗时。
+ * 单帧出图时只解码当前镜头所需的 1–3 张底图（第 3 镜 10 张），显著降低单帧冷启动耗时。
  * 待定事项：无。
  */
 import { useEffect, useMemo, useState } from "react";
@@ -36,7 +36,7 @@ const SHOT_PLATES: Record<ShotKey, readonly PlateKey[]> = {
   s09: ["closeup-s9"],
   s10: ["house-takeoff"],
   s11: ["paddy-wide"],
-  s12: ["house-sky-twilight", "house-front-twilight"],
+  s12: ["house-sky-twilight", "house-front-twilight", "house-front-twilight-lamp"],
 };
 
 const createPlateImage = (key: PlateKey): HTMLImageElement => {
@@ -83,6 +83,9 @@ const createPlateImage = (key: PlateKey): HTMLImageElement => {
       return image;
     case "house-front-twilight":
       image.src = staticFile("episodes/after-rain/plate-house-front-twilight.png");
+      return image;
+    case "house-front-twilight-lamp":
+      image.src = staticFile("episodes/after-rain/plate-house-front-twilight-lamp.png");
       return image;
     case "house-takeoff":
       image.src = staticFile("episodes/after-rain/plate-house-takeoff.png");
@@ -161,6 +164,7 @@ const buildPlatesSnapshot = (): AfterRainPlates => ({
     "house-front-rain": decodedCache.get("house-front-rain")!,
     "house-sky-twilight": decodedCache.get("house-sky-twilight")!,
     "house-front-twilight": decodedCache.get("house-front-twilight")!,
+    "house-front-twilight-lamp": decodedCache.get("house-front-twilight-lamp")!,
     "house-takeoff": decodedCache.get("house-takeoff")!,
     "low-s4": decodedCache.get("low-s4")!,
     "low-s6": decodedCache.get("low-s6")!,

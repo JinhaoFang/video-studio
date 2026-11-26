@@ -1,6 +1,7 @@
 /**
  * 晾衣竹竿：按场景里的 3D 轴线（scene.ts 的 pole）经相机投影成有透视粗细的竹管，赛璐璐两色加一条受光带，
  * 湿面上断续的窄高光，竹节处略鼓并画节线，上下轮廓用手绘线；竿底挂几颗水珠。
+ * 同时调用 pole-stand.ts 按世界坐标实时绘制 b 端的木制晾衣架（后臂在竹竿之前、前臂在竹竿之后），确保接点与竹竿严丝合缝。
  * bend(t) 给出轴线上每点的竖直位移（米），S2 竹竿被蹬得下沉、弹回时由镜头传入；drawing 只决定线条抖动，水珠和高光的位置固定。
  * 离相机不到 MIN_DEPTH 米的一段（在相机旁边或背后）不画，免得投影出巨大的线宽。
  */
@@ -9,16 +10,19 @@ import type { Camera, Vec3 } from "../../src/kit/engine/camera.ts";
 import type { Point } from "../../src/kit/engine/figure.ts";
 import { boil, drawStrokes, strokes } from "../../src/kit/engine/ink.ts";
 import { hash } from "../../src/kit/engine/random.ts";
-import { ink, rain, dusk, warm } from "./tokens.ts";
+import { drawPoleStandBack, drawPoleStandFront } from "./pole-stand.ts";
+import type { StandMood } from "./pole-stand.ts";
+import { ink, rain, dusk, warm, props } from "./tokens.ts";
 import { pole, poleAt } from "./scene.ts";
 
 const MIN_DEPTH = 0.3;
 
 export type PoleLook = {
-  state: "rain" | "dusk";
+  state: StandMood;
   drawing: number;
   bend?: (t: number) => number;
   drops?: number;
+  stand?: boolean;
 };
 
 const mixHex = (a: string, b: string, t: number) => {
@@ -34,6 +38,15 @@ export const poleScreen = (camera: Camera, t: number, bend?: (t: number) => numb
 };
 
 export const drawPole = (ctx: CanvasRenderingContext2D, camera: Camera, look: PoleLook) => {
+  const showStand = look.stand !== false;
+  const bendAtEnd = look.bend ? look.bend(1) : 0;
+  if (showStand) {
+    drawPoleStandBack(ctx, camera, {
+      state: look.state,
+      drawing: look.drawing,
+      bendAtEnd,
+    });
+  }
   const n = 90;
   const centers: Point[] = [];
   const half: number[] = [];
@@ -79,10 +92,23 @@ export const drawPole = (ctx: CanvasRenderingContext2D, camera: Camera, look: Po
   const amp = ink.boilMinPx + (ink.boilMaxPx - ink.boilMinPx) * hash(147, look.drawing, 10);
   const top = boil(edge(1), seed, amp);
   const bottom = boil(edge(-1), seed, amp);
-  const isDusk = look.state === "dusk";
-  const body = isDusk ? mixHex(rain.poleShadow, dusk.shadowViolet, 0.35) : rain.poleShadow;
-  const mid = isDusk ? mixHex(rain.pole, dusk.shadowViolet, 0.38) : rain.pole;
-  const lit = isDusk ? mixHex(rain.pole, warm.rim, 0.5) : mixHex(rain.pole, rain.cloud.edge, 0.3);
+  const isDusk = look.state === "dusk" || look.state === "lowDusk";
+  const isTwilight = look.state === "twilight";
+  const body = isTwilight
+    ? props.pole.twilight.shade
+    : isDusk
+      ? mixHex(rain.poleShadow, dusk.shadowViolet, 0.35)
+      : rain.poleShadow;
+  const mid = isTwilight
+    ? mixHex(props.pole.twilight.shade, props.pole.twilight.lit, 0.5)
+    : isDusk
+      ? mixHex(rain.pole, dusk.shadowViolet, 0.38)
+      : rain.pole;
+  const lit = isTwilight
+    ? props.pole.twilight.lit
+    : isDusk
+      ? mixHex(rain.pole, warm.rim, 0.5)
+      : mixHex(rain.pole, rain.cloud.edge, 0.3);
   const band = (from: number, to: number, color: string) => {
     const a = boil(edge(from), seed, amp);
     const b = boil(edge(to), seed, amp);
@@ -165,5 +191,12 @@ export const drawPole = (ctx: CanvasRenderingContext2D, camera: Camera, look: Po
     ctx.arc(x + size * 0.25, y + size * 0.2, Math.max(0.8, size * 0.28), 0, Math.PI * 2);
     ctx.fillStyle = warm.dropHighlight;
     ctx.fill();
+  }
+  if (showStand) {
+    drawPoleStandFront(ctx, camera, {
+      state: look.state,
+      drawing: look.drawing,
+      bendAtEnd,
+    });
   }
 };

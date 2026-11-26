@@ -1,11 +1,10 @@
 /**
- * 《雨后》正片各新机位的水粉底图绘制（第 2 轮精修版）：
- * 几何投影只作草稿定位，所有建筑、屋瓦、墙板、树篱、林木、湿泥地、水洼、稻田与天空均以顺形水粉笔触与手绘边缘画出，摒弃平涂与直尺线。
- * 1. 老屋正面反向机位（第 1 镜暴雨版、第 12 镜暮色亮灯版）：暴雨云成层铺展并带连续斜雨幕；屋顶分出主坡与左右侧坡明暗，屋脊与檐口略有下垂，瓦一行一行手画并在雨景沿瓦槽做湿反光条纹；墙板逐块绘制；左侧林木为成团叶簇剪影并仅在朝天外缘带亮边；
- * 2. 第 10 镜低夕光回看老屋正面：保持玄关门洞与 1.64 米檐影线构图不变，墙面分出灰泥与木墙板并延伸至右缘，檐底椽子按透视收细并收在封檐板后，屋瓦铺满画顶，补齐檐廊木纹、木柱木纹与手画边、门内玄关台阶；
- * 3. 第 4、6 镜贴地低机位院子：天空采用 4–7 镜共用放晴天与紫色花椰菜云团；树篱拆成一团团有机灌木并封严底边，背后乔木带树干落地；湿泥地画车辙、合理尺度的脚印、草簇与小积水反光；水洼 W1 边缘不规则，倒映天光紫云与细小涟漪；
- * 4. 第 11 镜稻田上空大远景：天分冷暖两侧（左暖金、右冷紫蓝）；远处不规则林带与农舍隐在暖紫雾中；稻田按透视稻行一笔笔画并带大尺度风吹明暗稻浪；连续有机田埂边草按真实三维距离缩放；电线杆略倾不完全规整，电线有自然垂度；
- * 5. 第 2、5、7、8（起/止）、9 镜近景虚化背景与木制晾衣架设定图保持验收通过版本不变。
+ * 《雨后》正片各新机位的水粉底图绘制（#200 返工精修版）：
+ * 几何投影只作草稿定位，所有建筑、屋瓦、灰泥墙、木墙板、树篱、林木、湿泥地、水洼、稻田与天空均以顺形水粉笔触与手绘边缘画出，摒弃平涂、直尺线与规则几何。
+ * 1. 老屋正面反向机位（第 1 镜暴雨版、第 12 镜暮色灭灯版 + 独立透明亮灯层）：移除底图中的木制晾衣架（改由 pole-stand.ts 实时投影）；屋顶改画日式和瓦（往屋脊方向行距变密的瓦檐横线与连续竖向瓦垄起伏，第 1 镜沿瓦垄保留湿反光）；暮色屋拆出灭灯底图与可按帧淡入的独立灯层；
+ * 2. 第 10 镜低夕光回看老屋正面：保持玄关门洞与 1.64 米檐影线构图不变；檐影上半墙改灰泥哑光质感；下半墙板逐块画接缝、通长木纹与深浅（去掉梭形）；右上受光屋瓦按 3D 透视画成行瓦垄（去掉迷彩斑）；檐廊地板木纹顺地板方向走；两根柱子改成手画边的木方柱；
+ * 3. 第 4、6 镜贴地低机位院子与第 2、5、7、8、9 镜近景虚化背景保持验收通过版本不变；
+ * 4. 第 11 镜稻田上空大远景：按 shots/s10-11/ 实际相机路径（含末段上摇至 +8.3°）扩展天空覆盖并画入冷暖夕云与空气层；远处补林带与农舍罩在暖紫雾（#b49aa8）中；稻田去掉细直地块线，改用大片风吹明暗稻浪与地块色相/稻行方向变化，田埂改成手画不规则宽窄、弯折、缺口与边草。
  */
 import { project, toCamera } from "../../src/kit/engine/camera.ts";
 import type { Camera, Vec3 } from "../../src/kit/engine/camera.ts";
@@ -31,7 +30,6 @@ import {
   hedgeWorld,
   house,
   paddyWorld,
-  poleStand,
   puddleW1,
   yardPath,
   yardPuddlesWorld,
@@ -346,48 +344,6 @@ const paintHouseSky = (plate: ViewPlate, mode: "rain" | "twilight"): Paper => {
   return b.c;
 };
 
-const drawWoodenStand = (b: Brush, cam: Camera, litCol: RGB, shadeCol: RGB, strokeCol: RGB) => {
-  const [bx, by] = poleStand.base;
-  const h = poleStand.topHeight;
-  const sx = poleStand.legSpanX;
-  const sy = poleStand.legSpanY;
-  const postBot = proj(cam, [bx, by, 0]);
-  const postTop = proj(cam, [bx, by, h]);
-  const forkL = proj(cam, [bx - 0.11, by - 0.05, poleStand.forkTopZ]);
-  const forkR = proj(cam, [bx + 0.11, by + 0.05, poleStand.forkTopZ]);
-  const legA = proj(cam, [bx - sx * 0.5, by - sy * 0.45, 0]);
-  const legB = proj(cam, [bx + sx * 0.5, by + sy * 0.45, 0]);
-  const legMidA = proj(cam, [bx - sx * 0.12, by - sy * 0.1, poleStand.crossbarZ + 0.22]);
-  const legMidB = proj(cam, [bx + sx * 0.12, by + sy * 0.1, poleStand.crossbarZ + 0.22]);
-  const barA = proj(cam, [bx - sx * 0.36, by - sy * 0.32, poleStand.crossbarZ]);
-  const barB = proj(cam, [bx + sx * 0.36, by + sy * 0.32, poleStand.crossbarZ]);
-  const scale = project(cam, [bx, by, h * 0.5]).scale;
-  const postW = Math.max(4, poleStand.postRadius * 2 * scale);
-  fill(
-    b,
-    arc(postBot[0], postBot[1] + 2, postW * 3.8, 0, Math.PI * 2, 12)
-      .slice(0, -1)
-      .map(([x, y]) => [x, postBot[1] + 2 + (y - postBot[1] - 2) * 0.22] as [number, number]),
-    shadeRgb(shadeCol, 0.65),
-    1.8,
-    0.45,
-  );
-  handLine(b, legA, legMidA, postW * 0.82, shadeCol, { dry: 0.22, body: 0.78, wobble: 0.09, jitterPx: 1.4, taper: [0.04, 0.06] });
-  handLine(b, legB, legMidB, postW * 0.82, litCol, { dry: 0.22, body: 0.78, wobble: 0.09, jitterPx: 1.4, taper: [0.04, 0.06] });
-  handLine(b, barA, barB, postW * 0.68, shadeCol, { dry: 0.24, body: 0.75, wobble: 0.08, jitterPx: 1.2, taper: [0.06, 0.06] });
-  handLine(b, postBot, postTop, postW, shadeCol, { dry: 0.18, body: 0.82, wobble: 0.08, jitterPx: 1.5, taper: [0.02, 0.04] });
-  handLine(b, [postBot[0] + postW * 0.22, postBot[1]], [postTop[0] + postW * 0.22, postTop[1]], postW * 0.38, litCol, {
-    dry: 0.3,
-    body: 0.68,
-    wobble: 0.08,
-    jitterPx: 1.1,
-    taper: [0.04, 0.06],
-  });
-  handLine(b, postTop, forkL, postW * 0.64, shadeCol, { dry: 0.2, body: 0.8, wobble: 0.08, jitterPx: 1.2, taper: [0.06, 0.14] });
-  handLine(b, postTop, forkR, postW * 0.64, litCol, { dry: 0.2, body: 0.8, wobble: 0.08, jitterPx: 1.2, taper: [0.06, 0.14] });
-  handLine(b, postBot, postTop, Math.max(1.2, postW * 0.16), strokeCol, { dry: 0.38, alpha: 0.56, wobble: 0.06, jitterPx: 1.0 });
-};
-
 const paintHouseFront = (plate: ViewPlate, mode: "rain" | "twilight"): Paper => {
   const isTwilight = mode === "twilight";
   const b = makeBrush(plate, isTwilight, isTwilight ? 7212 : 7201);
@@ -502,10 +458,9 @@ const paintHouseFront = (plate: ViewPlate, mode: "rain" | "twilight"): Paper => 
       const u = (i + 0.5) / rows;
       const yy = center[1] - ry + 2 * ry * u;
       const half = rx * Math.sqrt(Math.max(0.05, 1 - Math.pow(2 * u - 1, 2))) * 0.88;
-      const glintCol =
-        isTwilight && Math.abs(pd.x - 1.2) < 3.4
-          ? mixRgb(rgb(houseTwilight.lampGlow), refCol, 0.35 + u * 0.35)
-          : mixRgb(refCol, rgb(rain.cloud.edge), 0.28);
+      const glintCol = isTwilight
+        ? mixRgb(refCol, rgb(houseTwilight.skyBelt), 0.24)
+        : mixRgb(refCol, rgb(rain.cloud.edge), 0.28);
       line(b, [[center[0] - half * 0.78, yy], [center[0] + half * 0.78, yy + b.r.range(-0.6, 0.6)]], Math.max(1.8, (2 * ry) / rows), jitter(b, glintCol, 0.03), {
         dry: 0.36,
         alpha: 0.72,
@@ -548,11 +503,7 @@ const paintHouseFront = (plate: ViewPlate, mode: "rain" | "twilight"): Paper => 
     const bBR = p(wx, house.wallY, house.verandaZ - 0.04);
     const bBL = p(wx1, house.wallY, house.verandaZ - 0.04);
     const boardShade = b.r.range(0.92, 1.08);
-    let boardCol = shadeRgb(jitter(b, wallCol, 0.025), boardShade);
-    const lampDist = Math.abs((wx + wx1) * 0.5 - 1.0);
-    if (isTwilight && lampDist < 3.4) {
-      boardCol = mixRgb(boardCol, rgb(houseTwilight.lampGlow), (1 - lampDist / 3.4) * 0.22);
-    }
+    const boardCol = shadeRgb(jitter(b, wallCol, 0.025), boardShade);
     fill(b, [bTL, bTR, bBR, bBL], boardCol, 0.8, 0.97);
     const midTop: [number, number] = [(bTL[0] + bTR[0]) * 0.5, (bTL[1] + bTR[1]) * 0.5];
     const midBot: [number, number] = [(bBL[0] + bBR[0]) * 0.5, (bBL[1] + bBR[1]) * 0.5];
@@ -563,10 +514,21 @@ const paintHouseFront = (plate: ViewPlate, mode: "rain" | "twilight"): Paper => 
       alpha: 0.55,
       jitterPx: 0.8,
       streak: 0.12,
+      taper: [0.02, 0.02],
     });
     const splashTop = p((wx + wx1) * 0.5, house.wallY, house.verandaZ + b.r.range(0.22, 0.4));
-    handLine(b, splashTop, midBot, wPx * 0.85, mixRgb(boardCol, eavesDark, 0.24), { dry: 0.5, alpha: 0.36, jitterPx: 0.8 });
-    handLine(b, bTL, bBL, Math.max(1.4, wPx * 0.09), mixRgb(eavesDark, boardCol, 0.3), { dry: 0.36, alpha: 0.65, jitterPx: 0.7 });
+    handLine(b, splashTop, midBot, wPx * 0.85, mixRgb(boardCol, eavesDark, 0.24), {
+      dry: 0.5,
+      alpha: 0.36,
+      jitterPx: 0.8,
+      taper: [0.04, 0.02],
+    });
+    handLine(b, bTL, bBL, Math.max(1.4, wPx * 0.09), mixRgb(eavesDark, boardCol, 0.3), {
+      dry: 0.36,
+      alpha: 0.65,
+      jitterPx: 0.7,
+      taper: [0.02, 0.02],
+    });
     wx = wx1;
   }
 
@@ -578,41 +540,25 @@ const paintHouseFront = (plate: ViewPlate, mode: "rain" | "twilight"): Paper => 
   fill(b, [wallTL, wallTR, eaveMidBR, eaveMidBL], eavesDark, 1.6, 0.42);
 
   const lr = house.litRoom;
-  const doorTL = p(lr.xMax, house.wallY, lr.zMax);
-  const doorTR = p(lr.xMin, house.wallY, lr.zMax);
-  const doorBL = p(lr.xMax, house.wallY, lr.zMin);
-  const doorCx = (doorTL[0] + doorTR[0]) * 0.5;
-  const doorCy = (doorTL[1] + doorBL[1]) * 0.5;
-  const doorRx = Math.abs(doorTR[0] - doorTL[0]) * 0.5;
-  const doorRy = Math.abs(doorBL[1] - doorTL[1]) * 0.5;
-  if (isTwilight) {
-    paintSoftGlowQuad(b, doorCx, doorCy, doorRx * 2.15, doorRy * 1.95, rgb(houseTwilight.lampGlow), 0.16);
-    paintSoftGlowQuad(b, doorCx, doorCy, doorRx * 1.48, doorRy * 1.38, rgb(houseTwilight.lampGlow), 0.22);
-    for (let i = 0; i < 6; i++) {
-      for (let j = 0; j < 5; j++) {
-        const x0 = lr.xMin + ((lr.xMax - lr.xMin) * i) / 6;
-        const x1 = lr.xMin + ((lr.xMax - lr.xMin) * (i + 1)) / 6;
-        const z0 = lr.zMin + ((lr.zMax - lr.zMin) * j) / 5;
-        const z1 = lr.zMin + ((lr.zMax - lr.zMin) * (j + 1)) / 5;
-        const dist = Math.hypot((i + 0.5 - 3) / 3, (j + 0.5 - 2.6) / 2.5);
-        const paneCol = mixRgb(rgb(warm.dropHighlight), rgb(houseTwilight.lamp), Math.min(1, 0.35 + dist * 0.65));
-        const finalCol = dist > 0.85 ? mixRgb(paneCol, rgb(houseTwilight.lampGlow), 0.35) : paneCol;
-        fill(b, [p(x1, house.wallY, z1), p(x0, house.wallY, z1), p(x0, house.wallY, z0), p(x1, house.wallY, z0)], jitter(b, finalCol, 0.025), 0.6, 0.99);
-      }
-    }
-  } else {
-    for (let i = 0; i < 6; i++) {
-      for (let j = 0; j < 5; j++) {
-        const x0 = lr.xMin + ((lr.xMax - lr.xMin) * i) / 6;
-        const x1 = lr.xMin + ((lr.xMax - lr.xMin) * (i + 1)) / 6;
-        const z0 = lr.zMin + ((lr.zMax - lr.zMin) * j) / 5;
-        const z1 = lr.zMin + ((lr.zMax - lr.zMin) * (j + 1)) / 5;
-        const paneCol = mixRgb(wallCol, eavesDark, b.r.range(0.24, 0.42));
-        fill(b, [p(x1, house.wallY, z1), p(x0, house.wallY, z1), p(x0, house.wallY, z0), p(x1, house.wallY, z0)], jitter(b, paneCol, 0.03), 0.6, 0.95);
-      }
+  for (let i = 0; i < 6; i++) {
+    for (let j = 0; j < 5; j++) {
+      const x0 = lr.xMin + ((lr.xMax - lr.xMin) * i) / 6;
+      const x1 = lr.xMin + ((lr.xMax - lr.xMin) * (i + 1)) / 6;
+      const z0 = lr.zMin + ((lr.zMax - lr.zMin) * j) / 5;
+      const z1 = lr.zMin + ((lr.zMax - lr.zMin) * (j + 1)) / 5;
+      const paneCol = isTwilight
+        ? mixRgb(wallCol, eavesDark, b.r.range(0.46, 0.62))
+        : mixRgb(wallCol, eavesDark, b.r.range(0.24, 0.42));
+      fill(
+        b,
+        [p(x1, house.wallY, z1), p(x0, house.wallY, z1), p(x0, house.wallY, z0), p(x1, house.wallY, z0)],
+        jitter(b, paneCol, 0.028),
+        0.6,
+        0.96,
+      );
     }
   }
-  const mullionCol = isTwilight ? mixRgb(eavesDark, rgb(ink.color), 0.64) : mixRgb(eavesDark, wallCol, 0.25);
+  const mullionCol = isTwilight ? mixRgb(eavesDark, rgb(ink.color), 0.56) : mixRgb(eavesDark, wallCol, 0.25);
   for (let i = 0; i <= 6; i++) {
     const x = lr.xMin + ((lr.xMax - lr.xMin) * i) / 6;
     handLine(b, p(x, house.wallY, lr.zMin), p(x, house.wallY, lr.zMax), i % 2 === 0 ? 4.2 : 2.1, mullionCol, {
@@ -620,6 +566,7 @@ const paintHouseFront = (plate: ViewPlate, mode: "rain" | "twilight"): Paper => 
       alpha: 0.92,
       jitterPx: 0.8,
       wobble: 0.06,
+      taper: [0.02, 0.02],
     });
   }
   for (let j = 0; j <= 5; j++) {
@@ -629,6 +576,7 @@ const paintHouseFront = (plate: ViewPlate, mode: "rain" | "twilight"): Paper => 
       alpha: 0.9,
       jitterPx: 0.8,
       wobble: 0.06,
+      taper: [0.02, 0.02],
     });
   }
 
@@ -687,19 +635,6 @@ const paintHouseFront = (plate: ViewPlate, mode: "rain" | "twilight"): Paper => 
       });
     }
   }
-  if (isTwilight) {
-    const spillCenter = p(1.0, 0.7, 0.15);
-    paintSoftGlowQuad(b, spillCenter[0], spillCenter[1], doorRx * 1.9, doorRy * 0.95, rgb(houseTwilight.lampGlow), 0.24);
-    paintSoftGlowQuad(b, spillCenter[0], spillCenter[1] + 28, doorRx * 2.5, doorRy * 1.25, rgb(houseTwilight.lampGlow), 0.12);
-    for (let i = 0; i < 8; i++) {
-      const y = house.wallY + ((house.verandaY - house.wallY) * (i + 0.5)) / 8;
-      handLine(b, p(lr.xMax + 0.6, y, house.verandaZ), p(lr.xMin - 0.6, y, house.verandaZ), 4.5, rgb(houseTwilight.lampGlow), {
-        dry: 0.45,
-        alpha: 0.36,
-        jitterPx: 1.0,
-      });
-    }
-  }
 
   const eaveSag = (x: number) => {
     const u = Math.max(0, Math.min(1, (x - (house.xMin - 0.64)) / (house.xMax - house.xMin + 1.28)));
@@ -732,12 +667,13 @@ const paintHouseFront = (plate: ViewPlate, mode: "rain" | "twilight"): Paper => 
     const top = p(px, house.pillarY, house.eaveZ + 0.02 + eaveSag(px));
     const w = Math.max(8, project(cam, [px, house.pillarY, 1.2]).scale * 0.15);
     handLine(b, bot, top, w, mixRgb(eavesDark, wallCol, 0.34), { dry: 0.2, body: 0.84, wobble: 0.06, jitterPx: 1.1, taper: [0.01, 0.01] });
-    const rimCol = isTwilight && Math.abs(px - 1.0) < 2.8 ? rgb(houseTwilight.lampGlow) : mixRgb(wallCol, eavesDark, 0.18);
-    handLine(b, [bot[0] + w * 0.24, bot[1]], [top[0] + w * 0.24, top[1]], w * 0.28, rimCol, {
+    const rimCol = mixRgb(wallCol, eavesDark, 0.22);
+    handLine(b, [bot[0] + w * 0.24, bot[1]], [top[0] + w * 0.24, top[1]], w * 0.26, rimCol, {
       dry: 0.35,
-      alpha: 0.72,
+      alpha: 0.65,
       wobble: 0.06,
       jitterPx: 0.9,
+      taper: [0.02, 0.02],
     });
   }
 
@@ -754,144 +690,218 @@ const paintHouseFront = (plate: ViewPlate, mode: "rain" | "twilight"): Paper => 
     return p(x, y, z);
   };
 
+  const tileShadow = mixRgb(roofCol, eavesDark, 0.62);
+  const tileDeep = shadeRgb(tileShadow, 0.86);
+  const tileSheen = isTwilight
+    ? mixRgb(roofCol, rgb(houseTwilight.skyBelt), 0.34)
+    : mixRgb(roofCol, rgb(houseRain.lightningSky), 0.46);
+  const tileBrightWet = mixRgb(roofCol, rgb(houseRain.lightningSky), 0.62);
+
   const leftHipBack = p(eaveLeftX + 0.22, house.ridgeY + 1.0, house.eaveZ + 0.42);
   const leftHipTop = roofFrontPt(0, 0);
   const leftHipBot = roofFrontPt(0, 1);
-  const leftHipCol = shadeRgb(roofCol, isTwilight ? 0.62 : 0.7);
+  const leftHipCol = shadeRgb(roofCol, isTwilight ? 0.66 : 0.72);
   fill(b, [leftHipTop, leftHipBot, leftHipBack], leftHipCol, 1.8);
-  const leftRows = 12;
-  for (let r = 0; r < leftRows; r++) {
-    const v = (r + 0.5) / leftRows;
+  const sideCourses = 16;
+  for (let r = 1; r <= sideCourses; r++) {
+    const v = Math.pow(r / sideCourses, 1.32);
     const a: [number, number] = [leftHipTop[0] + (leftHipBot[0] - leftHipTop[0]) * v, leftHipTop[1] + (leftHipBot[1] - leftHipTop[1]) * v];
     const c: [number, number] = [leftHipTop[0] + (leftHipBack[0] - leftHipTop[0]) * v, leftHipTop[1] + (leftHipBack[1] - leftHipTop[1]) * v];
-    const rowCol = jitter(b, shadeRgb(leftHipCol, 0.86 + b.r.range(0, 0.2)), 0.03);
-    handLine(b, a, c, 9 + v * 5, rowCol, { dry: 0.34, body: 0.68, alpha: 0.88, jitterPx: 1.5 });
-    handLine(b, [a[0], a[1] + 4], [c[0], c[1] + 4], 2.0, shadeRgb(eavesDark, 0.85), { dry: 0.36, alpha: 0.62, jitterPx: 1.1 });
+    handLine(b, a, c, 2.0 + v * 1.4, shadeRgb(tileDeep, 0.92), { dry: 0.32, alpha: 0.7, jitterPx: 1.1 });
+  }
+  for (let s = 1; s < 10; s++) {
+    const t = s / 10;
+    const topPt: [number, number] = [leftHipTop[0] + (leftHipBack[0] - leftHipTop[0]) * t * 0.28, leftHipTop[1] + (leftHipBack[1] - leftHipTop[1]) * t * 0.28];
+    const botPt: [number, number] = [leftHipBot[0] + (leftHipBack[0] - leftHipBot[0]) * t, leftHipBot[1] + (leftHipBack[1] - leftHipBot[1]) * t];
+    handLine(b, topPt, botPt, 2.2, mixRgb(leftHipCol, tileSheen, 0.24), { dry: 0.42, alpha: 0.48, jitterPx: 1.0 });
   }
 
   const rightHipBack = p(eaveRightX - 0.24, house.ridgeY + 0.9, house.eaveZ + 0.42);
   const rightHipTop = roofFrontPt(1, 0);
   const rightHipBot = roofFrontPt(1, 1);
-  const rightHipCol = isTwilight ? mixRgb(roofCol, rgb(houseTwilight.skyBelt), 0.2) : mixRgb(roofCol, rgb(houseRain.lightningSky), 0.14);
+  const rightHipCol = isTwilight ? mixRgb(roofCol, rgb(houseTwilight.skyBelt), 0.18) : mixRgb(roofCol, rgb(houseRain.lightningSky), 0.14);
   fill(b, [rightHipTop, rightHipBack, rightHipBot], rightHipCol, 1.6);
-  for (let r = 0; r < 11; r++) {
-    const v = (r + 0.5) / 11;
+  for (let r = 1; r <= sideCourses; r++) {
+    const v = Math.pow(r / sideCourses, 1.32);
     const a: [number, number] = [rightHipTop[0] + (rightHipBot[0] - rightHipTop[0]) * v, rightHipTop[1] + (rightHipBot[1] - rightHipTop[1]) * v];
     const c: [number, number] = [rightHipTop[0] + (rightHipBack[0] - rightHipTop[0]) * v, rightHipTop[1] + (rightHipBack[1] - rightHipTop[1]) * v];
-    handLine(b, a, c, 8 + v * 4, jitter(b, rightHipCol, 0.03), { dry: 0.34, body: 0.66, alpha: 0.85, jitterPx: 1.4 });
+    handLine(b, a, c, 1.8 + v * 1.3, mixRgb(tileShadow, rightHipCol, 0.35), { dry: 0.34, alpha: 0.62, jitterPx: 1.1 });
   }
 
   const frontPoly: [number, number][] = [];
-  for (let i = 0; i <= 16; i++) frontPoly.push(roofFrontPt(i / 16, 0));
-  for (let i = 16; i >= 0; i--) frontPoly.push(roofFrontPt(i / 16, 1));
+  for (let i = 0; i <= 18; i++) frontPoly.push(roofFrontPt(i / 18, 0));
+  for (let i = 18; i >= 0; i--) frontPoly.push(roofFrontPt(i / 18, 1));
   fill(b, frontPoly, roofCol, 1.5);
 
-  const tileShadow = mixRgb(roofCol, eavesDark, 0.56);
-  const tileSheen = isTwilight ? mixRgb(roofCol, rgb(houseTwilight.skyBelt), 0.3) : mixRgb(roofCol, rgb(houseRain.lightningSky), 0.42);
-  const tileBrightWet = mixRgb(roofCol, rgb(houseRain.lightningSky), 0.56);
-  const wetPatches: [number, number, number, number][] = [
-    [0.24, 0.34, 0.14, 0.5],
-    [0.52, 0.48, 0.17, 0.55],
-    [0.79, 0.36, 0.12, 0.42],
-  ];
-  const courses = 15;
-  for (let r = 0; r < courses; r++) {
-    const v0 = r / courses;
-    const v1 = (r + 1) / courses;
+  const courseCount = 22;
+  const courseVs: number[] = [];
+  for (let r = 0; r <= courseCount; r++) {
+    const t = r / courseCount;
+    courseVs.push(Math.pow(t, 1.48));
+  }
+
+  for (let r = 0; r < courseCount; r++) {
+    const v0 = courseVs[r];
+    const v1 = courseVs[r + 1];
     const vm = (v0 + v1) * 0.5;
-    const courseTone = shadeRgb(roofCol, 0.9 + (r % 3 === 0 ? -0.04 : 0.03) + b.r.range(-0.04, 0.04));
-    const tilesInRow = Math.round(24 + vm * 14);
-    for (let t = 0; t < tilesInRow; t++) {
-      const u0 = t / tilesInRow;
-      const u1 = Math.min(1, (t + 1.08) / tilesInRow);
+    const slopeGrad = isTwilight ? 0.84 + vm * 0.16 : 0.86 + (1 - Math.abs(vm - 0.36)) * 0.12;
+    const rowBase = shadeRgb(roofCol, slopeGrad + (r % 2 === 0 ? -0.026 : 0.022));
+    const segs = 16;
+    for (let s = 0; s < segs; s++) {
+      const u0 = s / segs;
+      const u1 = Math.min(1, (s + 1.08) / segs);
       const um = (u0 + u1) * 0.5;
-      const pA = roofFrontPt(u0, vm + b.r.range(-0.008, 0.008));
-      const pB = roofFrontPt(u1, vm + b.r.range(-0.008, 0.008));
-      const heightPx = Math.max(6, Math.abs(roofFrontPt(um, v1)[1] - roofFrontPt(um, v0)[1]));
-      const tileWear = b.r.next();
-      const wetPatch = !isTwilight
-        ? wetPatches.reduce((acc, [pu, pv, ru, rv]) => {
-            const du = (um - pu) / ru;
-            const dv = (vm - pv) / rv;
-            return Math.max(acc, Math.exp(-(du * du + dv * dv)));
-          }, 0)
-        : 0;
-      const wetStreak = !isTwilight ? Math.max(0, noise1(um * 22 + vm * 2.2, 722) - 0.52) * 1.45 : 0;
-      const wetBoost = Math.min(1, wetPatch * 0.65 + wetStreak * 0.55);
-      let tileCol =
-        tileWear < 0.2
-          ? mixRgb(courseTone, tileShadow, b.r.range(0.25, 0.5))
-          : tileWear > 0.78
-            ? mixRgb(courseTone, tileSheen, b.r.range(0.15, 0.34))
-            : jitter(b, courseTone, 0.042);
-      if (wetBoost > 0.25) {
-        tileCol = mixRgb(tileCol, tileBrightWet, (wetBoost - 0.2) * 0.5);
+      const pA = roofFrontPt(u0, vm);
+      const pB = roofFrontPt(u1, vm);
+      const rowH = Math.max(3.5, Math.abs(roofFrontPt(um, v1)[1] - roofFrontPt(um, v0)[1]));
+      const wear = fbm2(um * 6.2, vm * 5.0, isTwilight ? 7219 : 7209, 3);
+      let col =
+        wear < 0.46
+          ? mixRgb(rowBase, tileShadow, (0.46 - wear) * 0.58)
+          : mixRgb(rowBase, tileSheen, (wear - 0.46) * (isTwilight ? 0.26 : 0.34));
+      if (!isTwilight) {
+        const wetField = fbm2(um * 2.5 + 1.4, vm * 2.0 + 0.6, 7238, 3);
+        const skyCatch = Math.sin(Math.PI * Math.min(1, vm * 1.08)) * Math.max(0, (wetField - 0.36) / 0.64);
+        col = mixRgb(col, tileBrightWet, Math.min(0.46, skyCatch * 0.52));
       }
-      line(b, curve(pA, pB, b.r.range(-0.05, 0.05), 3), heightPx * b.r.range(0.88, 1.12), tileCol, {
-        dry: 0.3,
-        body: 0.72,
-        alpha: 0.88,
-        taper: [0.16, 0.16],
-        streak: 0.1,
+      line(b, curve(pA, pB, b.r.range(-0.01, 0.01), 4), rowH * 1.18, jitter(b, col, 0.018), {
+        dry: 0.38,
+        body: 0.64,
+        alpha: 0.78,
+        taper: [0.18, 0.18],
+        streak: 0.05,
       });
-      if (wetBoost > 0.44 && b.r.next() < 0.68) {
-        const gA = roofFrontPt(u0 + 0.004, v0 + 0.012);
-        const gB = roofFrontPt(u1 - 0.004, v0 + 0.012);
-        line(b, [gA, gB], Math.max(1.8, heightPx * 0.22), jitter(b, tileBrightWet, 0.025), {
-          dry: 0.36,
-          alpha: Math.min(0.62, wetBoost * 0.65),
-          taper: [0.25, 0.25],
-        });
-      }
-      if (b.r.next() < 0.75) {
-        const sTop = roofFrontPt(u0 + b.r.range(-0.004, 0.004), v0);
-        const sBot = roofFrontPt(u0 + b.r.range(-0.004, 0.004), v1);
-        line(b, [sTop, sBot], b.r.range(1.4, 2.4), jitter(b, tileShadow, 0.04), { dry: 0.4, alpha: 0.58 });
-      }
     }
-    const rowLip: [number, number][] = [];
-    for (let s = 0; s <= 18; s++) {
-      const u = s / 18;
-      const q = roofFrontPt(u, v1);
-      rowLip.push([q[0], q[1] + b.r.range(-1.1, 1.4)]);
+  }
+
+  const ribCount = 58;
+  for (let c = 0; c <= ribCount; c++) {
+    const uBase = c / ribCount;
+    const uJitter = (noise1(c * 1.7, 7231) - 0.5) * 0.002;
+    const u = Math.max(0.008, Math.min(0.992, uBase + uJitter));
+    const groovePts: [number, number][] = [];
+    const crestPts: [number, number][] = [];
+    const ribSteps = 10;
+    for (let s = 0; s <= ribSteps; s++) {
+      const v = s / ribSteps;
+      const q = roofFrontPt(u, v);
+      const qNext = roofFrontPt(Math.min(1, u + 1 / ribCount), v);
+      const colW = Math.hypot(qNext[0] - q[0], qNext[1] - q[1]);
+      const wob = (noise1(c * 2.3 + v * 3.8, 7232) - 0.5) * 0.9;
+      groovePts.push([q[0] - colW * 0.24 + wob, q[1]]);
+      crestPts.push([q[0] + colW * 0.14 + wob, q[1]]);
     }
-    line(b, rowLip, b.r.range(1.8, 3.0), jitter(b, tileShadow, 0.04), { dry: 0.34, alpha: 0.66, wobble: 0.08 });
+    const midColW = Math.max(
+      3.6,
+      Math.hypot(
+        roofFrontPt(Math.min(1, u + 1 / ribCount), 0.6)[0] - roofFrontPt(u, 0.6)[0],
+        roofFrontPt(Math.min(1, u + 1 / ribCount), 0.6)[1] - roofFrontPt(u, 0.6)[1],
+      ),
+    );
+    const ribVar = 0.7 + 0.52 * noise1(c * 2.9, 7233);
+    line(b, groovePts, Math.max(2.0, midColW * 0.44), jitter(b, tileDeep, 0.024), {
+      dry: 0.5,
+      body: 0.52,
+      alpha: (isTwilight ? 0.28 : 0.3) * ribVar,
+      taper: [0.06, 0.04],
+      widthAt: (t) => 0.58 + t * 0.56,
+    });
+    const crestCol = !isTwilight ? mixRgb(roofCol, tileSheen, 0.48) : mixRgb(roofCol, tileSheen, 0.36);
+    line(b, crestPts, Math.max(1.6, midColW * 0.32), jitter(b, crestCol, 0.02), {
+      dry: 0.58,
+      body: 0.42,
+      alpha: (isTwilight ? 0.14 : 0.18) * ribVar,
+      taper: [0.08, 0.08],
+      widthAt: (t) => 0.55 + t * 0.54,
+    });
+  }
+
+  for (let i = 0; i < 160; i++) {
+    const r = Math.floor(b.r.range(1, courseCount - 1));
+    const c = Math.floor(b.r.range(1, ribCount - 1));
+    const u0 = (c + 0.08) / ribCount;
+    const u1 = (c + 0.92) / ribCount;
+    const vm = (courseVs[r] + courseVs[r + 1]) * 0.5;
+    const pA = roofFrontPt(u0, vm);
+    const pB = roofFrontPt(u1, vm);
+    const h = Math.max(2.5, Math.abs(roofFrontPt((u0 + u1) * 0.5, courseVs[r + 1])[1] - roofFrontPt((u0 + u1) * 0.5, courseVs[r])[1]));
+    const tint = b.r.next() < 0.52 ? mixRgb(roofCol, tileShadow, b.r.range(0.28, 0.52)) : mixRgb(roofCol, tileSheen, b.r.range(0.18, 0.4));
+    line(b, [pA, pB], h * 0.82, jitter(b, tint, 0.022), {
+      dry: 0.46,
+      body: 0.54,
+      alpha: b.r.range(0.22, 0.38),
+      taper: [0.16, 0.16],
+    });
+  }
+
+  for (let r = 1; r < courseCount; r++) {
+    const v = courseVs[r];
+    const lipPts: [number, number][] = [];
+    const highlightPts: [number, number][] = [];
+    const samples = ribCount * 2;
+    const scallopAmp = 0.6 + v * 1.5;
+    for (let s = 0; s <= samples; s++) {
+      const u = s / samples;
+      const q = roofFrontPt(u, v);
+      const wave = Math.sin(u * ribCount * Math.PI * 2) * scallopAmp;
+      const wob = (noise1(u * 24 + r * 3.1, 7236) - 0.5) * 0.85;
+      lipPts.push([q[0], q[1] + wave + wob]);
+      highlightPts.push([q[0], q[1] + wave - (1.2 + v * 1.2) + wob * 0.5]);
+    }
+    const lipW = 1.35 + v * 1.7;
+    line(b, lipPts, lipW, jitter(b, tileDeep, 0.025), {
+      dry: 0.28,
+      body: 0.78,
+      alpha: (isTwilight ? 0.6 : 0.66) + v * 0.16,
+      wobble: 0.05,
+      taper: [0.02, 0.02],
+    });
+    const edgeLightCol = !isTwilight ? tileBrightWet : tileSheen;
+    line(b, highlightPts, Math.max(1.0, lipW * 0.44), jitter(b, edgeLightCol, 0.02), {
+      dry: 0.56,
+      body: 0.44,
+      alpha: !isTwilight ? 0.15 + v * 0.14 : 0.11 + (1 - v) * 0.09,
+      taper: [0.04, 0.04],
+    });
   }
 
   if (!isTwilight) {
-    for (let i = 0; i < 16; i++) {
-      const u = b.r.range(0.08, 0.92);
-      const v0 = b.r.range(0.06, 0.46);
-      const v1 = Math.min(0.95, v0 + b.r.range(0.22, 0.52));
+    for (let i = 0; i < 20; i++) {
+      const ribIdx = Math.floor(b.r.range(3, ribCount - 3));
+      const u = (ribIdx + 0.22) / ribCount;
+      const v0 = b.r.range(0.08, 0.56);
+      const v1 = Math.min(0.94, v0 + b.r.range(0.12, 0.3));
       const pts: [number, number][] = [];
       for (let s = 0; s <= 5; s++) pts.push(roofFrontPt(u, v0 + ((v1 - v0) * s) / 5));
-      line(b, pts, b.r.range(7, 16), jitter(b, tileSheen, 0.02), {
-        dry: 0.56,
-        body: 0.38,
-        alpha: b.r.range(0.14, 0.26),
-        taper: [0.38, 0.4],
-        streak: 0.16,
+      line(b, pts, b.r.range(2.2, 4.4), jitter(b, tileBrightWet, 0.02), {
+        dry: 0.62,
+        body: 0.36,
+        alpha: b.r.range(0.12, 0.22),
+        taper: [0.4, 0.4],
+        streak: 0.08,
       });
     }
   } else {
-    for (let i = 0; i < 20; i++) {
-      const v = b.r.range(0.08, 0.85);
+    for (let i = 0; i < 16; i++) {
+      const v = b.r.range(0.06, 0.62);
       const u0 = b.r.range(0.06, 0.82);
-      const u1 = Math.min(0.96, u0 + b.r.range(0.08, 0.24));
-      line(b, [roofFrontPt(u0, v), roofFrontPt(u1, v)], b.r.range(3.5, 7.5), jitter(b, tileSheen, 0.025), {
-        dry: 0.44,
-        alpha: b.r.range(0.22, 0.38),
-        taper: [0.35, 0.35],
+      const u1 = Math.min(0.95, u0 + b.r.range(0.08, 0.22));
+      line(b, [roofFrontPt(u0, v), roofFrontPt(u1, v)], b.r.range(2.2, 4.4), jitter(b, tileSheen, 0.02), {
+        dry: 0.52,
+        alpha: b.r.range(0.12, 0.22),
+        taper: [0.36, 0.36],
       });
     }
   }
 
   const eavePts: [number, number][] = [];
-  for (let s = 0; s <= 24; s++) eavePts.push(roofFrontPt(s / 24, 1));
-  line(b, eavePts, 7.2, eavesDark, { dry: 0.22, body: 0.88, wobble: 0.06 });
-  for (let s = 0; s < 32; s++) {
-    const q = roofFrontPt((s + 0.5) / 32, 0.99);
-    fill(b, arc(q[0], q[1] + 2, 4.2, 0, Math.PI * 2, 8).slice(0, -1), jitter(b, tileShadow, 0.04), 0.7, 0.9);
+  for (let s = 0; s <= 28; s++) eavePts.push(roofFrontPt(s / 28, 1));
+  line(b, eavePts, 6.8, eavesDark, { dry: 0.22, body: 0.88, wobble: 0.05 });
+  for (let c = 0; c < ribCount; c++) {
+    const u = (c + 0.5) / ribCount;
+    const q = roofFrontPt(u, 0.992);
+    fill(b, arc(q[0], q[1] + 2.0, 3.0, 0, Math.PI * 2, 7).slice(0, -1), jitter(b, tileDeep, 0.03), 0.5, 0.9);
+    fill(b, arc(q[0] + 0.6, q[1] + 1.4, 1.4, 0, Math.PI * 2, 6).slice(0, -1), jitter(b, tileSheen, 0.03), 0.3, isTwilight ? 0.3 : 0.42);
   }
 
   const ridgePts: [number, number][] = [];
@@ -907,11 +917,138 @@ const paintHouseFront = (plate: ViewPlate, mode: "rain" | "twilight"): Paper => 
   handLine(b, leftHipTop, leftHipBot, 6.8, mixRgb(roofCol, eavesDark, 0.5), { dry: 0.24, body: 0.86, jitterPx: 1.4 });
   handLine(b, rightHipTop, rightHipBot, 6.0, mixRgb(roofCol, tileSheen, 0.26), { dry: 0.24, body: 0.84, jitterPx: 1.4 });
 
-  const standLit = isTwilight ? mixRgb(rgb(props.pole.twilight.lit), rgb(houseTwilight.lampGlow), 0.28) : rgb(props.pole.rain.lit);
-  const standShade = isTwilight ? rgb(props.pole.twilight.shade) : rgb(props.pole.rain.shade);
-  drawWoodenStand(b, cam, standLit, standShade, rgb(ink.color));
+  mottle(b.c, 62 * b.k, 0.026, isTwilight ? 73 : 74);
+  return b.c;
+};
 
-  mottle(b.c, 62 * b.k, 0.028, isTwilight ? 73 : 74);
+const paintHouseTwilightLamp = (plate: ViewPlate): Paper => {
+  const b = makeBrush(plate, true, 7240);
+  const { reference: cam } = plate;
+  const p = (x: number, y: number, z: number): [number, number] => proj(cam, [x, y, z]);
+  const lr = house.litRoom;
+  const eavesDark = rgb(houseTwilight.eavesDark);
+  const lampCol = rgb(houseTwilight.lamp);
+  const lampGlow = rgb(houseTwilight.lampGlow);
+
+  const doorTL = p(lr.xMax, house.wallY, lr.zMax);
+  const doorTR = p(lr.xMin, house.wallY, lr.zMax);
+  const doorBL = p(lr.xMax, house.wallY, lr.zMin);
+  const doorCx = (doorTL[0] + doorTR[0]) * 0.5;
+  const doorCy = (doorTL[1] + doorBL[1]) * 0.5;
+  const doorRx = Math.abs(doorTR[0] - doorTL[0]) * 0.5;
+  const doorRy = Math.abs(doorBL[1] - doorTL[1]) * 0.5;
+
+  let wx = house.xMin;
+  while (wx < house.xMax) {
+    const bw = b.r.range(0.24, 0.33);
+    const wx1 = Math.min(house.xMax, wx + bw);
+    const lampDist = Math.abs((wx + wx1) * 0.5 - 1.0);
+    if (lampDist < 3.4) {
+      const bTL = p(wx1, house.wallY, house.eaveZ + 0.14);
+      const bTR = p(wx, house.wallY, house.eaveZ + 0.14);
+      const bBR = p(wx, house.wallY, house.verandaZ - 0.04);
+      const bBL = p(wx1, house.wallY, house.verandaZ - 0.04);
+      fill(b, [bTL, bTR, bBR, bBL], lampGlow, 0.8, (1 - lampDist / 3.4) * 0.22);
+    }
+    wx = wx1;
+  }
+
+  paintSoftGlowQuad(b, doorCx, doorCy, doorRx * 2.15, doorRy * 1.95, lampGlow, 0.16);
+  paintSoftGlowQuad(b, doorCx, doorCy, doorRx * 1.48, doorRy * 1.38, lampGlow, 0.22);
+
+  for (let i = 0; i < 6; i++) {
+    for (let j = 0; j < 5; j++) {
+      const x0 = lr.xMin + ((lr.xMax - lr.xMin) * i) / 6;
+      const x1 = lr.xMin + ((lr.xMax - lr.xMin) * (i + 1)) / 6;
+      const z0 = lr.zMin + ((lr.zMax - lr.zMin) * j) / 5;
+      const z1 = lr.zMin + ((lr.zMax - lr.zMin) * (j + 1)) / 5;
+      const dist = Math.hypot((i + 0.5 - 3) / 3, (j + 0.5 - 2.6) / 2.5);
+      const paneCol = mixRgb(rgb(warm.dropHighlight), lampCol, Math.min(1, 0.35 + dist * 0.65));
+      const finalCol = dist > 0.85 ? mixRgb(paneCol, lampGlow, 0.35) : paneCol;
+      fill(
+        b,
+        [p(x1, house.wallY, z1), p(x0, house.wallY, z1), p(x0, house.wallY, z0), p(x1, house.wallY, z0)],
+        jitter(b, finalCol, 0.025),
+        0.6,
+        0.99,
+      );
+    }
+  }
+
+  const mullionCol = mixRgb(eavesDark, rgb(ink.color), 0.64);
+  for (let i = 0; i <= 6; i++) {
+    const x = lr.xMin + ((lr.xMax - lr.xMin) * i) / 6;
+    handLine(b, p(x, house.wallY, lr.zMin), p(x, house.wallY, lr.zMax), i % 2 === 0 ? 4.2 : 2.1, mullionCol, {
+      dry: 0.24,
+      alpha: 0.94,
+      jitterPx: 0.8,
+      wobble: 0.06,
+      taper: [0.02, 0.02],
+    });
+  }
+  for (let j = 0; j <= 5; j++) {
+    const z = lr.zMin + ((lr.zMax - lr.zMin) * j) / 5;
+    handLine(b, p(lr.xMax, house.wallY, z), p(lr.xMin, house.wallY, z), j === 0 || j === 5 ? 4.2 : 1.9, mullionCol, {
+      dry: 0.24,
+      alpha: 0.92,
+      jitterPx: 0.8,
+      wobble: 0.06,
+      taper: [0.02, 0.02],
+    });
+  }
+
+  const spillCenter = p(1.0, 0.7, 0.15);
+  paintSoftGlowQuad(b, spillCenter[0], spillCenter[1], doorRx * 1.9, doorRy * 0.95, lampGlow, 0.24);
+  paintSoftGlowQuad(b, spillCenter[0], spillCenter[1] + 28, doorRx * 2.5, doorRy * 1.25, lampGlow, 0.12);
+  for (let i = 0; i < 8; i++) {
+    const y = house.wallY + ((house.verandaY - house.wallY) * (i + 0.5)) / 8;
+    handLine(b, p(lr.xMax + 0.6, y, house.verandaZ), p(lr.xMin - 0.6, y, house.verandaZ), 4.8, lampGlow, {
+      dry: 0.42,
+      alpha: 0.38,
+      jitterPx: 1.0,
+    });
+  }
+
+  const yardFarY = p(0, -0.9, 0)[1] - 8;
+  for (const pd of [...yardPuddlesWorld, puddleW1]) {
+    if (pd.y > 9.4 || Math.abs(pd.x - 1.2) >= 3.4) continue;
+    const center = p(pd.x, pd.y, 0);
+    const rx = Math.abs(p(pd.x + pd.rx, pd.y, 0)[0] - center[0]);
+    const ry = Math.max(4, Math.abs(p(pd.x, pd.y + pd.ry, 0)[1] - center[1]));
+    if (center[1] < yardFarY || center[1] > plate.rect.y1 + 60) continue;
+    const rows = Math.max(5, Math.round(ry / 3.5));
+    for (let i = 0; i < rows; i++) {
+      const u = (i + 0.5) / rows;
+      const yy = center[1] - ry + 2 * ry * u;
+      const half = rx * Math.sqrt(Math.max(0.05, 1 - Math.pow(2 * u - 1, 2))) * 0.84;
+      line(
+        b,
+        [[center[0] - half * 0.75, yy], [center[0] + half * 0.75, yy + b.r.range(-0.5, 0.5)]],
+        Math.max(1.8, (2 * ry) / rows),
+        jitter(b, lampGlow, 0.025),
+        { dry: 0.36, alpha: (0.65 - u * 0.28) * 0.72, taper: [0.3, 0.3] },
+      );
+    }
+  }
+
+  const eaveSag = (x: number) => {
+    const u = Math.max(0, Math.min(1, (x - (house.xMin - 0.64)) / (house.xMax - house.xMin + 1.28)));
+    return -Math.sin(Math.PI * u) * 0.11 + (noise1(u * 5.2, 728) - 0.5) * 0.03;
+  };
+  for (const px of house.pillarsX) {
+    if (Math.abs(px - 1.0) >= 2.8) continue;
+    const bot = p(px, house.pillarY, 0);
+    const top = p(px, house.pillarY, house.eaveZ + 0.02 + eaveSag(px));
+    const w = Math.max(8, project(cam, [px, house.pillarY, 1.2]).scale * 0.15);
+    handLine(b, [bot[0] + w * 0.24, bot[1]], [top[0] + w * 0.24, top[1]], w * 0.3, lampGlow, {
+      dry: 0.34,
+      alpha: 0.76,
+      wobble: 0.06,
+      jitterPx: 0.9,
+      taper: [0.02, 0.02],
+    });
+  }
+
   return b.c;
 };
 
@@ -958,64 +1095,137 @@ const paintHouseTakeoff = (plate: ViewPlate): Paper => {
   fill(b, [[rect.x0, rect.y0], [rect.x1, rect.y0], [rect.x1, rect.y1], [rect.x0, rect.y1]], wallLit, 0);
   fill(b, [wallTL, wallTR, wallBR, wallBL], wallLit, 1.0);
 
-  for (let row = 0; row < 20; row++) {
-    const v = (row + 0.5) / 20;
-    for (let s = 0; s < 14; s++) {
-      const u0 = s / 14 + b.r.range(-0.02, 0.02);
-      const u1 = Math.min(1.04, u0 + b.r.range(0.08, 0.18));
-      const a = bilerp(sunL, sunR, wainR, wainL, Math.max(0, u0), v);
-      const c = bilerp(sunL, sunR, wainR, wainL, u1, v + b.r.range(-0.04, 0.04));
-      const n = fbm2(u0 * 6, v * 4, 7311, 3);
-      const col =
-        n < 0.36
-          ? mixRgb(wallLit, wallShade, (0.36 - n) * 0.45)
-          : n > 0.62
-            ? mixRgb(wallLit, warmGold, (n - 0.62) * 0.62)
-            : mixRgb(wallLit, verandaCol, (n - 0.36) * 0.35);
-      line(b, curve(a, c, b.r.range(-0.04, 0.04), 4), b.r.range(18, 34), jitter(b, col, 0.026), {
-        dry: 0.38,
-        body: 0.56,
-        alpha: 0.68,
-        taper: [0.35, 0.35],
-        streak: 0.08,
-      });
+  const paintPlasterArea = (
+    topL: [number, number],
+    topR: [number, number],
+    botR: [number, number],
+    botL: [number, number],
+    baseCol: RGB,
+    coolCol: RGB,
+    warmCol: RGB,
+    seedBase: number,
+    isShadow: boolean,
+  ) => {
+    const patches = isShadow ? 95 : 85;
+    for (let i = 0; i < patches; i++) {
+      const u = b.r.range(0.01, 0.99);
+      const v = b.r.range(0.03, 0.97);
+      const cPt = bilerp(topL, topR, botR, botL, u, v);
+      const n = fbm2(u * 9.5, v * 5.2, seedBase, 3);
+      const rx = b.r.range(24, 62);
+      const ry = b.r.range(18, 44);
+      let col = baseCol;
+      if (isShadow) {
+        const bounce = Math.pow(v, 2.2) * 0.22;
+        col = n < 0.46 ? mixRgb(baseCol, coolCol, (0.46 - n) * 0.68) : mixRgb(baseCol, warmCol, (n - 0.46) * 0.42 + bounce);
+      } else {
+        col = n < 0.42 ? mixRgb(baseCol, coolCol, (0.42 - n) * 0.34) : mixRgb(baseCol, warmCol, (n - 0.42) * 0.45);
+      }
+      const dabPoly = arc(cPt[0], cPt[1], rx, 0, Math.PI * 2, 10)
+        .slice(0, -1)
+        .map(([x, y]) => [cPt[0] + (x - cPt[0]), cPt[1] + (y - cPt[1]) * (ry / rx)] as [number, number]);
+      fill(b, dabPoly, jitter(b, col, 0.016), Math.max(2, ry * 0.14), b.r.range(0.14, 0.28));
     }
-  }
+    const trowels = isShadow ? 60 : 54;
+    for (let i = 0; i < trowels; i++) {
+      const u = b.r.range(0.02, 0.98);
+      const v = b.r.range(0.04, 0.96);
+      const cPt = bilerp(topL, topR, botR, botL, u, v);
+      const ang = b.r.range(-0.55, 0.55);
+      const half = b.r.range(14, 34);
+      const col = b.r.next() < 0.5 ? mixRgb(baseCol, coolCol, 0.22) : mixRgb(baseCol, warmCol, 0.2);
+      line(
+        b,
+        curve(
+          [cPt[0] - Math.cos(ang) * half, cPt[1] - Math.sin(ang) * half],
+          [cPt[0] + Math.cos(ang) * half, cPt[1] + Math.sin(ang) * half],
+          b.r.range(-0.18, 0.18),
+          4,
+        ),
+        b.r.range(12, 24),
+        jitter(b, col, 0.015),
+        { dry: 0.56, body: 0.44, alpha: b.r.range(0.12, 0.24), taper: [0.4, 0.4], streak: 0.04 },
+      );
+    }
+    if (isShadow) {
+      for (let i = 0; i < 16; i++) {
+        const u = b.r.range(0.03, 0.97);
+        const topP = bilerp(topL, topR, botR, botL, u, 0.02);
+        const botP = bilerp(topL, topR, botR, botL, u, b.r.range(0.24, 0.65));
+        handLine(b, topP, botP, b.r.range(6, 15), jitter(b, mixRgb(baseCol, coolCol, 0.36), 0.02), {
+          dry: 0.62,
+          body: 0.34,
+          alpha: b.r.range(0.1, 0.18),
+          jitterPx: 1.4,
+          taper: [0.15, 0.45],
+        });
+      }
+    }
+  };
 
-  fill(b, [wainL, wainR, wallBR, wallBL], mixRgb(wallLit, verandaCol, 0.24), 0.8);
+  paintPlasterArea(sunL, sunR, wainR, wainL, wallLit, mixRgb(wallLit, wallShade, 0.38), warmGold, 7311, false);
+
+  fill(b, [wainL, wainR, wallBR, wallBL], mixRgb(wallLit, verandaCol, 0.26), 0.8);
   let wx = -64.0;
+  let boardIdx = 0;
   while (wx <= 0.4) {
-    const bw = wx < -24 ? b.r.range(0.45, 0.72) : b.r.range(0.24, 0.34);
+    const bw = wx < -24 ? b.r.range(0.45, 0.72) : b.r.range(0.23, 0.33);
     const wx1 = wx + bw;
+    boardIdx += 1;
     if (toCamera(cam, [wx, house.wallY, 0.8])[1] > 2.0 && toCamera(cam, [wx1, house.wallY, 0.8])[1] > 2.0) {
       const a = p(wx1, house.wallY, wainscotZ);
       const c = p(wx, house.wallY, wainscotZ);
       const d = p(wx, house.wallY, house.verandaZ);
       const e = p(wx1, house.wallY, house.verandaZ);
       if (Math.max(a[0], c[0]) >= rect.x0 - 40 && Math.min(a[0], c[0]) <= rect.x1 + 40) {
-        const tone = b.r.range(0, 1);
+        const tone = (boardIdx * 0.37 + noise1(wx * 1.9, 7312)) % 1;
         const boardCol =
-          tone < 0.35
-            ? mixRgb(wallLit, verandaCol, b.r.range(0.22, 0.46))
-            : tone > 0.72
-              ? mixRgb(wallLit, warmGold, b.r.range(0.14, 0.3))
-              : mixRgb(wallLit, wallShade, b.r.range(0.06, 0.16));
-        fill(b, [a, c, d, e], jitter(b, boardCol, 0.028), 0.7, 0.96);
+          tone < 0.34
+            ? mixRgb(wallLit, verandaCol, b.r.range(0.24, 0.46))
+            : tone > 0.7
+              ? mixRgb(wallLit, warmGold, b.r.range(0.12, 0.28))
+              : mixRgb(wallLit, wallShade, b.r.range(0.08, 0.2));
+        fill(b, [a, c, d, e], jitter(b, boardCol, 0.025), 0.7, 0.98);
         const wPx = Math.max(3, Math.abs(c[0] - a[0]));
-        const mTop: [number, number] = [(a[0] + c[0]) * 0.5, (a[1] + c[1]) * 0.5];
-        const mBot: [number, number] = [(e[0] + d[0]) * 0.5, (e[1] + d[1]) * 0.5];
-        handLine(b, mTop, mBot, wPx * 0.62, jitter(b, mixRgb(boardCol, verandaCol, 0.32), 0.03), {
-          dry: 0.42,
-          body: 0.58,
-          alpha: 0.62,
-          jitterPx: 0.8,
-          streak: 0.14,
-        });
-        handLine(b, a, e, Math.max(1.2, wPx * 0.09), mixRgb(verandaCol, wallShade, 0.52), {
-          dry: 0.34,
-          alpha: 0.7,
+        const grainCount = wPx > 18 ? 4 : wPx > 9 ? 3 : 2;
+        for (let g = 0; g < grainCount; g++) {
+          const u = (g + 0.5 + b.r.range(-0.28, 0.28)) / grainCount;
+          const gTop: [number, number] = [a[0] + (c[0] - a[0]) * u, a[1] + (c[1] - a[1]) * u];
+          const gBot: [number, number] = [e[0] + (d[0] - e[0]) * u, e[1] + (d[1] - e[1]) * u];
+          const gCol = g % 2 === 0 ? mixRgb(boardCol, verandaCol, b.r.range(0.2, 0.38)) : mixRgb(boardCol, wallShade, b.r.range(0.12, 0.24));
+          handLine(b, gTop, gBot, Math.max(1.1, wPx * b.r.range(0.08, 0.18)), jitter(b, gCol, 0.028), {
+            dry: 0.44,
+            body: 0.56,
+            alpha: b.r.range(0.36, 0.58),
+            jitterPx: Math.min(1.0, wPx * 0.06),
+            taper: [0.01, 0.01],
+            streak: 0.14,
+          });
+        }
+        const botMidT: [number, number] = [(a[0] + c[0]) * 0.5, (a[1] + c[1]) * 0.5 + ((e[1] + d[1]) * 0.5 - (a[1] + c[1]) * 0.5) * 0.76];
+        const botMidB: [number, number] = [(e[0] + d[0]) * 0.5, (e[1] + d[1]) * 0.5];
+        handLine(b, botMidT, botMidB, wPx * 0.88, mixRgb(boardCol, wallShade, 0.24), {
+          dry: 0.54,
+          alpha: 0.28,
           jitterPx: 0.6,
+          taper: [0.22, 0.01],
         });
+        handLine(b, a, e, Math.max(1.3, Math.min(3.2, wPx * 0.1)), mixRgb(verandaCol, wallShade, 0.64), {
+          dry: 0.3,
+          alpha: 0.78,
+          jitterPx: 0.6,
+          taper: [0.01, 0.01],
+        });
+        if (wPx > 10) {
+          handLine(
+            b,
+            [a[0] + 1.8, a[1]],
+            [e[0] + 1.8, e[1]],
+            Math.max(1.0, wPx * 0.06),
+            mixRgb(wallLit, warmGold, 0.4),
+            { dry: 0.42, alpha: 0.44, jitterPx: 0.5, taper: [0.01, 0.01] },
+          );
+        }
       }
     }
     wx = wx1;
@@ -1027,30 +1237,10 @@ const paintHouseTakeoff = (plate: ViewPlate): Paper => {
     jitterPx: 1.2,
   });
 
-  const shadeEdgePts = handPath(b, sunL, sunR, 4.2, 0, 22);
-  fill(b, [wallTL, wallTR, ...shadeEdgePts.slice().reverse()], wallShade, 2.2, 0.96);
-  for (let row = 0; row < 16; row++) {
-    const v = (row + 0.5) / 16;
-    for (let s = 0; s < 14; s++) {
-      const u0 = s / 14 + b.r.range(-0.02, 0.02);
-      const u1 = Math.min(1.04, u0 + b.r.range(0.08, 0.18));
-      const a = bilerp(wallTL, wallTR, sunR, sunL, Math.max(0, u0), v);
-      const c = bilerp(wallTL, wallTR, sunR, sunL, u1, v + b.r.range(-0.04, 0.04));
-      const nearSun = Math.pow(v, 1.8);
-      const col =
-        v < 0.32
-          ? mixRgb(wallShade, shadowViolet, b.r.range(0.22, 0.46))
-          : mixRgb(wallShade, mixRgb(wallLit, wallShade, 0.55), nearSun * b.r.range(0.12, 0.38));
-      line(b, curve(a, c, b.r.range(-0.04, 0.04), 4), b.r.range(18, 34), jitter(b, col, 0.025), {
-        dry: 0.4,
-        body: 0.55,
-        alpha: 0.64,
-        taper: [0.35, 0.35],
-        streak: 0.08,
-      });
-    }
-  }
-  line(b, shadeEdgePts, 10, mixRgb(wallShade, wallLit, 0.28), { dry: 0.48, body: 0.46, alpha: 0.42, wobble: 0.12 });
+  const shadeEdgePts = handPath(b, sunL, sunR, 3.6, 0, 22);
+  fill(b, [wallTL, wallTR, ...shadeEdgePts.slice().reverse()], wallShade, 2.0, 0.97);
+  paintPlasterArea(wallTL, wallTR, sunR, sunL, wallShade, shadowViolet, mixRgb(wallLit, wallShade, 0.45), 7314, true);
+  line(b, shadeEdgePts, 9, mixRgb(wallShade, wallLit, 0.26), { dry: 0.5, body: 0.44, alpha: 0.38, wobble: 0.1 });
 
   const gxMin = house.genkan.x - house.genkan.width * 0.5;
   const gxMax = house.genkan.x + house.genkan.width * 0.5;
@@ -1139,30 +1329,31 @@ const paintHouseTakeoff = (plate: ViewPlate): Paper => {
     const y0 = house.wallY + ((house.verandaY - house.wallY) * i) / planks;
     const y1 = house.wallY + ((house.verandaY - house.wallY) * (i + 1)) / planks;
     const ym = (y0 + y1) * 0.5;
-    const [pA, pB] = lineOnY(ym, house.verandaZ, -0.5, -14.0);
     const [sA, sB] = lineOnY(y1, house.verandaZ, -0.5, -14.0);
-    const outerLift = (i / (planks - 1)) * 0.25;
-    const plankCol = mixRgb(verandaCol, i % 2 === 0 ? wallLit : warmGold, 0.16 + outerLift + b.r.range(-0.06, 0.08));
-    for (let seg = 0; seg < 7; seg++) {
-      const u0 = seg / 7;
-      const u1 = Math.min(1, u0 + b.r.range(0.14, 0.22));
-      const qa: [number, number] = [pA[0] + (pB[0] - pA[0]) * u0, pA[1] + (pB[1] - pA[1]) * u0];
-      const qb: [number, number] = [pA[0] + (pB[0] - pA[0]) * u1, pA[1] + (pB[1] - pA[1]) * u1];
-      const plankW = Math.max(4, Math.abs(yOnSegment([sA, sB], qa[0]) - qa[1]) * 1.9);
-      line(b, curve(qa, qb, b.r.range(-0.015, 0.015), 4), plankW, jitter(b, plankCol, 0.032), {
-        dry: 0.32,
-        body: 0.68,
-        alpha: 0.88,
+    const [tA, tB] = lineOnY(y0, house.verandaZ, -0.5, -14.0);
+    const outerLift = (i / (planks - 1)) * 0.26 + (ym - house.wallY) * 0.0;
+    const plankCol = mixRgb(verandaCol, i % 2 === 0 ? wallLit : warmGold, 0.14 + outerLift + b.r.range(-0.05, 0.07));
+    fill(b, [tA, tB, sB, sA], jitter(b, plankCol, 0.022), 0.7, 0.94);
+    for (let g = 0; g < 3; g++) {
+      const f = 0.2 + g * 0.3;
+      const yg = y0 + (y1 - y0) * f;
+      const [gA, gB] = lineOnY(yg, house.verandaZ, -0.5, -14.0);
+      const gCol = g === 1 ? mixRgb(plankCol, woodBase, 0.28) : mixRgb(plankCol, wallLit, 0.26);
+      handLine(b, gA, gB, 1.4 + (1 - i / planks) * 0.8, jitter(b, gCol, 0.028), {
+        dry: 0.46,
+        body: 0.56,
+        alpha: 0.48,
+        jitterPx: 0.7,
+        taper: [0.02, 0.02],
         streak: 0.16,
-        taper: [0.18, 0.18],
-      });
-      line(b, curve([qa[0], qa[1] + b.r.range(-2, 2)], [qb[0], qb[1] + b.r.range(-2, 2)], 0.008, 4), Math.max(1.5, plankW * 0.18), jitter(b, mixRgb(verandaCol, woodBase, 0.42), 0.04), {
-        dry: 0.48,
-        alpha: 0.52,
-        taper: [0.25, 0.25],
       });
     }
-    handLine(b, sA, sB, 2.0, mixRgb(verandaCol, wallShade, 0.52), { dry: 0.34, alpha: 0.68, jitterPx: 1.0 });
+    handLine(b, sA, sB, 2.0, mixRgb(verandaCol, wallShade, 0.58), {
+      dry: 0.32,
+      alpha: 0.74,
+      jitterPx: 0.8,
+      taper: [0.01, 0.01],
+    });
   }
   handLine(b, verandaFL, verandaFR, 4.2, mixRgb(wallLit, warmGold, 0.42), { dry: 0.26, alpha: 0.85, jitterPx: 1.2 });
 
@@ -1225,18 +1416,18 @@ const paintHouseTakeoff = (plate: ViewPlate): Paper => {
     const bot = p(px, house.pillarY, 0);
     const top = p(px, house.pillarY, house.eaveZ + 0.15);
     const sunPt = p(px, house.pillarY, house.takeoffSunLineZ);
-    const w = Math.max(14, project(cam, [px, house.pillarY, 1.2]).scale * 0.17);
+    const w = Math.max(14, project(cam, [px, house.pillarY, 1.2]).scale * 0.165);
     const halfW = w * 0.5;
     fill(
       b,
       arc(bot[0], bot[1] + 5, w * 0.95, 0, Math.PI * 2, 12)
         .slice(0, -1)
-        .map(([x, y]) => [x, bot[1] + 5 + (y - bot[1] - 5) * 0.32] as [number, number]),
+        .map(([x, y]) => [x, bot[1] + 5 + (y - bot[1] - 5) * 0.34] as [number, number]),
       mixRgb(wallShade, woodBase, 0.42),
-      2.4,
+      2.6,
       0.92,
     );
-    handLine(b, [bot[0] - halfW * 0.85, bot[1] + 2], [bot[0] + halfW * 0.5, bot[1] + 1], 4.5, mixRgb(verandaCol, wallLit, 0.35), {
+    handLine(b, [bot[0] - halfW * 0.85, bot[1] + 2], [bot[0] + halfW * 0.48, bot[1] + 1], 4.2, mixRgb(verandaCol, wallLit, 0.35), {
       dry: 0.36,
       alpha: 0.74,
       jitterPx: 1.2,
@@ -1244,42 +1435,53 @@ const paintHouseTakeoff = (plate: ViewPlate): Paper => {
 
     const pTL: [number, number] = [top[0] - halfW, top[1]];
     const pTR: [number, number] = [top[0] + halfW, top[1]];
-    const pBR: [number, number] = [bot[0] + halfW * 1.04, bot[1]];
-    const pBL: [number, number] = [bot[0] - halfW * 1.04, bot[1]];
-    const pMidT: [number, number] = [top[0] - halfW * 0.12, top[1]];
-    const pMidB: [number, number] = [bot[0] - halfW * 0.12, bot[1]];
-    const pSunL: [number, number] = [sunPt[0] - halfW * 1.02, sunPt[1]];
-    const pSunM: [number, number] = [sunPt[0] - halfW * 0.12, sunPt[1]];
+    const pBR: [number, number] = [bot[0] + halfW * 1.03, bot[1]];
+    const pBL: [number, number] = [bot[0] - halfW * 1.03, bot[1]];
+    const arrisU = 0.44;
+    const pMidT: [number, number] = [pTL[0] + (pTR[0] - pTL[0]) * arrisU, top[1]];
+    const pMidB: [number, number] = [pBL[0] + (pBR[0] - pBL[0]) * arrisU, bot[1]];
+    const pSunL: [number, number] = [sunPt[0] - halfW * 1.01, sunPt[1]];
+    const pSunM: [number, number] = [pTL[0] + (pTR[0] - pTL[0]) * arrisU, sunPt[1] - 4];
 
-    const pillarDark = mixRgb(wallShade, woodBase, 0.56);
-    const pillarLit = mixRgb(wallLit, verandaCol, 0.34);
-    const pillarShadeFront = mixRgb(wallShade, woodBase, 0.42);
-    fill(b, [pTL, pTR, pBR, pBL], pillarDark, 1.8, 0.99);
-    fill(b, [pTL, pMidT, pSunM, pSunL], pillarShadeFront, 1.4, 0.94);
-    fill(b, [pSunL, pSunM, pMidB, pBL], pillarLit, 1.6, 0.96);
+    const edgeL = handPath(b, pTL, pBL, 2.2, 0, 14);
+    const edgeM = handPath(b, pMidT, pMidB, 1.5, 0, 14);
+    const edgeR = handPath(b, pTR, pBR, 2.2, 0, 14);
 
-    for (let g = 0; g < 9; g++) {
-      const u = 0.08 + (g / 8) * 0.84;
+    const pillarDark = mixRgb(wallShade, woodBase, 0.58);
+    const pillarShadeFront = mixRgb(wallShade, woodBase, 0.38);
+    const pillarLit = mixRgb(wallLit, verandaCol, 0.36);
+
+    fill(b, [...edgeL, ...edgeR.slice().reverse()], pillarDark, 1.6, 0.99);
+    fill(b, [...edgeL, ...edgeM.slice().reverse()], pillarShadeFront, 1.2, 0.96);
+    const litLeft = handPath(b, pSunL, pBL, 1.8, 0, 8);
+    const litMid = handPath(b, pSunM, pMidB, 1.4, 0, 8);
+    fill(b, [...litLeft, ...litMid.slice().reverse()], pillarLit, 1.2, 0.98);
+
+    for (let g = 0; g < 7; g++) {
+      const u = 0.08 + (g / 6) * 0.84;
       const gTop: [number, number] = [pTL[0] + (pTR[0] - pTL[0]) * u, pTL[1]];
       const gBot: [number, number] = [pBL[0] + (pBR[0] - pBL[0]) * u, pBL[1]];
-      const gSun: [number, number] = [pSunL[0] + (pTR[0] - pTL[0]) * u, sunPt[1]];
-      const onLitSide = u < 0.45;
-      handLine(b, gTop, gSun, Math.max(1.8, w * 0.09), jitter(b, shadeRgb(pillarDark, b.r.range(0.76, 1.15)), 0.04), {
+      const gSun: [number, number] = [pTL[0] + (pTR[0] - pTL[0]) * u, sunPt[1] - (u < arrisU ? 0 : 4)];
+      const onLitFace = u < arrisU;
+      handLine(b, gTop, gSun, Math.max(1.4, w * 0.075), jitter(b, shadeRgb(pillarDark, b.r.range(0.76, 1.12)), 0.03), {
         dry: 0.44,
-        alpha: 0.62,
+        alpha: 0.56,
         jitterPx: 1.0,
-        streak: 0.18,
+        taper: [0.02, 0.02],
+        streak: 0.16,
       });
-      handLine(b, gSun, gBot, Math.max(1.8, w * 0.09), jitter(b, onLitSide ? mixRgb(verandaCol, woodBase, 0.35) : shadeRgb(pillarDark, 0.84), 0.04), {
+      handLine(b, gSun, gBot, Math.max(1.4, w * 0.075), jitter(b, onLitFace ? mixRgb(verandaCol, woodBase, 0.36) : shadeRgb(pillarDark, 0.84), 0.03), {
         dry: 0.42,
-        alpha: 0.65,
+        alpha: 0.6,
         jitterPx: 1.0,
-        streak: 0.18,
+        taper: [0.02, 0.02],
+        streak: 0.16,
       });
     }
-    handLine(b, pTL, pBL, 2.6, mixRgb(doorwayDark, woodBase, 0.55), { dry: 0.28, alpha: 0.78, jitterPx: 1.3 });
-    handLine(b, pTR, pBR, 2.8, mixRgb(doorwayDark, woodBase, 0.65), { dry: 0.28, alpha: 0.82, jitterPx: 1.3 });
-    handLine(b, pSunL, pBL, 3.2, mixRgb(wallLit, warmGold, 0.42), { dry: 0.34, alpha: 0.74, jitterPx: 1.0 });
+    line(b, edgeM, Math.max(1.4, w * 0.055), mixRgb(doorwayDark, woodBase, 0.52), { dry: 0.34, alpha: 0.62, taper: [0.01, 0.01] });
+    line(b, edgeL, 2.4, mixRgb(doorwayDark, woodBase, 0.56), { dry: 0.28, alpha: 0.78, taper: [0.01, 0.01] });
+    line(b, edgeR, 2.6, mixRgb(doorwayDark, woodBase, 0.68), { dry: 0.28, alpha: 0.82, taper: [0.01, 0.01] });
+    handLine(b, pSunL, pBL, 2.8, mixRgb(wallLit, warmGold, 0.42), { dry: 0.32, alpha: 0.72, jitterPx: 0.9, taper: [0.02, 0.02] });
   }
 
   const soffitDark = mixRgb(doorwayDark, wallShade, 0.42);
@@ -1328,47 +1530,127 @@ const paintHouseTakeoff = (plate: ViewPlate): Paper => {
   const roofTopL: [number, number] = [rect.x0 - 20, rect.y0 - 20];
   const roofTopR: [number, number] = [rect.x1 + 20, rect.y0 - 20];
   fill(b, [roofTopL, roofTopR, eaveFR, eaveFL], roofCol, 1.4);
-  const roofCourses = 18;
-  for (let r = 0; r < roofCourses; r++) {
-    const v0 = r / roofCourses;
-    const v1 = (r + 1) / roofCourses;
-    const vm = (v0 + v1) * 0.5;
-    const rL = bilerp(eaveFL, eaveFR, roofTopR, roofTopL, 0, vm);
-    const rR = bilerp(eaveFL, eaveFR, roofTopR, roofTopL, 1, vm);
-    const bL = bilerp(eaveFL, eaveFR, roofTopR, roofTopL, 0, v0);
-    const bR = bilerp(eaveFL, eaveFR, roofTopR, roofTopL, 1, v0);
-    const stagger = (r % 2) * 0.026 + b.r.range(-0.012, 0.012);
-    for (let s = -1; s < 20; s++) {
-      const t0 = Math.max(0, s / 20 + stagger);
-      const t1 = Math.min(1, t0 + b.r.range(0.052, 0.088));
-      if (t1 <= t0 + 0.01) continue;
-      const qa: [number, number] = [rL[0] + (rR[0] - rL[0]) * t0, rL[1] + (rR[1] - rL[1]) * t0 + b.r.range(-2, 2)];
-      const qb: [number, number] = [rL[0] + (rR[0] - rL[0]) * t1, rL[1] + (rR[1] - rL[1]) * t1 + b.r.range(-2, 2)];
-      const fadeFar = Math.max(0.45, 1 - vm * 0.35);
-      const col =
-        b.r.next() < 0.42
-          ? mixRgb(roofCol, wallShade, b.r.range(0.12, 0.28) * fadeFar)
-          : mixRgb(roofCol, wallLit, b.r.range(0.08, 0.22) * fadeFar);
-      line(b, curve(qa, qb, b.r.range(-0.03, 0.03), 3), b.r.range(16, 26), jitter(b, col, 0.026), {
-        dry: 0.38,
-        body: 0.64,
-        alpha: 0.78,
-        taper: [0.24, 0.24],
+
+  const roofTileShadow = mixRgb(roofCol, wallShade, 0.62);
+  const roofTileDeep = mixRgb(roofCol, doorwayDark, 0.58);
+  const roofTileLit = mixRgb(roofCol, wallLit, 0.54);
+
+  const vpEave = p(-1e4, house.eaveY, house.eaveZ);
+  const angEave = Math.atan2(eaveFL[1] - vpEave[1], eaveFL[0] - vpEave[0]);
+  const angTop = Math.atan2(roofTopR[1] - 40 - vpEave[1], roofTopR[0] - vpEave[0]);
+  const rayToLeft = (ang: number): [number, number] => {
+    const dx = Math.cos(ang);
+    const dy = Math.sin(ang);
+    const tX = Math.abs(dx) > 1e-4 ? (rect.x0 - 40 - vpEave[0]) / dx : 4000;
+    const tY = dy < -1e-4 ? (rect.y0 - 40 - vpEave[1]) / dy : 4000;
+    const t = Math.max(80, Math.min(tX > 0 ? tX : 4000, tY > 0 ? tY : 4000));
+    return [vpEave[0] + dx * t, vpEave[1] + dy * t];
+  };
+  const rayToRight = (ang: number): [number, number] => {
+    const dx = Math.cos(ang);
+    const dy = Math.sin(ang);
+    const t = Math.abs(dx) > 1e-4 ? (rect.x1 + 40 - vpEave[0]) / dx : 0;
+    return t > 0 ? [vpEave[0] + dx * t, vpEave[1] + dy * t] : vpEave;
+  };
+  const courseRays: [[number, number], [number, number]][] = [];
+  const takeoffCourses = 18;
+  for (let i = 0; i <= takeoffCourses; i++) {
+    const v = i / takeoffCourses;
+    const ang = angEave + (angTop - angEave) * Math.pow(v, 1.15);
+    courseRays.push([rayToLeft(ang), rayToRight(ang)]);
+  }
+
+  for (let i = 0; i < takeoffCourses; i++) {
+    const v0 = i / takeoffCourses;
+    const [rL0, rR0] = courseRays[i];
+    const [rL1, rR1] = courseRays[i + 1];
+    const rowTone =
+      i % 2 === 0
+        ? mixRgb(roofCol, roofTileLit, 0.22 - v0 * 0.08)
+        : mixRgb(roofCol, roofTileShadow, 0.14 + v0 * 0.08);
+    fill(b, [rL1, rR1, rR0, rL0], jitter(b, rowTone, 0.018), 0.9, 0.85);
+    const segs = 12;
+    for (let s = 0; s < segs; s++) {
+      const t0 = s / segs;
+      const t1 = (s + 1.05) / segs;
+      const pA: [number, number] = [rL0[0] + (rR0[0] - rL0[0]) * t0, rL0[1] + (rR0[1] - rL0[1]) * t0];
+      const pB: [number, number] = [rL0[0] + (rR0[0] - rL0[0]) * t1, rL0[1] + (rR0[1] - rL0[1]) * t1];
+      const pTopA: [number, number] = [rL1[0] + (rR1[0] - rL1[0]) * t0, rL1[1] + (rR1[1] - rL1[1]) * t0];
+      const pTopB: [number, number] = [rL1[0] + (rR1[0] - rL1[0]) * t1, rL1[1] + (rR1[1] - rL1[1]) * t1];
+      const midA: [number, number] = [(pA[0] + pTopA[0]) * 0.5, (pA[1] + pTopA[1]) * 0.5];
+      const midB: [number, number] = [(pB[0] + pTopB[0]) * 0.5, (pB[1] + pTopB[1]) * 0.5];
+      const bandH = Math.max(4, Math.min(24, Math.abs(pTopA[1] - pA[1])));
+      const wear = fbm2(t0 * 5.2 + i * 0.3, v0 * 4.2, 7318, 2);
+      const dabCol = wear < 0.48 ? mixRgb(rowTone, roofTileShadow, 0.34) : mixRgb(rowTone, roofTileLit, 0.34);
+      line(b, [midA, midB], bandH * 0.85, jitter(b, dabCol, 0.02), {
+        dry: 0.44,
+        body: 0.56,
+        alpha: 0.48,
+        taper: [0.16, 0.16],
       });
     }
-    handLine(b, bL, bR, 2.0, mixRgb(roofCol, wallShade, 0.42), { dry: 0.4, alpha: 0.52, jitterPx: 1.4 });
   }
-  for (let x = -48.0; x <= 1.2; x += 0.52) {
-    if (toCamera(cam, [x, house.eaveY, house.eaveZ])[1] < 1.8) continue;
-    const a = p(x, house.eaveY - 5.2, house.eaveZ + 2.7);
-    const c = p(x, house.eaveY, house.eaveZ);
-    if (c[0] < rect.x0 - 80 || c[0] > rect.x1 + 80) continue;
-    handLine(b, a, c, 2.6, jitter(b, mixRgb(roofCol, wallShade, 0.42), 0.03), {
-      dry: 0.38,
+
+  const takeoffRibs = 44;
+  for (let c = 0; c <= takeoffRibs; c++) {
+    const u = Math.pow(c / takeoffRibs, 1.18);
+    const ePt: [number, number] = [eaveFL[0] + (eaveFR[0] - eaveFL[0]) * u, eaveFL[1] + (eaveFR[1] - eaveFL[1]) * u - 4];
+    const dirX = -0.34 - u * 0.32;
+    const dirY = -0.94 + u * 0.12;
+    const dirL = Math.hypot(dirX, dirY);
+    const ux = dirX / dirL;
+    const uy = dirY / dirL;
+    const tToTop = (rect.y0 - 40 - ePt[1]) / uy;
+    const topPt: [number, number] = [ePt[0] + ux * tToTop, ePt[1] + uy * tToTop];
+    const colSpacing = Math.max(6, Math.hypot(eaveFR[0] - eaveFL[0], eaveFR[1] - eaveFL[1]) * (1.18 / takeoffRibs) * Math.max(0.28, Math.pow(Math.max(0.04, c / takeoffRibs), 0.18)));
+    const ribW = Math.max(2.2, Math.min(11, colSpacing * 0.24 * (1.15 - u * 0.48)));
+    const offX = -uy * ribW * 0.58;
+    const offY = ux * ribW * 0.58;
+    const wob = (noise1(c * 2.3, 7319) - 0.5) * 1.4;
+    handLine(b, [ePt[0] + wob, ePt[1]], [topPt[0] + wob, topPt[1]], ribW, jitter(b, roofTileShadow, 0.028), {
+      dry: 0.48,
+      body: 0.54,
       alpha: 0.48,
-      jitterPx: 1.2,
+      jitterPx: 0.9,
+      taper: [0.02, 0.04],
+      widthAt: (t) => 1 - t * 0.3,
+    });
+    handLine(
+      b,
+      [ePt[0] + offX + wob, ePt[1] + offY],
+      [topPt[0] + offX * 0.72 + wob, topPt[1] + offY * 0.72],
+      Math.max(1.8, ribW * 0.85),
+      jitter(b, mixRgb(roofCol, roofTileLit, 0.62), 0.024),
+      {
+        dry: 0.54,
+        body: 0.46,
+        alpha: 0.4,
+        jitterPx: 0.8,
+        taper: [0.03, 0.05],
+        widthAt: (t) => 1 - t * 0.3,
+      },
+    );
+  }
+
+  for (let i = 1; i < takeoffCourses; i++) {
+    const vm = i / takeoffCourses;
+    const [rL0, rR0] = courseRays[i];
+    handLine(b, rL0, rR0, Math.max(1.8, 4.4 - vm * 1.8), jitter(b, roofTileDeep, 0.025), {
+      dry: 0.3,
+      body: 0.76,
+      alpha: 0.76,
+      jitterPx: 1.0,
+      taper: [0.02, 0.02],
+    });
+    handLine(b, [rL0[0], rL0[1] - 2.4], [rR0[0], rR0[1] - 2.4], Math.max(1.4, 2.8 - vm * 1.0), jitter(b, roofTileLit, 0.022), {
+      dry: 0.48,
+      body: 0.5,
+      alpha: 0.44,
+      jitterPx: 0.8,
+      taper: [0.02, 0.02],
     });
   }
+
   handLine(b, eaveFL, eaveFR, 11, mixRgb(doorwayDark, woodBase, 0.55), { dry: 0.2, body: 0.88, jitterPx: 1.6 });
   handLine(b, [eaveFL[0], eaveFL[1] - 3.5], [eaveFR[0], eaveFR[1] - 3.5], 3.8, mixRgb(roofCol, wallLit, 0.42), {
     dry: 0.28,
@@ -1376,7 +1658,7 @@ const paintHouseTakeoff = (plate: ViewPlate): Paper => {
     jitterPx: 1.3,
   });
 
-  mottle(b.c, 58 * b.k, 0.028, 75);
+  mottle(b.c, 58 * b.k, 0.026, 75);
   return b.c;
 };
 
@@ -1886,6 +2168,7 @@ const paintPaddyWide = (plate: ViewPlate): Paper => {
   const silCol = rgb(paddyWide.silhouette);
   const greenGold = rgb(dusk.paddyLit[1]);
   const brightGold = rgb(dusk.cloudGap[1]);
+  const zenithCool = mixRgb(skyCool, rgb(houseTwilight.skyHigh), 0.34);
 
   const sunAz = (28.3 * Math.PI) / 180;
   const sunEl = (16.0 * Math.PI) / 180;
@@ -1897,141 +2180,180 @@ const paintPaddyWide = (plate: ViewPlate): Paper => {
 
   const skyAt = (x: number, y: number): RGB => {
     const t = Math.max(0, Math.min(1, (y - rect.y0) / Math.max(1, horizonY - rect.y0)));
-    const sideWarm = Math.max(0, Math.min(1, 1 - (x - (sunScreen.x - 80)) / 1080));
-    const dSun = Math.hypot((x - sunScreen.x) / 1.35, (y - sunScreen.y) / 1.0);
-    const glow = Math.exp(-dSun / 680);
-    const core = Math.exp(-dSun / 300);
-    let c = mixRgb(skyCool, mistCol, Math.pow(t, 1.55) * 0.62);
-    c = mixRgb(c, skyWarm, Math.max(glow * 0.9, Math.pow(sideWarm, 1.45) * 0.68));
-    c = mixRgb(c, rgb(dusk.cloudGap[0]), core * 0.56);
+    const sideWarm = Math.max(0, Math.min(1, 1 - (x - (sunScreen.x - 160)) / 1420));
+    const dSun = Math.hypot((x - sunScreen.x) / 1.5, (y - sunScreen.y) / 1.08);
+    const glow = Math.exp(-dSun / 880);
+    const core = Math.exp(-dSun / 360);
+    let c = t < 0.46 ? mixRgb(zenithCool, skyCool, t / 0.46) : mixRgb(skyCool, mistCol, Math.pow((t - 0.46) / 0.54, 1.28) * 0.72);
+    const warmMask = Math.max(glow * 0.88, Math.pow(sideWarm, 1.4) * (0.36 + 0.52 * t));
+    c = mixRgb(c, skyWarm, Math.min(0.88, warmMask));
+    c = mixRgb(c, rgb(dusk.cloudGap[0]), core * 0.46);
+
+    const cloudAlt = Math.sin(Math.PI * Math.max(0, Math.min(1, (t - 0.04) / 0.82)));
+    const warp = fbm2(x / 460, y / 180, 7514, 2) * 1.4;
+    const deck = fbm2(x / 520 + warp * 0.35, y / 115 - warp * 0.2, 7515, 4);
+    const under = fbm2(x / 520 + warp * 0.35, (y - 26) / 115 - warp * 0.2, 7515, 4);
+    const cloudMask = Math.max(0, Math.min(1, (deck - 0.48) * 2.5)) * cloudAlt;
+    if (cloudMask > 0.01) {
+      const litEdge = Math.max(0, Math.min(1, (under - deck) * 2.4 + 0.32));
+      const cloudShade = mixRgb(mixRgb(skyCool, mistCol, 0.45), rgb(dusk.cloud.shadow), 0.22);
+      const cloudSun = mixRgb(skyWarm, brightGold, 0.35 + glow * 0.45);
+      const cloudCol = mixRgb(cloudShade, cloudSun, Math.min(1, litEdge * (0.28 + sideWarm * 0.62)));
+      c = mixRgb(c, cloudCol, cloudMask * 0.58);
+    }
     return c;
   };
   paintWash(b, rect.y0, horizonY + 35, skyAt, 0.013, 7511);
 
-  for (let i = 0; i < 44; i++) {
-    const y = b.r.range(rect.y0 + 18, horizonY - 26);
-    const x = b.r.range(rect.x0 - 60, rect.x1 - 200);
-    const len = b.r.range(280, 700);
-    const base = skyAt(x + len * 0.5, y);
-    const nearSun = Math.exp(-Math.hypot(x + len * 0.5 - sunScreen.x, y - sunScreen.y) / 860);
-    const col = nearSun > 0.42 ? mixRgb(base, brightGold, 0.24) : mixRgb(base, skyCool, 0.18);
-    line(b, curve([x, y], [x + len, y + b.r.range(-8, 8)], b.r.range(-0.018, 0.018), 5), b.r.range(26, 54), jitter(b, col, 0.015), {
-      dry: 0.44,
-      body: 0.4,
-      alpha: b.r.range(0.18, 0.3),
-      taper: [0.4, 0.4],
-      streak: 0.05,
-    });
-  }
-  for (let i = 0; i < 14; i++) {
-    const y = b.r.range(rect.y0 + 34, horizonY - 64);
-    const x = b.r.range(rect.x0 + 60, rect.x1 - 240);
-    const len = b.r.range(260, 580);
-    const nearSun = Math.exp(-Math.hypot(x + len * 0.5 - sunScreen.x, y - sunScreen.y) / 880);
-    const cloudCol = mixRgb(mistCol, nearSun > 0.38 ? skyWarm : skyCool, 0.52);
-    line(b, curve([x, y], [x + len, y + b.r.range(-6, 6)], b.r.range(-0.02, 0.02), 5), b.r.range(14, 30), jitter(b, cloudCol, 0.016), {
-      dry: 0.48,
-      body: 0.44,
-      alpha: b.r.range(0.22, 0.36),
-      taper: [0.42, 0.42],
+  for (let i = 0; i < 84; i++) {
+    const y = b.r.range(rect.y0 + 16, horizonY - 20);
+    const x = b.r.range(rect.x0 - 160, rect.x1 - 180);
+    const len = b.r.range(420, 980);
+    const mx = x + len * 0.5;
+    const base = skyAt(mx, y);
+    const nearSun = Math.exp(-Math.hypot(mx - sunScreen.x, y - sunScreen.y) / 1080);
+    const col =
+      b.r.next() < 0.52
+        ? mixRgb(base, nearSun > 0.32 ? brightGold : skyWarm, 0.14 + nearSun * 0.14)
+        : mixRgb(base, mixRgb(skyCool, mistCol, 0.45), 0.16);
+    line(b, curve([x, y], [x + len, y + b.r.range(-18, 18)], b.r.range(-0.02, 0.02), 5), b.r.range(42, 88), jitter(b, col, 0.012), {
+      dry: 0.5,
+      body: 0.34,
+      alpha: b.r.range(0.1, 0.2),
+      taper: [0.46, 0.46],
+      streak: 0.03,
     });
   }
 
-  const ridgePts: [number, number][] = [];
-  for (let x = rect.x0; x <= rect.x1; x += 16) {
-    const h = 34 + 54 * fbm2(x / 460, 0.4, 752, 4);
-    ridgePts.push([x, horizonY - h * 0.68]);
+  const farRidgePts: [number, number][] = [];
+  for (let x = rect.x0; x <= rect.x1; x += 14) {
+    const h = 42 + 72 * fbm2(x / 520, 0.4, 752, 4);
+    farRidgePts.push([x, horizonY - h * 0.74]);
   }
-  fill(b, [...ridgePts, [rect.x1, horizonY + 30], [rect.x0, horizonY + 30]], mixRgb(mistCol, skyCool, 0.34), 2.5, 0.9);
-  for (let x = rect.x0; x < rect.x1; x += b.r.range(45, 110)) {
-    const h = 34 + 54 * fbm2(x / 460, 0.4, 752, 4);
-    const y = horizonY - h * 0.68 + 6;
-    line(b, curve([x, y], [x + b.r.range(30, 85), y + b.r.range(14, 34)], 0.06, 4), b.r.range(12, 24), mixRgb(mistCol, skyWarm, 0.2), {
+  fill(b, [...farRidgePts, [rect.x1, horizonY + 30], [rect.x0, horizonY + 30]], mixRgb(mistCol, skyCool, 0.38), 2.5, 0.92);
+  for (let x = rect.x0; x < rect.x1; x += b.r.range(42, 100)) {
+    const h = 42 + 72 * fbm2(x / 520, 0.4, 752, 4);
+    const y = horizonY - h * 0.74 + 8;
+    line(b, curve([x, y], [x + b.r.range(32, 92), y + b.r.range(14, 38)], 0.06, 4), b.r.range(12, 26), mixRgb(mistCol, skyWarm, 0.24), {
       dry: 0.54,
       alpha: 0.32,
     });
   }
 
-  const mistTreeCol = mixRgb(mistCol, rowShadow, 0.32);
-  const mistTreeLit = mixRgb(mistCol, skyWarm, 0.44);
-  const groveBaseY = horizonY + 3;
-  const treeTopPts: [number, number][] = [];
-  for (let x = rect.x0 - 20; x <= rect.x1 + 20; x += 8) {
-    const grove = fbm2(x / 190, 0.5, 753, 3);
-    const fine = noise1(x / 22, 754);
-    const h = Math.max(0, (grove - 0.24) * 38) + fine * 10;
-    treeTopPts.push([x, groveBaseY - h]);
-  }
-  fill(b, [...treeTopPts, [rect.x1 + 20, groveBaseY + 14], [rect.x0 - 20, groveBaseY + 14]], mixRgb(mistTreeCol, mistCol, 0.32), 2.5, 0.88);
-  for (let i = 0; i < treeTopPts.length - 2; i += 3) {
-    const [tx, ty] = treeTopPts[i];
-    if (groveBaseY - ty < 8 || b.r.next() < 0.35) continue;
-    line(b, [[tx - 8, ty + 2], [tx + 12, ty + 4]], b.r.range(4, 9), jitter(b, b.r.next() < 0.45 ? mistTreeLit : mistTreeCol, 0.03), {
-      dry: 0.42,
-      alpha: 0.62,
-      taper: [0.35, 0.35],
+  for (let i = 0; i < 18; i++) {
+    const cx = b.r.range(rect.x0 + 40, rect.x1 - 40);
+    const cy = horizonY - b.r.range(6, 30);
+    const len = b.r.range(300, 700);
+    line(b, curve([cx - len * 0.5, cy], [cx + len * 0.5, cy + b.r.range(-4, 4)], 0.008, 4), b.r.range(18, 36), jitter(b, mistCol, 0.014), {
+      dry: 0.56,
+      body: 0.38,
+      alpha: b.r.range(0.36, 0.52),
+      taper: [0.44, 0.44],
     });
   }
 
-  const farmXs = [rect.x0 + 380, rect.x0 + 890, rect.x0 + 1380, rect.x0 + 1940, rect.x0 + 2420];
-  for (const fx of farmXs) {
-    const fw = b.r.range(36, 62);
-    const fh = b.r.range(11, 18);
-    const fy = groveBaseY + 2;
-    const roofMist = mixRgb(silCol, mistCol, 0.62);
-    const wallMist = mixRgb(mistCol, farGold, 0.32);
-    fill(b, [[fx - fw * 0.42, fy - fh * 0.45], [fx + fw * 0.42, fy - fh * 0.45], [fx + fw * 0.42, fy + 2], [fx - fw * 0.42, fy + 2]], wallMist, 0.8, 0.74);
-    fill(b, [[fx - fw * 0.54, fy - fh * 0.4], [fx - fw * 0.3, fy - fh], [fx + fw * 0.3, fy - fh], [fx + fw * 0.54, fy - fh * 0.4]], roofMist, 1.0, 0.82);
-    line(b, [[fx - fw * 0.5, fy - fh * 0.44], [fx - fw * 0.28, fy - fh]], 2.4, mixRgb(mistCol, brightGold, 0.52), { dry: 0.36, alpha: 0.68 });
-  }
-
-  fill(b, [[rect.x0, horizonY + 1], [rect.x1, horizonY + 1], [rect.x1, rect.y1], [rect.x0, rect.y1]], mixRgb(farGold, nearGold, 0.5), 0);
+  fill(b, [[rect.x0, horizonY + 2], [rect.x1, horizonY + 2], [rect.x1, rect.y1], [rect.x0, rect.y1]], nearGold, 0);
 
   const windWaveAt = (wx: number, wy: number) => {
-    const macro = Math.sin(wx * 0.065 + wy * 0.085 + fbm2(wx / 42, wy / 36, 7518, 2) * 3.4) * 0.5 + 0.5;
-    const detail = fbm2(wx / 22 + wy / 32, wy / 14 - wx / 45, 7519, 3);
-    return macro * 0.62 + detail * 0.38;
-  };
-  const parcelTintAt = (wx: number, wy: number) => {
-    const px = Math.floor(wx / 26);
-    const py = Math.floor(wy / 18);
-    return noise1(px * 3.7 + py * 11.3, 754);
+    const warp = fbm2(wx / 54, wy / 44, 7518, 2) * 3.4;
+    const sweep1 = Math.sin(wx * 0.052 - wy * 0.074 + warp) * 0.5 + 0.5;
+    const sweep2 = Math.sin(wx * 0.024 + wy * 0.058 - warp * 0.52) * 0.5 + 0.5;
+    const smoothBand = sweep1 * 0.74 + sweep2 * 0.26;
+    return Math.max(0, Math.min(1, smoothBand));
   };
 
-  let sy = horizonY + 3;
-  while (sy < rect.y1 + 26) {
+  const parcelAt = (wx: number, wy: number) => {
+    const warpX = wx + (fbm2(wx / 68, wy / 68, 7541, 2) - 0.5) * 8.0;
+    const warpY = wy + (fbm2(wx / 68, wy / 68, 7542, 2) - 0.5) * 5.5;
+    const px = Math.floor(warpX / 26);
+    const py = Math.floor(warpY / 19);
+    const id = noise1(px * 4.3 + py * 13.7, 754);
+    const rowMode = Math.abs(px * 3 + py * 5) % 3;
+    return { id, rowMode };
+  };
+
+  const deepWaveShadow = mixRgb(rowShadow, silCol, 0.16);
+  const richGold = mixRgb(nearGold, rgb(dusk.paddyLit[0]), 0.42);
+
+  paintWash(
+    b,
+    horizonY + 2,
+    rect.y1,
+    (sx, sy) => {
+      const u = Math.max(0, Math.min(1, (sy - horizonY) / Math.max(1, rect.y1 - horizonY)));
+      const gw = screenToGround(cam, sx, sy);
+      const wx = gw ? gw[0] : sx * 0.2;
+      const wy = gw ? gw[1] : 90;
+      const dist = gw ? Math.hypot(wx - cam.position[0], wy - cam.position[1]) : 160;
+      const farMist = Math.max(0, Math.min(0.84, Math.pow(Math.max(0, (dist - 40) / 210), 0.76)));
+      const { id } = parcelAt(wx, wy);
+      const wave = windWaveAt(wx, wy);
+      const sunBand = Math.exp(-Math.abs(sx - sunScreen.x - 140) / 1080) * (1 - u * 0.38);
+
+      let col =
+        id < 0.34
+          ? mixRgb(richGold, greenGold, 0.5)
+          : id > 0.66
+            ? mixRgb(richGold, farGold, 0.44)
+            : mixRgb(richGold, rowShadow, 0.18);
+      col = mixRgb(col, farGold, Math.pow(1 - u, 1.38) * 0.48);
+      if (wave < 0.5) {
+        const trough = Math.pow((0.5 - wave) / 0.5, 0.92);
+        col = mixRgb(col, deepWaveShadow, Math.min(0.84, trough * (0.58 + 0.38 * u)));
+      } else {
+        const crest = Math.pow((wave - 0.5) / 0.5, 0.92);
+        col = mixRgb(col, brightGold, Math.min(0.76, crest * 0.68));
+      }
+      col = mixRgb(col, brightGold, sunBand * 0.16);
+      const hazeCol = mixRgb(mistCol, farGold, 0.24 + sunBand * 0.3);
+      return mixRgb(col, hazeCol, farMist);
+    },
+    0.015,
+    7512,
+  );
+
+  let sy = horizonY + 5;
+  while (sy < rect.y1 + 24) {
     const u = Math.max(0, Math.min(1, (sy - horizonY) / Math.max(1, rect.y1 - horizonY)));
-    const stepY = 2.6 + Math.pow(u, 1.42) * 14.5;
-    const thick = stepY * 1.42;
-    let sx = rect.x0 - 50;
-    while (sx < rect.x1 + 50) {
-      const len = b.r.range(38, 124) * (0.55 + u * 1.15);
+    const stepY = 3.2 + Math.pow(u, 1.46) * 16.0;
+    const thick = stepY * 1.16;
+    let sx = rect.x0 - 40;
+    while (sx < rect.x1 + 40) {
+      const len = b.r.range(78, 210) * (0.55 + u * 1.12);
       const xm = sx + len * 0.5;
       const gw = screenToGround(cam, xm, sy);
       const wx = gw ? gw[0] : xm * 0.2;
-      const wy = gw ? gw[1] : 60;
-      const dist = gw ? Math.hypot(wx - cam.position[0], wy - cam.position[1]) : 120;
-      const farMist = Math.max(0, Math.min(0.84, Math.pow(Math.max(0, (dist - 36) / 260), 0.78)));
-      const pTint = parcelTintAt(wx, wy);
+      const wy = gw ? gw[1] : 80;
+      const dist = gw ? Math.hypot(wx - cam.position[0], wy - cam.position[1]) : 140;
+      const farMist = Math.max(0, Math.min(0.82, Math.pow(Math.max(0, (dist - 40) / 210), 0.76)));
+      const { id, rowMode } = parcelAt(wx, wy);
       const wave = windWaveAt(wx, wy);
-      const sunBand = Math.exp(-Math.abs(xm - sunScreen.x - 160) / 1080) * (1 - u * 0.35);
+      const sunBand = Math.exp(-Math.abs(xm - sunScreen.x - 140) / 1080) * (1 - u * 0.38);
 
-      let col = pTint < 0.32 ? mixRgb(nearGold, greenGold, 0.44) : pTint > 0.68 ? mixRgb(nearGold, farGold, 0.58) : nearGold;
-      col = mixRgb(col, farGold, (1 - u) * 0.56);
-      if (wave < 0.48) {
-        col = mixRgb(col, rowShadow, Math.min(0.68, (0.48 - wave) * 1.65 * (0.4 + 0.6 * u)));
+      let col =
+        id < 0.34
+          ? mixRgb(richGold, greenGold, 0.5)
+          : id > 0.66
+            ? mixRgb(richGold, farGold, 0.44)
+            : mixRgb(richGold, rowShadow, 0.18);
+      col = mixRgb(col, farGold, Math.pow(1 - u, 1.38) * 0.46);
+      if (wave < 0.5) {
+        const trough = Math.pow((0.5 - wave) / 0.5, 0.92);
+        col = mixRgb(col, deepWaveShadow, Math.min(0.84, trough * (0.6 + 0.38 * u)));
       } else {
-        col = mixRgb(col, brightGold, Math.min(0.64, (wave - 0.48) * 1.45));
+        const crest = Math.pow((wave - 0.5) / 0.5, 0.92);
+        col = mixRgb(col, brightGold, Math.min(0.76, crest * 0.7));
       }
-      col = mixRgb(col, brightGold, sunBand * 0.24);
-      const hazeCol = mixRgb(mistCol, farGold, 0.36 + sunBand * 0.34);
+      col = mixRgb(col, brightGold, sunBand * 0.14);
+      const hazeCol = mixRgb(mistCol, farGold, 0.24 + sunBand * 0.3);
       col = mixRgb(col, hazeCol, farMist);
 
       let dxDir = 1;
       let dyDir = 0;
-      if (gw && dist < 240) {
-        const altDir = (Math.floor(wx / 26) + Math.floor(wy / 18)) % 3 === 0;
-        const p2 = p(wx + (altDir ? 0 : 2.2), wy + (altDir ? 2.2 : 0), 0);
+      if (gw && dist < 210) {
+        const stepX = rowMode === 0 ? 3.2 : rowMode === 1 ? 0.5 : 2.5;
+        const stepY3 = rowMode === 0 ? 0.25 : rowMode === 1 ? 3.2 : -1.5;
+        const p2 = p(wx + stepX, wy + stepY3, 0);
         const vx = p2[0] - xm;
         const vy = p2[1] - sy;
         const vl = Math.hypot(vx, vy) || 1;
@@ -2041,128 +2363,281 @@ const paintPaddyWide = (plate: ViewPlate): Paper => {
           dxDir = -dxDir;
           dyDir = -dyDir;
         }
-        dyDir = Math.max(-0.42, Math.min(0.42, dyDir));
+        dyDir = Math.max(-0.38, Math.min(0.38, dyDir));
       }
       const x1 = sx + len * dxDir;
-      const y1 = sy + len * dyDir + b.r.range(-1.5, 1.5);
-      line(b, curve([sx, sy], [x1, y1], b.r.range(-0.015, 0.015), 3), thick, jitter(b, col, 0.036), {
-        dry: 0.32,
-        body: 0.58,
-        alpha: 0.88,
-        taper: [0.28, 0.28],
-        streak: 0.1,
+      const y1 = sy + len * dyDir + b.r.range(-1.4, 1.4);
+      line(b, curve([sx, sy], [x1, y1], b.r.range(-0.025, 0.025), 4), thick, jitter(b, col, 0.028), {
+        dry: 0.38,
+        body: 0.56,
+        alpha: 0.72,
+        taper: [0.34, 0.34],
+        streak: 0.14,
       });
-      sx += len * b.r.range(0.54, 0.84);
+      sx += len * b.r.range(0.58, 0.88);
     }
     sy += stepY;
   }
 
-  for (let i = 0; i < 20; i++) {
-    const cx = b.r.range(rect.x0 + 80, rect.x1 - 80);
-    const cy = horizonY + b.r.range(-8, 22);
-    const len = b.r.range(260, 620);
+  const groveBaseY = horizonY + 8;
+  const farBeltCol = mixRgb(mistCol, silCol, 0.34);
+  const nearBeltCol = mixRgb(mistCol, mixRgb(rowShadow, silCol, 0.5), 0.56);
+  const beltLit = mixRgb(mistCol, skyWarm, 0.54);
+
+  const beltTopPts: [number, number][] = [];
+  for (let x = rect.x0 - 20; x <= rect.x1 + 20; x += 8) {
+    const groveWave = fbm2(x / 230, 0.3, 753, 3);
+    const clump = fbm2(x / 54, 0.7, 7531, 3);
+    const tallClump = Math.max(0, fbm2(x / 95, 1.4, 7532, 2) - 0.52) * 34;
+    const h = 6 + Math.max(0, groveWave - 0.14) * 38 + clump * 16 + tallClump;
+    beltTopPts.push([x, groveBaseY - h]);
+  }
+  fill(b, [...beltTopPts, [rect.x1 + 20, groveBaseY + 6], [rect.x0 - 20, groveBaseY + 6]], farBeltCol, 2.2, 0.86);
+
+  for (let gx = rect.x0 + 20; gx <= rect.x1 - 20; gx += b.r.range(64, 138)) {
+    const groveWave = fbm2(gx / 230, 0.3, 753, 3);
+    if (groveWave < 0.24 && b.r.next() < 0.55) continue;
+    const treesInCluster = 3 + Math.floor(b.r.next() * 4);
+    for (let k = 0; k < treesInCluster; k++) {
+      const tx = gx + b.r.range(-36, 36);
+      const tr = b.r.range(7, 17) * (0.65 + groveWave * 0.65);
+      const ty = groveBaseY - b.r.range(4, tr * 1.45);
+      const subPuffs = 3;
+      for (let m = 0; m < subPuffs; m++) {
+        const px = tx + b.r.range(-tr * 0.55, tr * 0.55);
+        const py = ty + b.r.range(-tr * 0.35, tr * 0.25);
+        const pr = tr * b.r.range(0.55, 0.92);
+        const col = m === 0 ? nearBeltCol : mixRgb(nearBeltCol, farBeltCol, b.r.range(0.15, 0.45));
+        fill(
+          b,
+          arc(px, py, pr, 0, Math.PI * 2, 9)
+            .slice(0, -1)
+            .map(([ax, ay]) => [px + (ax - px) * b.r.range(0.95, 1.35), py + (ay - py) * b.r.range(0.7, 1.0)] as [number, number]),
+          jitter(b, col, 0.025),
+          Math.max(1.4, pr * 0.22),
+          0.78,
+        );
+      }
+      if (b.r.next() < 0.48) {
+        line(
+          b,
+          curve([tx - tr * 0.6, ty - tr * 0.35], [tx + tr * 0.25, ty - tr * 0.52], -0.18, 4),
+          Math.max(2.0, tr * 0.26),
+          jitter(b, beltLit, 0.025),
+          { dry: 0.48, alpha: 0.46, taper: [0.4, 0.4] },
+        );
+      }
+    }
+  }
+
+  const farmSpecs: [number, number, number][] = [
+    [rect.x0 + 360, 74, 24],
+    [rect.x0 + 432, 46, 16],
+    [rect.x0 + 910, 82, 26],
+    [rect.x0 + 988, 50, 17],
+    [rect.x0 + 1470, 72, 23],
+    [rect.x0 + 1542, 44, 15],
+    [rect.x0 + 1950, 68, 22],
+  ];
+  for (const [fx, fw, fh] of farmSpecs) {
+    const fy = groveBaseY + 2;
+    const roofMist = mixRgb(silCol, mistCol, 0.42);
+    const roofLit = mixRgb(mistCol, brightGold, 0.44);
+    const wallMist = mixRgb(mistCol, mixRgb(farGold, rowShadow, 0.35), 0.34);
+    const wallShade = mixRgb(mistCol, silCol, 0.28);
+    fill(
+      b,
+      [[fx - fw * 0.42, fy - fh * 0.48], [fx + fw * 0.42, fy - fh * 0.48], [fx + fw * 0.42, fy + 1], [fx - fw * 0.42, fy + 1]],
+      jitter(b, wallMist, 0.02),
+      0.8,
+      0.88,
+    );
+    fill(
+      b,
+      [[fx - fw * 0.42, fy - fh * 0.48], [fx + fw * 0.42, fy - fh * 0.48], [fx + fw * 0.42, fy - fh * 0.3], [fx - fw * 0.42, fy - fh * 0.3]],
+      wallShade,
+      0.6,
+      0.48,
+    );
+    fill(
+      b,
+      [[fx - fw * 0.56, fy - fh * 0.44], [fx - fw * 0.24, fy - fh], [fx + fw * 0.24, fy - fh], [fx + fw * 0.56, fy - fh * 0.44]],
+      jitter(b, roofMist, 0.02),
+      1.0,
+      0.92,
+    );
+    line(b, [[fx - fw * 0.52, fy - fh * 0.46], [fx - fw * 0.22, fy - fh]], 2.6, roofLit, { dry: 0.36, alpha: 0.66 });
+    line(b, [[fx - fw * 0.22, fy - fh], [fx + fw * 0.22, fy - fh]], 1.8, mixRgb(silCol, mistCol, 0.34), { dry: 0.34, alpha: 0.68 });
+  }
+
+  for (let i = 0; i < 24; i++) {
+    const cx = b.r.range(rect.x0 + 40, rect.x1 - 40);
+    const cy = groveBaseY + b.r.range(-4, 18);
+    const len = b.r.range(280, 660);
     const nearSun = Math.exp(-Math.abs(cx - sunScreen.x) / 1100);
-    const veilCol = mixRgb(mistCol, skyWarm, 0.16 + nearSun * 0.38);
-    line(b, curve([cx - len * 0.5, cy], [cx + len * 0.5, cy + b.r.range(-4, 4)], 0.008, 4), b.r.range(18, 36), jitter(b, veilCol, 0.016), {
-      dry: 0.54,
-      body: 0.4,
+    const veilCol = mixRgb(mistCol, skyWarm, 0.14 + nearSun * 0.34);
+    line(b, curve([cx - len * 0.5, cy], [cx + len * 0.5, cy + b.r.range(-4, 4)], 0.008, 4), b.r.range(16, 32), jitter(b, veilCol, 0.015), {
+      dry: 0.56,
+      body: 0.36,
       alpha: b.r.range(0.28, 0.46),
-      taper: [0.42, 0.42],
+      taper: [0.45, 0.45],
     });
   }
 
-  const drawOrganicBundY = (yWorld: number, emphasis = 1) => {
-    const samples: { pt: [number, number]; dist: number; scale: number }[] = [];
-    for (let x = -30; x <= 1400; x += x < 200 ? 3.5 : 18) {
-      const wobbleY = (noise1(x * 0.08 + yWorld * 0.3, 755) - 0.5) * 0.34;
-      const wy = yWorld + wobbleY;
-      const camPt = toCamera(cam, [x, wy, 0.14]);
+  const drawOrganicBundY = (
+    yWorld: number,
+    emphasis: number,
+    bendAmp: number,
+    gaps: readonly [number, number][],
+  ) => {
+    const isGap = (x: number) => gaps.some(([g0, g1]) => x >= g0 && x <= g1);
+    type BundSample = { pt: [number, number]; dist: number; scale: number; halfW: number };
+    const segments: BundSample[][] = [];
+    let current: BundSample[] = [];
+    for (let x = -20; x <= 680; x += x < 140 ? 2.2 : 10) {
+      if (isGap(x)) {
+        if (current.length >= 2) segments.push(current);
+        current = [];
+        continue;
+      }
+      const macroBend =
+        Math.sin(x * 0.052 + yWorld * 0.21) * bendAmp +
+        (fbm2(x * 0.044, yWorld * 0.085, 755, 2) - 0.5) * bendAmp * 2.4;
+      const wy = yWorld + macroBend;
+      const camPt = toCamera(cam, [x, wy, 0.12]);
       if (camPt[1] < 2.2) continue;
-      const pr = project(cam, [x, wy, 0.14]);
-      if (pr.x < rect.x0 - 240 || pr.x > rect.x1 + 240 || pr.y > rect.y1 + 200) continue;
-      samples.push({ pt: [pr.x, pr.y], dist: Math.hypot(x - cam.position[0], wy - cam.position[1]), scale: pr.scale });
+      const pr = project(cam, [x, wy, 0.12]);
+      if (pr.x < rect.x0 - 220 || pr.x > rect.x1 + 220 || pr.y > rect.y1 + 200) continue;
+      const widthMul = 0.62 + 0.8 * noise1(x * 0.16 + yWorld * 0.5, 7552);
+      const halfW = Math.max(1.0, Math.min(11.5, 0.21 * pr.scale * emphasis * widthMul));
+      current.push({
+        pt: [pr.x, pr.y],
+        dist: Math.hypot(x - cam.position[0], wy - cam.position[1]),
+        scale: pr.scale,
+        halfW,
+      });
     }
-    if (samples.length < 2) return;
-    const chunks = 4;
-    for (let ci = 0; ci < chunks; ci++) {
-      const i0 = Math.floor((samples.length * ci) / chunks);
-      const i1 = Math.min(samples.length, Math.ceil((samples.length * (ci + 1)) / chunks) + 1);
-      const slice = samples.slice(i0, i1);
-      if (slice.length < 2) continue;
-      const midSample = slice[Math.floor(slice.length * 0.5)];
-      const mistT = Math.max(0, Math.min(0.76, (midSample.dist - 34) / 185));
-      const w = Math.max(1.8, Math.min(18, 0.4 * midSample.scale * emphasis));
-      const bundShadow = mixRgb(mixRgb(rowShadow, silCol, 0.2), mistCol, mistT);
-      const bundTop = mixRgb(mixRgb(nearGold, rowShadow, 0.42), mistCol, mistT);
-      const pts = slice.map((s) => s.pt);
-      line(b, pts, w * 1.15, bundShadow, { dry: 0.34, body: 0.74, alpha: 0.86, wobble: 0.14, taper: [0.05, 0.05] });
-      line(
-        b,
-        pts.map(([x, y]) => [x, y - w * 0.24] as [number, number]),
-        w * 0.46,
-        bundTop,
-        { dry: 0.38, alpha: 0.8, wobble: 0.12, taper: [0.05, 0.05] },
-      );
-    }
-    for (let i = 0; i < samples.length; i++) {
-      const s = samples[i];
-      if (s.dist > 78 || (s.dist > 45 && i % 2 === 1) || b.r.next() < 0.28) continue;
-      const [gx, gy] = s.pt;
-      const tufts = s.dist < 44 ? 3 + Math.floor(b.r.next() * 3) : 2 + Math.floor(b.r.next() * 2);
-      const grassBase = Math.max(3, Math.min(22, s.scale * 0.38));
-      for (let t = 0; t < tufts; t++) {
-        const tx = gx + b.r.range(-12, 12);
-        const th = grassBase * b.r.range(0.65, 1.35);
-        const gCol = t === 0 ? mixRgb(greenGold, brightGold, 0.46) : mixRgb(rowShadow, rgb(lowYard.hedge), 0.54);
-        line(b, [[tx, gy + 1], [tx + b.r.range(-th * 0.48, th * 0.48), gy - th]], Math.max(1.2, th * 0.14), jitter(b, gCol, 0.05), {
-          dry: 0.32,
-          taper: [0.1, 0.72],
-          alpha: 0.84 * Math.max(0.25, 1 - s.dist / 90),
+    if (current.length >= 2) segments.push(current);
+
+    for (const seg of segments) {
+      const chunkSize = 14;
+      for (let start = 0; start < seg.length - 1; start += chunkSize) {
+        const end = Math.min(seg.length - 1, start + chunkSize);
+        const sub = seg.slice(start, end + 1);
+        if (sub.length < 2) continue;
+        const mid = sub[Math.floor(sub.length * 0.5)];
+        const mistT = Math.max(0, Math.min(0.84, (mid.dist - 36) / 145));
+        const bundShadow = mixRgb(mixRgb(rowShadow, silCol, 0.14), mistCol, mistT);
+        const bundEarth = mixRgb(mixRgb(nearGold, rowShadow, 0.56), mistCol, mistT);
+        const bundGrass = mixRgb(mixRgb(greenGold, rgb(lowYard.hedge), 0.44), mistCol, mistT);
+
+        const upper: [number, number][] = [];
+        const lower: [number, number][] = [];
+        const crownPts: [number, number][] = [];
+        for (let i = 0; i < sub.length; i++) {
+          const globalI = start + i;
+          const s = sub[i];
+          const prev = seg[Math.max(0, globalI - 1)].pt;
+          const next = seg[Math.min(seg.length - 1, globalI + 1)].pt;
+          const dx = next[0] - prev[0];
+          const dy = next[1] - prev[1];
+          const l = Math.hypot(dx, dy) || 1;
+          let nx = -dy / l;
+          let ny = dx / l;
+          if (ny > 0) {
+            nx = -nx;
+            ny = -ny;
+          }
+          const endTaper =
+            globalI === 0 || globalI === seg.length - 1
+              ? 0.32
+              : globalI === 1 || globalI === seg.length - 2
+                ? 0.76
+                : 1.0;
+          const hw = s.halfW * endTaper;
+          upper.push([s.pt[0] + nx * hw * 0.85, s.pt[1] + ny * hw * 0.85]);
+          lower.push([s.pt[0] - nx * hw * 1.15, s.pt[1] - ny * hw * 1.15]);
+          crownPts.push([s.pt[0] + nx * hw * 0.28, s.pt[1] + ny * hw * 0.28]);
+        }
+
+        fill(b, [...upper, ...lower.slice().reverse()], bundShadow, Math.max(1.1, mid.halfW * 0.24), 0.82 * (1 - mistT * 0.3));
+        line(b, crownPts, Math.max(1.3, mid.halfW * 0.94), jitter(b, bundEarth, 0.028), {
+          dry: 0.42,
+          body: 0.62,
+          alpha: 0.8 * (1 - mistT * 0.32),
+          taper: [start === 0 ? 0.08 : 0.01, end === seg.length - 1 ? 0.08 : 0.01],
+          wobble: 0.14,
         });
+        line(b, lower, Math.max(1.1, mid.halfW * 0.68), jitter(b, bundGrass, 0.035), {
+          dry: 0.46,
+          body: 0.54,
+          alpha: 0.72 * (1 - mistT * 0.36),
+          taper: [start === 0 ? 0.1 : 0.01, end === seg.length - 1 ? 0.1 : 0.01],
+          wobble: 0.18,
+        });
+      }
+
+      for (let i = 0; i < seg.length; i++) {
+        const s = seg[i];
+        if (s.dist > 86 || (s.dist > 48 && i % 2 === 1) || b.r.next() < 0.1) continue;
+        const [gx, gy] = s.pt;
+        const tufts = s.dist < 42 ? 5 + Math.floor(b.r.next() * 5) : 3 + Math.floor(b.r.next() * 3);
+        const grassBase = Math.max(3.5, Math.min(25, s.scale * 0.44));
+        for (let t = 0; t < tufts; t++) {
+          const sideY = b.r.range(-s.halfW * 0.95, s.halfW * 1.0);
+          const tx = gx + b.r.range(-16, 16);
+          const th = grassBase * b.r.range(0.5, 1.5);
+          const gCol =
+            t === 0
+              ? mixRgb(greenGold, brightGold, 0.46)
+              : t % 2 === 1
+                ? mixRgb(greenGold, rgb(lowYard.hedge), 0.48)
+                : mixRgb(rowShadow, rgb(lowYard.hedge), 0.56);
+          line(
+            b,
+            curve([tx, gy + sideY], [tx + b.r.range(-th * 0.6, th * 0.6), gy + sideY - th], b.r.range(-0.2, 0.2), 3),
+            Math.max(1.2, th * 0.14),
+            jitter(b, gCol, 0.05),
+            {
+              dry: 0.32,
+              taper: [0.08, 0.74],
+              alpha: 0.86 * Math.max(0.25, 1 - s.dist / 98),
+            },
+          );
+        }
       }
     }
   };
 
-  for (const yBund of [19, paddyWorld.farmerRidgeY, paddyWorld.powerLineY, 50, 68, 92, 130]) {
-    drawOrganicBundY(yBund, yBund === paddyWorld.farmerRidgeY ? 1.16 : yBund === 19 ? 1.2 : 0.82);
-  }
-  for (const xBund of [14, 38, 64, 94, 130, 175, 235, 320, 440]) {
-    const pts: [number, number][] = [];
-    for (let y = 14; y <= 280; y += 5) {
-      const wx = xBund + (noise1(y * 0.08 + xBund * 0.2, 756) - 0.5) * 0.42;
-      if (toCamera(cam, [wx, y, 0.12])[1] < 3.0) continue;
-      const q = proj(cam, [wx, y, 0.12]);
-      if (q[0] < rect.x0 - 200 || q[0] > rect.x1 + 200 || q[1] > rect.y1 + 180) continue;
-      pts.push(q);
-    }
-    if (pts.length >= 2) {
-      line(b, pts, 3.0, mixRgb(rowShadow, nearGold, 0.34), { dry: 0.42, alpha: 0.52, wobble: 0.15 });
-    }
-  }
+  drawOrganicBundY(19.5, 1.05, 1.2, [[17.0, 18.2], [45.0, 46.2]]);
+  drawOrganicBundY(paddyWorld.farmerRidgeY, 1.12, 0.48, [[41.5, 42.6]]);
+  drawOrganicBundY(paddyWorld.powerLineY, 0.88, 0.64, [[29.0, 30.4], [64.0, 65.5]]);
+  drawOrganicBundY(54, 0.72, 1.35, [[35.0, 37.0], [80.0, 82.0]]);
+  drawOrganicBundY(78, 0.6, 1.6, [[50.0, 52.5]]);
 
-  for (let row = 0; row < 24; row++) {
-    const u = 0.36 + (row / 23) * 0.64;
-    const y = horizonY + 24 + Math.pow(u, 1.68) * (rect.y1 - horizonY - 14);
-    const clusters = Math.floor(14 + u * 26);
+  for (let row = 0; row < 28; row++) {
+    const u = 0.34 + (row / 27) * 0.66;
+    const y = horizonY + 22 + Math.pow(u, 1.66) * (rect.y1 - horizonY - 12);
+    const clusters = Math.floor(14 + u * 28);
     for (let s = 0; s < clusters; s++) {
       const cx = b.r.range(rect.x0, rect.x1);
       const gw = screenToGround(cam, cx, y);
       const wave = gw ? windWaveAt(gw[0], gw[1]) : 0.5;
       const blades = 2 + Math.floor(b.r.next() * 3);
       for (let k = 0; k < blades; k++) {
-        const sx = cx + b.r.range(-12, 12);
-        const h = (8 + u * 22) * b.r.range(0.7, 1.2);
-        const bend = (6 + u * 13) * (0.65 + wave * 0.7);
+        const sx = cx + b.r.range(-14, 14);
+        const h = (7 + u * 22) * b.r.range(0.7, 1.25);
+        const bend = (6 + u * 14) * (0.65 + wave * 0.75);
         const col =
           wave < 0.44 || k === 0
-            ? mixRgb(nearGold, rowShadow, b.r.range(0.35, 0.6))
-            : mixRgb(nearGold, brightGold, b.r.range(0.35, 0.7));
+            ? mixRgb(nearGold, rowShadow, b.r.range(0.35, 0.62))
+            : mixRgb(nearGold, brightGold, b.r.range(0.38, 0.74));
         line(
           b,
           curve([sx, y + 2], [sx + bend, y - h], -0.22, 4),
-          Math.max(1.3, h * 0.1),
+          Math.max(1.2, h * 0.095),
           jitter(b, col, 0.045),
-          { dry: 0.3, taper: [0.08, 0.76], alpha: 0.68 },
+          { dry: 0.3, taper: [0.08, 0.76], alpha: 0.66 },
         );
       }
     }
@@ -2431,6 +2906,8 @@ export const paintViewPlate = (plate: ViewPlate): Paper => {
       return paintHouseSky(plate, "twilight");
     case "house-front-twilight":
       return paintHouseFront(plate, "twilight");
+    case "house-front-twilight-lamp":
+      return paintHouseTwilightLamp(plate);
     case "house-takeoff":
       return paintHouseTakeoff(plate);
     case "low-s4":

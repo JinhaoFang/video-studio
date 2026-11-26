@@ -62,7 +62,7 @@ test("正片与小样生成清单完整登记全部底图且输入与本地产�
     ),
     ...viewPlates.map((p) => `episodes/after-rain/plate-${p.id}.png`),
   ];
-  assert.equal(afterRainExpected.length, 24);
+  assert.equal(afterRainExpected.length, 25);
   verifyManifest("episodes/after-rain/data/generated.json", afterRainExpected);
 
   const sampleExpected = plates.flatMap((p) =>
@@ -123,4 +123,7 @@ test("正片底图生成器 CLI 遵守 --help 与报错退出码约定", () => {
   });
   assert.equal(bad.status, 2);
   assert.match(bad.stderr, /^出错：/);
+  assert.doesNotMatch(bad.stderr, /Unknown option/i);
+  assert.match(bad.stderr, /不认识的参数 --unknown/);
+  assert.match(bad.stderr, /用法：/);
 });

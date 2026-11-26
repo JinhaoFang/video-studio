@@ -156,7 +156,7 @@ export const viewReferences = {
   houseTakeoff: shotCameras.s10,
   lowS4: shotCameras.s4,
   lowS6: shotCameras.s6,
-  paddyWide: cam([9.0, 13.5, 6.0], 51.0, -10.0, 24),
+  paddyWide: cam([9.0, 13.5, 6.0], 41.0, 0.0, 24),
   closeupS2: shotCameras.s2Start,
   closeupS5: shotCameras.s5,
   closeupS7: shotCameras.s7,
@@ -186,6 +186,7 @@ export type ViewPlateId =
   | "house-front-rain"
   | "house-sky-twilight"
   | "house-front-twilight"
+  | "house-front-twilight-lamp"
   | "house-takeoff"
   | "low-s4"
   | "low-s6"
@@ -240,6 +241,14 @@ export const viewPlates: readonly ViewPlate[] = [
     shots: [12],
   },
   {
+    id: "house-front-twilight-lamp",
+    reference: viewReferences.houseReverse,
+    distance: 10.0,
+    rect: { x0: -220, y0: -60, x1: 2140, y1: 1240 },
+    k: 1.15,
+    shots: [12],
+  },
+  {
     id: "house-takeoff",
     reference: viewReferences.houseTakeoff,
     distance: 8.5,
@@ -267,7 +276,7 @@ export const viewPlates: readonly ViewPlate[] = [
     id: "paddy-wide",
     reference: viewReferences.paddyWide,
     distance: 35.0,
-    rect: { x0: -480, y0: -140, x1: 2400, y1: 1220 },
+    rect: { x0: -180, y0: -340, x1: 2100, y1: 1420 },
     k: 1.0,
     shots: [11],
   },

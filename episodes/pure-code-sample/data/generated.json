@@ -6,8 +6,8 @@
     "episodes/pure-code-sample/generate.ts"
   ],
   "status": "complete",
-  "cacheKey": "7cac8da023e1caac515447c65981f3a1490f4c77ec62501e1c1fdf3a1dacf503",
-  "plateKey": "26e1bf665a5d220dfeb79cdc50813f03d2d913f524a054f3482da05dae0d2f5d",
+  "cacheKey": "e9aa243440911b1afd865c4a80b312d6d1a123469e4969597cebc8c70c889a27",
+  "plateKey": "3c3ca98596cd10dac73d0e76f7823b0eaf2accd83cefdf85edf2ae6eff44f0eb",
   "inputs": [
     {
       "path": "episodes/pure-code-sample/generate.ts",
@@ -23,11 +23,11 @@
     },
     {
       "path": "episodes/after-rain/plates.ts",
-      "sha256": "ccf975df93fa56d7764d645dd3f15d1cfdc62b47b6bca1c61a9de85f01b93145"
+      "sha256": "f836d15e0c2642596b90e787f366dd620cc535ba997ecf5e8ab075eb40e6288b"
     },
     {
       "path": "episodes/after-rain/scene.ts",
-      "sha256": "ada55ae4c543805db1fda57e46ceb47e0a923a196f71ff8db8a49ee3088c3a49"
+      "sha256": "5f68ad435107dd46020444d10744d4d38ddc90750620e08b6d9a6b90614cb6a1"
     },
     {
       "path": "episodes/after-rain/tokens.ts",
@@ -139,11 +139,11 @@
     },
     {
       "path": "episodes/pure-code-sample/plate-far-rain.png",
-      "sha256": "6abc499af05e086a2651a9d80a334539a4b160548344b2fa248e9cbbf0f1d88d"
+      "sha256": "22962d1dc70b9f66dd2a4893a8aa82d2b5a1aba1efb34f205d23b3226601e410"
     },
     {
       "path": "episodes/pure-code-sample/plate-far-dusk.png",
-      "sha256": "fb670c8fd4e51221ed2225ccf817d1d9dcc2219c1d8d4ba728de255683121e5f"
+      "sha256": "cc45e5cdf6c53b97e1bdadb5f14c24bee1149c4c76ebf1c0fc8c1fd620fae23c"
     },
     {
       "path": "episodes/pure-code-sample/plate-field-rain.png",

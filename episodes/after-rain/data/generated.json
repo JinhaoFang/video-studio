@@ -6,12 +6,12 @@
     "episodes/after-rain/generate.ts"
   ],
   "status": "complete",
-  "cacheKey": "1bd1d4b93521d6e00f4fe881c84abfe22e5b58e22c65df544d07d5a624811130",
-  "plateKey": "cd1bdaa589c1e7667e45bf84bba23308df9ce340a118b14218d2a1e5654a73b7",
+  "cacheKey": "37083d3fbfade961ea0c770207f77c1fb078fb29258812edf787870effc738a5",
+  "plateKey": "45df014ef4ffa5b475cf2a0aebc549ffbc8a77ce52471919f63918ae48f2eefa",
   "inputs": [
     {
       "path": "episodes/after-rain/generate.ts",
-      "sha256": "0a5961c29f86fdf642ec12b0495cb8d4efd7d3f3db313020b4f834e167cd7663"
+      "sha256": "4b89bc92a30e88f936802d201c6410075804197fa26776867a8dcc34ccfa3f12"
     },
     {
       "path": "src/kit/generation/bake.ts",
@@ -23,15 +23,15 @@
     },
     {
       "path": "episodes/after-rain/plates.ts",
-      "sha256": "ccf975df93fa56d7764d645dd3f15d1cfdc62b47b6bca1c61a9de85f01b93145"
+      "sha256": "f836d15e0c2642596b90e787f366dd620cc535ba997ecf5e8ab075eb40e6288b"
     },
     {
       "path": "episodes/after-rain/plates-views.ts",
-      "sha256": "2ec7fdb261c9e933b80e68befb0a556097aaad7074e19c7b7bcc0366bed8d776"
+      "sha256": "f2deb9964b04b66d0eaede59d0ebb1fcdc528eaf2cbbbdce1a1405e928aeb80c"
     },
     {
       "path": "episodes/after-rain/scene.ts",
-      "sha256": "ada55ae4c543805db1fda57e46ceb47e0a923a196f71ff8db8a49ee3088c3a49"
+      "sha256": "5f68ad435107dd46020444d10744d4d38ddc90750620e08b6d9a6b90614cb6a1"
     },
     {
       "path": "episodes/after-rain/tokens.ts",
@@ -155,11 +155,11 @@
     },
     {
       "path": "episodes/after-rain/plate-far-rain.png",
-      "sha256": "6abc499af05e086a2651a9d80a334539a4b160548344b2fa248e9cbbf0f1d88d"
+      "sha256": "22962d1dc70b9f66dd2a4893a8aa82d2b5a1aba1efb34f205d23b3226601e410"
     },
     {
       "path": "episodes/after-rain/plate-far-dusk.png",
-      "sha256": "fb670c8fd4e51221ed2225ccf817d1d9dcc2219c1d8d4ba728de255683121e5f"
+      "sha256": "cc45e5cdf6c53b97e1bdadb5f14c24bee1149c4c76ebf1c0fc8c1fd620fae23c"
     },
     {
       "path": "episodes/after-rain/plate-field-rain.png",
@@ -199,7 +199,7 @@
     },
     {
       "path": "episodes/after-rain/plate-house-front-rain.png",
-      "sha256": "d31f9cd6891dedf9e89d66758ad54d195bd3c43e7e92bbfd74849c211b62bab9"
+      "sha256": "7eb376f44215d8d474bd986df05f4593daa835b3d52abace3c702e04e51550fa"
     },
     {
       "path": "episodes/after-rain/plate-house-sky-twilight.png",
@@ -207,11 +207,15 @@
     },
     {
       "path": "episodes/after-rain/plate-house-front-twilight.png",
-      "sha256": "ef87ed029906d457186e07bc124eb4939c5c461e099972423b1309a26282ebbc"
+      "sha256": "2a525444e65975cea1566270a4ee5ccc635436763b24147d621a95b0f8b892a4"
+    },
+    {
+      "path": "episodes/after-rain/plate-house-front-twilight-lamp.png",
+      "sha256": "47ea60f2a6b823e9638723f60bc9490857cbb8c4a2082d2a68dba8584cc40888"
     },
     {
       "path": "episodes/after-rain/plate-house-takeoff.png",
-      "sha256": "e91e3d418a154ffeb49203e89d7dfe149da761435b273a37f6a04d40f562a9ab"
+      "sha256": "5850d6497004f085915fae0c69b6d165c98a51f4e27f953e1efe77ebfddb3348"
     },
     {
       "path": "episodes/after-rain/plate-low-s4.png",
@@ -223,7 +227,7 @@
     },
     {
       "path": "episodes/after-rain/plate-paddy-wide.png",
-      "sha256": "b369610a7238372efe0212efaa9f668c57f94c3d52520d892969f10599f6ada6"
+      "sha256": "119ce6b15f0909fcc525e67e1507a832d4f652305f581cb9a98ab6f524eea640"
     },
     {
       "path": "episodes/after-rain/plate-closeup-s2.png",
