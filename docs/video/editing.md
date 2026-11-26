@@ -62,6 +62,66 @@
 - **样片**：[耶鲁「WIPE」中的《七武士》](https://filmanalysis.yale.edu/editing/)（片段；原片版权，仅观看）。
 - **出处**：耶鲁大学 Film Analysis，[Editing — Wipe](https://filmanalysis.yale.edu/editing/)：可见的移动边界、动作冒险片中的使用，以及短暂时间省略的效果。
 
+### 切在动作上
+
+- **一句话**　人或物还在动，画面已经换了机位，观众看到的是同一次动作。
+- **适合**　跨景别或机位接续同一个动作，尤其是伸手、起跳、开门这类动作阶段清楚的场面。
+- **标志特征**　切点两侧的动作阶段接得上，肢体和接触物的相对位置、运动方向和速度让动作看起来只发生了一次。
+- **关键技法**　两幅画面对齐同一动作的相邻阶段。门把刚被压下可以接门开始打开，切点落在动作进行中。它是匹配剪辑里的动作匹配。
+- **样片**　观察连续动作怎样换机位（电影原片版权归权利人，仅观看教学片段，不搬运）。[耶鲁 Editing「Continuity Editing」中的《邻居们》](https://filmanalysis.yale.edu/editing/#22187)
+- **出处**　耶鲁大学 Film Analysis 在 Continuity Editing 讨论《邻居们》的动作匹配。Tom Barrance 的课程图示转头过程中换机位。[耶鲁 Editing](https://filmanalysis.yale.edu/editing/#22187) · [Learn About Film「Match on action」](https://learnaboutfilm.com/film-language/sequence/)
+
+### 遮挡转场
+
+- **一句话**　人物、翅膀、柱子之类的场景物体挡过画面，遮住接缝，露出来时已经到了下一镜。
+- **适合**　借前景遮挡连接不同机位或场景，或让几段镜头看起来像一次连续运镜。
+- **标志特征**　切点落在两镜共有的遮挡范围内。当前景完全盖住画面时，场景可在遮住的那一刻整体换掉。前景边缘可见时，边缘的方向和移动在接缝附近连得上。
+- **关键技法**　全遮挡可以藏一次硬切，移动遮挡轮廓也可以成为擦除的边界。后者可参照本节「转场：擦除」。
+- **样片**　约 01:02–01:04，紫袋移近并盖住全画面，袋子移开时画面已换到室内（原片受著作权保护，仅在线观看，不搬运）。[NFB《The Cat Came Back》](https://www.nfb.ca/film/the-cat-came-back/) · [NFB 使用条款](https://help.nfb.ca/terms/)
+- **出处**　NFB 原片示范全遮挡藏切点。哥伦比亚大学将《夺魂索》列为通过剪辑制造长镜头观感的案例，耶鲁大学的 Wipe 说明移动边界如何替换画面。[NFB《The Cat Came Back》](https://www.nfb.ca/film/the-cat-came-back/) · [哥伦比亚大学「Long Take」](https://filmglossary.ccnmtl.columbia.edu/term/long-take/) · [耶鲁 Editing — Wipe](https://filmanalysis.yale.edu/editing/)
+
+### 甩镜
+
+- **一句话**　镜头像一下子把头甩开，两幅画面在拖成条纹的时候接到一起。
+- **适合**　急转注意力、连接两处空间或强调突发行动。画面需要静下来交代细节时，强烈的扫动会抢走注意力。
+- **标志特征**　切点在快速扫动产生的模糊中。两侧的条纹走向和画面扫动接得上，清楚的主体在模糊散开后才重新出现。
+- **关键技法**　把两次快速摇镜接在模糊最强、画面细节最少的位置。横向甩镜通常产生横向拖影。同一次快速摇镜也可留在一个镜头内，作为运镜使用。
+- **样片**　对照快摇时怎样出现横向拖影（电影原片版权归权利人，仅观看教学片段，不搬运）。[耶鲁《精武门》片段](https://filmanalysis.yale.edu/cinematography/#whippan)
+- **出处**　耶鲁大学 Film Analysis 把快速横摇产生的条纹和藏在两次快摇间的切点都写在 Whip Pan 一节。[耶鲁 Cinematography](https://filmanalysis.yale.edu/cinematography/#whippan)
+
+### 焦点转场
+
+- **一句话**　前一镜的东西虚下去，后一镜的东西从虚影里清楚起来。
+- **适合**　把注意力交给新主体，或表现主观恍惚。线索需要在交接处一直看得清时，整幅失焦会遮掉信息。
+- **标志特征**　接缝附近有可见的失焦，清晰细节在新镜头重新出现。若画面始终只有同一个镜头，焦点从一个距离移到另一个距离，摄影中通常称为移焦。
+- **关键技法**　接缝可落在失焦段，模糊也可与叠化重合。模拟镜头失焦时，清晰度随焦平面或虚化强度改变。
+- **出处**　Adobe Premiere 的 Lens Blur 和 Blur Dissolve 分别说明景深式模糊过渡和带模糊的叠化。耶鲁大学说明移焦怎样让两个距离的物体轮流清楚。[Adobe「Modern transitions」](https://helpx.adobe.com/premiere/desktop/add-video-effects/types-of-effects/transitions.html) · [耶鲁 Cinematography — Racking Focus](https://filmanalysis.yale.edu/cinematography/#rackingfocus)
+
+### 光转场
+
+- **一句话**　一道闪光、镜头光斑或泛开的亮光盖过切点，亮光退去时画面已经换了。
+- **适合**　用相机闪光、强光扫过等亮度变化带进新镜头，或强调突然的时空转换。
+- **标志特征**　闪白有短促的亮度峰值，细节在峰值附近被冲淡。镜头光斑和光晕可只占画面的一部分，其余部位仍能看出场景。
+- **关键技法**　过曝式闪白把画面接缝放在亮度最高的附近。镜头光斑（flare）或泛光（glow）可让亮区随光源的位置或亮度跨过接缝。
+- **出处**　Adobe Premiere 在 Lights & Blurs 分列 Flash 的过曝闪光、Flare 的镜头光斑和 Glow 的增亮淡接。[Adobe「Modern transitions」](https://helpx.adobe.com/premiere/desktop/add-video-effects/types-of-effects/transitions.html)
+
+### 淡入淡出
+
+- **一句话**　画面从黑或白渐渐显出来，或慢慢退成一整幅黑或白。
+- **适合**　开篇、收尾或交代段落分隔。黑场或白场的停留可以成为独立的节拍。
+- **标志特征**　场景和纯色之间有可见的渐变。两镜经黑场或白场交接时，纯色是两边共用的中间画面。
+- **关键技法**　单边淡入或淡出连接一个镜头与纯色。两镜之间的 Dip To Black 或 Dip To White 则各有一个渐变段，共用同一纯色。
+- **出处**　Adobe Premiere 说明 Cross Dissolve 可为单个镜头做从黑淡入或淡至黑，并分别定义了经黑、经白连接两镜的效果。[Adobe「List of Video Dissolve transitions」](https://helpx.adobe.com/premiere/desktop/add-video-effects/effects-and-transitions-library/list-of-video-dissolve-transitions.html)
+
+### 声音先行或延后
+
+- **一句话**　声音和画面在不同的时刻换镜，观众先听见下一镜，或在新画面里还听见上一镜。
+- **适合**　预告下一处空间、提前听见讲话者，或把上一镜的对白、环境声、音乐余音带进新画面。
+- **标志特征**　J 切中下一镜的声音先于下一镜画面进入。L 切中上一镜的声音延续到下一镜画面之后。
+- **关键技法**　画面切点和声音的入点或出点分开。跨场使用时可参考「声音桥」对声音连续性的说明。[声音桥](sound.md#声音桥)
+- **样片**　听出跨场的声音与画面在何时交接（电影原片版权归权利人，仅观看教学片段，不搬运）。[耶鲁 Sound「Sound Bridge」中的《一一》](https://filmanalysis.yale.edu/sound/)
+- **出处**　Adobe Premiere 将 J 切和 L 切归入 split edit，说明两种声画错位的方向。耶鲁大学从跨场连接的功能说明声音桥。[Adobe「Perform J cuts and L cuts」](https://helpx.adobe.com/premiere/desktop/edit-projects/trim-clips/perform-j-cuts-and-l-cuts.html) · [耶鲁 Sound — Sound Bridge](https://filmanalysis.yale.edu/sound/)
+
 ### 剪辑手法：蒙太奇
 
 - **一句话**：几幅画面连在一起，会让人想到单独看其中一幅时没有的意思。
@@ -117,6 +177,93 @@
 - **关键技法**：长镜头强调持续时间，一镜到底强调该段连续呈现。藏起接缝也能造成连续的观感，因此成片看似一镜不能证明拍摄时只拍了一次。
 - **样片**：[耶鲁「LONG TAKE」中的《大玩家》](https://filmanalysis.yale.edu/editing/)（片段；原片版权，仅观看）；哥伦比亚大学 [Long Take](https://filmglossary.ccnmtl.columbia.edu/term/long-take/) 另有《公民凯恩》《时间密码》片段（原片版权，仅观看）。
 - **出处**：耶鲁大学 Film Analysis，[Editing — Long Take](https://filmanalysis.yale.edu/editing/)：镜头内部运动会改变长镜头的节奏；哥伦比亚大学 [Long Take](https://filmglossary.ccnmtl.columbia.edu/term/long-take/)：包括《夺魂索》通过剪辑形成连续观感的说明。
+
+### 180° 轴线
+
+- **一句话**　想象两个人之间有一条线，镜头从同一侧看过去，谁在画左、谁在画右就能保持一致。
+- **适合**　维持同场对话、人物与所看物件的关系，或跟住一段朝同一方向的运动。刻意换边也能让熟悉的空间突然显得不安。
+- **标志特征**　轴线由人物间的关系、人物和所看物的位置，或主体的运动路径形成。相邻机位在轴线同侧时，两人相向的关系或移动主体的左右方向接得上。直接切到另一侧时，左右关系可能反转。
+- **关键技法**　连续运镜可以让观众看到机位越过轴线。沿轴线正视或背视的中性镜头可以减少左右线索。交代新方位的全景可以重新建立空间关系。暂时离开主动作的镜头或中性的细节插入可以隔开两组方向，新一侧仍可用人物关系或地标让观众认出空间。
+- **样片**　观察反打越轴后，谈话者怎样在相邻画面里朝向同一边（电影原片版权归权利人，仅观看教学片段，不搬运）。[哥伦比亚大学《东京物语》片段](https://filmglossary.ccnmtl.columbia.edu/term/180-degree-rule/)
+- **出处**　耶鲁大学与哥伦比亚大学说明 180° 范围和方向反转，耶鲁指出重定场可缓和越轴。StudioBinder 的 Neutral Shot、Camera Movement 和 Cutaways 示范三种接法，Tom Barrance 另举全景和细节插入。[耶鲁 Editing — Continuity Editing](https://filmanalysis.yale.edu/editing/#22187) · [哥伦比亚大学「180-degree Rule」](https://filmglossary.ccnmtl.columbia.edu/term/180-degree-rule/) · [StudioBinder「Bend the 180 degree rule」](https://www.studiobinder.com/blog/what-is-the-180-degree-rule-film/) · [Learn About Film「Changing the line」](https://learnaboutfilm.com/film-language/sequence/180-degree-rule/)
+
+### 30° 规则
+
+- **一句话**　对同一个主体换角度时，两个机位绕着它分得够开，观众才容易看出这是另一次取景。
+- **适合**　连续剪同一个人的同一段表演，或在相近景别之间换机位。刻意让剪接痕迹显眼时，可以利用小角度带来的跳动。
+- **标志特征**　相邻机位绕同一主体形成明显角度差。镜位与构图太相似时，切换容易显得像人或物在原地跳了一下。
+- **关键技法**　David Bordwell 把至少 30° 用于同一主体的相邻异角度镜头。Tom Barrance 的示例同时拉开机位角度和景别，示范角度太近时，仅变景别仍可能看到跳动。Peter Zunitch 建议大于 30°，并指出视点明显拉近或拉远时，角度范围可有弹性。
+- **出处**　Bordwell 用《The Boss of It All》的连续截帧说明至少 30° 的规则及其有意违反。Barrance 对照角度变化和景别变化，Zunitch 讨论距离对视角变化的影响。[Bordwell「Another pebble in your shoe」](https://www.davidbordwell.net/blog/2006/12/13/another-pebble-in-your-shoe/) · [Learn About Film「The 30 degree rule」](https://learnaboutfilm.com/film-language/sequence/) · [Videomaker「Distance matters」](https://www.videomaker.com/how-to/editing/editing-technique/continuity-editing-the-importance-of-consistency-in-cinema/)
+
+### 屏幕方向
+
+- **一句话**　同一个角色沿路继续走，换镜头后，观众看见它仍在朝刚才那一边走。
+- **适合**　跨机位或跨场景表现追赶、旅途、走入走出和同向行动。角色掉头时，方向的改变本身就是叙事信息。
+- **标志特征**　连续朝画右移动的主体从一镜右边离画，下一镜从画左入画时仍往右走。追逐中的两人可保持同向，迎面接近的两人可呈相向。
+- **关键技法**　移动方向用画框里的左右描述。角色可在画内完成一次可见的转身，或由空间关系清楚的一镜交代路线改变。
+- **出处**　耶鲁大学把屏幕方向和位置匹配列为连贯剪辑的基本条件。Tom Barrance 用运动主体说明越轴如何翻转方向。Peter Zunitch 说明同侧出入画为何可能看成掉头。[耶鲁 Editing — Continuity Editing](https://filmanalysis.yale.edu/editing/#22187) · [Learn About Film「Moving subjects」](https://learnaboutfilm.com/film-language/sequence/180-degree-rule/) · [Videomaker「Continuity editing errors」](https://www.videomaker.com/how-to/editing/editing-technique/continuity-editing-the-importance-of-consistency-in-cinema/)
+
+### 视线匹配
+
+- **一句话**　一个角色朝画外看，另一镜的内容让观众认出它看的是谁或什么。
+- **适合**　无对白地交代角色注意到的线索，或让分开取景的两个人看起来在对视。
+- **标志特征**　前后镜头的左右和高低支持同一个观看关系。高处的角色朝下看，低处的人若回望，视线朝上。
+- **关键技法**　用角色眼神、头部朝向和被看对象的位置建立关系。被看对象可以用主观镜头呈现，也可以从旁边观察到。接缝上观众的注意力落点参见本节「剪辑手法：视线引导（主体位置匹配）」。
+- **样片**　约 00:52–00:57，门口的人朝下看，切到台阶前的袋子和小猫，再回到人物反应（原片受著作权保护，仅在线观看，不搬运）。[NFB《The Cat Came Back》](https://www.nfb.ca/film/the-cat-came-back/) · [NFB 使用条款](https://help.nfb.ca/terms/)
+- **出处**　耶鲁大学说明角色看画左时，对象镜必须让人理解观看者位于画外右侧。Tom Barrance 在 Eyeline match and looking space 用角色高低差说明上下视线。[耶鲁 Editing — Eyeline Match](https://filmanalysis.yale.edu/editing/#98494) · [Learn About Film「Eyeline match and looking space」](https://learnaboutfilm.com/film-language/sequence/180-degree-rule/)
+
+### 动作和道具状态连贯
+
+- **一句话**　换角度以后，动作正做到同一步，道具还在原先的位置，已经发生的变化也还看得见。
+- **适合**　呈现同一段行动或同一时刻，让需要追踪的东西有清楚的状态变化。
+- **标志特征**　切点附近动作用的手、手与道具的接触、道具的位置和朝向、打开或损坏的程度都接得上。比如门刚被推开一条缝，切到室内时门缝仍在继续扩大。
+- **关键技法**　对照动作阶段和道具的物理状态。叙事省去一段时间时，变化后的状态也可成为省略的线索。
+- **样片**　约 01:01–01:04，人物在门口伸手拾起紫袋，镜头回到室内后仍提着它（原片受著作权保护，仅在线观看，不搬运）。[NFB《The Cat Came Back》](https://www.nfb.ca/film/the-cat-came-back/) · [NFB 使用条款](https://help.nfb.ca/terms/)
+- **出处**　Nashville Film Institute 的 Continuity 一节说明场记核对各镜的动作、道具和造型，Insert Shot 一文举出切换景别时道具相对位置的例子。耶鲁大学的 Elliptical Editing 解释剪辑如何省去动作中的一段时间。[NFI「Script Supervisor」](https://www.nfi.edu/script-supervisor/) · [NFI「Insert Shot」](https://www.nfi.edu/insert-shot/) · [耶鲁 Editing — Elliptical Editing](https://filmanalysis.yale.edu/editing/#38272)
+
+### 光与时间连贯
+
+- **一句话**　故事还在同一个时刻时，窗光的来向和影子的落向接得上。天色变了，观众也能看出时间走了。
+- **适合**　维持同场的光照可信度，或用太阳高度、窗光、天色和亮灯等变化表现时间流逝。
+- **标志特征**　同一时刻、同一物体的受光面和投影在场景里的方位相容。反向取景改变画面里的左右，光源相对场景的位置仍然对得上。时间省略时，光线变化可以和场景中的可见线索互相印证。
+- **关键技法**　按场景中的光源位置和状态判断接缝，取景改变时沿用同一个空间关系。相邻镜头对曝光和色偏的调整可参考「基础校正与镜头匹配」。
+- **样片**　约 00:10–00:19，同一机位里的山顶房屋由深蓝星夜过渡到地平线发红、太阳升起（原片受著作权保护，仅在线观看，不搬运）。[NFB《The Cat Came Back》](https://www.nfb.ca/film/the-cat-came-back/) · [NFB 使用条款](https://help.nfb.ca/terms/)
+- **出处**　Nashville Film Institute 把照明纳入场记的同场连贯职责，并用插入镜头说明相对位置和照明的匹配。耶鲁大学区分相邻镜头的时间连贯与剪辑对故事时间的省略。[NFI「Script Supervisor — Continuity」](https://www.nfi.edu/script-supervisor/) · [NFI「Insert Shot」](https://www.nfi.edu/insert-shot/) · [耶鲁 Editing — Continuity Editing / Elliptical Editing](https://filmanalysis.yale.edu/editing/#22187)
+
+### 定场镜头
+
+- **一句话**　一眼交代这是哪里，人和重要物件各在哪里。
+- **适合**　进入新空间、交代后面行动要用的地形，或在观众看过局部细节后重新交代全局。
+- **标志特征**　画面里可辨认地点和重要元素之间的关系。例如同一画幅里能看出房屋在山顶、路从山坡通上来。
+- **关键技法**　较远景别常能容纳地标、人物和出入口，也可由数镜共同定场。重定场镜头重现或更新已交代的空间关系。
+- **样片**　约 00:10，观察山顶房屋与坡地、地平线之间的关系（原片受著作权保护，仅在线观看，不搬运）。[NFB《The Cat Came Back》](https://www.nfb.ca/film/the-cat-came-back/) · [NFB 使用条款](https://help.nfb.ca/terms/)
+- **出处**　耶鲁大学定义定场、重定场并以《刀马旦》说明多个镜头共同建立空间。哥伦比亚大学也把场景的空间关系作为定场功能。[耶鲁 Editing — Establishing Shot / Reestablishing Shot](https://filmanalysis.yale.edu/editing/) · [哥伦比亚大学「Establishing Shot」](https://filmglossary.ccnmtl.columbia.edu/term/establishing-shot/)
+
+### 插入镜头
+
+- **一句话**　从这一场的主画面切到某个细节，让观众看见刚才容易漏掉的东西。
+- **适合**　突出按钮、手的动作、信上关键的字，或会在后面起作用的物件。
+- **标志特征**　插入画面把正在发生的事中一个具体细节单独交代出来。细节和场景里的动作、位置或信息有可辨认的关系。
+- **关键技法**　近景或特写常用于让细节占据足够的画幅。插回同一动作时，道具状态和相对位置随动作延续。
+- **样片**　约 01:09–01:14，画面切到桌面的粉色圆柄道具，手从特写中把它拿走，切回中景时道具留在手里（原片受著作权保护，仅在线观看，不搬运）。[NFB《The Cat Came Back》](https://www.nfb.ca/film/the-cat-came-back/) · [NFB 使用条款](https://help.nfb.ca/terms/)
+- **出处**　耶鲁大学的 Cut-in / Cut Away 以进入同一场景的局部说明 cut-in。Nashville Film Institute 用实验室里移液的手举例，并指出插入镜头也可用其他景别。[耶鲁 Editing — Cut-in / Cut Away](https://filmanalysis.yale.edu/editing/#cutin) · [NFI「Insert Shot」](https://www.nfi.edu/insert-shot/)
+
+### 反应镜头
+
+- **一句话**　镜头给到作出反应的角色，让观众看见刚才发生的事对它有什么影响。
+- **适合**　不靠对白表现惊讶、迟疑或理解，也可用旁观者的反应改变观众对同一事件的感受。
+- **标志特征**　能看到由一句话、一个动作或一声响动引发的变化，比如眼睛睁开、身体后缩、笑容停住。
+- **关键技法**　反打可把画面从说话者切到听者。反应也可由视线匹配接回人物，让观众把可见的表情或姿势变化与刚见到的对象连起来。
+- **样片**　约 00:52–00:57，从台阶前的小猫切回门口人物，观察人物从看见到惊喜的表情变化（原片受著作权保护，仅在线观看，不搬运）。[NFB《The Cat Came Back》](https://www.nfb.ca/film/the-cat-came-back/) · [NFB 使用条款](https://help.nfb.ca/terms/)
+- **出处**　耶鲁大学用《司汤达综合征》说明剪辑如何在人物和她关注的对象之间建立联系，并在 Shot / Reverse Shot 说明人物间的交替取景。NFB 原片示范切回人物以呈现表情的改变。[耶鲁 Editing — Shot / Reverse Shot、Eyeline Match](https://filmanalysis.yale.edu/editing/) · [NFB《The Cat Came Back》](https://www.nfb.ca/film/the-cat-came-back/)
+
+### 镜头时长与读图时间
+
+- **一句话**　一镜停多久，取决于观众这一眼要认出什么、看懂什么变化，以及情绪要停多久。
+- **适合**　判断新空间、道具细节、复杂动作或安静反应各自需要多少观看时间。已建立的空间和重复的信息可以在更短的镜头里唤回。
+- **标志特征**　主体、动作结果或文字在切走前已经足够清楚，足以让观众认出本镜所承载的信息。相邻镜头即便等长，动作、对白和声音重音不同，体感也会不同。
+- **关键技法**　读图时间从关键线索变得可辨认时算起。画面一开始尚未揭示主体，或最初忙于辨认前景时，整镜时长里只有部分可用来理解线索。复杂画面、文字和声音同时争夺注意力时，增加可读的停留时间或减少同时出现的信息都可提高可读性。
+- **出处**　耶鲁大学的 Duration / Rhythm 用两段餐桌戏说明镜头长度、画面内动作与声音共同形成体感节奏。BBC 字幕指南的 Timing 部分把显示时长和观众同时看画面的需求纳入字幕读时，属于文字的具体情形。[耶鲁 Editing — Duration / Rhythm](https://filmanalysis.yale.edu/editing/#46105) · [BBC「Subtitle Guidelines — Visuals and graphics」](https://www.bbc.co.uk/accessibility/forproducts/guides/subtitles/#Visuals-and-graphics)
 
 ## ⑩ 画面文字
 
