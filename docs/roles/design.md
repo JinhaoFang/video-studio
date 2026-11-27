@@ -25,7 +25,7 @@
 
 - 开一期之前：`docs/workflow/README.md`「一期视频」的剧组，包括部门表、各部门的交付与自查、交接、锁定点；定其中某一项时，查 `docs/video/` 里对应的知识。
 - 写镜头动画之前：`docs/workflow/README.md`「一期视频」的时间机制，动画按台本句子编号定时。
-- 定风格、复刻参考镜头之前：参考的拆解，例如 `docs/research/nasa-ep04/` 的 `style.md`、`shots.md`。
+- 定风格、复刻参考镜头之前：先读参考的拆解，例如 `docs/research/noroi-iwai.md` 对参照片做法的拆解。
 
 ## 镜头运动
 

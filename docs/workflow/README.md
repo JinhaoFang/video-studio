@@ -126,13 +126,13 @@ pnpm 的版本由 `package.json` 的 `packageManager` 固定，本机装的 pnpm
 - **镜头之间怎么接**：写进切点表。切点两侧都写主体在画面上的位置（例如横向约 60%）和朝向，后一镜照着取景，这样不同人做的两个镜头也能接上（`docs/video/editing.md`「视线引导」）。
 - **复刻参考时**：运镜一列要按 10fps 以上的密集帧核对后再写。
 
-示例见 [NASA 朋克开场镜头剧本](../../episodes/nasa-punk-opening/storyboard.md)。
+示例见 [《雨后》镜头剧本](../../episodes/after-rain/storyboard.md)。
 
 ### 时间机制
 
 按时间轴锚点定时。镜头代码按"某个锚点之后多少帧"定时，不写死全片帧号；改了锚点的位置，动画会跟着走。
 
-- **有旁白时，锚点是台本句子**：台本每句一个编号（`L001`、`L002`……）和句后停顿，以每句音频的实测时长累计生成时间轴，记录每句的起止帧和配音来源。改稿或重配音后重新生成时间轴。当前格式、生成工具和 `pnpm qa sentence` 按句取点用法见 [NASA 朋克开场说明](../../episodes/nasa-punk-opening/README.md)。
+- **有旁白时，锚点是台本句子**：台本每句一个编号（`L001`、`L002`……）和句后停顿，以每句音频的实测时长累计生成时间轴，记录每句的起止帧和配音来源。改稿或重配音后重新生成时间轴。格式见 `tools/timeline-types.ts`，用 `node tools/build-timeline.ts` 生成，用 `pnpm qa sentence` 按句取点，用法都看 `--help`。
 - **没有旁白时，锚点是镜头起点和画面事件**：本期有一张镜头时间表（编号、起点、时长），镜头里的动画按镜头起点之后的帧数定时；镜头声明的画面事件汇总成全片事件表，音效按对齐点落到事件帧上。改镜头时长只改时间表。示例见 [纯代码小样说明](../../episodes/pure-code-sample/README.md)。
 
 ### 工具
@@ -163,14 +163,14 @@ pnpm 的版本由 `package.json` 的 `packageManager` 固定，本机装的 pnpm
 | `sound/mix.ts` | `renderMix(table, score, design, seed, synthesizeSfx, perspective?)` 生成混音与分轨。调用方提供 `(name, seed, options) => Clip`，为事件音效和环境床返回 48 kHz 单声道采样与 `alignmentSample`。参见[小样配方](../../episodes/pure-code-sample/sound/sfx.ts)。 |
 | `sound/measure.ts` | `measure`、`master` 测量响度、真峰值并处理总线，`pitchReport`、`spectrum` 检查音高和频谱。 |
 
-已有的按句工具 `sentence-timing.ts` 用 `sentenceFrame`、`chapterSpans` 定时，`subtitle-schedule.ts` 用 `buildSubtitleSchedule`、`subtitleState` 定字幕条。用法见 [NASA 朋克开场](../../episodes/nasa-punk-opening/README.md)。
+已有的按句工具 `src/kit/sentence-timing.ts` 用 `sentenceFrame`、`chapterSpans` 定时，`src/kit/subtitle-schedule.ts` 用 `buildSubtitleSchedule`、`subtitleState` 定字幕条，用法见两个文件头部的说明。
 
 画面细节与逐帧运动验收：`pnpm qa crop <视频> <时间点> <x,y…>` 按原始像素裁切一个或多个区域，左上角从 `0,0` 起，默认 600×450，可用 `--width`、`--height` 调整；输出不缩放的 PNG，区域超出画面时报错。`pnpm qa strip <视频> --from <起始帧> --to <结束帧> [--every <帧步长>]` 按从 0 开始的解码帧号取样，包含对齐步长的终点，步长默认 1；每格标帧号和实际呈现时间码，默认 4 列、每页最多 24 格，沿用 `sheet` 的排版与 2000 像素整页上限。两项均支持 `--out` 指定输出目录，详细用法见各自 `--help`。
 
-配音和成片的工具先看 `--help`：逐句配音 `pnpm tts`、等比变速 `node tools/stretch-voice.ts`、配音打分 `pnpm qa voice`、配乐与混音 `node tools/mix-opening.ts`、运动自检 `pnpm qa motion`。本期的复现命令见 [NASA 朋克开场说明](../../episodes/nasa-punk-opening/README.md)。`--help` 里没有的几条：
+配音和成片的工具先看 `--help`：逐句配音 `pnpm tts`、等比变速 `node tools/stretch-voice.ts`、配音打分 `pnpm qa voice`、配乐与混音 `node tools/mix-opening.ts`、运动自检 `pnpm qa motion`。这些工具最早用在 NASA 朋克开场，该期 2026-11-27 移出仓库，完整的复现命令见提交 `ffe625a` 的 `episodes/nasa-punk-opening/README.md`。`--help` 里没有的几条：
 
 - 凭据只从环境变量或 `--env` 指定的文件读，不复制进仓库和日志。
-- `eleven_v4` 不支持 Speed，请求成功不代表生效（[API 研究](../research/nasa-ep04/elevenlabs-api.md)）。
+- `eleven_v4` 不支持 Speed，请求成功不代表生效（[API 研究](../research/elevenlabs-api.md)）。
 - 变速总是从原始目录生成到新目录；时间轴读变速后的实测时长，来源说明写明默认倍率和例外。
 - 成片响度用 `pnpm qa loudness` 验收：目标 -16 LUFS、容差 1 LU、真峰值不超过 -1 dBTP，LRA 只报告。用 `pnpm qa dropouts` 查成片断音，按 JSON 的帧号和时间码在逐帧电平图里复核低电平段与骤降。默认只报告，显式给检测阈值可判定通过与否。
 - 配音打分的截断标记和运动自检的检出都是复核线索，结合原始转写或画面再下结论。

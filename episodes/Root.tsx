@@ -1,7 +1,5 @@
 /** 按期注册合成；按需加载各期，避免其他期的字体初始化进入纯代码渲染。 */
 import { Composition, Folder } from "remotion";
-import type { ClinMeshPromoProps } from "./clinmesh-promo/ClinMeshPromo";
-import promoTimeline from "./clinmesh-promo/data/timeline.json";
 import {
   durationInFrames as afterRainDuration,
   fps as afterRainFps,
@@ -14,8 +12,6 @@ import {
   sampleSize,
 } from "./pure-code-sample/model";
 import { SHOT12_DURATION as afterRainTitleDuration } from "./after-rain/title/timing";
-import timeline from "./nasa-punk-opening/data/timeline.json";
-import type { Timeline } from "../tools/timeline-types";
 
 const loadSampleA = () =>
   import("./pure-code-sample/PureCodeSample").then(({ PureCodeSampleA }) => ({
@@ -36,14 +32,6 @@ const loadStill = () =>
 const loadPreview = () =>
   import("./pure-code-sample/samples/ShotPreview").then(({ ShotPreview }) => ({
     default: ShotPreview,
-  }));
-const loadOpening = () =>
-  import("./nasa-punk-opening/Opening").then(({ Opening }) => ({
-    default: Opening,
-  }));
-const loadPromo = () =>
-  import("./clinmesh-promo/ClinMeshPromo").then(({ ClinMeshPromo }) => ({
-    default: ClinMeshPromo,
   }));
 const loadAfterRain = () =>
   import("./after-rain/AfterRain").then(({ AfterRain }) => ({
@@ -157,41 +145,6 @@ export const RemotionRoot: React.FC = () => (
         width={1920}
         height={1080}
         defaultProps={{ shot: "s2-b" as const }}
-      />
-    </Folder>
-    <Folder name="nasa-punk-opening">
-      <Composition
-        id="NasaPunkOpening"
-        lazyComponent={loadOpening}
-        durationInFrames={timeline.durationInFrames}
-        fps={30}
-        width={1920}
-        height={1080}
-        defaultProps={{ timeline: timeline as Timeline }}
-        calculateMetadata={({ props }) => ({
-          durationInFrames: props.timeline.durationInFrames,
-          fps: props.timeline.fps,
-        })}
-      />
-    </Folder>
-    <Folder name="clinmesh-promo">
-      <Composition
-        id="ClinMeshPromo"
-        lazyComponent={loadPromo}
-        durationInFrames={promoTimeline.durationInFrames}
-        fps={30}
-        width={1920}
-        height={1080}
-        defaultProps={
-          {
-            timeline: promoTimeline as Timeline,
-            bgm: true,
-          } satisfies ClinMeshPromoProps
-        }
-        calculateMetadata={({ props }) => ({
-          durationInFrames: props.timeline.durationInFrames,
-          fps: props.timeline.fps,
-        })}
       />
     </Folder>
   </>

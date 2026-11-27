@@ -155,9 +155,35 @@ ffmpeg -y -i "$qa/cover-base.png" -i "$qa/title.png" -filter_complex \
 | `out/after-rain/after-rain.mp4` | 两平台共用的 1080p24 有声正片 |
 | `out/after-rain/cover-youtube.jpg`、`out/after-rain/cover-bilibili.jpg` | 3840×2160 宽封面、1200×900 首页封面。规格出处见 [sources.md](sources.md#194-锁定版正片与发布封面) |
 | `out/after-rain/description.md` | 设计负责人定稿的简介，带署名（执行者的草稿在 `$qa/description.md`） |
+| `out/after-rain/after-rain-web.mp4`、`out/after-rain/shots-12.jpg`、`out/after-rain/social-preview.jpg` | GitHub 展示用的 540p 小文件版、十二镜缩略条、仓库社交预览图，做法见下文「GitHub 展示」 |
 | `$qa/sheet/`、`$qa/cuts-*.jpg`、`$qa/master-check.json` | 全片联系表、逐切点对照、逐帧时间戳与锁定版像素核对 |
 | `$qa/loudness.json`、`$qa/dropouts.json`、`$qa/levels.svg` | 对交付 MP4 的响度、真峰值、断音报告与电平图 |
 | `$qa/repeat.json`、`$qa/manifest-check.json`、`$qa/render-time.txt` | 三帧独立复渲的 RGB 字节比对、生成清单核对、全片墙钟耗时 |
+
+### GitHub 展示
+
+仓库首页 README 和 GitHub Release 用到三个文件，都从成片和 YouTube 封面用 FFmpeg 派生，不新增素材：
+
+- **`after-rain-web.mp4`**：960×540、两遍编码，视频 1090 kb/s、AAC 128 kb/s，共 9.9 MB。GitHub 免费账户的视频附件上限是 10 MB（[GitHub 文档「附加文件」](https://docs.github.com/en/get-started/writing-on-github/working-with-advanced-formatting/attaching-files)），拖进 issue 或 PR 的评论框得到附件链接，README 里单独一行写这个链接就能直接播放。评论要发出去，链接才对外可见：只上传不发出时，不登录访问返回 404（11-27 实测）。同样的码率试过 1280×720，第 1 镜的雨丝和瓦顶高光被抹平；README 的播放器最宽约 880 像素，540p 保留的细节更多。
+- **`shots-12.jpg`**：每镜一帧拼成 4×3，帧号 F72、F216、F372、F492、F582、F684、F792、F960、F1044、F1134、F1260、F1500，每格 640×360。
+- **`social-preview.jpg`**：从 4K 封面裁 2:1 再缩到 1280×640，70 KB。GitHub 要求社交预览图小于 1 MB、建议 1280×640，只能在仓库 Settings 的「Social preview」里上传（[GitHub 文档](https://docs.github.com/en/repositories/managing-your-repositorys-settings-and-features/customizing-your-repository/customizing-your-repositorys-social-media-preview)）。
+
+```bash
+src=out/after-rain/after-rain.mp4
+dst=out/after-rain
+log=out/qa/after-rain-web
+mkdir -p "$log"
+ffmpeg -y -i "$src" -vf scale=960:540:flags=lanczos -c:v libx264 -preset slower -b:v 1090k \
+  -pass 1 -passlogfile "$log/x264" -an -f mp4 /dev/null
+ffmpeg -y -i "$src" -vf scale=960:540:flags=lanczos -c:v libx264 -preset slower -b:v 1090k \
+  -pass 2 -passlogfile "$log/x264" -c:a aac -b:a 128k -movflags +faststart -pix_fmt yuv420p "$dst/after-rain-web.mp4"
+ffmpeg -y -i "$dst/cover-youtube.jpg" -vf 'crop=3840:1920:0:120,scale=1280:640:flags=lanczos' \
+  -q:v 2 "$dst/social-preview.jpg"
+ffmpeg -y -i "$src" -vf 'select=eq(n\,72)+eq(n\,216)+eq(n\,372)+eq(n\,492)+eq(n\,582)+eq(n\,684)+eq(n\,792)+eq(n\,960)+eq(n\,1044)+eq(n\,1134)+eq(n\,1260)+eq(n\,1500),scale=640:360:flags=lanczos,tile=4x3:padding=6:color=0x1d1a22' \
+  -frames:v 1 -q:v 3 "$dst/shots-12.jpg"
+```
+
+Release `after-rain-v1` 挂成片、小文件版、两张封面和缩略条；README 的封面和缩略条直接引用 Release 里的文件。
 
 ### 本机渲染耗时
 

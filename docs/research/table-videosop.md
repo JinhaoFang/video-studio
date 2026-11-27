@@ -23,6 +23,8 @@
 
 ## 2. 和 NASA 那期（DispatchDock 双角色）的对比
 
+NASA 那期 2026-11-27 移出仓库，原文件见提交 `ffe625a` 的 `episodes/nasa-punk-opening/`、`docs/research/nasa-ep04/`。
+
 | 方面 | NASA 朋克（路北路陈） | Table-Video SOP（一只桌子） |
 |---|---|---|
 | Agent 组织 | 两个不同的模型分角色：Opus 设计、Codex 工程 | Codex 里开多个对话：总控 + 分段；开场方案借 ChatGPT Pro |
