@@ -48,6 +48,12 @@ export const moodPostOverrides: Record<MoodId, Partial<Post>> = {
   },
 };
 
+export const PADDY_WIDE_POST: Partial<Post> = {
+  glowThreshold: 0.86,
+  glow: 0.3,
+  softFocus: 0.2,
+};
+
 export const resolvePost = (override: Partial<Post> = {}): Post => ({
   ...defaultPost,
   ...override,
@@ -115,8 +121,10 @@ export const postForShot = (
       break;
     case "s09":
     case "s10":
-    case "s11":
       base = moodPosts.lowDusk;
+      break;
+    case "s11":
+      base = { ...moodPosts.lowDusk, ...PADDY_WIDE_POST };
       break;
     case "s12":
       base = moodPosts.twilight;

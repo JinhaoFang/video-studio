@@ -80,6 +80,7 @@
 | 夕光 | 4–7 | `defaultPost` 不改 | 小样定稿 |
 | 晒太阳 | 8 | `darkest` `#221c28`，`glow` 0.45，`glowThreshold` 0.64，`softFocus` 0.4 | 全片光晕最强的一格 |
 | 低夕光 | 9–11 | `darkest` `#221c28`，`glow` 0.38，`glowThreshold` 0.68 | 仍是暖光，比晒太阳收一点 |
+| 低夕光·大远景 | 11 | 在低夕光上再改：`glowThreshold` 0.86，`glow` 0.3，`softFocus` 0.2（#192 画面锁定时定） | 大远景里整幅稻田都比 0.68 亮，按低夕光的阈值会整幅起光晕，金色被冲成奶白；只让靠太阳的天和金边起光晕 |
 | 暮色 | 12 | `darkest` `#1f1b30`，`glow` 0.22，`glowThreshold` 0.8，`grain` 0.07，`vignette` 0.32 | 只有灯亮到能起光晕；颗粒更明显 |
 
 ## 按光照分的色指定
