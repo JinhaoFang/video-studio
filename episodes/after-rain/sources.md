@@ -136,3 +136,9 @@
 B 站规格核于 **2026-11-27**。官方《web 投稿封面使用 Q&A》Q1、Q5 说明首页推荐和投稿页用 4:3，推荐列表、个人空间等用 16:9，两个比例可分别设图。创作中心上传面板提示「建议上传尺寸≥1200x900的高清图片」。本次首页封面取 1200×900，宽版可供 16:9 入口使用。[官方封面 Q&A](https://www.bilibili.com/blackboard/era/xXjSYgChj7DWlPzK.html) · [创作中心投稿页](https://member.bilibili.com/york/videoup) · [投稿页公开界面文案 `recommendedCoverResolution`](https://s1.hdslb.com/bfs/static/creator-monorepo/videoup/static/js/index.8804633e.js)
 
 YouTube 版用 3840×2160 横幅 JPG，依据[仓库交付规范](../../docs/video/delivery.md#按展示位置区分的封面)和 [YouTube 官方缩略图说明](https://support.google.com/youtube/answer/72431?hl=zh-Hans)。正片、封面均只用本仓库画面、声音和自绘字印，本工单引入的第三方素材、移植代码与新依赖均为零。
+
+## GitHub 展示用文件
+
+`after-rain-web.mp4`（540p 小文件版）、`shots-12.jpg`（十二镜缩略条）和 `social-preview.jpg`（仓库社交预览图）都由 FFmpeg 从 `after-rain.mp4`、`cover-youtube.jpg` 派生，只缩放、裁切、拼格和重新编码，不加任何新画面或声音。完整命令见[本期 README「GitHub 展示」](README.md#github-展示)。没有引入第三方素材、移植代码或新依赖。
+
+这三个文件和成片、两张封面一起发在 GitHub Release `after-rain-v1`，按 CC BY-NC-SA 4.0 授权，署名「溯游」；仓库代码按根目录 `LICENSE` 的 MIT。
