@@ -2,6 +2,14 @@
 
 画面和声音全部由本仓库的代码生成（`GLOSSARY.md`「纯代码」）。每张工单在末尾加一节，标题写工单号，写清生成命令、产物、用到的第三方代码和许可；不改别人的节（本期约定第 2 节「登记处」）。
 
+## #180 麻雀与远处鸟群的设定
+
+麻雀湿、甩乱、干三种状态和新姿势在 `episodes/after-rain/sparrow.ts`，五套麻雀色指定在 `tokens-sparrow.ts`，远处鸟群在 `flock.ts`，全部用 kit 的绘制接口按帧算出。设定图是 Remotion 合成 `AfterRainSparrowSheet`（`sheets/SparrowSheet.tsx`，96 帧），看图用 `pnpm exec remotion still AfterRainSparrowSheet <输出.png> --frame=<帧号> --gl=swangle`，不另存媒体。没有引入第三方代码、外部图片或素材。（#180 落地时漏登，#168 收尾时由设计负责人补。）
+
+## #181 走过院子的人的设定
+
+人的下半身、走路和停步、竹篮、远处小人影在 `episodes/after-rain/person.ts`，四档光照下的人和道具色指定在 `tokens-person.ts`，全部用 kit 的绘制接口按帧算出。设定图是 Remotion 合成 `AfterRainPersonSheet`（`sheets/PersonSheet.tsx`，96 帧），看图命令同上，不另存媒体。没有引入第三方代码、外部图片或素材。（#181 落地时漏登，#168 收尾时由设计负责人补。）
+
 ## #184 试听样
 
 从仓库根目录运行 `node episodes/after-rain/auditions/generate.ts`。生成器按源码、乐谱、运行版本和输出的 SHA-256 判断能否复用三个 WAV。媒体放在 `public/episodes/after-rain/`，48 kHz、PCM16、双声道。重建命令和哈希见[试听生成清单](data/auditions.json)。
