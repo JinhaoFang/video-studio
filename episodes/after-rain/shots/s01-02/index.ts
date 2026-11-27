@@ -1,278 +1,306 @@
-/**
- * 第 1–2 镜（起）的全片装配预演（#185）：真机位、正式角色设定的关键姿势停格（blocking，不补中间画）、已有烘焙底图。
- * 第 1 镜反向机位从树篱回看雷雨里的老屋与竹竿上的湿麻雀背影，含第 8–30 帧从雨色最暗色淡入与第 84 帧云间闪电微亮；
- * 第 2 镜长焦近景展示湿透麻雀在竹竿上张望画右、弱叫、挪脚、抬翅、寒战后缩回，首尾构图衔接 1→2 与 2→3 切点表。
- * 待定事项：正式雨丝、水滴与中间画由 #187 替换。
- */
-import { directionToView } from "../../../../src/kit/engine/camera.ts";
+/** 第 1、2 镜的正式画面。广角沿雨带推向老屋，长焦晚四帧跟随竹竿上的湿麻雀。 */
+import { directionToView, focalPx } from "../../../../src/kit/engine/camera.ts";
 import type { Camera, Vec3 } from "../../../../src/kit/engine/camera.ts";
-import { hold, progress } from "../../../../src/kit/engine/timing.ts";
+import { hash, noise1 } from "../../../../src/kit/engine/random.ts";
+import { ease, progress } from "../../../../src/kit/engine/timing.ts";
 import type { Shot } from "../../../../src/kit/shots.ts";
 import { drawPole, poleScreen } from "../../pole.ts";
 import { perchT, pole, poleAt, shotCameras, sky } from "../../scene.ts";
-import { drawSparrow, restPose, sparrowLight } from "../../sparrow.ts";
-import type { Pose } from "../../sparrow.ts";
-import { drawViewPlate, mixCamera, placeSparrow, viewImage } from "../../stage.ts";
+import { drawSparrow, sparrowLight } from "../../sparrow.ts";
+import {
+  drawViewPlate,
+  mixCamera,
+  placeSparrow,
+  viewImage,
+} from "../../stage.ts";
 import type { Surface } from "../../stage.ts";
-import { closeup, darkestByMood, houseRain } from "../../tokens.ts";
+import { closeup, darkestByMood, houseRain, rain } from "../../tokens.ts";
+import { birdAt, wetHuddle } from "./acting.ts";
 import {
   S01_FADE_END,
   S01_FADE_START,
   S01_LIGHTNING,
+  S02_CLAW_SHIFT,
+  S02_SHIVER,
   s01CameraProgress,
   s01Timing,
-  S02_CALL_WEAK,
-  S02_CLAW_SHIFT,
-  S02_GLANCE,
-  S02_HUDDLE,
-  S02_SHIVER,
-  S02_WING_LIFT,
+  s02AimCorrection,
   s02CameraProgress,
   s02Timing,
 } from "./timing.ts";
+import { drawRainPlane, drawRunoff } from "./weather.ts";
 
 const deg = (v: number) => (v * Math.PI) / 180;
-
-const viewYawForAzimuth = (camera: Camera, target: Vec3, azimuthRad: number) => {
-  const bearing = Math.atan2(target[0] - camera.position[0], target[1] - camera.position[1]);
-  return azimuthRad - bearing - Math.PI / 2;
-};
-
-const s01CameraAt = (frame: number): Camera =>
-  mixCamera(shotCameras.s1Start, shotCameras.s1End, s01CameraProgress(frame));
-
-const wetHuddle: Pose = {
-  ...restPose,
-  wet: 1,
-  puff: 0.08,
-  crouch: 0.34,
-  bodyPitch: 0.24,
-  headPitch: -0.22,
-  headYaw: 0.06,
-  eyeOpen: 0.52,
-  glint: 0.2,
-};
-
-const drawS01 = (surface: Surface, frame: number) => {
-  const ctx = surface.context;
-  const camera = s01CameraAt(frame);
-
-  ctx.fillStyle = houseRain.sky;
-  ctx.fillRect(0, 0, camera.width, camera.height);
-  drawViewPlate(ctx, viewImage(surface, "house-sky-rain"), "house-sky-rain", camera);
-
-  const flashDelta = Math.abs(frame - S01_LIGHTNING);
-  if (flashDelta <= 4) {
-    const flashAlpha = (1 - flashDelta / 5) * 0.42;
-    ctx.save();
-    ctx.globalAlpha = flashAlpha;
-    ctx.fillStyle = houseRain.lightningSky;
-    ctx.fillRect(0, 0, camera.width, camera.height * 0.56);
-    ctx.restore();
-  }
-
-  drawViewPlate(ctx, viewImage(surface, "house-front-rain"), "house-front-rain", camera);
-  drawPole(ctx, camera, { state: "rain", drawing: 1, drops: 6 });
-
-  const pt = poleAt(perchT);
-  const feet: Vec3 = [pt[0], pt[1], pt[2] + pole.radius];
-  const place = placeSparrow(camera, feet, 0, sky);
-  const yaw = -Math.PI / 2 - 0.14;
-  drawSparrow(
-    ctx,
-    {
-      x: place.x,
-      y: place.y,
-      ppu: place.ppu,
-      yaw,
-      pitch: place.pitch,
-      lighting: sparrowLight("rain", directionToView(camera, sky)),
-      drawing: 1,
-      seed: 18501,
-    },
-    wetHuddle,
-  );
-
-  if (frame < S01_FADE_END) {
-    const reveal = frame < S01_FADE_START ? 0 : progress(frame, S01_FADE_START, S01_FADE_END);
-    ctx.save();
-    ctx.globalAlpha = 1 - reveal;
-    ctx.fillStyle = darkestByMood.rain;
-    ctx.fillRect(0, 0, camera.width, camera.height);
-    ctx.restore();
-  }
+const footAt = (t: number, height = 0): Vec3 => {
+  const [x, y, z] = poleAt(t);
+  return [x, y, z + pole.radius + height];
 };
 
 export const s01: Shot<Surface> = {
   ...s01Timing,
   post: {},
-  draw: drawS01,
+  draw(surface, frame) {
+    const ctx = surface.context;
+    const camera = mixCamera(
+      shotCameras.s1Start,
+      shotCameras.s1End,
+      s01CameraProgress(frame),
+    );
+    const amount = 1.6 - 0.2 * progress(frame, 108, 143);
+    camera.pitch -= deg(1.15) * (1 - s01CameraProgress(frame));
+    ctx.fillStyle = houseRain.sky;
+    ctx.fillRect(0, 0, camera.width, camera.height);
+    ctx.save();
+    ctx.translate(frame * 0.15, 0);
+    drawViewPlate(
+      ctx,
+      viewImage(surface, "house-sky-rain"),
+      "house-sky-rain",
+      camera,
+    );
+    ctx.restore();
+    const flash = frame - S01_LIGHTNING;
+    if (flash >= 0 && flash < 6) {
+      const glow = ctx.createRadialGradient(740, 220, 30, 740, 220, 1140);
+      glow.addColorStop(0, houseRain.lightningSky);
+      glow.addColorStop(1, "transparent");
+      ctx.save();
+      ctx.globalAlpha = [0.15, 0.46, 0.55, 0.34, 0.16, 0.06][flash];
+      ctx.fillStyle = glow;
+      ctx.fillRect(0, 0, camera.width, camera.height);
+      ctx.restore();
+    }
+    drawRainPlane(ctx, camera, frame, false, 0, amount);
+    drawViewPlate(
+      ctx,
+      viewImage(surface, "house-front-rain"),
+      "house-front-rain",
+      camera,
+    );
+    drawRunoff(ctx, camera, frame);
+    drawRainPlane(ctx, camera, frame, false, 1, amount);
+    drawPole(ctx, camera, { state: "rain", drawing: 1, drops: 6 });
+    const place = placeSparrow(camera, footAt(perchT), 0, sky);
+    drawSparrow(
+      ctx,
+      {
+        ...place,
+        yaw: -Math.PI / 2 - 0.14,
+        lighting: sparrowLight("rain", directionToView(camera, sky)),
+        drawing: 1,
+        seed: 18501,
+      },
+      wetHuddle,
+    );
+    drawRainPlane(ctx, camera, frame, false, 2, amount);
+    if (frame < S01_FADE_END) {
+      ctx.save();
+      ctx.globalAlpha = 1 - progress(frame, S01_FADE_START, S01_FADE_END);
+      ctx.fillStyle = darkestByMood.rain;
+      ctx.fillRect(0, 0, camera.width, camera.height);
+      ctx.restore();
+    }
+  },
 };
 
-const s02StartCam: Camera = {
+const start: Camera = {
   ...shotCameras.s2Start,
   position: [0.42, 1.45, 1.81],
   pitch: deg(3.6),
 };
-const s02EndCam: Camera = {
+const end: Camera = {
   ...shotCameras.s2End,
   position: [0.4, 1.55, 1.815],
   pitch: deg(3.6),
 };
+const closeCamera = (frame: number) => {
+  const c = mixCamera(start, end, s02CameraProgress(frame));
+  c.yaw +=
+    deg(0.24) * s02AimCorrection(frame) +
+    deg(1.51) * ease(progress(frame, S02_CLAW_SHIFT + 4, S02_CLAW_SHIFT + 28));
+  c.yaw += ((noise1(frame / 68, 18702) - 0.5) * 4) / focalPx(c);
+  c.pitch += ((noise1(frame / 82, 18712) - 0.5) * 2.8) / focalPx(c);
+  return c;
+};
 
-const s02CameraAt = (frame: number): Camera =>
-  mixCamera(s02StartCam, s02EndCam, s02CameraProgress(frame));
-
-type S02Beat = { pose: Pose; perchShift: number; drawing: number };
-
-const s02Beats: readonly [number, S02Beat][] = [
-  [0, { pose: wetHuddle, perchShift: 0, drawing: 1 }],
-  [
-    S02_GLANCE,
-    {
-      pose: {
-        ...wetHuddle,
-        crouch: 0.16,
-        bodyPitch: 0.42,
-        headPitch: 0.18,
-        headYaw: -0.32,
-        eyeOpen: 0.92,
-        glint: 0.34,
-      },
-      perchShift: 0,
-      drawing: 2,
-    },
-  ],
-  [
-    S02_CALL_WEAK,
-    {
-      pose: {
-        ...wetHuddle,
-        crouch: 0.18,
-        bodyPitch: 0.4,
-        headPitch: 0.14,
-        headYaw: -0.28,
-        eyeOpen: 0.88,
-        glint: 0.34,
-        beakOpen: 0.36,
-      },
-      perchShift: 0,
-      drawing: 3,
-    },
-  ],
-  [
-    S02_CLAW_SHIFT,
-    {
-      pose: {
-        ...wetHuddle,
-        crouch: 0.24,
-        bodyPitch: 0.36,
-        headPitch: 0.12,
-        headYaw: -0.26,
-        eyeOpen: 0.9,
-        glint: 0.34,
-      },
-      perchShift: 0.014,
-      drawing: 4,
-    },
-  ],
-  [
-    S02_WING_LIFT,
-    {
-      pose: {
-        ...wetHuddle,
-        crouch: 0.2,
-        bodyPitch: 0.34,
-        headPitch: 0.1,
-        headYaw: -0.24,
-        wingSpread: 0.24,
-        wingFlap: 0.22,
-        eyeOpen: 0.92,
-        glint: 0.34,
-      },
-      perchShift: 0.014,
-      drawing: 5,
-    },
-  ],
-  [
-    S02_SHIVER,
-    {
-      pose: {
-        ...wetHuddle,
-        crouch: 0.38,
-        puff: 0.24,
-        bodyPitch: 0.22,
-        headPitch: -0.18,
-        headYaw: -0.05,
-        headRoll: 0.22,
-        eyeOpen: 0.18,
-        glint: 0.15,
-      },
-      perchShift: 0.014,
-      drawing: 6,
-    },
-  ],
-  [
-    S02_HUDDLE,
-    {
-      pose: wetHuddle,
-      perchShift: 0.014,
-      drawing: 7,
-    },
-  ],
-];
-
-const drawS02 = (surface: Surface, frame: number) => {
-  const ctx = surface.context;
-  const camera = s02CameraAt(frame);
-
-  ctx.fillStyle = closeup.s2.eavesDark;
-  ctx.fillRect(0, 0, camera.width, camera.height);
-  drawViewPlate(ctx, viewImage(surface, "closeup-s2"), "closeup-s2", camera);
-
-  const beat = hold(frame, s02Beats);
-  drawPole(ctx, camera, { state: "rain", drawing: beat.drawing, drops: 5 });
-
-  const t = perchT + beat.perchShift;
-  const pt = poleAt(t);
-  const feet: Vec3 = [pt[0], pt[1], pt[2] + pole.radius];
-  const place = placeSparrow(camera, feet, 0, sky);
-  const contact = poleScreen(camera, t);
+const bambooSkin = (ctx: CanvasRenderingContext2D, camera: Camera) => {
   ctx.save();
-  ctx.globalAlpha = 0.26;
-  ctx.fillStyle = darkestByMood.rain;
-  ctx.beginPath();
-  ctx.ellipse(
-    contact.x,
-    contact.y - pole.radius * contact.scale * 0.55,
-    place.ppu * 0.85,
-    pole.radius * contact.scale * 0.34,
-    -0.1,
-    0,
-    Math.PI * 2,
-  );
-  ctx.fill();
+  ctx.lineCap = "round";
+  const knots = 14;
+  for (let i = 0; i < knots; i++) {
+    const from = (i + 0.28) / knots;
+    const length = (0.38 + hash(187, i) * 0.47) / knots;
+    const points = Array.from({ length: 12 }, (_, j) => {
+      const t = from + (length * j) / 11;
+      const p = poleScreen(camera, t);
+      const edge = 0.48 + 0.38 * noise1(t * 90, 187);
+      return { p, edge };
+    });
+    if (points.some(({ p }) => p.depth < 0.3)) continue;
+    ctx.beginPath();
+    for (const [j, { p, edge }] of points.entries()) {
+      const y = p.y - pole.radius * p.scale * edge;
+      if (j === 0) ctx.moveTo(p.x, y);
+      else ctx.lineTo(p.x, y);
+    }
+    for (const { p } of points.reverse())
+      ctx.lineTo(p.x, p.y - pole.radius * p.scale * 0.39);
+    ctx.closePath();
+    ctx.fillStyle = rain.pole;
+    ctx.globalAlpha = 0.78;
+    ctx.fill();
+  }
+  for (let i = 0; i < 520; i++) {
+    const t = hash(187, i, 1),
+      z = hash(187, i, 2) * 1.76 - 0.88;
+    const a = poleScreen(camera, t);
+    if (a.depth < 0.3 || a.x < -120 || a.x > camera.width + 120) continue;
+    const b = poleScreen(camera, t + 0.0008 + hash(187, i, 3) ** 2 * 0.007);
+    ctx.strokeStyle = z > 0.48 ? rain.pole : rain.poleShadow;
+    ctx.globalAlpha = 0.28 + hash(187, i, 4) * 0.35;
+    ctx.lineWidth = Math.max(0.8, a.scale * pole.radius * 0.034);
+    ctx.beginPath();
+    ctx.moveTo(a.x, a.y - z * a.scale * pole.radius);
+    ctx.lineTo(b.x, b.y - z * b.scale * pole.radius + 0.7);
+    ctx.stroke();
+  }
   ctx.restore();
+};
 
-  const yaw = viewYawForAzimuth(camera, feet, deg(144));
-  drawSparrow(
-    ctx,
-    {
-      x: place.x,
-      y: place.y,
-      ppu: place.ppu,
-      yaw,
-      pitch: place.pitch,
-      lighting: sparrowLight("rain", directionToView(camera, sky)),
-      drawing: beat.drawing,
-      seed: 18502,
-    },
-    beat.pose,
-  );
+const featherWater = (
+  ctx: CanvasRenderingContext2D,
+  frame: number,
+  place: ReturnType<typeof placeSparrow>,
+  featherEdge: (dx: number) => number,
+) => {
+  const { x, y, ppu } = place;
+  const bead = (
+    dx: number,
+    dy: number,
+    r: number,
+    elongation: number,
+    angle = 0,
+  ) => {
+    ctx.beginPath();
+    ctx.ellipse(dx, dy, r, r * elongation, angle, 0, Math.PI * 2);
+    ctx.fillStyle = rain.paddyWater;
+    ctx.fill();
+    ctx.beginPath();
+    ctx.ellipse(
+      dx + r * 0.2,
+      dy + r * 0.25,
+      r * 0.48,
+      r * 0.61,
+      angle,
+      0,
+      Math.PI * 2,
+    );
+    ctx.fillStyle = rain.cloud.edge;
+    ctx.fill();
+  };
+  ctx.save();
+  for (const [ax, period, offset] of [
+    [-1.36, 27, 3],
+    [-0.49, 23, 15],
+  ]) {
+    const age = (frame + offset) % period;
+    const growth = Math.min(1, (age + 1) / (period - 7));
+    const fall = Math.max(0, age - period + 7);
+    const dx = x + ax * ppu,
+      dy = featherEdge(ax * ppu);
+    if (!Number.isFinite(dy)) continue;
+    ctx.lineWidth = 1.2;
+    ctx.strokeStyle = rain.paddyWater;
+    ctx.beginPath();
+    ctx.moveTo(dx + 2, dy - 8 * growth);
+    ctx.lineTo(dx, dy + growth * 2);
+    ctx.stroke();
+    bead(
+      dx,
+      dy + 3 * growth + fall * fall * 1.1,
+      0.8 + growth * 2.4,
+      1.1 + fall * 0.15,
+    );
+  }
+  for (let i = 0; i < 7; i++) {
+    const age = frame - S02_SHIVER - (i % 3);
+    if (age < 0 || age > 13) continue;
+    const sign = i % 2 ? -1 : 1;
+    const dx =
+      x +
+      ppu *
+        (sign * (0.68 + hash(187, i, 6) * 0.4) +
+          age * sign * (0.045 + hash(187, i, 7) * 0.06));
+    const dy =
+      y +
+      ppu * (-0.05 - 0.4 * hash(187, i, 8) - age * 0.082 + age * age * 0.0065);
+    bead(
+      dx,
+      dy,
+      ppu * (0.012 + hash(187, i, 9) * 0.016),
+      1 + Math.max(0, 4 - age) * 0.18,
+      sign * 1.1,
+    );
+  }
+  ctx.restore();
 };
 
 export const s02: Shot<Surface> = {
   ...s02Timing,
   post: {},
-  draw: drawS02,
+  draw(surface, frame) {
+    const ctx = surface.context,
+      camera = closeCamera(frame),
+      beat = birdAt(frame);
+    const amount = 1.4 - 0.4 * progress(frame, 0, 143);
+    ctx.fillStyle = closeup.s2.eavesDark;
+    ctx.fillRect(0, 0, camera.width, camera.height);
+    ctx.save();
+    ctx.translate(camera.width / 2, camera.height / 2);
+    ctx.scale(1.16, 1.16);
+    ctx.translate(-camera.width / 2, -camera.height / 2);
+    drawViewPlate(ctx, viewImage(surface, "closeup-s2"), "closeup-s2", camera);
+    ctx.restore();
+    drawRainPlane(ctx, camera, frame, true, 0, amount);
+    drawRainPlane(ctx, camera, frame, true, 1, amount);
+    drawPole(ctx, camera, { state: "rain", drawing: 1, drops: 0 });
+    bambooSkin(ctx, camera);
+    const feet = footAt(perchT + beat.shift, beat.height);
+    const place = placeSparrow(camera, feet, 0, sky);
+    const yaw =
+      deg(144) -
+      Math.atan2(feet[0] - camera.position[0], feet[1] - camera.position[1]) -
+      Math.PI / 2;
+    const plumage = document.createElement("canvas");
+    const radius = Math.ceil(place.ppu * 3);
+    plumage.width = 2 * radius;
+    plumage.height = 2 * radius;
+    const cel = plumage.getContext("2d", { willReadFrequently: true })!;
+    drawSparrow(
+      cel,
+      {
+        ...place,
+        x: radius,
+        y: radius,
+        yaw,
+        lighting: sparrowLight("rain", directionToView(camera, sky)),
+        drawing: beat.drawing,
+        seed: 18502,
+      },
+      beat.pose,
+    );
+    ctx.drawImage(plumage, place.x - radius, place.y - radius);
+    featherWater(ctx, frame, place, (dx) => {
+      const column = cel.getImageData(
+        Math.round(radius + dx),
+        radius,
+        1,
+        radius,
+      ).data;
+      for (let i = radius - 1; i >= 0; i--)
+        if (column[i * 4 + 3] > 128) return place.y + i;
+      return NaN;
+    });
+    drawRainPlane(ctx, camera, frame, true, 2, amount);
+  },
 };

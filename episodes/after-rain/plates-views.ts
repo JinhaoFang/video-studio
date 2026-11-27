@@ -1,7 +1,7 @@
 /**
  * 《雨后》正片各新机位的水粉底图绘制（#200 返工精修版）：
  * 几何投影只作草稿定位，所有建筑、屋瓦、灰泥墙、木墙板、树篱、林木、湿泥地、水洼、稻田与天空均以顺形水粉笔触与手绘边缘画出，摒弃平涂、直尺线与规则几何。
- * 1. 老屋正面反向机位（第 1 镜暴雨版、第 12 镜暮色灭灯版 + 独立透明亮灯层）：移除底图中的木制晾衣架（改由 pole-stand.ts 实时投影）；屋顶改画日式和瓦（往屋脊方向行距变密的瓦檐横线与连续竖向瓦垄起伏，第 1 镜沿瓦垄保留湿反光）；暮色屋拆出灭灯底图与可按帧淡入的独立灯层；
+ * 1. 老屋正面反向机位（第 1 镜暴雨版、第 12 镜暮色灭灯版 + 独立透明亮灯层）：晾衣架由 pole-stand.ts 实时投影；雨中的屋瓦分垄叠放，湿光沿筒瓦断续，暮色只保留屋脊和檐口轮廓光；灭灯底图与独立灯层分别绘制；
  * 2. 第 10 镜低夕光回看老屋正面：保持玄关门洞与 1.64 米檐影线构图不变；檐影上半墙改灰泥哑光质感；下半墙板逐块画接缝、通长木纹与深浅（去掉梭形）；右上受光屋瓦按 3D 透视画成行瓦垄（去掉迷彩斑）；檐廊地板木纹顺地板方向走；两根柱子改成手画边的木方柱；
  * 3. 第 4、6 镜贴地低机位院子与第 2、5、7、8、9 镜近景虚化背景保持验收通过版本不变；
  * 4. 第 11 镜稻田上空大远景：按 shots/s10-11/ 实际相机路径（含末段上摇至 +8.3°）扩展天空覆盖并画入冷暖夕云与空气层；远处补林带与农舍罩在暖紫雾（#b49aa8）中；稻田去掉细直地块线，改用大片风吹明暗稻浪与地块色相/稻行方向变化，田埂改成手画不规则宽窄、弯折、缺口与边草。#190 追加：天空分暖冷两侧（画左上靠太阳最亮最暖，画右上偏冷紫），太阳方位正下方远处一条逆光发亮的反光带，近处更深更饱和并压一片云影，稻行加影子线，风浪暗槽加深。
@@ -342,6 +342,107 @@ const paintHouseSky = (plate: ViewPlate, mode: "rain" | "twilight"): Paper => {
   }
   mottle(b.c, 112 * b.k, 0.016, 72);
   return b.c;
+};
+
+type RoofPoint = (u: number, v: number) => [number, number];
+
+const paintKawara = (
+  b: Brush,
+  point: RoofPoint,
+  count: number,
+  base: RGB,
+  shade: RGB,
+  light: RGB,
+  wet: boolean,
+) => {
+  const rows = 16;
+  for (let c = 0; c < count; c++) {
+    const course = (c + 0.14 * (noise1(c * 1.9, 7231) - 0.5)) / count;
+    const next = (c + 1 + 0.14 * (noise1((c + 1) * 1.9, 7231) - 0.5)) / count;
+    const offset = b.r.range(-0.32, 0.32);
+    for (let r = rows - 1; r >= 0; r--) {
+      const v = Math.max(0, (r + offset) / rows);
+      const end = r === rows - 1 ? 1 : (r + 1 + offset) / rows;
+      const start = r === 0 ? 0 : v;
+      const origin = point(course, end);
+      const width = Math.abs(point(next, end)[0] - origin[0]);
+      const height = Math.abs(point(course, start)[1] - origin[1]);
+      if (
+        origin[0] < b.rect.x0 - width - 180 ||
+        origin[0] > b.rect.x1 + width + 180 ||
+        origin[1] < b.rect.y0 - height
+      )
+        continue;
+      const detail =
+        Math.max(0, Math.min(1, (Math.min(width, height * 3) - 3) / 14)) *
+        (0.14 + 0.86 * end) *
+        (0.62 + 0.38 * noise1(c * 0.19 + end, 7281));
+      const arch = Math.min(width * b.r.range(0.13, 0.19), height * 0.62);
+      const shift = b.r.range(-0.035, 0.035);
+      const tile = (x: number, y: number, crown = 0): [number, number] => {
+        const q = point(
+          course + (next - course) * (x + shift),
+          start + (end - start) * y,
+        );
+        return [q[0], q[1] - arch * crown];
+      };
+      const tone = mixRgb(base, shade, b.r.range(0.08, 0.46));
+      const glaze = mixRgb(tone, light, b.r.range(0.28, 0.58));
+      const chipped = b.r.next() < 0.045;
+      fill(
+        b,
+        [
+          tile(0, 0),
+          tile(1, 0),
+          tile(1, 1),
+          tile(chipped ? 0.81 : 0.93, chipped ? 0.82 : 0.99),
+          tile(0.65, 1.03),
+          tile(0, 0.98),
+        ],
+        tone,
+        0.5,
+        0.32 + detail * 0.56,
+      );
+      const cap = (x: number, y: number) =>
+        tile(0.07 + x * 0.5, y, Math.sin(Math.PI * x));
+      const face = (left: number, right: number, color: RGB, alpha: number) =>
+        fill(
+          b,
+          [
+            cap(left, 0),
+            cap(right, 0),
+            cap(right, 1),
+            cap((right + left) / 2, 1.025),
+            cap(left, 1),
+          ],
+          color,
+          0.42,
+          alpha * detail,
+        );
+      face(0, 0.32, glaze, 0.9);
+      face(0.32, 0.67, mixRgb(tone, light, 0.26), 0.95);
+      face(0.67, 1, shade, 0.92);
+      if (detail > 0.15 && b.r.next() < (wet ? 0.45 : 0.19)) {
+        const along = b.r.range(0.08, 0.62);
+        line(
+          b,
+          [cap(0.24, along), cap(0.27, along + b.r.range(0.13, 0.34))],
+          Math.max(1, width * 0.065),
+          light,
+          { dry: 0.52, alpha: detail * 0.68, taper: [0.28, 0.36] },
+        );
+      }
+      if (detail > 0.45 && b.r.next() < 0.035) {
+        line(
+          b,
+          [tile(0.62, 0.77), tile(0.83, 0.89)],
+          Math.max(1, height * 0.19),
+          mixRgb(tone, rgb(houseRain.trees), 0.64),
+          { dry: 0.46, alpha: 0.72 },
+        );
+      }
+    }
+  }
 };
 
 const paintHouseFront = (plate: ViewPlate, mode: "rain" | "twilight"): Paper => {
@@ -702,207 +803,23 @@ const paintHouseFront = (plate: ViewPlate, mode: "rain" | "twilight"): Paper => 
   const leftHipBot = roofFrontPt(0, 1);
   const leftHipCol = shadeRgb(roofCol, isTwilight ? 0.66 : 0.72);
   fill(b, [leftHipTop, leftHipBot, leftHipBack], leftHipCol, 1.8);
-  const sideCourses = 16;
-  for (let r = 1; r <= sideCourses; r++) {
-    const v = Math.pow(r / sideCourses, 1.32);
-    const a: [number, number] = [leftHipTop[0] + (leftHipBot[0] - leftHipTop[0]) * v, leftHipTop[1] + (leftHipBot[1] - leftHipTop[1]) * v];
-    const c: [number, number] = [leftHipTop[0] + (leftHipBack[0] - leftHipTop[0]) * v, leftHipTop[1] + (leftHipBack[1] - leftHipTop[1]) * v];
-    handLine(b, a, c, 2.0 + v * 1.4, shadeRgb(tileDeep, 0.92), { dry: 0.32, alpha: 0.7, jitterPx: 1.1 });
-  }
-  for (let s = 1; s < 10; s++) {
-    const t = s / 10;
-    const topPt: [number, number] = [leftHipTop[0] + (leftHipBack[0] - leftHipTop[0]) * t * 0.28, leftHipTop[1] + (leftHipBack[1] - leftHipTop[1]) * t * 0.28];
-    const botPt: [number, number] = [leftHipBot[0] + (leftHipBack[0] - leftHipBot[0]) * t, leftHipBot[1] + (leftHipBack[1] - leftHipBot[1]) * t];
-    handLine(b, topPt, botPt, 2.2, mixRgb(leftHipCol, tileSheen, 0.24), { dry: 0.42, alpha: 0.48, jitterPx: 1.0 });
-  }
-
   const rightHipBack = p(eaveRightX - 0.24, house.ridgeY + 0.9, house.eaveZ + 0.42);
   const rightHipTop = roofFrontPt(1, 0);
   const rightHipBot = roofFrontPt(1, 1);
   const rightHipCol = isTwilight ? mixRgb(roofCol, rgb(houseTwilight.skyBelt), 0.18) : mixRgb(roofCol, rgb(houseRain.lightningSky), 0.14);
   fill(b, [rightHipTop, rightHipBack, rightHipBot], rightHipCol, 1.6);
-  for (let r = 1; r <= sideCourses; r++) {
-    const v = Math.pow(r / sideCourses, 1.32);
-    const a: [number, number] = [rightHipTop[0] + (rightHipBot[0] - rightHipTop[0]) * v, rightHipTop[1] + (rightHipBot[1] - rightHipTop[1]) * v];
-    const c: [number, number] = [rightHipTop[0] + (rightHipBack[0] - rightHipTop[0]) * v, rightHipTop[1] + (rightHipBack[1] - rightHipTop[1]) * v];
-    handLine(b, a, c, 1.8 + v * 1.3, mixRgb(tileShadow, rightHipCol, 0.35), { dry: 0.34, alpha: 0.62, jitterPx: 1.1 });
-  }
-
   const frontPoly: [number, number][] = [];
   for (let i = 0; i <= 18; i++) frontPoly.push(roofFrontPt(i / 18, 0));
   for (let i = 18; i >= 0; i--) frontPoly.push(roofFrontPt(i / 18, 1));
   fill(b, frontPoly, roofCol, 1.5);
 
-  const courseCount = 22;
-  const courseVs: number[] = [];
-  for (let r = 0; r <= courseCount; r++) {
-    const t = r / courseCount;
-    courseVs.push(Math.pow(t, 1.48));
-  }
-
-  for (let r = 0; r < courseCount; r++) {
-    const v0 = courseVs[r];
-    const v1 = courseVs[r + 1];
-    const vm = (v0 + v1) * 0.5;
-    const slopeGrad = isTwilight ? 0.84 + vm * 0.16 : 0.86 + (1 - Math.abs(vm - 0.36)) * 0.12;
-    const rowBase = shadeRgb(roofCol, slopeGrad + (r % 2 === 0 ? -0.026 : 0.022));
-    const segs = 16;
-    for (let s = 0; s < segs; s++) {
-      const u0 = s / segs;
-      const u1 = Math.min(1, (s + 1.08) / segs);
-      const um = (u0 + u1) * 0.5;
-      const pA = roofFrontPt(u0, vm);
-      const pB = roofFrontPt(u1, vm);
-      const rowH = Math.max(3.5, Math.abs(roofFrontPt(um, v1)[1] - roofFrontPt(um, v0)[1]));
-      const wear = fbm2(um * 6.2, vm * 5.0, isTwilight ? 7219 : 7209, 3);
-      let col =
-        wear < 0.46
-          ? mixRgb(rowBase, tileShadow, (0.46 - wear) * 0.58)
-          : mixRgb(rowBase, tileSheen, (wear - 0.46) * (isTwilight ? 0.26 : 0.34));
-      if (!isTwilight) {
-        const wetField = fbm2(um * 2.5 + 1.4, vm * 2.0 + 0.6, 7238, 3);
-        const skyCatch = Math.sin(Math.PI * Math.min(1, vm * 1.08)) * Math.max(0, (wetField - 0.36) / 0.64);
-        col = mixRgb(col, tileBrightWet, Math.min(0.46, skyCatch * 0.52));
-      }
-      line(b, curve(pA, pB, b.r.range(-0.01, 0.01), 4), rowH * 1.18, jitter(b, col, 0.018), {
-        dry: 0.38,
-        body: 0.64,
-        alpha: 0.78,
-        taper: [0.18, 0.18],
-        streak: 0.05,
-      });
-    }
-  }
-
   const ribCount = 58;
-  for (let c = 0; c <= ribCount; c++) {
-    const uBase = c / ribCount;
-    const uJitter = (noise1(c * 1.7, 7231) - 0.5) * 0.002;
-    const u = Math.max(0.008, Math.min(0.992, uBase + uJitter));
-    const groovePts: [number, number][] = [];
-    const crestPts: [number, number][] = [];
-    const ribSteps = 10;
-    for (let s = 0; s <= ribSteps; s++) {
-      const v = s / ribSteps;
-      const q = roofFrontPt(u, v);
-      const qNext = roofFrontPt(Math.min(1, u + 1 / ribCount), v);
-      const colW = Math.hypot(qNext[0] - q[0], qNext[1] - q[1]);
-      const wob = (noise1(c * 2.3 + v * 3.8, 7232) - 0.5) * 0.9;
-      groovePts.push([q[0] - colW * 0.24 + wob, q[1]]);
-      crestPts.push([q[0] + colW * 0.14 + wob, q[1]]);
-    }
-    const midColW = Math.max(
-      3.6,
-      Math.hypot(
-        roofFrontPt(Math.min(1, u + 1 / ribCount), 0.6)[0] - roofFrontPt(u, 0.6)[0],
-        roofFrontPt(Math.min(1, u + 1 / ribCount), 0.6)[1] - roofFrontPt(u, 0.6)[1],
-      ),
-    );
-    const ribVar = 0.7 + 0.52 * noise1(c * 2.9, 7233);
-    line(b, groovePts, Math.max(2.0, midColW * 0.44), jitter(b, tileDeep, 0.024), {
-      dry: 0.5,
-      body: 0.52,
-      alpha: (isTwilight ? 0.28 : 0.3) * ribVar,
-      taper: [0.06, 0.04],
-      widthAt: (t) => 0.58 + t * 0.56,
-    });
-    const crestCol = !isTwilight ? mixRgb(roofCol, tileSheen, 0.48) : mixRgb(roofCol, tileSheen, 0.36);
-    line(b, crestPts, Math.max(1.6, midColW * 0.32), jitter(b, crestCol, 0.02), {
-      dry: 0.58,
-      body: 0.42,
-      alpha: (isTwilight ? 0.14 : 0.18) * ribVar,
-      taper: [0.08, 0.08],
-      widthAt: (t) => 0.55 + t * 0.54,
-    });
-  }
-
-  for (let i = 0; i < 160; i++) {
-    const r = Math.floor(b.r.range(1, courseCount - 1));
-    const c = Math.floor(b.r.range(1, ribCount - 1));
-    const u0 = (c + 0.08) / ribCount;
-    const u1 = (c + 0.92) / ribCount;
-    const vm = (courseVs[r] + courseVs[r + 1]) * 0.5;
-    const pA = roofFrontPt(u0, vm);
-    const pB = roofFrontPt(u1, vm);
-    const h = Math.max(2.5, Math.abs(roofFrontPt((u0 + u1) * 0.5, courseVs[r + 1])[1] - roofFrontPt((u0 + u1) * 0.5, courseVs[r])[1]));
-    const tint = b.r.next() < 0.52 ? mixRgb(roofCol, tileShadow, b.r.range(0.28, 0.52)) : mixRgb(roofCol, tileSheen, b.r.range(0.18, 0.4));
-    line(b, [pA, pB], h * 0.82, jitter(b, tint, 0.022), {
-      dry: 0.46,
-      body: 0.54,
-      alpha: b.r.range(0.22, 0.38),
-      taper: [0.16, 0.16],
-    });
-  }
-
-  for (let r = 1; r < courseCount; r++) {
-    const v = courseVs[r];
-    const lipPts: [number, number][] = [];
-    const highlightPts: [number, number][] = [];
-    const samples = ribCount * 2;
-    const scallopAmp = 0.6 + v * 1.5;
-    for (let s = 0; s <= samples; s++) {
-      const u = s / samples;
-      const q = roofFrontPt(u, v);
-      const wave = Math.sin(u * ribCount * Math.PI * 2) * scallopAmp;
-      const wob = (noise1(u * 24 + r * 3.1, 7236) - 0.5) * 0.85;
-      lipPts.push([q[0], q[1] + wave + wob]);
-      highlightPts.push([q[0], q[1] + wave - (1.2 + v * 1.2) + wob * 0.5]);
-    }
-    const lipW = 1.35 + v * 1.7;
-    line(b, lipPts, lipW, jitter(b, tileDeep, 0.025), {
-      dry: 0.28,
-      body: 0.78,
-      alpha: (isTwilight ? 0.6 : 0.66) + v * 0.16,
-      wobble: 0.05,
-      taper: [0.02, 0.02],
-    });
-    const edgeLightCol = !isTwilight ? tileBrightWet : tileSheen;
-    line(b, highlightPts, Math.max(1.0, lipW * 0.44), jitter(b, edgeLightCol, 0.02), {
-      dry: 0.56,
-      body: 0.44,
-      alpha: !isTwilight ? 0.15 + v * 0.14 : 0.11 + (1 - v) * 0.09,
-      taper: [0.04, 0.04],
-    });
-  }
-
-  if (!isTwilight) {
-    for (let i = 0; i < 20; i++) {
-      const ribIdx = Math.floor(b.r.range(3, ribCount - 3));
-      const u = (ribIdx + 0.22) / ribCount;
-      const v0 = b.r.range(0.08, 0.56);
-      const v1 = Math.min(0.94, v0 + b.r.range(0.12, 0.3));
-      const pts: [number, number][] = [];
-      for (let s = 0; s <= 5; s++) pts.push(roofFrontPt(u, v0 + ((v1 - v0) * s) / 5));
-      line(b, pts, b.r.range(2.2, 4.4), jitter(b, tileBrightWet, 0.02), {
-        dry: 0.62,
-        body: 0.36,
-        alpha: b.r.range(0.12, 0.22),
-        taper: [0.4, 0.4],
-        streak: 0.08,
-      });
-    }
-  } else {
-    for (let i = 0; i < 16; i++) {
-      const v = b.r.range(0.06, 0.62);
-      const u0 = b.r.range(0.06, 0.82);
-      const u1 = Math.min(0.95, u0 + b.r.range(0.08, 0.22));
-      line(b, [roofFrontPt(u0, v), roofFrontPt(u1, v)], b.r.range(2.2, 4.4), jitter(b, tileSheen, 0.02), {
-        dry: 0.52,
-        alpha: b.r.range(0.12, 0.22),
-        taper: [0.36, 0.36],
-      });
-    }
-  }
+  if (!isTwilight) paintKawara(b, roofFrontPt, ribCount, roofCol, tileDeep, tileBrightWet, true);
 
   const eavePts: [number, number][] = [];
   for (let s = 0; s <= 28; s++) eavePts.push(roofFrontPt(s / 28, 1));
   line(b, eavePts, 6.8, eavesDark, { dry: 0.22, body: 0.88, wobble: 0.05 });
-  for (let c = 0; c < ribCount; c++) {
-    const u = (c + 0.5) / ribCount;
-    const q = roofFrontPt(u, 0.992);
-    fill(b, arc(q[0], q[1] + 2.0, 3.0, 0, Math.PI * 2, 7).slice(0, -1), jitter(b, tileDeep, 0.03), 0.5, 0.9);
-    fill(b, arc(q[0] + 0.6, q[1] + 1.4, 1.4, 0, Math.PI * 2, 6).slice(0, -1), jitter(b, tileSheen, 0.03), 0.3, isTwilight ? 0.3 : 0.42);
-  }
+  line(b, eavePts, 2.2, tileSheen, {dry: 0.42, alpha: isTwilight ? 0.62 : 0.38});
 
   const ridgePts: [number, number][] = [];
   for (let s = 0; s <= 18; s++) ridgePts.push(roofFrontPt(s / 18, 0));
@@ -1531,125 +1448,12 @@ const paintHouseTakeoff = (plate: ViewPlate): Paper => {
   const roofTopR: [number, number] = [rect.x1 + 20, rect.y0 - 20];
   fill(b, [roofTopL, roofTopR, eaveFR, eaveFL], roofCol, 1.4);
 
-  const roofTileShadow = mixRgb(roofCol, wallShade, 0.62);
-  const roofTileDeep = mixRgb(roofCol, doorwayDark, 0.58);
-  const roofTileLit = mixRgb(roofCol, wallLit, 0.54);
-
-  const vpEave = p(-1e4, house.eaveY, house.eaveZ);
-  const angEave = Math.atan2(eaveFL[1] - vpEave[1], eaveFL[0] - vpEave[0]);
-  const angTop = Math.atan2(roofTopR[1] - 40 - vpEave[1], roofTopR[0] - vpEave[0]);
-  const rayToLeft = (ang: number): [number, number] => {
-    const dx = Math.cos(ang);
-    const dy = Math.sin(ang);
-    const tX = Math.abs(dx) > 1e-4 ? (rect.x0 - 40 - vpEave[0]) / dx : 4000;
-    const tY = dy < -1e-4 ? (rect.y0 - 40 - vpEave[1]) / dy : 4000;
-    const t = Math.max(80, Math.min(tX > 0 ? tX : 4000, tY > 0 ? tY : 4000));
-    return [vpEave[0] + dx * t, vpEave[1] + dy * t];
-  };
-  const rayToRight = (ang: number): [number, number] => {
-    const dx = Math.cos(ang);
-    const dy = Math.sin(ang);
-    const t = Math.abs(dx) > 1e-4 ? (rect.x1 + 40 - vpEave[0]) / dx : 0;
-    return t > 0 ? [vpEave[0] + dx * t, vpEave[1] + dy * t] : vpEave;
-  };
-  const courseRays: [[number, number], [number, number]][] = [];
-  const takeoffCourses = 18;
-  for (let i = 0; i <= takeoffCourses; i++) {
-    const v = i / takeoffCourses;
-    const ang = angEave + (angTop - angEave) * Math.pow(v, 1.15);
-    courseRays.push([rayToLeft(ang), rayToRight(ang)]);
-  }
-
-  for (let i = 0; i < takeoffCourses; i++) {
-    const v0 = i / takeoffCourses;
-    const [rL0, rR0] = courseRays[i];
-    const [rL1, rR1] = courseRays[i + 1];
-    const rowTone =
-      i % 2 === 0
-        ? mixRgb(roofCol, roofTileLit, 0.22 - v0 * 0.08)
-        : mixRgb(roofCol, roofTileShadow, 0.14 + v0 * 0.08);
-    fill(b, [rL1, rR1, rR0, rL0], jitter(b, rowTone, 0.018), 0.9, 0.85);
-    const segs = 12;
-    for (let s = 0; s < segs; s++) {
-      const t0 = s / segs;
-      const t1 = (s + 1.05) / segs;
-      const pA: [number, number] = [rL0[0] + (rR0[0] - rL0[0]) * t0, rL0[1] + (rR0[1] - rL0[1]) * t0];
-      const pB: [number, number] = [rL0[0] + (rR0[0] - rL0[0]) * t1, rL0[1] + (rR0[1] - rL0[1]) * t1];
-      const pTopA: [number, number] = [rL1[0] + (rR1[0] - rL1[0]) * t0, rL1[1] + (rR1[1] - rL1[1]) * t0];
-      const pTopB: [number, number] = [rL1[0] + (rR1[0] - rL1[0]) * t1, rL1[1] + (rR1[1] - rL1[1]) * t1];
-      const midA: [number, number] = [(pA[0] + pTopA[0]) * 0.5, (pA[1] + pTopA[1]) * 0.5];
-      const midB: [number, number] = [(pB[0] + pTopB[0]) * 0.5, (pB[1] + pTopB[1]) * 0.5];
-      const bandH = Math.max(4, Math.min(24, Math.abs(pTopA[1] - pA[1])));
-      const wear = fbm2(t0 * 5.2 + i * 0.3, v0 * 4.2, 7318, 2);
-      const dabCol = wear < 0.48 ? mixRgb(rowTone, roofTileShadow, 0.34) : mixRgb(rowTone, roofTileLit, 0.34);
-      line(b, [midA, midB], bandH * 0.85, jitter(b, dabCol, 0.02), {
-        dry: 0.44,
-        body: 0.56,
-        alpha: 0.48,
-        taper: [0.16, 0.16],
-      });
-    }
-  }
-
-  const takeoffRibs = 44;
-  for (let c = 0; c <= takeoffRibs; c++) {
-    const u = Math.pow(c / takeoffRibs, 1.18);
-    const ePt: [number, number] = [eaveFL[0] + (eaveFR[0] - eaveFL[0]) * u, eaveFL[1] + (eaveFR[1] - eaveFL[1]) * u - 4];
-    const dirX = -0.34 - u * 0.32;
-    const dirY = -0.94 + u * 0.12;
-    const dirL = Math.hypot(dirX, dirY);
-    const ux = dirX / dirL;
-    const uy = dirY / dirL;
-    const tToTop = (rect.y0 - 40 - ePt[1]) / uy;
-    const topPt: [number, number] = [ePt[0] + ux * tToTop, ePt[1] + uy * tToTop];
-    const colSpacing = Math.max(6, Math.hypot(eaveFR[0] - eaveFL[0], eaveFR[1] - eaveFL[1]) * (1.18 / takeoffRibs) * Math.max(0.28, Math.pow(Math.max(0.04, c / takeoffRibs), 0.18)));
-    const ribW = Math.max(2.2, Math.min(11, colSpacing * 0.24 * (1.15 - u * 0.48)));
-    const offX = -uy * ribW * 0.58;
-    const offY = ux * ribW * 0.58;
-    const wob = (noise1(c * 2.3, 7319) - 0.5) * 1.4;
-    handLine(b, [ePt[0] + wob, ePt[1]], [topPt[0] + wob, topPt[1]], ribW, jitter(b, roofTileShadow, 0.028), {
-      dry: 0.48,
-      body: 0.54,
-      alpha: 0.48,
-      jitterPx: 0.9,
-      taper: [0.02, 0.04],
-      widthAt: (t) => 1 - t * 0.3,
-    });
-    handLine(
-      b,
-      [ePt[0] + offX + wob, ePt[1] + offY],
-      [topPt[0] + offX * 0.72 + wob, topPt[1] + offY * 0.72],
-      Math.max(1.8, ribW * 0.85),
-      jitter(b, mixRgb(roofCol, roofTileLit, 0.62), 0.024),
-      {
-        dry: 0.54,
-        body: 0.46,
-        alpha: 0.4,
-        jitterPx: 0.8,
-        taper: [0.03, 0.05],
-        widthAt: (t) => 1 - t * 0.3,
-      },
-    );
-  }
-
-  for (let i = 1; i < takeoffCourses; i++) {
-    const vm = i / takeoffCourses;
-    const [rL0, rR0] = courseRays[i];
-    handLine(b, rL0, rR0, Math.max(1.8, 4.4 - vm * 1.8), jitter(b, roofTileDeep, 0.025), {
-      dry: 0.3,
-      body: 0.76,
-      alpha: 0.76,
-      jitterPx: 1.0,
-      taper: [0.02, 0.02],
-    });
-    handLine(b, [rL0[0], rL0[1] - 2.4], [rR0[0], rR0[1] - 2.4], Math.max(1.4, 2.8 - vm * 1.0), jitter(b, roofTileLit, 0.022), {
-      dry: 0.48,
-      body: 0.5,
-      alpha: 0.44,
-      jitterPx: 0.8,
-      taper: [0.02, 0.02],
-    });
-  }
+  const takeoffTile: RoofPoint = (u, v) => p(
+    1.4 - 22 * u,
+    house.ridgeY + (house.eaveY - house.ridgeY) * v,
+    house.ridgeZ + (house.eaveZ - house.ridgeZ) * v,
+  );
+  paintKawara(b, takeoffTile, 82, roofCol, mixRgb(roofCol, doorwayDark, 0.68), mixRgb(roofCol, wallLit, 0.58), false);
 
   handLine(b, eaveFL, eaveFR, 11, mixRgb(doorwayDark, woodBase, 0.55), { dry: 0.2, body: 0.88, jitterPx: 1.6 });
   handLine(b, [eaveFL[0], eaveFL[1] - 3.5], [eaveFR[0], eaveFR[1] - 3.5], 3.8, mixRgb(roofCol, wallLit, 0.42), {
