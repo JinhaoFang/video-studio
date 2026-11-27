@@ -172,18 +172,18 @@
 - **一句话**：观看位置沿着场景移动，像在旁边陪人走一段。
 - **适合**：展示沿途环境、连接相邻位置，或持续跟住运动主体；复杂背景和多层移动可能增加观看负担。
 - **标志特征**：相机位置侧向改变；跟拍时取景随主体移动，以保持主体可见。
-- **关键技法**：横移描述相机的路径，跟拍描述它在跟着谁；跟拍也可以包含推拉、摇镜或升降。
+- **关键技法**：横移描述相机的路径，跟拍描述它在跟着谁；跟拍也可以包含推拉、摇镜或升降。虚拟相机跟拍时用阻尼控制相机追主体的快慢：阻尼小，相机反应快；阻尼大，主体先在画面里走出一段相机才追上，像更重的相机。另可设一个死区，主体在死区里移动时相机不动。
 - **样片**：[耶鲁「TRACKING SHOT」的侧向移动](https://filmanalysis.yale.edu/cinematography/#trackingshot) 与 [「FOLLOWING SHOT」中的舞会](https://filmanalysis.yale.edu/cinematography/#followingshot)（片段；原片版权，仅观看）。
-- **出处**：耶鲁大学 Film Analysis，[Tracking Shot](https://filmanalysis.yale.edu/cinematography/#trackingshot) 与 [Following Shot](https://filmanalysis.yale.edu/cinematography/#followingshot)：移动路径与跟随功能的区别。
+- **出处**：耶鲁大学 Film Analysis，[Tracking Shot](https://filmanalysis.yale.edu/cinematography/#trackingshot) 与 [Following Shot](https://filmanalysis.yale.edu/cinematography/#followingshot)：移动路径与跟随功能的区别。Unity Cinemachine，[Position Composer](https://docs.unity3d.com/Packages/com.unity.cinemachine@3.1/manual/CinemachinePositionComposer.html)：阻尼越大相机反应越慢、像更重的相机，以及死区的含义（2026-11-27 读取）。
 
 ### 左右摇镜
 
 - **一句话**：站在一个地方向左或向右转头，依次看到同一空间里的不同部分。
 - **适合**：连接两个人或位置、跟随横向动作、揭示原本在画外的东西；快速摇动会让细节难以辨认。
 - **标志特征**：相机所在位置基本不变，观看方向左右旋转。
-- **关键技法**：水平转动相机；速度和揭示内容会影响观众感到从容还是急迫。
+- **关键技法**：水平转动相机；速度和揭示内容会影响观众感到从容还是急迫。24 fps、180° 快门下，RED 给的经验值是摇过一整个画幅宽度不少于约 7 秒，再快画面会一顿一顿地抖；改快门角或帧率会改变这个速度，快门角越大运动模糊越多，可以摇得快一些。
 - **样片**：[耶鲁「PAN」中的《毒品网络》《司汤达综合征》](https://filmanalysis.yale.edu/cinematography/#pan)（片段；原片版权，仅观看）。
-- **出处**：耶鲁大学 Film Analysis，[Pan](https://filmanalysis.yale.edu/cinematography/#pan)：左右旋转直接连接同一空间内的位置，速度有叙事作用。
+- **出处**：耶鲁大学 Film Analysis，[Pan](https://filmanalysis.yale.edu/cinematography/#pan)：左右旋转直接连接同一空间内的位置，速度有叙事作用。RED，[Panning Speed Best Practices](https://www.reddigitalcinema.com/red-101/camera-panning-speed)：约 7 秒一个画幅宽度的经验值及其前提（2026-11-27 读取）。
 
 ### 上下摇镜
 
@@ -217,9 +217,9 @@
 - **一句话**：画面带着人手拿相机时的轻微晃动，像有人就在现场看着。
 - **适合**：纪实感、临场感、慌乱或不稳定的主观体验；长时间读字、精确对比和容易晕动的观看场景不适合持续晃动。
 - **标志特征**：取景有可见的不规则偏移或转动；运动不一定平滑。
-- **关键技法**：手持式运动强调身体带来的不稳定；稳定器跟拍可以很平滑，两者效果有区别。
+- **关键技法**：手持式运动强调身体带来的不稳定；稳定器跟拍可以很平滑，两者效果有区别。虚拟相机用噪声模拟手持：转动的晃动通常比位移的明显，先加转动再加位移；可信的噪声由低、中、高几层频率混合，示例起点约 0.1–0.5、0.8–1.5、3–4 Hz；长焦视角窄，同样的晃动被放大，振幅要比广角小。
 - **样片**：[耶鲁「HANDHELD CAMERA, STEADYCAM」中的《黑暗中的舞者》](https://filmanalysis.yale.edu/cinematography/#handheldcamera)（片段；原片版权，仅观看）。
-- **出处**：耶鲁大学 Film Analysis，[Handheld Camera, Steadycam](https://filmanalysis.yale.edu/cinematography/#handheldcamera)：手持的灵活与晃动、稳定器的平滑效果及其风格化使用。
+- **出处**：耶鲁大学 Film Analysis，[Handheld Camera, Steadycam](https://filmanalysis.yale.edu/cinematography/#handheldcamera)：手持的灵活与晃动、稳定器的平滑效果及其风格化使用。Unity Cinemachine 2.10，[Working with noise profiles](https://docs.unity3d.com/Packages/com.unity.cinemachine@2.10/manual/CinemachineNoiseProfiles.html)：手持以转动为主、低中高频分层、长焦用更小的振幅（2026-11-27 读取）。
 
 ### 画面震动
 
