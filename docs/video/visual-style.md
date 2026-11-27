@@ -153,7 +153,7 @@
 - **关键技法**：按层级揭示路径和文字，扫描器循环移动；MG 样例数字跳变 3–5 帧后落定，锁定框从 1.4 倍缩至 1 倍。辉光、扫描线和三维地球属于可选叠层，不以叠满装饰代替清楚的状态变化。
 - **素材来源**：代码绘制框线、扫描器、图表与数字，许可核准的等宽字体、地图数据，以及用户授权的产品图或公有领域航天图片。本仓库已有二维 HUD 和打字文字的实现参照，完整三维全息画面需要另做渲染。实拍以后支持；AI 生成以后支持。
 - **样片**：[mg-styles-15「赛博朋克 HUD／FUI」](https://vincentwei1021.github.io/mg-styles-15/?lang=zh#22-hud)（作者自制部分 MIT，地图、字体等第三方素材另按各自许可，只用来看）。
-- **出处**：[MG 研究笔记「22 赛博朋克 HUD／FUI」](../research/mg-styles-15.md#22-赛博朋克-hudfui)、[固定版本的特征与参数](https://github.com/Vincentwei1021/mg-styles-15/blob/49052d80bfaf9fa8412cc9710530e5e95a3b8d8c/prompts/22-hud.md)；本仓库可行性参照 [Hud.tsx](../../episodes/nasa-punk-opening/Hud.tsx)。
+- **出处**：[MG 研究笔记「22 赛博朋克 HUD／FUI」](../research/mg-styles-15.md#22-赛博朋克-hudfui)、[固定版本的特征与参数](https://github.com/Vincentwei1021/mg-styles-15/blob/49052d80bfaf9fa8412cc9710530e5e95a3b8d8c/prompts/22-hud.md)；本仓库可行性参照 NASA 朋克开场的 `Hud.tsx`（该期已移出仓库，见提交 `ffe625a`）。
 
 ### 写实／实拍质感
 
@@ -161,7 +161,7 @@
 - **适合**：纪实、人物采访、实物展示和需要具体环境证据的讲解；基调可以客观、亲近或紧张。写实外观本身不能证明内容真实，尤其不能把渲染或合成画面当作事件证据。
 - **标志特征**：物体与接触位置的阴影一致，反射与环境对应；透视、景深和遮挡在同一镜头内相容；连续视频中人物和物体的结构不随帧无故变化。颗粒、虚化和偏色都不是写实的必要条件。
 - **关键技法**：相机取景、景深与合成遮罩共同维持空间关系；三维路线以灯光、材质和相机近似摄影外观。照片平移缩放可产生取景变化，但不会自动获得人物运动和新的视角；已有视频合成则依赖素材本身的镜头内容。
-- **素材来源**：用户授权的现成照片、视频、素材库影像、公有领域图片，以及许可明确的三维预渲染素材，本仓库现在能读取并合成；[现有照片来源记录](../../episodes/nasa-punk-opening/sources.md)与[照片取景实现](../../episodes/nasa-punk-opening/PhotoCamera.tsx)可作本仓库依据。新拍摄的实拍以后支持；AI 生成以后支持。
+- **素材来源**：用户授权的现成照片、视频、素材库影像、公有领域图片，以及许可明确的三维预渲染素材，本仓库现在能读取并合成；NASA 朋克开场用公有领域照片做过平移缩放取景，照片来源记录和取景实现见提交 `ffe625a` 的 `episodes/nasa-punk-opening/sources.md`、`PhotoCamera.tsx`（该期 2026-11-27 移出仓库）。新拍摄的实拍以后支持；AI 生成以后支持。
 - **样片**：[Blender《Tears of Steel》官方播放页](https://mango.blender.org/)（[CC BY 3.0 许可与署名要求](https://mango.blender.org/sharing/)，标识及非项目内容除外，只用来看实拍与视觉特效合成；演员肖像权不随素材许可一并放开，不能默认用于广告代言）。
 - **出处**：[影片官方原始拍摄影像说明](https://mango.blender.org/production/4-tb-original-4k-footage-available-as-cc-by/)记录实拍来源、合成用途与演员肖像限制；[Blender 相机](https://docs.blender.org/manual/en/4.5/render/cameras.html)和[材质文档](https://docs.blender.org/manual/en/4.5/render/shader_nodes/shader/principled.html)说明摄影与渲染外观的相关控制。
 
@@ -399,6 +399,6 @@
 - [Adobe Stock 授权条款](https://stock.adobe.com/license-terms)：标准、扩展和编辑用途等范围不同，授权资产也可能包含生成式内容；购买费、素材版权许可及人物／财产权利的适用条件各有区别，不能把平台整体当作一张通行许可。
 - [Wikimedia Commons 对站外使用的说明](https://commons.wikimedia.org/wiki/Commons:Reusing_content_outside_Wikimedia)：具体文件页列作者、来源和许可，公有领域状态可能受地区影响；截图、照片或古画数字图像同样要追溯其中各部分的权利，不能只引用聚合搜索结果。
 - [Creative Commons BY 4.0](https://creativecommons.org/licenses/by/4.0/)说明署名、许可链接、修改说明及不暗示背书等条件；[CC0](https://creativecommons.org/publicdomain/zero/1.0/)说明权利放弃的范围与其他权利限制，[Public Domain Mark](https://creativecommons.org/publicdomain/mark/1.0/)则是公有领域状态标记。这里介绍常见许可与权利状态，不把它们套到没有明确声明的素材上。
-- 本仓库的能力依据为[当前依赖](../../package.json)、[MG 研究中的实现对照](../research/mg-styles-15.md#15-种风格及本仓库的可行性)、[白板 MP4 实测](../research/srt-whiteboard-animation.md#5-单幕-mp4-与-remotion-兼容性通过)、[纯代码小样](../../episodes/pure-code-sample/README.md)和[现有素材来源记录](../../episodes/nasa-punk-opening/sources.md)。这些是代码绘制、现成素材读取与局部试验的证据，不是对未来拍摄或 AI 生成交付的承诺。
+- 本仓库的能力依据为[当前依赖](../../package.json)、[MG 研究中的实现对照](../research/mg-styles-15.md#15-种风格及本仓库的可行性)、[白板 MP4 实测](../research/srt-whiteboard-animation.md#5-单幕-mp4-与-remotion-兼容性通过)、[纯代码小样](../../episodes/pure-code-sample/README.md)和 NASA 朋克开场的素材来源记录（该期 2026-11-27 移出仓库，见提交 `ffe625a` 的 `episodes/nasa-punk-opening/sources.md`）。这些是代码绘制、现成素材读取与局部试验的证据，不是对未来拍摄或 AI 生成交付的承诺。
 
 实际采用的媒体及其来源、作者、许可与使用范围仍归当期 `sources.md`；本页提供选项和权利边界，样片不成为可直接挪用的素材清单。

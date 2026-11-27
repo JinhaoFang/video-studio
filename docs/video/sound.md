@@ -100,16 +100,16 @@
 ### 本仓库来源：ElevenLabs
 
 - **一句话**：仓库已经用 ElevenLabs 做过中文正式旁白，声线是否合适、具体模型能控制什么，都有独立的实测记录。
-- **适合**：了解 NASA 朋克开场的声音选择与发音、变速限制；这份单期记录不能代表其他声线、模型或账号。
+- **适合**：了解 NASA 朋克开场（复刻练习，2026-11-27 移出仓库）的声音选择与发音、变速限制；这份单期记录不能代表其他声线、模型或账号。
 - **素材来源**：已用服务；不是本次工单新增的素材。模型能力、默认声线可用性和使用许可均有上下文限制。
-- **出处**：[NASA 朋克开场 README「正式配音」](../../episodes/nasa-punk-opening/README.md#正式配音69)、[ElevenLabs API 研究](../research/nasa-ep04/elevenlabs-api.md)、[该期 sources.md 的配音与许可记录](../../episodes/nasa-punk-opening/sources.md)：引用既有经验，不把历史参数写成当前通用能力。
+- **出处**：[ElevenLabs API 研究](../research/elevenlabs-api.md)；该期 README「正式配音」和 sources.md 的配音与许可记录见提交 `ffe625a` 的 `episodes/nasa-punk-opening/`：引用既有经验，不把历史参数写成当前通用能力。
 
 ### 本仓库来源：MiniMax
 
-- **一句话**：ClinMesh 最终旁白用的是 MiniMax Audio「沉稳高管」，相关经验记录在本期说明里。
+- **一句话**：ClinMesh 宣传片（协作者的内部产品宣传片，2026-11-27 移出仓库）最终旁白用的是 MiniMax Audio「沉稳高管」，相关经验记录在该期说明里。
 - **适合**：了解已有产品宣传片的声音来源与实际处理边界；「沉稳高管」是本期使用的声线名，不是全部企业片的固定答案。
 - **素材来源**：已用服务；本期生成、切句属于未入库的本机步骤，配音也没有经过现有配音工具的错字率评分，不能与另一服务直接作质量排名。
-- **出处**：[ClinMesh README「制作步骤」「复现」「已知偏离」「与首期的差异」](../../episodes/clinmesh-promo/README.md)、[该期 sources.md 的未登记项](../../episodes/clinmesh-promo/sources.md)：账号、模型及商用条款尚未补齐，不由知识文档补作授权结论。
+- **出处**：该期 README「制作步骤」「复现」「已知偏离」「与首期的差异」和 sources.md 的未登记项，见提交 `ffe625a` 的 `episodes/clinmesh-promo/`：账号、模型及商用条款尚未补齐，不由知识文档补作授权结论。
 
 ## ⑧ 人声
 
@@ -316,7 +316,7 @@
 - **适合**：以讲清内容为主的视频；无旁白的音乐片段可由音乐或音效承担注意力中心，不必套同一种人声优先关系。
 - **标志特征**：对白、音乐、音效和环境声可分别控制；压低背景音（ducking）表现为说话时背景变小，结束后平滑恢复。整片响度合格不能证明每个字都没被音乐盖住。
 - **关键技法**：分轨增益和音量包络控制相对平衡；ducking 控制让位量和过渡快慢，没有所有曲目通用的固定电平差。
-- **出处**：[Adobe Essential Sound](https://helpx.adobe.com/premiere/desktop/add-audio-effects/adjust-volume-and-levels/audio-editing-with-essential-sound-panel.html) 区分 Dialogue、Music、SFX、Ambience；[Adobe 自动压低背景音](https://helpx.adobe.com/premiere/desktop/add-audio-effects/adjust-volume-and-levels/automatically-duck-audio.html) 说明让位量、触发和淡变。[NASA 混音经验](../../episodes/nasa-punk-opening/README.md#配乐嘀嗒与混音70) 只作为单期实现引用，其占位音色及平衡并非通用定稿。
+- **出处**：[Adobe Essential Sound](https://helpx.adobe.com/premiere/desktop/add-audio-effects/adjust-volume-and-levels/audio-editing-with-essential-sound-panel.html) 区分 Dialogue、Music、SFX、Ambience；[Adobe 自动压低背景音](https://helpx.adobe.com/premiere/desktop/add-audio-effects/adjust-volume-and-levels/automatically-duck-audio.html) 说明让位量、触发和淡变。NASA 朋克开场的混音经验（该期已移出仓库，见提交 `ffe625a`）只作为单期实现引用，其占位音色及平衡并非通用定稿。
 
 ### 对白清理、均衡与动态控制
 
@@ -355,7 +355,7 @@
 - **一句话**：工作室已有统一的成片响度目标、容差和真峰值上限，数字只保留在制作工作流中。
 - **适合**：本仓库一般成片验收；平台或委托方另有交付规格时，其适用对象和测量口径需要单独区分。
 - **标志特征**：目标、容差、真峰值上限及 LRA 的处理均引用同一处约定；本页不另立数字，也不把某期内部混音参数当作整仓标准。
-- **出处**：[制作工作流「一期视频」的成片响度条目](../workflow/README.md#一期视频)；[NASA README 的混音与成片实测](../../episodes/nasa-punk-opening/README.md#配乐嘀嗒与混音70) 只引用，不重复抄录响度数字。
+- **出处**：[制作工作流「一期视频」的成片响度条目](../workflow/README.md#一期视频)；NASA 朋克开场 README 的混音与成片实测（该期已移出仓库，见提交 `ffe625a`）只引用，不重复抄录响度数字。
 
 ### 广播与广播内容流媒体：EBU R 128 系列
 

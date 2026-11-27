@@ -26,8 +26,8 @@
 | 方法层怎么改 | 放方法和思路，不放写死的规范；遇到的问题先记成观察，经过分析和评估再决定加不加、用什么形式；"汇报给人"由用户打分（用户 10-31） | `JinhaoFang/agent-workflow` 的 `AGENTS.md`「怎么改方法层」 |
 | 协作边界 | 派发前独立审查由用户选择；工单准确定位参照、定稿、契约和验收产物，实现位置由执行者决定；工程推送仅限派发明确授权的本工单分支。规则边界已同步（用户 11-05） | `docs/agents/issue-tracker.md`、`docs/roles/`、`docs/workflow/README.md` |
 | CI | GitHub Actions 的设定不动；启动不了时改为本机验证（用户 10-31） | `docs/workflow/README.md`「护栏」 |
-| 第一阶段 | 复刻开场 0:00～0:46：spec #60，PR #73，成片 47.9 秒；用户审片后返工 #74 | `docs/reports/spec-60-nasa-punk-opening.html` |
-| ClinMesh 宣传片 | 协作者在本机制作、经 PR #121 入库的一期产品宣传片；spec #122 收敛为只剩最终版 `ClinMeshPromo`，文档按事实重写，verify 能拦住 suite 层的测试失败（用户 11-09） | `episodes/clinmesh-promo/README.md`、`docs/reports/spec-122-clinmesh-cleanup.html` |
+| 第一阶段 | 复刻开场 0:00～0:46：spec #60，PR #73，成片 47.9 秒；用户审片后返工 #74。这一期复刻他人的视频，台本照录原片旁白，2026-11-27 连同参考视频的转写、拆解和取样出的 `src/styles/nasa-punk/` 一起移出仓库，git 历史不改写（用户 11-27） | 提交 `ffe625a`的 `episodes/nasa-punk-opening/`、`docs/research/nasa-ep04/`、`docs/reports/spec-60-nasa-punk-opening.html` |
+| ClinMesh 宣传片 | 协作者在本机制作、经 PR #121 入库的一期产品宣传片；spec #122 收敛为只剩最终版 `ClinMeshPromo`，文档按事实重写，verify 能拦住 suite 层的测试失败（用户 11-09）。这是协作者的内部产品宣传片，素材授权没登记完，2026-11-27 移出仓库，git 历史不改写（用户 11-27） | 提交 `ffe625a`的 `episodes/clinmesh-promo/`、`docs/reports/spec-122-clinmesh-cleanup.html` |
 | 仓库定位 | 视频类型不限；目的是做出满意的视频、沉淀、可以对外交付；被邀请进来的人都是用户，不分主次（用户 11-09） | `AGENTS.md`、`GLOSSARY.md` |
 | 工作室层的沉淀 | 本仓库跨期共享的部分叫工作室层，"方法层"只指 `agent-workflow`；沉淀只从新会话的 `/retro` 进入，满足四条标准；推翻已定事项时请当初定的人确认；改了工作室层的 PR 合并前在新会话里用 `code-review` 审一次；不设人工把关（用户 11-09） | `docs/workflow/README.md`「复利」、`docs/adr/0001-studio-layer-without-gatekeeper.md` |
 | 帮不懂视频的用户 | 核心是在必要的时候请用户参与（只有用户知道的、之后改起来代价大的、满不满意），问新手给样片、说大白话；一期 13 项决定是设计负责人的检查清单；视频知识放 `docs/video/`，只写知识不写步骤；不加新流程、技能或简报文件，入口不变；白板技能按实测收纳，mg-styles 的评审打分不纳入（用户 11-09，spec #132）。11-26 剧组底座把 13 项清单改成按部门排，"不加新流程"这一半由用户确认改掉；不加技能和简报文件仍成立 | `docs/workflow/README.md`「一期视频」、`docs/roles/design.md`「工作流」、`docs/video/`、`docs/reports/spec-132-video-novice.html` |
@@ -35,7 +35,7 @@
 | 视觉工单的自查 | 工作类型是「前端」「动画」的工单，执行者交付前一轮一轮自查画面（多帧、1:1 裁切、连续帧条、写下最差三处并改、对照反面清单），记录写进汇报；自查不代替设计负责人验收（用户 11-26，spec #147 复盘） | `docs/roles/engineering.md`「完成标准」 |
 | 剧组底座 | 一期由剧组来做：编剧、美术、摄影、动作、剪辑、声音六个部门，设计负责人兼任导演和制片；各类片子用同一个剧组，只是各部门的做法不同，每期六个部门都在，用不上的写「不适用」和理由。13 项清单改成按部门排，新增 ⑭ 动作；各部门写明交出什么、交给谁、怎么自查；交接以全片装配为主干，镜头之间看切点表，画面和声音之间看听点表，上游锁定后下游才开工；视频工单写 `部门：`，和工作类型分开；设计负责人只亲手做纸面决定、验收和最后微调，画面的定稿也可以派出去迭代；`docs/video/` 缺的转场、连贯规则、机位图、动作、拟音等知识由纯代码动画正片 spec 补（用户 11-26） | `docs/workflow/README.md`「一期视频」、`docs/adr/0003-crew-base-by-department.md`、`docs/roles/`、`GLOSSARY.md`「剧组」 |
 | 纯代码动画正片 | 《雨后》65 秒、12 个镜头，剧组底座第一次在完整片子上跑通：纸面决定 → 设定和底图 → 全片预演给用户看 → 按段派镜头 → 画面锁定 → 听点表和混音 → 成片和封面；引擎、声音合成、样张工具提进 `src/kit/`，纯代码护栏按 `episodes/pure-code.json` 登记检查，`docs/video/` 补了 90 条带出处的知识（spec #168，PR #205；用户看成片的结论记在 #195） | `episodes/after-rain/README.md`、`docs/reports/spec-168-after-rain.html` |
-| 对外展示 | 《雨后》公开分享，让更多人看到一人剧组能做出什么、也开始自己做：根目录 README 面向第一次来的人，中文为主、英文版单独一个文件，以《雨后》为代表作讲剧组怎么运转、怎么跑起来、怎么做自己的一部；开发命令移到 `docs/development.md`；成片、封面和缩略图发在 GitHub Release，README 引用 Release 里的文件，媒体仍不进 git（用户 11-27 要求公开分享，做法由用户在 PR 里确认） | `README.md`、`README.en.md`、`episodes/after-rain/README.md`「GitHub 展示」 |
+| 对外展示 | 《雨后》公开分享，让更多人看到一人剧组能做出什么、也开始自己做：根目录 README 面向第一次来的人，中文为主、英文版单独一个文件，以《雨后》为代表作讲剧组怎么运转、怎么跑起来、怎么做自己的一部；开发命令移到 `docs/development.md`；成片、封面和缩略图发在 GitHub Release，README 引用 Release 里的文件，媒体仍不进 git；只发《雨后》成片，小样视频不发；复刻他人视频的 NASA 朋克开场和内部产品宣传片 ClinMesh 移出仓库，剩下的代码和文档按 MIT（用户 11-27） | `README.md`、`README.en.md`、`episodes/after-rain/README.md`「GitHub 展示」 |
 
 进行中的工作以 GitHub 上打开的 spec 为准，不写进本文。
 
@@ -49,7 +49,7 @@
 - 并行切开的镜头，衔接只能在合并后验收：#66 和 #67 各自都通过了，合到一起才发现中间有 1.2 秒黑场。以后在 spec 里给"跨工单衔接"留一步设计验收。已由剧组底座处理：全片装配和切点表。
 - 并行镜头都要改总合成、令牌和本期 README，每次合并都冲突。第二期再用时，考虑让每个镜头自己登记，或者把令牌按镜头拆文件。已由剧组底座处理：制片的归属表加每个镜头一个目录，spec #147 的 A、B 两版合并零冲突。
 - 实测的量没有上限：#67 为逐帧证明跑了约 3.3 小时，其他镜头工单约 1 小时。工单的验收产物要写明到什么程度就够。
-- 派发前先核对外部 API 的能力：#69 按不支持的 speed 参数合成，多花约 250 credits。仓库里的 `docs/research/nasa-ep04/elevenlabs-api.md` 早有记录。
+- 派发前先核对外部 API 的能力：#69 按不支持的 speed 参数合成，多花约 250 credits。仓库里的 `docs/research/elevenlabs-api.md` 早有记录。
 - 审片返工 #74：开场同一张照片的推拉被做成溶解换页，根源是小样把镜头内换景别定成溶解、参考拆解用 2 秒联系表、验收只看静态对比图。已沉淀：`docs/roles/design.md`「镜头运动」和运镜验收要求，镜头剧本的“运镜”列（`docs/workflow/README.md`），桌子 SOP 经验要点（`docs/research/table-videosop.md` 第 4 节），lint 禁止镜头代码用 SVG `<image>`。
 - 可以提进 `src/kit/` 的：字幕条、按句定时、颗粒暗角、红色手绘批注。第二期再用时提（按句定时和字幕调度已在 #114 提出）。
 - 配音：Alice × eleven_v4 在第一阶段实测可用（错字率 0%，后期变速收语速）；ClinMesh 用的是 MiniMax 原速。每期自己选。
@@ -57,7 +57,7 @@
 ## 待定
 
 - kit 组件要写测试时，测试的运行环境怎么定：现在 `.test.ts` 都按 Node 环境检查和运行，测不了 JSX。
-- kit 复用欠账：ClinMesh 是中英文加空格（首期 `text-spacing.ts`）和颗粒暗角（首期 `FilmFinish.tsx`）的第二次使用，但两处都各写了一份，没有提进 `src/kit/`。
+- kit 复用欠账：中英文加空格（`text-spacing.ts`）和颗粒暗角（`FilmFinish.tsx`）在 NASA 朋克开场和 ClinMesh 两期各写过一份，没有提进 `src/kit/`；两期 11-27 移出仓库后，当前版本里已经没有这两段代码。下一期要用时从提交 `ffe625a`取回，直接提进 `src/kit/`。
 - 时间轴来源类型：`tools/build-timeline.ts` 只认 `temporary` 和 `elevenlabs`，非 ElevenLabs 的正式配音（如 ClinMesh 的 MiniMax）只能记成 `elevenlabs`。#114 曾加过 `local`，后来按审阅撤回；要不要加，再定。
 - 视频知识的维护：做完一期后由 `/retro` 按这一期的证据更正和补充 `docs/video/`（spec #147 复盘改了日式动画等条目与代码路线冲突的说法，补了静默与环境底噪、视线引导、纯代码合成的声音）；出处里的平台规格页会改版，什么时候复查还没定。
 - `land` 保留被忽略文件时同一个文件列两次，第二次移动报「文件不存在」：spec #168 出现 14 次，每次手动移到保留目录再重跑。根因在 `agent-workflow`；本仓库能先做的是把能按生成清单重建的期媒体（如 `public/episodes/after-rain/`）加进 `docs/agents/run-spec.json` 的 `disposableIgnored`，加不加、按期加还是等上游修，再定。

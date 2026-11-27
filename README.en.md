@@ -82,7 +82,6 @@ On *After the Rain*, the previs drew four notes: the walking figure entered too 
 ```text
 episodes/after-rain/   After the Rain: storyboard, camera map, art, motion and sound design, code for 12 shots, sound synthesis, title
 src/kit/               shared across films: render engine (line, cel, gouache plates, camera, post, brush writing, seal carving), sound synthesis, sample sheets
-src/styles/            style skins, one folder of design tokens each
 tools/                 QA and pipeline: frame grabs, comparison, loudness, dropout checks, the pure-code guard
 docs/video/            film-making knowledge by department, each entry with sources
 docs/roles/            how the design lead and the engineering lead divide the work
@@ -119,13 +118,9 @@ pnpm exec remotion render AfterRain out/after-rain/after-rain.mp4 --gl=swangle -
 
 Skill sources and versions are pinned in `skills-lock.json`. The `run-spec` skill comes from [agent-workflow](https://github.com/JinhaoFang/agent-workflow), whose README explains how to install it; the other skills come from [mattpocock/skills](https://github.com/mattpocock/skills) and [remotion-dev/skills](https://github.com/remotion-dev/skills). The full process is in the [production workflow](docs/workflow/README.md).
 
-## Other episodes
+## Before *After the Rain*
 
-| Episode | What it is | Can you watch it |
-|---|---|---|
-| [Pure-code sample](episodes/pure-code-sample/README.md) | A 13-second, two-shot test made before *After the Rain*, to see whether pure code can reach the look of Japanese theatrical animation | Code and generators are in the repository and can be reproduced |
-| [NASA punk opening](episodes/nasa-punk-opening/README.md) | A recreation of an explainer video's opening, the first full run of voice-over, subtitles, shots and mixing | Local study only; its media is not published |
-| [ClinMesh promo](episodes/clinmesh-promo/README.md) | A medical product promo made by a collaborator | Asset licences are not fully recorded, so it is not published |
+A 13-second, two-shot [pure-code sample](episodes/pure-code-sample/README.md) came first, to test whether pure code could reach the look of Japanese theatrical animation. The render engine, sound synthesis and sample-sheet tools grew out of it and were later moved into `src/kit/`. The sample video is not released on its own; its code and generators are in the repository and can be reproduced.
 
 ## Licence
 

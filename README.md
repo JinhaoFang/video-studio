@@ -82,7 +82,6 @@ flowchart TB
 ```text
 episodes/after-rain/   《雨后》：镜头剧本、机位图、美术、动作、声音设计，12 个镜头的代码，声音合成，片名
 src/kit/               跨片复用：渲染引擎（线条、赛璐璐、水粉底图、相机、后期、毛笔书写、篆刻印章）、声音合成、样张工具
-src/styles/            风格皮肤，一套设计令牌一个文件夹
 tools/                 验收与管线：抽帧、对比、响度、断音检查、纯代码护栏
 docs/video/            视频知识库：剧组各部门的做法和样片，每条有出处
 docs/roles/            设计负责人和工程负责人的分工
@@ -119,13 +118,9 @@ pnpm exec remotion render AfterRain out/after-rain/after-rain.mp4 --gl=swangle -
 
 技能的来源和版本记在 `skills-lock.json`。执行技能 `run-spec` 来自 [agent-workflow](https://github.com/JinhaoFang/agent-workflow)，安装方法见那边的 README；其余技能来自 [mattpocock/skills](https://github.com/mattpocock/skills) 和 [remotion-dev/skills](https://github.com/remotion-dev/skills)。完整流程见 [制作工作流](docs/workflow/README.md)。
 
-## 其他几期
+## 《雨后》之前
 
-| 期 | 是什么 | 能不能看 |
-|---|---|---|
-| [纯代码小样](episodes/pure-code-sample/README.md) | 《雨后》之前的 13 秒、两个镜头的试做，用来验证纯代码能不能做出日式动画的质感 | 代码和生成器都在仓库里，可以照着复现 |
-| [NASA 朋克开场](episodes/nasa-punk-opening/README.md) | 复刻一支讲解视频的开场，第一次把配音、字幕、镜头和混音的管线跑通 | 只在本机学习，素材不公开 |
-| [ClinMesh 宣传片](episodes/clinmesh-promo/README.md) | 协作者做的一支医疗产品宣传片 | 素材授权还没登记完，不对外发布 |
+先做过一段 13 秒、两个镜头的 [纯代码小样](episodes/pure-code-sample/README.md)，验证纯代码能不能做出日式剧场动画的质感。引擎、声音合成和样张工具从小样里长出来，后来提进了 `src/kit/`。小样的视频不单独发布，代码和生成器都在仓库里，可以照着复现。
 
 ## 许可
 
