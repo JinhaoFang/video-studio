@@ -34,6 +34,7 @@
 | 纯代码动画 | 原创的剧场级日式动画短片，画面、配乐、音效全部由仓库代码算出（`GLOSSARY.md`「纯代码」）；宿主是 Remotion，Canvas 2D 加 WebGL，声音用 Node 合成，本机只能用软件图形 `--gl=swangle`；第一部小样 13 秒、两个镜头，镜头 2 的 A、B 两版各成一部（spec #147，PR #164）。用户看片选了 A；用哪个模型属于个人席位，仓库只记对比证据；参照片方法的验证结论在研究记录第 7 节（用户 11-26，复盘） | `docs/adr/0002-pure-code-animation-on-remotion.md`、`episodes/pure-code-sample/README.md`、`docs/reports/spec-147-pure-code-sample.html`、`docs/research/noroi-iwai.md` |
 | 视觉工单的自查 | 工作类型是「前端」「动画」的工单，执行者交付前一轮一轮自查画面（多帧、1:1 裁切、连续帧条、写下最差三处并改、对照反面清单），记录写进汇报；自查不代替设计负责人验收（用户 11-26，spec #147 复盘） | `docs/roles/engineering.md`「完成标准」 |
 | 剧组底座 | 一期由剧组来做：编剧、美术、摄影、动作、剪辑、声音六个部门，设计负责人兼任导演和制片；各类片子用同一个剧组，只是各部门的做法不同，每期六个部门都在，用不上的写「不适用」和理由。13 项清单改成按部门排，新增 ⑭ 动作；各部门写明交出什么、交给谁、怎么自查；交接以全片装配为主干，镜头之间看切点表，画面和声音之间看听点表，上游锁定后下游才开工；视频工单写 `部门：`，和工作类型分开；设计负责人只亲手做纸面决定、验收和最后微调，画面的定稿也可以派出去迭代；`docs/video/` 缺的转场、连贯规则、机位图、动作、拟音等知识由纯代码动画正片 spec 补（用户 11-26） | `docs/workflow/README.md`「一期视频」、`docs/adr/0003-crew-base-by-department.md`、`docs/roles/`、`GLOSSARY.md`「剧组」 |
+| 纯代码动画正片 | 《雨后》65 秒、12 个镜头，剧组底座第一次在完整片子上跑通：纸面决定 → 设定和底图 → 全片预演给用户看 → 按段派镜头 → 画面锁定 → 听点表和混音 → 成片和封面；引擎、声音合成、样张工具提进 `src/kit/`，纯代码护栏按 `episodes/pure-code.json` 登记检查，`docs/video/` 补了 90 条带出处的知识（spec #168，PR #205；用户看成片的结论记在 #195） | `episodes/after-rain/README.md`、`docs/reports/spec-168-after-rain.html` |
 
 进行中的工作以 GitHub 上打开的 spec 为准，不写进本文。
 
@@ -58,3 +59,5 @@
 - kit 复用欠账：ClinMesh 是中英文加空格（首期 `text-spacing.ts`）和颗粒暗角（首期 `FilmFinish.tsx`）的第二次使用，但两处都各写了一份，没有提进 `src/kit/`。
 - 时间轴来源类型：`tools/build-timeline.ts` 只认 `temporary` 和 `elevenlabs`，非 ElevenLabs 的正式配音（如 ClinMesh 的 MiniMax）只能记成 `elevenlabs`。#114 曾加过 `local`，后来按审阅撤回；要不要加，再定。
 - 视频知识的维护：做完一期后由 `/retro` 按这一期的证据更正和补充 `docs/video/`（spec #147 复盘改了日式动画等条目与代码路线冲突的说法，补了静默与环境底噪、视线引导、纯代码合成的声音）；出处里的平台规格页会改版，什么时候复查还没定。
+- `land` 保留被忽略文件时同一个文件列两次，第二次移动报「文件不存在」：spec #168 出现 14 次，每次手动移到保留目录再重跑。根因在 `agent-workflow`；本仓库能先做的是把能按生成清单重建的期媒体（如 `public/episodes/after-rain/`）加进 `docs/agents/run-spec.json` 的 `disposableIgnored`，加不加、按期加还是等上游修，再定。
+- 执行者 worktree 里没有 Remotion 的无头浏览器，spec #168 的镜头工单都借主工作区的路径渲染；派发安装时带上，还是写进工程文档，再定。
