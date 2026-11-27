@@ -16,6 +16,8 @@
 
 ## 《雨后》
 
+https://github.com/user-attachments/assets/0f2311ec-410b-409a-b2d1-ef6b43460e6a
+
 > 雷雨冲散了同伴，湿透的小麻雀缩在檐下竹竿上，怎么也飞不起来。雨停之后，它在夕光里一点一点晒干羽毛，稻田那头，同伴还在叫它。
 
 <img src="https://github.com/JinhaoFang/video-studio/releases/download/after-rain-v1/shots-12.jpg" alt="《雨后》十二个镜头各一帧：从雷雨的冷蓝灰，到夕光的金色，再沉进暮色；最后一格是片名和亮着灯的屋子" width="100%">
@@ -24,7 +26,7 @@
 |---|---|---|---|
 | 1920×1080，24 帧，B 站和 YouTube 共用一个母版 | 没有图片、录音和字体文件，也没用生成图片、音乐或人声的模型 | 设计负责人拆单、验收，其中 28 张派给工程 agent | 正片从 spec 发出到合并约 23 小时，中间遇上一夜断网 |
 
-下载成片：[1080p（78 MB）](https://github.com/JinhaoFang/video-studio/releases/download/after-rain-v1/after-rain.mp4) · [540p 小文件版（10 MB）](https://github.com/JinhaoFang/video-studio/releases/download/after-rain-v1/after-rain-web.mp4)
+上面播放的是 540p 小文件版，看高清请下载：[1080p（78 MB）](https://github.com/JinhaoFang/video-studio/releases/download/after-rain-v1/after-rain.mp4) · [540p 小文件版（10 MB）](https://github.com/JinhaoFang/video-studio/releases/download/after-rain-v1/after-rain-web.mp4)
 
 **画面和声音怎么从代码里出来**
 

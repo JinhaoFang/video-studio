@@ -164,7 +164,7 @@ ffmpeg -y -i "$qa/cover-base.png" -i "$qa/title.png" -filter_complex \
 
 仓库首页 README 和 GitHub Release 用到三个文件，都从成片和 YouTube 封面用 FFmpeg 派生，不新增素材：
 
-- **`after-rain-web.mp4`**：960×540、两遍编码，视频 1090 kb/s、AAC 128 kb/s，共 9.9 MB。GitHub 免费账户的视频附件上限是 10 MB（[GitHub 文档「附加文件」](https://docs.github.com/en/get-started/writing-on-github/working-with-advanced-formatting/attaching-files)），拖进 issue 或 PR 的编辑框得到附件链接，README 里单独一行写这个链接就能直接播放。同样的码率试过 1280×720，第 1 镜的雨丝和瓦顶高光被抹平；README 的播放器最宽约 880 像素，540p 保留的细节更多。
+- **`after-rain-web.mp4`**：960×540、两遍编码，视频 1090 kb/s、AAC 128 kb/s，共 9.9 MB。GitHub 免费账户的视频附件上限是 10 MB（[GitHub 文档「附加文件」](https://docs.github.com/en/get-started/writing-on-github/working-with-advanced-formatting/attaching-files)），拖进 issue 或 PR 的评论框得到附件链接，README 里单独一行写这个链接就能直接播放。评论要发出去，链接才对外可见：只上传不发出时，不登录访问返回 404（11-27 实测）。同样的码率试过 1280×720，第 1 镜的雨丝和瓦顶高光被抹平；README 的播放器最宽约 880 像素，540p 保留的细节更多。
 - **`shots-12.jpg`**：每镜一帧拼成 4×3，帧号 F72、F216、F372、F492、F582、F684、F792、F960、F1044、F1134、F1260、F1500，每格 640×360。
 - **`social-preview.jpg`**：从 4K 封面裁 2:1 再缩到 1280×640，70 KB。GitHub 要求社交预览图小于 1 MB、建议 1280×640，只能在仓库 Settings 的「Social preview」里上传（[GitHub 文档](https://docs.github.com/en/repositories/managing-your-repositorys-settings-and-features/customizing-your-repository/customizing-your-repositorys-social-media-preview)）。
 

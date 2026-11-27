@@ -16,6 +16,8 @@ Our first film, *After the Rain*, is a 65-second animated short. Every frame, th
 
 ## *After the Rain*
 
+https://github.com/user-attachments/assets/0f2311ec-410b-409a-b2d1-ef6b43460e6a
+
 > A thunderstorm scatters the flock. A soaked young sparrow huddles on a bamboo pole under the eaves and cannot fly. When the rain stops, it dries its feathers bit by bit in the evening sun, while across the rice field its companions keep calling.
 
 <img src="https://github.com/JinhaoFang/video-studio/releases/download/after-rain-v1/shots-12.jpg" alt="One frame from each of the twelve shots: from the cold blue-grey of the storm to golden evening light, then into dusk; the last frame shows the title and a lit house" width="100%">
@@ -24,7 +26,7 @@ Our first film, *After the Rain*, is a 65-second animated short. Every frame, th
 |---|---|---|---|
 | 1920×1080 at 24 fps, one master for Bilibili and YouTube | No images, recordings or font files, and no models that generate images, music or voices | Planned and accepted by the design lead; 28 of them carried out by engineering agents | About 23 hours from spec to merge, including a night-long network outage |
 
-Download: [1080p (78 MB)](https://github.com/JinhaoFang/video-studio/releases/download/after-rain-v1/after-rain.mp4) · [540p small file (10 MB)](https://github.com/JinhaoFang/video-studio/releases/download/after-rain-v1/after-rain-web.mp4)
+The player above shows the 540p small file; for full quality, download: [1080p (78 MB)](https://github.com/JinhaoFang/video-studio/releases/download/after-rain-v1/after-rain.mp4) · [540p small file (10 MB)](https://github.com/JinhaoFang/video-studio/releases/download/after-rain-v1/after-rain-web.mp4)
 
 **How picture and sound come out of code**
 
