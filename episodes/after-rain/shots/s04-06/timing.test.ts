@@ -68,6 +68,7 @@ test("第 5 镜：五步喜剧时机的帧号和事件一致，竹竿弹回在�
   assert.deepEqual(framesOf(s05Timing, "push_off"), [S05_PUSH_OFF]);
   assert.deepEqual(S05_FLAPS, [24, 27, 30, 33]);
   assert.ok(S05_FLAPS[0] > S05_PUSH_OFF && S05_FLAPS[S05_FLAPS.length - 1] < S05_HUSH);
+  assert.deepEqual(framesOf(s05Timing, "drop_land"), [31, 61, 63, 65], "进入碎滴绘制分支的首帧，F61 的两颗只触发一次");
   assert.deepEqual(framesOf(s05Timing, "hush"), [S05_HUSH]);
   assert.ok(S05_HUSH < S05_DROP && S05_DROP < S05_FALL_BACK);
   assert.equal(S05_POLE_SPRING - S05_FALL_BACK, 5);

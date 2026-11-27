@@ -289,18 +289,18 @@
       "localFrame": 30
     },
     {
+      "frame": 559,
+      "kind": "drop_land",
+      "description": "甩出的水珠落到竹竿或地上",
+      "shotId": "s05",
+      "localFrame": 31
+    },
+    {
       "frame": 561,
       "kind": "flap_wet",
       "description": "湿翅膀拼命下扑第 4 下",
       "shotId": "s05",
       "localFrame": 33
-    },
-    {
-      "frame": 566,
-      "kind": "drop_land",
-      "description": "甩出的水珠落到竹竿或地上",
-      "shotId": "s05",
-      "localFrame": 38
     },
     {
       "frame": 568,
@@ -345,11 +345,25 @@
       "localFrame": 59
     },
     {
-      "frame": 594,
+      "frame": 589,
       "kind": "drop_land",
       "description": "甩出的水珠落到竹竿或地上",
       "shotId": "s05",
-      "localFrame": 66
+      "localFrame": 61
+    },
+    {
+      "frame": 591,
+      "kind": "drop_land",
+      "description": "甩出的水珠落到竹竿或地上",
+      "shotId": "s05",
+      "localFrame": 63
+    },
+    {
+      "frame": 593,
+      "kind": "drop_land",
+      "description": "甩出的水珠落到竹竿或地上",
+      "shotId": "s05",
+      "localFrame": 65
     },
     {
       "frame": 612,
@@ -648,7 +662,7 @@
     {
       "frame": 1149,
       "kind": "pole_spring",
-      "description": "竹竿被蹬下沉后弹回的第一下",
+      "description": "脚蹬离后竹竿压到最低，开始弹回",
       "shotId": "s10",
       "localFrame": 57
     },

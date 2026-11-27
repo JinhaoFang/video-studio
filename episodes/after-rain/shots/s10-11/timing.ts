@@ -6,7 +6,7 @@
  */
 import { createFlock, flockFlightState, flockMemberState } from "../../flock.ts";
 import type { FlockBirdState, FlockMember } from "../../flock.ts";
-import { timeShot } from "../../model.ts";
+import { shotRow, shotTable, timeShot } from "../../model.ts";
 
 export const S10_TURN_END = 12;
 export const S10_CROUCH = 12;
@@ -27,7 +27,7 @@ export const S10_FLAPS: readonly (readonly [number, number])[] = [
 export const S10_WING_START = 74;
 export const S10_WING_PASS = 76;
 export const S10_COVERED = 81;
-export const S10_LAST = 83;
+export const S10_LAST = shotRow(shotTable, "s10").durationInFrames - 1;
 export const S11_WING_OFFSET = S10_LAST - S10_WING_START + 1;
 export const S10_SMEAR_FRAMES = [56, 59] as const;
 
@@ -50,7 +50,7 @@ export const s10Timing = timeShot({
   events: [
     { frame: S10_CROUCH, kind: "crouch", description: "起飞前开始压身" },
     { frame: S10_TAKEOFF, kind: "takeoff", description: "脚离开竹竿" },
-    { frame: S10_POLE_SPRING, kind: "pole_spring", description: "竹竿被蹬下沉后弹回的第一下" },
+    { frame: S10_POLE_SPRING, kind: "pole_spring", description: "脚蹬离后竹竿压到最低，开始弹回" },
     ...s10WingbeatFrames().map((frame, i) => ({
       frame,
       kind: "wingbeat",
@@ -156,4 +156,3 @@ export const s11Timing = timeShot({
     })),
   ].sort((a, b) => a.frame - b.frame),
 });
-

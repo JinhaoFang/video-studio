@@ -14,10 +14,11 @@ import { test } from "node:test";
 import { frameToSample } from "../../../src/kit/shots.ts";
 import { rate, seedFor, stereo } from "../../../src/kit/sound/dsp.ts";
 import type { Clip, EventTable, Stereo } from "../../../src/kit/sound/types.ts";
-import { bandLevels } from "./analyze.ts";
+import { bandLevels, envelope } from "./analyze.ts";
 import { rainAmount as sampleRainAmount } from "../../pure-code-sample/shots/s1/timing.ts";
 import { RAIN_LAYERS, rainPlan, surfaces, synthesizeRain } from "./rain.ts";
 import { renderHum, renderMix, rmsDbfs, type RawScore } from "./render.ts";
+import { renderSpots } from "./spotting.ts";
 import { synthesizeHumClip } from "./sfx.ts";
 import { synthesizeWalla, wallaLines, wallaViews } from "./walla.ts";
 
@@ -82,6 +83,52 @@ test("雨量按场次取自时间表：第 1 镜 160%，第 2 镜 140% → 100%�
     );
   assert.equal(plan.amount(third.startFrame + 200), 0);
   assert.equal(plan.toFrame, tail.frame + 168);
+});
+
+test("包络步长不能舍入到零个采样，单采样窗口能前进", () => {
+  const channel = Float64Array.of(1, 0.5);
+  assert.throws(() => envelope(channel, rate, 1e-6, 0, 2 / rate), /--step/);
+  assert.deepEqual(envelope(channel, rate, 1 / rate, 0, 2 / rate), [0, 10 * Math.log10(0.25)]);
+});
+
+test("在首镜内把 open 推迟到 F12，大雨从事件帧开始", () => {
+  const events = table.events.map((e) => e.kind === "open" ? { ...e, frame: 12, localFrame: 12 } : e);
+  const plan = rainPlan({ ...table, events }, seed);
+  assert.equal(plan.fromFrame, 12);
+  assert.equal(plan.amount(11), 0);
+  assert.equal(plan.amount(12), 1.6);
+});
+
+test("一声同伴回应连同混响按全片采样淡出，在叠化末帧起点归零", () => {
+  const anchors = ["drip_fall", "drip_hit", "hush", "drop", "toe_turn"];
+  const call = table.events.filter((e) => e.kind === "companion_call").at(-1)!;
+  const events = [...table.events.filter((e) => anchors.includes(e.kind)), call];
+  const start = table.shotTable.find((r) => r.id === "s12")!.startFrame;
+  const last = table.shotTable.find((r) => r.id === "s11")!;
+  const end = last.startFrame + last.durationInFrames - 1;
+  const render = (delayDissolve: number) => {
+    const shotTable = table.shotTable.map((r) => {
+      if (r.id === "s12") return { ...r, startFrame: r.startFrame + delayDissolve };
+      if (r.id === "s11") return { ...r, durationInFrames: r.durationInFrames + delayDissolve };
+      return r;
+    });
+    const nearCall = (f: number) => toSample(f - call.frame + 1);
+    const length = nearCall(end + 4);
+    const stems = { ambience: stereo(length), sfx: stereo(length), voice: stereo(length) };
+    renderSpots({ ...table, shotTable, events }, seed, nearCall, stems);
+    return stems.sfx;
+  };
+  const faded = render(0);
+  const full = render(last.durationInFrames);
+  const at = (frame: number) => toSample(frame - call.frame + 1);
+  for (const c of [0, 1]) {
+    assert.ok(full[c].subarray(at(call.frame), at(end)).some((x) => x !== 0));
+    assert.ok(full[c].subarray(at(end)).some((x) => x !== 0), "对照声在末帧仍有混响");
+    for (let i = at(call.frame); i < faded[c].length; i++) {
+      const gain = Math.max(0, (at(end) - i) / (at(end) - at(start)));
+      assert.ok(Math.abs(faded[c][i] - full[c][i] * gain) < 1e-12);
+    }
+  }
 });
 
 test("推迟 rain_tail 事件时雨的范围跟着事件走；阵风低谷在 thunder 事件之后", () => {

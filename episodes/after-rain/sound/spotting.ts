@@ -101,6 +101,13 @@ const spots: Record<string, Spot> = {
   floor_creak: ["basket_creak", -19, 0, "woodRoom"],
   eave_drip: ["drip_land", -13, -0.4, "garden"],
 };
+const dropSurfaces = [
+  { material: "竹竿", tone: 820, cutoffHz: 5800 },
+  { material: "竹竿", tone: 620, cutoffHz: 5800 },
+  { material: "木板", tone: 280, cutoffHz: 2500 },
+  { material: "泥地", tone: 150, cutoffHz: 680 },
+] as const;
+
 const heroes = new Set([
   "drip_hit",
   "puddle_step",
@@ -147,6 +154,10 @@ export const renderSpots = (
   const at = (shot: string, frame: number) =>
     resolveAnchor({ shot, frame }, table);
   const event = (kind: string) => resolveAnchor({ event: kind }, table);
+  const dissolveStart = toSample(at("s12", 0));
+  const outgoing = shotRow(table.shotTable, "s11");
+  const dissolveEnd = toSample(outgoing.startFrame + outgoing.durationInFrames - 1);
+  const dissolve: [number, number][] = [[dissolveStart, 1], [dissolveEnd, 0]];
   const quiet = quietRanges(table);
   const cues = table.events.map(({ shotId, kind, frame }) => ({
     shotId,
@@ -201,18 +212,9 @@ export const renderSpots = (
       pan = wide ? 0.35 : shotId === "s09" ? 0.7 : 0.6;
     }
     if (wide && kind === "wingbeat") db -= 14;
-    const overlapEnd =
-      shotRow(table.shotTable, "s11").startFrame +
-      shotRow(table.shotTable, "s11").durationInFrames;
-    const dissolve = wide
-      ? curve(
-          [
-            [at("s12", 0), 1],
-            [overlapEnd, 0],
-          ],
-          frame,
-        )
-      : 1;
+    const fadeCall = wide && kind === "companion_call";
+    const surface = shotId === "s05" && kind === "drop_land"
+      ? dropSurfaces[ordinal % dropSurfaces.length] : undefined;
     const scene = wide ? "open" : room;
     const seconds =
       kind === "wing_pass" ? (at("s11", 10) - frame) / table.fps : undefined;
@@ -224,14 +226,14 @@ export const renderSpots = (
             table.fps
           : undefined,
       tone:
-        kind === "title_dot" ? [740, 920, 810, 1150][ordinal % 4] : undefined,
+        kind === "title_dot" ? [740, 920, 810, 1150][ordinal % 4] : surface?.tone,
       crest:
         kind === "wing_pass" ? (at("s11", 0) - frame) / table.fps : undefined,
       cutoffHz: wide
         ? 1800
         : shotId === "s03" && kind === "mud_step"
           ? 680
-          : undefined,
+          : surface?.cutoffHz,
     });
     const wet = wide
       ? 0.22
@@ -247,7 +249,7 @@ export const renderSpots = (
       dry,
       clip,
       target - origin,
-      dbGain(db) * dissolve,
+      dbGain(db),
       pan,
       0.28,
     );
@@ -265,7 +267,7 @@ export const renderSpots = (
         i < Math.min(sound[c].length, bus[c].length - origin);
         i++
       )
-        bus[c][origin + i] += sound[c][i];
+        bus[c][origin + i] += sound[c][i] * (fadeCall ? curve(dissolve, origin + i) : 1);
     const alignedSample = origin + start + clip.alignmentSample;
     placements.push({
       shotId,
@@ -273,6 +275,7 @@ export const renderSpots = (
       kind,
       name,
       scene,
+      ...(surface && { material: surface.material }),
       layer,
       onsetSample:
         origin + start + clip.samples.findIndex((v) => Math.abs(v) > 1e-9),

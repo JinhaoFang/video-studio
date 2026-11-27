@@ -82,7 +82,7 @@ export const bandLevels = (
   const start = Math.round(from * rate);
   const end = Math.min(channels[0].length, Math.round(to * rate));
   const n = end - start;
-  if (n <= 0) throw new Error(`测量区间为空：${from}–${to} 秒`);
+  if (n <= 0) throw usageError("--from 到 --to 的窗口须至少包含 1 个采样。", usage);
   let nfft = 1;
   while (2 * nfft <= Math.min(n, 8192)) nfft *= 2;
   const binHz = rate / nfft;
@@ -157,6 +157,8 @@ export const envelope = (
   to: number,
 ) => {
   const width = Math.round(step * rate);
+  if (!Number.isSafeInteger(width) || width < 1)
+    throw usageError(`--step 换算后须至少为 1 个采样（当前 ${rate} Hz），请增大窗长。`, usage);
   const values: number[] = [];
   for (
     let at = Math.round(from * rate);
@@ -245,8 +247,12 @@ const main = () => {
       allowPositionals: true,
     }));
   } catch (error) {
+    const detail = error as NodeJS.ErrnoException;
+    const option = detail.message.match(/'([^']+)'/)?.[1] ?? "";
     throw usageError(
-      error instanceof Error ? error.message : String(error),
+      detail.code === "ERR_PARSE_ARGS_UNKNOWN_OPTION"
+        ? `不认识的参数 ${option}，请按下列用法填写。`
+        : `参数 ${option} 的取值无效，请按下列用法填写。`,
       usage,
     );
   }

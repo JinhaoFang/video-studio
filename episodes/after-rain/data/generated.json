@@ -6,12 +6,12 @@
     "episodes/after-rain/generate.ts"
   ],
   "status": "complete",
-  "cacheKey": "e7e8b3a39aff91d4044adfcdc3ae339b8665eee4609bde2ff9e2840af2574132",
-  "plateKey": "889bec502ba92704224155b6a6ae237a78bb3ef96e01dd8bd31b61f692d8bad1",
+  "cacheKey": "68cd4ee398b385de1e33be338dd7296f9b7b4455ac966834319360f087eaba56",
+  "plateKey": "274386c2872ac3e82b27b7a3e484bce59fbd12ba0cf1e76a8ed0a045095f988b",
   "inputs": [
     {
       "path": "episodes/after-rain/generate.ts",
-      "sha256": "afd14c88d555d4d3b7c15530cbd46b868c720963c3ad130241e441fe01031b64"
+      "sha256": "ddeaaa0660400bb27c070d4d3abdc65ce2509786cbec24daae5ff349061c25a9"
     },
     {
       "path": "src/kit/generation/bake.ts",
@@ -59,7 +59,7 @@
     },
     {
       "path": "episodes/after-rain/sound/spotting.ts",
-      "sha256": "8f41045d501abe2d3b8e1b8a7a43205e20f11238b77428c3f2c9cd06adb7b9e2"
+      "sha256": "51c28c09133d4be699336e3585d3e68b023cd3a2e5476dd3e1fbb5a103f935a8"
     },
     {
       "path": "episodes/after-rain/sound/sfx.ts",
@@ -67,7 +67,7 @@
     },
     {
       "path": "episodes/after-rain/sound/rain.ts",
-      "sha256": "ec3091da48abed4ef1e0125521075e2c53df270c89b6623258c16c61290a1832"
+      "sha256": "a2ba0a75e99ffc0afd984c7c2a1facee6850932c4fa0f948fac7a87fce332f55"
     },
     {
       "path": "episodes/after-rain/sound/walla.ts",
@@ -75,7 +75,7 @@
     },
     {
       "path": "episodes/after-rain/sound/analyze.ts",
-      "sha256": "10f60c9d23e6a98b4147e60cc38f4e2f7f4323af44a8983f1303618566c2fc53"
+      "sha256": "4d84819b3b0922714f4a9b1a21dd640391f6629e68552ce8c6e9ab2159e2fbcd"
     },
     {
       "path": "episodes/after-rain/sound/render.ts",
@@ -122,6 +122,26 @@
       "sha256": "04e9c5f93180379ffb0e42d2605c0282b6931b26d9f9897717301fda0cc2471f"
     },
     {
+      "path": "episodes/after-rain/flock.ts",
+      "sha256": "3a5b51dc75d84af2c966d0f7fc55c907b9ee12eaa43f56ecc83eb247dd57cbba"
+    },
+    {
+      "path": "episodes/after-rain/tokens-sparrow.ts",
+      "sha256": "c022313d7921fb1bf4713dcb12c809e02f5d7234738dae2fa02138ca49fdc785"
+    },
+    {
+      "path": "src/kit/engine/cel.ts",
+      "sha256": "3a9544a9eb0bd6bc62cb2aed1bb81d60355a34d0abbd77eda909544f6c68498f"
+    },
+    {
+      "path": "src/kit/engine/ink.ts",
+      "sha256": "9296f76611d1f5f8b9e5463f991ba5b9fb642b199e73cd37ec76cd53a5557146"
+    },
+    {
+      "path": "episodes/after-rain/title/timing.ts",
+      "sha256": "e3799ae6c3df991c31fb66aa35f797d2c8e5c5696e504a564645d575a664b9e2"
+    },
+    {
       "path": "episodes/after-rain/shots/timings.ts",
       "sha256": "ee010d323aa8c7ff5531135678483788a02720cca21a105046729a92deddd11b"
     },
@@ -135,7 +155,7 @@
     },
     {
       "path": "episodes/after-rain/shots/s04-06/timing.ts",
-      "sha256": "65ca90a5680e063839e6ea52d665a73c49f4e4ecba6f37bcab1f443b101348bc"
+      "sha256": "01bd9f49beadf05210fa98b42004e803beda6e6516dde744f2d9220abe99d168"
     },
     {
       "path": "episodes/after-rain/shots/s07-09/timing.ts",
@@ -143,7 +163,7 @@
     },
     {
       "path": "episodes/after-rain/shots/s10-11/timing.ts",
-      "sha256": "5ba3b27c1a7aceb205f66078d48b7378c901b50a4619d743a58643a7293bf520"
+      "sha256": "f24e329c357277b259f7b9f9db5b2f7b1e93a810613762b37d1e0be90f0fa5cf"
     },
     {
       "path": "episodes/after-rain/shots/s12/timing.ts",
@@ -167,7 +187,7 @@
   "files": [
     {
       "path": "episodes/after-rain/events.json",
-      "sha256": "06d074fa2de3dd3225448856135797cccff19501571c4080708440ca55ea0888"
+      "sha256": "4af4d5cc2e4f5163252e205fbb6674b3ecd37899a8e9ff922ae7e1a58848f706"
     },
     {
       "path": "episodes/after-rain/plate-far-rain.png",
@@ -271,13 +291,13 @@
     },
     {
       "path": "episodes/after-rain/mix.wav",
-      "sha256": "d0af4ec7bd7bfa0649a551311f8040b1c993a08e299480028d9ee2797df78364"
+      "sha256": "b62b26f939f3caf7204ca385e0367779d996a3ee4c157f252f058504408c4da9"
     }
   ],
   "eventTables": [
     {
       "path": "episodes/after-rain/data/events.json",
-      "sha256": "06d074fa2de3dd3225448856135797cccff19501571c4080708440ca55ea0888"
+      "sha256": "4af4d5cc2e4f5163252e205fbb6674b3ecd37899a8e9ff922ae7e1a58848f706"
     }
   ],
   "audio": {

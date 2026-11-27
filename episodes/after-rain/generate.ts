@@ -100,6 +100,11 @@ const runPool = async (jobs: BakeJob[]): Promise<BakeResult[]> => {
 };
 
 const timingSources = [
+  `${episode}/flock.ts`,
+  `${episode}/tokens-sparrow.ts`,
+  "src/kit/engine/cel.ts",
+  "src/kit/engine/ink.ts",
+  `${episode}/title/timing.ts`,
   `${episode}/shots/timings.ts`,
   `${episode}/shots/s01-02/timing.ts`,
   `${episode}/shots/s03/timing.ts`,

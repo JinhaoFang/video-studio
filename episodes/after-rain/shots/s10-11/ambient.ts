@@ -12,7 +12,7 @@ import type { Point } from "../../../../src/kit/engine/figure.ts";
 import { hash, noise1 } from "../../../../src/kit/engine/random.ts";
 import { house, plateSize } from "../../scene.ts";
 import type { ViewPlate } from "../../scene.ts";
-import { dusk, houseTakeoff, lowYard, paddyWide, warm } from "../../tokens.ts";
+import { darkestByMood, dusk, houseTakeoff, lowYard, paddyWide, warm } from "../../tokens.ts";
 import { mixHex } from "../../tokens-sparrow.ts";
 
 export type Offscreen = { canvas: HTMLCanvasElement; ctx: CanvasRenderingContext2D };
@@ -157,9 +157,9 @@ export const drawPoleContactShadow = (
   ctx.closePath();
   ctx.clip();
   const g = ctx.createRadialGradient(perch.x, perch.y, 0, perch.x, perch.y, reach);
-  g.addColorStop(0, `rgba(34,28,40,${0.5 + 0.2 * tightness})`);
-  g.addColorStop(0.45, `rgba(34,28,40,${0.3 + 0.14 * tightness})`);
-  g.addColorStop(1, "rgba(34,28,40,0)");
+  g.addColorStop(0, rgba(darkestByMood.lowDusk, 0.5 + 0.2 * tightness));
+  g.addColorStop(0.45, rgba(darkestByMood.lowDusk, 0.3 + 0.14 * tightness));
+  g.addColorStop(1, rgba(darkestByMood.lowDusk, 0));
   ctx.fillStyle = g;
   const angle = Math.atan2(uy, ux);
   ctx.translate(perch.x, perch.y);
@@ -350,4 +350,3 @@ export const drawCloudDrift = (
   c.globalCompositeOperation = "source-over";
   ctx.drawImage(cloud.canvas, 0, 0);
 };
-

@@ -8,6 +8,7 @@
 import type { Camera, Vec3 } from "../../../../src/kit/engine/camera.ts";
 import { mix } from "../../../../src/kit/engine/timing.ts";
 import { shotCameras } from "../../scene.ts";
+import { S10_LAST, s11Timing } from "./timing.ts";
 
 const deg = (value: number) => (value * Math.PI) / 180;
 
@@ -89,7 +90,6 @@ export const S10_PAN_DEG = 2.0;
 export const S10_TILT_DEG = 0.5;
 
 const s10Base: Camera = shotCameras.s10;
-const s10PanLength = 83;
 
 const rampOpen = (frame: number, start: number, accel: number) => {
   if (frame <= start) return 0;
@@ -97,7 +97,7 @@ const rampOpen = (frame: number, start: number, accel: number) => {
   return t < accel ? accel * integral(t / accel) : accel / 2 + (t - accel);
 };
 
-const s10Follow = (frame: number) => rampOpen(frame, S10_FOLLOW_START, S10_FOLLOW_ACCEL) / rampOpen(s10PanLength, S10_FOLLOW_START, S10_FOLLOW_ACCEL);
+const s10Follow = (frame: number) => rampOpen(frame, S10_FOLLOW_START, S10_FOLLOW_ACCEL) / rampOpen(S10_LAST, S10_FOLLOW_START, S10_FOLLOW_ACCEL);
 
 export const s10CameraAt = (frame: number): Camera => {
   const dolly = trapezoid(frame, S10_DOLLY) * S10_DOLLY_METERS;
@@ -121,7 +121,7 @@ export const S11_TARGET: RateProfile = { start: 0.42, fast: 0.74, fastFrom: 36, 
 export const S11_OMEGA = 0.34;
 export const S11_ZETA = 0.78;
 
-const s11Frames = 192;
+const s11Frames = s11Timing.durationInFrames;
 const s11Base: Camera = shotCameras.s11Start;
 
 export const S11_LAND_FRAME = 150;

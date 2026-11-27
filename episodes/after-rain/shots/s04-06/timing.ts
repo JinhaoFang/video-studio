@@ -6,7 +6,9 @@
  * 待定事项：无。
  */
 import type { StopTurnTiming } from "../../person.ts";
-import { timeShot } from "../../model.ts";
+import { rng } from "../../../../src/kit/engine/random.ts";
+import { fps, timeShot } from "../../model.ts";
+import { pole } from "../../scene.ts";
 
 export const S04_POSE_OFFSET = 10;
 export const S04_STEP_FRAMES = 24;
@@ -69,7 +71,39 @@ export const S05_BALANCE_FLAPS = [56, 59] as const;
 export const S05_POLE_SPRING = 59;
 export const S05_STEADY = 84;
 export const S05_CALL_SMALL = 94;
-export const S05_DROP_LANDS = [38, 66] as const;
+const s05Drops = (() => {
+  const r = rng(1885, 54);
+  const drops = [];
+  const bursts = [
+    ...S05_FLAPS.map((f) => [f, 1, 4, 1]),
+    [S05_FALL_BACK + 1, 4, 6, 1.6],
+    ...S05_BALANCE_FLAPS.map((f) => [f, 2, 2, 1.2]),
+  ];
+  for (const [spawn, landers, flyers, power] of bursts) {
+    for (let i = 0; i < landers + flyers; i++) {
+      const lander = i < landers;
+      drops.push({
+        spawn,
+        side: r.next() < 0.5 ? 1 : -1,
+        lateral: lander ? r.range(0.08, 0.28) : r.range(0.6, 1.5) * power,
+        up: lander ? r.range(0.3, 0.9) * power : r.range(-0.4, 0.5) * power,
+        forward: r.range(-0.1, 0.3),
+        size: r.next() < 0.3 ? r.range(3.6, 5.2) : r.range(2.2, 3.6),
+      });
+    }
+  }
+  return drops;
+})();
+
+const landingFrames: number[] = [];
+for (const { spawn, lateral, up } of s05Drops) {
+  const seconds = (up + Math.sqrt(up * up + 2 * 4.9 * 0.09)) / 9.8;
+  if (Math.abs(lateral * seconds) < pole.radius * 1.6)
+    landingFrames.push(Math.ceil(spawn + seconds * fps));
+}
+landingFrames.sort((a, b) => a - b);
+
+export const S05_DROP_LANDS = landingFrames.filter((frame, i) => i === 0 || frame - landingFrames[i - 1] >= 2);
 
 export const s05Timing = timeShot({
   id: "s05",

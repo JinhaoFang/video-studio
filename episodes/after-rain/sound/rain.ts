@@ -85,10 +85,11 @@ export const rainPlan = (table: EventTable, seed: number): RainPlan => {
   };
   const fps = table.fps;
   const amount = (frame: number) => {
+    if (frame < open.frame) return 0;
     if (frame < first.to)
       return curve(
         [
-          [first.from + (first.to - first.from) * 0.75, FIRST_SHOT_RAIN],
+          [open.frame + (first.to - open.frame) * 0.75, FIRST_SHOT_RAIN],
           [first.to - 1, SECOND_SHOT_RAIN[0]],
         ],
         frame,
@@ -140,7 +141,7 @@ export const rainPlan = (table: EventTable, seed: number): RainPlan => {
     return 20 * Math.log10(gain) + dip + (rainBand - 0.5) * 2;
   };
   return {
-    fromFrame: first.from,
+    fromFrame: open.frame,
     toFrame: tail.frame + SAMPLE_RAIN_DURATION,
     amount,
     gustDb,
