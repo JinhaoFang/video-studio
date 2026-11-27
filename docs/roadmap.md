@@ -19,10 +19,10 @@
 | 仓库形态 | 一个工作室仓库放所有期，可复用的放 `src/`，每期的放 `episodes/<期>/` | `AGENTS.md`「目录与归属」 |
 | 时间机制 | 按时间轴锚点定时，不写死全片帧号：有旁白时锚点是句子编号，没有旁白时是镜头起点和画面事件（用户 11-25，spec #147） | `docs/workflow/README.md`「一期视频」 |
 | 包管理、媒体 | pnpm；媒体和渲染结果不进 git | `AGENTS.md` |
-| 远程仓库 | `github.com/JinhaoFang/video-studio`（私有） | — |
+| 远程仓库 | `github.com/JinhaoFang/video-studio`（公开） | — |
 | 开发流程 | 设计负责人是和用户对话的主会话，工程负责人由它按席位派发，用 `run-spec` 执行 spec；用哪个框架和模型写在个人席位配置里，仓库只登记工作类型 `前端`、`动画`；派发层随 `run-spec` 自带，不再需要 DispatchDock；版本 `workflow-v7`（11-17），各版本内容见 `JinhaoFang/agent-workflow` 的 README「版本」 | `AGENTS.md`、`docs/roles/`、`docs/workflow/README.md`、`docs/agents/` |
 | 流程的版本 | `workflow-v1`～`workflow-v3.1` 从本仓库发布；之后的版本从 `JinhaoFang/agent-workflow` 发布 | `JinhaoFang/agent-workflow` 的 README |
-| 方法层仓库 | 开发流程带着历史拆到 `JinhaoFang/agent-workflow`（私有）；视频的组件、风格、工具、规则和护栏留在本仓库；本仓库的两个技能从 `workflow-v4` 起换成安装版本，不进 git（用户 10-31） | `docs/workflow/README.md`「方法层仓库」 |
+| 方法层仓库 | 开发流程带着历史拆到 `JinhaoFang/agent-workflow`（公开）；视频的组件、风格、工具、规则和护栏留在本仓库；本仓库的两个技能从 `workflow-v4` 起换成安装版本，不进 git（用户 10-31） | `docs/workflow/README.md`「方法层仓库」 |
 | 方法层怎么改 | 放方法和思路，不放写死的规范；遇到的问题先记成观察，经过分析和评估再决定加不加、用什么形式；"汇报给人"由用户打分（用户 10-31） | `JinhaoFang/agent-workflow` 的 `AGENTS.md`「怎么改方法层」 |
 | 协作边界 | 派发前独立审查由用户选择；工单准确定位参照、定稿、契约和验收产物，实现位置由执行者决定；工程推送仅限派发明确授权的本工单分支。规则边界已同步（用户 11-05） | `docs/agents/issue-tracker.md`、`docs/roles/`、`docs/workflow/README.md` |
 | CI | GitHub Actions 的设定不动；启动不了时改为本机验证（用户 10-31） | `docs/workflow/README.md`「护栏」 |
@@ -35,6 +35,7 @@
 | 视觉工单的自查 | 工作类型是「前端」「动画」的工单，执行者交付前一轮一轮自查画面（多帧、1:1 裁切、连续帧条、写下最差三处并改、对照反面清单），记录写进汇报；自查不代替设计负责人验收（用户 11-26，spec #147 复盘） | `docs/roles/engineering.md`「完成标准」 |
 | 剧组底座 | 一期由剧组来做：编剧、美术、摄影、动作、剪辑、声音六个部门，设计负责人兼任导演和制片；各类片子用同一个剧组，只是各部门的做法不同，每期六个部门都在，用不上的写「不适用」和理由。13 项清单改成按部门排，新增 ⑭ 动作；各部门写明交出什么、交给谁、怎么自查；交接以全片装配为主干，镜头之间看切点表，画面和声音之间看听点表，上游锁定后下游才开工；视频工单写 `部门：`，和工作类型分开；设计负责人只亲手做纸面决定、验收和最后微调，画面的定稿也可以派出去迭代；`docs/video/` 缺的转场、连贯规则、机位图、动作、拟音等知识由纯代码动画正片 spec 补（用户 11-26） | `docs/workflow/README.md`「一期视频」、`docs/adr/0003-crew-base-by-department.md`、`docs/roles/`、`GLOSSARY.md`「剧组」 |
 | 纯代码动画正片 | 《雨后》65 秒、12 个镜头，剧组底座第一次在完整片子上跑通：纸面决定 → 设定和底图 → 全片预演给用户看 → 按段派镜头 → 画面锁定 → 听点表和混音 → 成片和封面；引擎、声音合成、样张工具提进 `src/kit/`，纯代码护栏按 `episodes/pure-code.json` 登记检查，`docs/video/` 补了 90 条带出处的知识（spec #168，PR #205；用户看成片的结论记在 #195） | `episodes/after-rain/README.md`、`docs/reports/spec-168-after-rain.html` |
+| 对外展示 | 《雨后》公开分享，让更多人看到一人剧组能做出什么、也开始自己做：根目录 README 面向第一次来的人，中文为主、英文版单独一个文件，以《雨后》为代表作讲剧组怎么运转、怎么跑起来、怎么做自己的一部；开发命令移到 `docs/development.md`；成片、封面和缩略图发在 GitHub Release，README 引用 Release 里的文件，媒体仍不进 git（用户 11-27 要求公开分享，做法由用户在 PR 里确认） | `README.md`、`README.en.md`、`episodes/after-rain/README.md`「GitHub 展示」 |
 
 进行中的工作以 GitHub 上打开的 spec 为准，不写进本文。
 

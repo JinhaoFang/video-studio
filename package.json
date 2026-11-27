@@ -1,9 +1,12 @@
 {
   "name": "video-studio",
   "version": "1.0.0",
-  "description": "My Remotion video",
-  "repository": {},
-  "license": "UNLICENSED",
+  "description": "一个人带一支 agent 剧组做视频：纯代码动画短片《雨后》的源码、工作流和视频知识库",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/JinhaoFang/video-studio.git"
+  },
+  "license": "MIT",
   "private": true,
   "type": "module",
   "packageManager": "pnpm@10.34.6",

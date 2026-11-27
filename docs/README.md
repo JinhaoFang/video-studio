@@ -3,6 +3,7 @@
 | 文档 | 内容 |
 |---|---|
 | `../AGENTS.md` | 共同规则、角色、目录与归属（两个 agent 每次都会读） |
+| `development.md` | 开发者手册：环境要求、`pnpm` 常用命令、`pnpm verify` 和 `pnpm qa` 验收子命令 |
 | `roadmap.md` | 目标、已定的决策、下一步和待定，**新会话从这里看起**；进行中的工作看 GitHub 上打开的 spec |
 | `workflow/README.md` | 制作工作流总图：每个阶段谁触发、用什么、产物在哪里 |
 | `roles/design.md` | 设计负责人：自己做和派出去的判断标准、验收方法 |
