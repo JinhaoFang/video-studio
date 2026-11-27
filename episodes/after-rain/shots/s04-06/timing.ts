@@ -2,13 +2,15 @@
  * 第 4–6 镜（承）的时间数据与画面事件：对齐 storyboard.md「镜头内的锚点」「时间表」（#186 之后）、motion.md 与 contract.md 第 4 节。
  * 走路的事件帧从同一份步态参数推出来：第 4 镜的走路画张号 = 镜头帧 + S04_POSE_OFFSET（第 3 镜第 158 帧那一脚落在本镜第 −10 帧，J 切声音先行）；
  * 后脚离地落在下一脚着地之后（支撑期减一步，再被泥吸住 2 帧）；竹篮比腿晚 5 帧摆到头（mudWalkPose 的 lagFrames），停步后按 stopTurnPose 的衰减摆取前三次。
+ * 第 5 镜的绘制与落水拟音共用 s05DropPaths；事件只取落点向上取整后的首帧，相隔不到两帧的落点合并。
  * 不依赖浏览器，供镜头渲染、生成器与测试共用。
  * 待定事项：无。
  */
-import type { StopTurnTiming } from "../../person.ts";
+import type { Vec3 } from "../../../../src/kit/engine/camera.ts";
 import { rng } from "../../../../src/kit/engine/random.ts";
 import { fps, timeShot } from "../../model.ts";
-import { pole } from "../../scene.ts";
+import type { StopTurnTiming } from "../../person.ts";
+import { perchPoint, pole } from "../../scene.ts";
 
 export const S04_POSE_OFFSET = 10;
 export const S04_STEP_FRAMES = 24;
@@ -71,6 +73,7 @@ export const S05_BALANCE_FLAPS = [56, 59] as const;
 export const S05_POLE_SPRING = 59;
 export const S05_STEADY = 84;
 export const S05_CALL_SMALL = 94;
+
 const s05Drops = (() => {
   const r = rng(1885, 54);
   const drops = [];
@@ -95,17 +98,39 @@ const s05Drops = (() => {
   return drops;
 })();
 
-const landingFrames: number[] = [];
-for (const { spawn, lateral, up } of s05Drops) {
-  const seconds = (up + Math.sqrt(up * up + 2 * 4.9 * 0.09)) / 9.8;
-  if (Math.abs(lateral * seconds) < pole.radius * 1.6)
-    landingFrames.push(Math.ceil(spawn + seconds * fps));
-}
-landingFrames.sort((a, b) => a - b);
+export type DropPath = { spawn: number; start: Vec3; vel: Vec3; size: number; landFrame: number | null; landPoint: Vec3 | null };
 
-export const S05_DROP_LANDS = landingFrames.filter((frame, i) => i === 0 || frame - landingFrames[i - 1] >= 2);
+export const s05DropPaths = (azimuth: number, poleZ: number): DropPath[] => {
+  const lateral: Vec3 = [Math.cos(azimuth), -Math.sin(azimuth), 0];
+  const forward: Vec3 = [Math.sin(azimuth), Math.cos(azimuth), 0];
+  return s05Drops.map((d) => {
+    const start: Vec3 = [lateral[0] * d.side * 0.075 + forward[0] * 0.02, lateral[1] * d.side * 0.075 + forward[1] * 0.02, poleZ + 0.09];
+    const vel: Vec3 = [lateral[0] * d.side * d.lateral + forward[0] * d.forward, lateral[1] * d.side * d.lateral + forward[1] * d.forward, d.up];
+    const dz = start[2] - poleZ;
+    const disc = d.up * d.up + 2 * 4.9 * dz;
+    const tLand = disc > 0 ? (d.up + Math.sqrt(disc)) / 9.8 : null;
+    const lands = tLand !== null && Math.abs(d.lateral * tLand) < pole.radius * 1.6;
+    return {
+      spawn: d.spawn,
+      start,
+      vel,
+      size: d.size,
+      landFrame: lands && tLand !== null ? d.spawn + tLand * fps : null,
+      landPoint: lands && tLand !== null ? [start[0] + vel[0] * tLand, start[1] + vel[1] * tLand, poleZ] : null,
+    };
+  });
+};
 
-export const s05Timing = timeShot({
+const dropLandFrames = (paths: readonly DropPath[]) => {
+  const frames: number[] = [];
+  for (const { landFrame } of paths) {
+    if (landFrame !== null) frames.push(Math.ceil(landFrame));
+  }
+  frames.sort((a, b) => a - b);
+  return frames.filter((frame, i) => i === 0 || frame - frames[i - 1] >= 2);
+};
+
+export const timeS05 = (dropPaths = s05DropPaths) => timeShot({
   id: "s05",
   events: [
     { frame: S05_FLINCH, kind: "flinch", description: "溅水声一响，麻雀一缩" },
@@ -122,7 +147,7 @@ export const s05Timing = timeShot({
       kind: "flap_wet",
       description: `落回竹竿乱扑保持平衡第 ${i + 1} 下`,
     })),
-    ...S05_DROP_LANDS.map((frame) => ({
+    ...dropLandFrames(dropPaths(0, perchPoint[2] + pole.radius)).map((frame) => ({
       frame,
       kind: "drop_land",
       description: "甩出的水珠落到竹竿或地上",
@@ -135,6 +160,8 @@ export const s05Timing = timeShot({
     { frame: S05_CALL_SMALL, kind: "call_small", description: "麻雀叫声第 3 声：喘着气的一小声" },
   ].sort((a, b) => a.frame - b.frame),
 });
+
+export const s05Timing = timeS05();
 
 export const S06_STOP_TIMING: StopTurnTiming = {
   settle: 4,

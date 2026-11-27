@@ -32,7 +32,9 @@ import {
   S05_STEADY,
   S05_WINDUP,
   s04Timing,
+  s05DropPaths,
   s05Timing,
+  timeS05,
   S06_BASKET_CREAKS,
   S06_HUM_START,
   S06_PULLS,
@@ -75,6 +77,14 @@ test("第 5 镜：五步喜剧时机的帧号和事件一致，竹竿弹回在�
   assert.ok(S05_FALL_BACK < S05_BALANCE_FLAPS[0] && S05_BALANCE_FLAPS[S05_BALANCE_FLAPS.length - 1] < S05_STEADY);
   assert.ok(S05_STEADY < S05_CALL_SMALL && S05_CALL_SMALL < s05Timing.durationInFrames);
   assert.equal(s05Timing.durationInFrames, 108);
+});
+
+test("第 5 镜：共享路径的落点延后一帧，整张事件表里的落水拟音也延后一帧", () => {
+  const delayed = timeS05((azimuth, poleZ) => s05DropPaths(azimuth, poleZ).map((path) => ({
+    ...path,
+    landFrame: path.landFrame === null ? null : path.landFrame + 1,
+  })));
+  assert.deepEqual(framesOf(delayed, "drop_land"), framesOf(s05Timing, "drop_land").map((frame) => frame + 1));
 });
 
 test("第 6 镜：脚尖转向事件就是每一小步踩实的帧，接着走的步频对着停步表", () => {

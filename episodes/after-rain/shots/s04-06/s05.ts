@@ -13,7 +13,7 @@ import { layer, project } from "../../../../src/kit/engine/camera.ts";
 import type { Camera, Vec3 } from "../../../../src/kit/engine/camera.ts";
 import type { Point } from "../../../../src/kit/engine/figure.ts";
 import { boil, drawStrokes, strokes } from "../../../../src/kit/engine/ink.ts";
-import { hash, rng } from "../../../../src/kit/engine/random.ts";
+import { hash } from "../../../../src/kit/engine/random.ts";
 import { clamp01, drawing, ease, mix, progress } from "../../../../src/kit/engine/timing.ts";
 import type { Shot } from "../../../../src/kit/shots.ts";
 import { drawPole, poleScreen } from "../../pole.ts";
@@ -35,6 +35,8 @@ import {
   S05_PUSH_OFF,
   S05_STEADY,
   S05_WINDUP,
+  type DropPath,
+  s05DropPaths,
   s05Timing,
 } from "./timing.ts";
 
@@ -276,53 +278,6 @@ const drawPoleShadow = (ctx: CanvasRenderingContext2D, camera: Camera, bend: (u:
   ctx.ellipse(contact.x + ppu * 0.04, contact.y - pole.radius * contact.scale * 0.45, ppu * 0.55, pole.radius * contact.scale * 0.28, -0.08, 0, Math.PI * 2);
   ctx.fill();
   ctx.restore();
-};
-
-type Drop = { spawn: number; side: 1 | -1; lateral: number; up: number; forward: number; size: number };
-
-const DROPS: readonly Drop[] = (() => {
-  const r = rng(1885, 54);
-  const out: Drop[] = [];
-  const burst = (spawn: number, landers: number, flyers: number, power: number) => {
-    for (let i = 0; i < landers + flyers; i++) {
-      const lander = i < landers;
-      out.push({
-        spawn,
-        side: r.next() < 0.5 ? 1 : -1,
-        lateral: lander ? r.range(0.08, 0.28) : r.range(0.6, 1.5) * power,
-        up: lander ? r.range(0.3, 0.9) * power : r.range(-0.4, 0.5) * power,
-        forward: r.range(-0.1, 0.3),
-        size: r.next() < 0.3 ? r.range(3.6, 5.2) : r.range(2.2, 3.6),
-      });
-    }
-  };
-  for (const f of S05_FLAPS) burst(f, 1, 4, 1);
-  burst(S05_FALL_BACK + 1, 4, 6, 1.6);
-  for (const f of S05_BALANCE_FLAPS) burst(f, 2, 2, 1.2);
-  return out;
-})();
-
-type DropPath = { spawn: number; start: Vec3; vel: Vec3; size: number; landFrame: number | null; landPoint: Vec3 | null };
-
-const dropPaths = (azimuth: number, poleZ: number): DropPath[] => {
-  const lateral: Vec3 = [Math.cos(azimuth), -Math.sin(azimuth), 0];
-  const forward: Vec3 = [Math.sin(azimuth), Math.cos(azimuth), 0];
-  return DROPS.map((d) => {
-    const start: Vec3 = [lateral[0] * d.side * 0.075 + forward[0] * 0.02, lateral[1] * d.side * 0.075 + forward[1] * 0.02, poleZ + 0.09];
-    const vel: Vec3 = [lateral[0] * d.side * d.lateral + forward[0] * d.forward, lateral[1] * d.side * d.lateral + forward[1] * d.forward, d.up];
-    const dz = start[2] - poleZ;
-    const disc = d.up * d.up + 2 * 4.9 * dz;
-    const tLand = disc > 0 ? (d.up + Math.sqrt(disc)) / 9.8 : null;
-    const lands = tLand !== null && Math.abs(d.lateral * tLand) < pole.radius * 1.6;
-    return {
-      spawn: d.spawn,
-      start,
-      vel,
-      size: d.size,
-      landFrame: lands && tLand !== null ? d.spawn + tLand * 24 : null,
-      landPoint: lands && tLand !== null ? [start[0] + vel[0] * tLand, start[1] + vel[1] * tLand, poleZ] : null,
-    };
-  });
 };
 
 const drawDrops = (ctx: CanvasRenderingContext2D, camera: Camera, frame: number, paths: readonly DropPath[]) => {
@@ -607,7 +562,7 @@ const drawS05 = (surface: Surface, frame: number) => {
   const feet: Vec3 = [pt[0] + forward[0] * state.lift * 0.3, pt[1] + forward[1] * state.lift * 0.3, poleZ + pole.radius + state.lift];
   const place = placeSparrow(camera, feet, 0, sun);
 
-  drawDrops(ctx, camera, frame, dropPaths(azimuth, poleZ + pole.radius));
+  drawDrops(ctx, camera, frame, s05DropPaths(azimuth, poleZ + pole.radius));
 
   if (frame >= S05_PUSH_OFF && frame < S05_FLAPS[0]) {
     drawSpeedLines(ctx, place.x, place.y, place.ppu, frame, state.lines, "launch");
