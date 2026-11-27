@@ -1,6 +1,8 @@
 # 不进 git 的内容：依赖与构建产物、本机参考资料、派发记录（.codex-runs）、
 # 本机安装的技能（按 skills-lock.json 和 DispatchDock 安装器重装，run-spec、setup-run-spec 从 JinhaoFang/agent-workflow 安装）、
-# 媒体与渲染结果（public/episodes、out）、Remotion 打包输出（build）。
+# 媒体与渲染结果（public、out）、Remotion 打包输出（build）。
+# public 整个忽略：只忽略 public/episodes/ 时，git 列被忽略目录会把 public/ 和 public/episodes/ 各列一次，
+# run-spec 的 land 因此把同一个文件搬两次、第二次报「文件不存在」（spec #168 复盘）。
 node_modules
 dist
 build
@@ -10,5 +12,5 @@ references
 .codex-runs/
 .agents
 .claude
-public/episodes/
+public/
 out
