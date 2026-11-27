@@ -2169,7 +2169,7 @@ const paintPaddyWide = (plate: ViewPlate): Paper => {
   const greenGold = rgb(dusk.paddyLit[1]);
   const brightGold = rgb(dusk.cloudGap[1]);
   const zenithCool = mixRgb(skyCool, rgb(houseTwilight.skyHigh), 0.46);
-  const coolViolet = mixRgb(rgb(houseTwilight.skyHigh), rgb(rain.sky[0]), 0.5);
+  const coolViolet = mixRgb(skyCool, rgb(houseTwilight.skyHigh), 0.38);
   const shadowViolet = rgb(dusk.shadowViolet);
   const smoothstep = (a: number, b: number, x: number) => {
     const t = Math.max(0, Math.min(1, (x - a) / (b - a)));
@@ -2187,13 +2187,13 @@ const paintPaddyWide = (plate: ViewPlate): Paper => {
   const skyAt = (x: number, y: number): RGB => {
     const t = Math.max(0, Math.min(1, (y - rect.y0) / Math.max(1, horizonY - rect.y0)));
     const sideWarm = Math.max(0, Math.min(1, 1 - (x - (sunScreen.x + 40)) / 760));
-    const sideCool = Math.max(0, Math.min(1, (x - (sunScreen.x + 250)) / 700));
+    const sideCool = smoothstep(sunScreen.x + 200, sunScreen.x + 1700, x);
     const dSun = Math.hypot((x - sunScreen.x) / 1.5, (y - sunScreen.y) / 1.08);
     const glow = Math.exp(-dSun / 880);
     const glowNear = Math.exp(-dSun / 430);
     const core = Math.exp(-dSun / 360);
     let c = t < 0.46 ? mixRgb(zenithCool, skyCool, t / 0.46) : mixRgb(skyCool, mistCol, Math.pow((t - 0.46) / 0.54, 1.28) * 0.72);
-    c = mixRgb(c, coolViolet, Math.min(1, sideCool * (0.92 - 0.42 * Math.max(0, (t - 0.62) / 0.38))));
+    c = mixRgb(c, coolViolet, Math.min(1, sideCool * (0.72 - 0.36 * Math.max(0, (t - 0.62) / 0.38))));
     const warmGlow = 1 - sideCool * 0.7;
     c = mixRgb(c, skyWarm, Math.min(1, sideWarm * (0.44 + 0.5 * (1 - t)) + glowNear * 0.45 * warmGlow));
     c = mixRgb(c, brightGold, Math.min(1, glowNear * 0.6 * warmGlow));
