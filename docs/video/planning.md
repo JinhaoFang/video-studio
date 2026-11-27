@@ -2,7 +2,7 @@
 
 对应「一期视频」部门表里导演、制片的 ① 目的与受众、② 渠道与规格、③ 类型与基调，和编剧的 ④ 叙事结构与文案。只写知识：有哪些选项、各是什么意思、适合什么情况、样片和出处；不写先做什么、后做什么，制作步骤见 `docs/workflow/README.md`「一期视频」。条目格式见 [visual-style.md](visual-style.md)「条目格式」，术语见 `GLOSSARY.md`「视频语言」。
 
-出处核对日期：2026-11-09。下面的「适合」是依据所引资料给出的选用建议，不是效果保证；基调的画面、节奏、声音是教材原理与片例的归纳，不是固定配方。样片只链接在线页面，许可和观看用途随条目标注。
+出处核对日期：2026-11-09；「GitHub 仓库首页与 Release」一条为 2026-11-27。下面的「适合」是依据所引资料给出的选用建议，不是效果保证；基调的画面、节奏、声音是教材原理与片例的归纳，不是固定配方。样片只链接在线页面，许可和观看用途随条目标注。
 
 ## ① 目的与受众
 
@@ -126,6 +126,14 @@
 - **标志特征**：标准频道自 2024-10-15 起上传的方形或竖屏、时长不超过 3 分钟的视频归为 Shorts；音乐人官方频道的相应生效日期为 2025-12-08。超过 1 分钟且带有效 Content ID 版权主张的 Shorts 会被全球禁播。
 - **关键技法**：开头的动作、结果或一句明确问题承担看点，紧凑构图让手机上的主体可辨；广告资料中的清楚信息、声音与画面配合可作表达参考，不保证普通 Shorts 的分发表现。
 - **出处**：[YouTube：三分钟 Shorts 的分类、日期与版权条件][youtube-shorts]；[Google Ads：Shorts 的 ABCDs][google-abcd]。
+
+### GitHub 仓库首页与 Release
+
+- **一句话**：仓库首页的 README 当作片子的介绍页，成片和封面挂在 Release 上，片子、代码和做法在同一个地方。
+- **适合**：想让人看完片子接着看做法、照着做的作品，例如本仓库的《雨后》；只想让人看片时，视频平台的分发更直接。
+- **标志特征**：README 里单独一行写视频附件链接，首页显示为播放器。评论框上传的视频，免费账户上限 10 MB、付费账户 100 MB，图片 10 MB，其他文件 25 MB。公开仓库的附件不登录也能访问，但只上传、评论没发出时，链接不登录访问是 404（2026-11-27 实测）。仓库搜索默认只查仓库名、简介和话题，不查 README 正文，查正文要加 `in:readme`。话题最多 20 个，用小写字母、数字和连字符。社交预览图小于 1 MB，建议 1280×640。
+- **关键技法**：成片超过附件上限时，另压一个小文件版放首页播放，原片放 Release 下载，首页注明播放的是小文件版（《雨后》是 960×540、9.9 MB）。README 可以直接引用 Release 里的图片：下载以 `application/octet-stream` 返回，浏览器仍按图片显示（2026-11-27 实测）。简介写成想被搜到的几种语言（《雨后》中英双语），话题取同类项目常用的词；网页搜索收录要几天到几周，发布后一到两周用同一批词复测。
+- **出处**：[GitHub：附加文件][gh-attach]（大小上限与公开仓库的访问）、[搜索仓库][gh-search]（默认搜索的字段）、[用话题给仓库分类][gh-topics]、[社交预览图][gh-social]；实测与命令见[《雨后》本期说明「GitHub 展示」](../../episodes/after-rain/README.md)。
 
 ## ③ 类型与基调
 
@@ -338,6 +346,10 @@
 [youtube-length]: https://support.google.com/youtube/answer/71673?hl=zh-Hans
 [youtube-retention]: https://support.google.com/youtube/answer/9314415?hl=zh-Hans
 [youtube-shorts]: https://support.google.com/youtube/answer/15424877?hl=zh-Hans
+[gh-attach]: https://docs.github.com/en/get-started/writing-on-github/working-with-advanced-formatting/attaching-files
+[gh-search]: https://docs.github.com/en/search-github/searching-on-github/searching-for-repositories#search-by-repository-name-description-or-contents-of-the-readme-file
+[gh-topics]: https://docs.github.com/en/repositories/managing-your-repositorys-settings-and-features/customizing-your-repository/classifying-your-repository-with-topics
+[gh-social]: https://docs.github.com/en/repositories/managing-your-repositorys-settings-and-features/customizing-your-repository/customizing-your-repositorys-social-media-preview
 [youtube-thumbnail]: https://support.google.com/youtube/answer/72431?hl=zh-Hans
 [youtube-language]: https://support.google.com/youtube/answer/13338784?hl=zh-Hans
 [w3c-media]: https://www.w3.org/WAI/media/av/
