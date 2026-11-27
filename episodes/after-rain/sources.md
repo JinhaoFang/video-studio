@@ -141,4 +141,4 @@ YouTube 版用 3840×2160 横幅 JPG，依据[仓库交付规范](../../docs/vid
 
 `after-rain-web.mp4`（540p 小文件版）、`shots-12.jpg`（十二镜缩略条）和 `social-preview.jpg`（仓库社交预览图）都由 FFmpeg 从 `after-rain.mp4`、`cover-youtube.jpg` 派生，只缩放、裁切、拼格和重新编码，不加任何新画面或声音。完整命令见[本期 README「GitHub 展示」](README.md#github-展示)。没有引入第三方素材、移植代码或新依赖。
 
-这三个文件和成片、两张封面一起发在 GitHub Release `after-rain-v1`，按 CC BY-NC-SA 4.0 授权，署名「溯游」；仓库代码按根目录 `LICENSE` 的 MIT。
+小文件版和缩略条连同成片、两张封面发在 GitHub Release `after-rain-v1`；社交预览图上传在仓库 Settings 的「Social preview」，不在 Release 里。这些媒体都按 CC BY-NC-SA 4.0 授权，署名「溯游」；仓库代码按根目录 `LICENSE` 的 MIT。

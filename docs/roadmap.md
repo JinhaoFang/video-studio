@@ -57,7 +57,7 @@
 ## 待定
 
 - kit 组件要写测试时，测试的运行环境怎么定：现在 `.test.ts` 都按 Node 环境检查和运行，测不了 JSX。
-- kit 复用欠账：中英文加空格（`text-spacing.ts`）和颗粒暗角（`FilmFinish.tsx`）在 NASA 朋克开场和 ClinMesh 两期各写过一份，没有提进 `src/kit/`；两期 11-27 移出仓库后，当前版本里已经没有这两段代码。下一期要用时从提交 `ffe625a`取回，直接提进 `src/kit/`。
+- kit 复用欠账：中英文加空格（`text-spacing.ts`）和颗粒暗角（`FilmFinish.tsx`）在 NASA 朋克开场和 ClinMesh 两期各写过一份，没有提进 `src/kit/`；两期 11-27 移出仓库后，当前版本里已经没有这两段代码，旧实现见提交 `ffe625a`；以后要不要复用、怎么复用，等下一期真用到时再定。
 - 时间轴来源类型：`tools/build-timeline.ts` 只认 `temporary` 和 `elevenlabs`，非 ElevenLabs 的正式配音（如 ClinMesh 的 MiniMax）只能记成 `elevenlabs`。#114 曾加过 `local`，后来按审阅撤回；要不要加，再定。
 - 视频知识的维护：做完一期后由 `/retro` 按这一期的证据更正和补充 `docs/video/`（spec #147 复盘改了日式动画等条目与代码路线冲突的说法，补了静默与环境底噪、视线引导、纯代码合成的声音）；出处里的平台规格页会改版，什么时候复查还没定。
 - `land` 保留被忽略文件时同一个文件列两次，第二次移动报「文件不存在」：spec #168 出现 14 次，每次手动移到保留目录再重跑。根因在 `agent-workflow`；本仓库能先做的是把能按生成清单重建的期媒体（如 `public/episodes/after-rain/`）加进 `docs/agents/run-spec.json` 的 `disposableIgnored`，加不加、按期加还是等上游修，再定。

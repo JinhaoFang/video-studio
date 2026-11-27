@@ -22,21 +22,21 @@ https://github.com/user-attachments/assets/0f2311ec-410b-409a-b2d1-ef6b43460e6a
 
 <img src="https://github.com/JinhaoFang/video-studio/releases/download/after-rain-v1/shots-12.jpg" alt="One frame from each of the twelve shots: from the cold blue-grey of the storm to golden evening light, then into dusk; the last frame shows the title and a lit house" width="100%">
 
-| 65 s · 12 shots | 0 asset files | 36 tickets | Under a day |
+| 65 s · 12 shots | 0 asset files | 37 tickets | Under a day |
 |---|---|---|---|
-| 1920×1080 at 24 fps, one master for Bilibili and YouTube | No images, recordings or font files, and no models that generate images, music or voices | Planned and accepted by the design lead; 28 of them carried out by engineering agents | About 23 hours from spec to merge, including a night-long network outage |
+| 1920×1080 at 24 fps, one master for Bilibili and YouTube | No images, recordings or font files, and no models that generate images, music or voices | Planned and accepted by the design lead; 29 of them carried out by engineering agents | About 23 hours from spec to merge, including a night-long network outage |
 
 The player above shows the 540p small file; for full quality, download: [1080p (78 MB)](https://github.com/JinhaoFang/video-studio/releases/download/after-rain-v1/after-rain.mp4) · [540p small file (10 MB)](https://github.com/JinhaoFang/video-studio/releases/download/after-rain-v1/after-rain-web.mp4)
 
 **How picture and sound come out of code**
 
-- **Characters**: cel-style line, flat colour and shadow, drawn frame by frame on a Canvas by `src/kit/engine/`. Take-offs, flapping, feather shakes and the walking figure follow written motion rules.
-- **Backgrounds**: gouache plates produced by one brush-stroke program, lit per shot. Storm, evening light and dusk differ only in parameters, and a colour script decides how colour tells the time of day.
+- **Characters**: cel-style line, flat colour and shadow, drawn frame by frame on a Canvas by `src/kit/engine/`. Take-offs, flapping, feather shakes and the walking figure follow written [motion rules](episodes/after-rain/motion.md).
+- **Backgrounds**: gouache plates produced by one brush-stroke program, lit per shot. Storm, evening light and dusk differ only in parameters, and a [colour script](episodes/after-rain/art.md) decides how colour tells the time of day.
 - **Camera**: a handheld-feeling camera that moves in every frame, with soft focus, bloom, grain and vignette tuned per scene.
-- **Sound**: rain is synthesised in layers (distant curtain, roof tiles, ground, drips from the eaves). The sparrow calls, the conversation behind the wall and the humming are all synthesised wordless voices, and the score grows out of the motif from the earlier sample.
+- **Sound**: rain is synthesised in layers (distant curtain, roof tiles, ground, drips from the eaves). The sparrow calls are built from frequency modulation and harmonics, the conversation behind the wall and the humming are synthesised wordless voices, and the score grows out of the motif from the earlier sample ([sound design](episodes/after-rain/sound-design.md)).
 - **Title and signature**: the title is written stroke by stroke in running script with the same gouache brush that paints the backgrounds; the four dots of the first character fall like the last four raindrops. The signature is a carved seal.
 
-Each film ends with a work report: [the report for *After the Rain*](docs/reports/spec-168-after-rain.html) (an HTML page; download it and open it in a browser). It lists the time spent, the rework and the known weak spots for every ticket. The report and most project docs are written in Chinese.
+Each film ends with a work report: [the report for *After the Rain*](docs/reports/spec-168-after-rain.html) (an HTML page; download it and open it in a browser). It covers the time spent on engineering dispatches, the rework, and the known weak spots of the film. The report and most project docs are written in Chinese.
 
 ## How a one-person crew works
 
@@ -113,20 +113,29 @@ pnpm exec remotion render AfterRain out/after-rain/after-rain.mp4 --gl=swangle -
 
 ## Make your own film
 
-1. Open Claude Code or Codex in the repository and tell it "you are the design lead". It reads the [role document](docs/roles/design.md) first.
-2. Run `/grill-with-docs` and describe the film you want. It questions you point by point until the plan is clear, then `/to-spec` publishes the plan as a spec in GitHub Issues.
-3. Run `run-spec` on the spec. The design lead writes the paper decisions, breaks them into tickets, dispatches them to engineering agents and accepts each one; it asks you to review the previs along the way and opens a PR for the final cut.
-4. If you are happy, merge, then run `/retro` in a fresh session so what this film taught goes into the studio layer for the next one.
+1. Install the skills first. Skills are not in git; `skills-lock.json` records the source repository and version of each one, and the [agent-workflow](https://github.com/JinhaoFang/agent-workflow) README explains how to install the `run-spec` skill.
+2. Open Claude Code or Codex in the repository and tell it "you are the design lead". It reads the [role document](docs/roles/design.md) first.
+3. Run `/grill-with-docs` and describe the film you want. It questions you point by point until the plan is clear; then `/to-spec` writes the spec and `/to-tickets` breaks it into tickets, both published to GitHub Issues.
+4. In a fresh session, say "run spec #<number>" and `run-spec` takes over: the design lead makes the paper decisions itself, dispatches the other tickets to engineering agents and accepts each one; it asks you to review the previs along the way and opens a PR for the final cut.
+5. If you are happy, merge, then run `/retro` in a fresh session so what this film taught goes into the studio layer for the next one.
 
-Skill sources and versions are pinned in `skills-lock.json`. The `run-spec` skill comes from [agent-workflow](https://github.com/JinhaoFang/agent-workflow), whose README explains how to install it; the other skills come from [mattpocock/skills](https://github.com/mattpocock/skills) and [remotion-dev/skills](https://github.com/remotion-dev/skills). The full process is in the [production workflow](docs/workflow/README.md).
+The full process is in the [production workflow](docs/workflow/README.md).
 
 ## Before *After the Rain*
 
 A 13-second, two-shot [pure-code sample](episodes/pure-code-sample/README.md) came first, to test whether pure code could reach the look of Japanese theatrical animation. The render engine, sound synthesis and sample-sheet tools grew out of it and were later moved into `src/kit/`. The sample video is not released on its own; its code and generators are in the repository and can be reproduced.
 
+## Acknowledgements
+
+These projects shaped how *After the Rain* and this workflow were made. We learned from their methods and copied no code:
+
+- [ChetasLua/noroi-iwai](https://github.com/ChetasLua/noroi-iwai) and [ChetasLua/the-last-page](https://github.com/ChetasLua/the-last-page): how to make Japanese-style animated shorts in pure code ([research notes](docs/research/noroi-iwai.md)).
+- [duoduoler-ops/Table-VideoSOP](https://github.com/duoduoler-ops/Table-VideoSOP): another agent-driven video workflow ([comparison](docs/research/table-videosop.md)).
+- [Vincentwei1021/mg-styles-15](https://github.com/Vincentwei1021/mg-styles-15): features, beats and sound of fifteen motion-graphics styles ([research notes](docs/research/mg-styles-15.md)).
+
 ## Licence
 
-- **Code and documentation**: MIT, see [LICENSE](LICENSE).
-- **The *After the Rain* film, covers and stills** (the media files in the Release): [CC BY-NC-SA 4.0](https://creativecommons.org/licenses/by-nc-sa/4.0/). Credit "Suyou" with a link to this repository, no commercial use, and share adaptations under the same licence.
+- **Code and documentation**: MIT, see [LICENSE](LICENSE). It covers only the code and documentation written for this repository, not content that has since been removed and survives only in the git history.
+- **The *After the Rain* film, covers and stills** (the media files in the Release): [CC BY-NC-SA 4.0](https://creativecommons.org/licenses/by-nc-sa/4.0/). Credit 溯游 (Suyou) with a link to this repository, no commercial use, and share adaptations under the same licence.
 
-*After the Rain* · Suyou · 2026
+*After the Rain* · 溯游 (Suyou) · 2026

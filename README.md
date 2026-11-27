@@ -22,9 +22,9 @@ https://github.com/user-attachments/assets/0f2311ec-410b-409a-b2d1-ef6b43460e6a
 
 <img src="https://github.com/JinhaoFang/video-studio/releases/download/after-rain-v1/shots-12.jpg" alt="《雨后》十二个镜头各一帧：从雷雨的冷蓝灰，到夕光的金色，再沉进暮色；最后一格是片名和亮着灯的屋子" width="100%">
 
-| 65 秒 · 12 个镜头 | 0 个素材文件 | 36 张工单 | 不到一天 |
+| 65 秒 · 12 个镜头 | 0 个素材文件 | 37 张工单 | 不到一天 |
 |---|---|---|---|
-| 1920×1080，24 帧，B 站和 YouTube 共用一个母版 | 没有图片、录音和字体文件，也没用生成图片、音乐或人声的模型 | 设计负责人拆单、验收，其中 28 张派给工程 agent | 正片从 spec 发出到合并约 23 小时，中间遇上一夜断网 |
+| 1920×1080，24 帧，B 站和 YouTube 共用一个母版 | 没有图片、录音和字体文件，也没用生成图片、音乐或人声的模型 | 设计负责人拆单、验收，其中 29 张派给工程 agent | 正片从 spec 发出到合并约 23 小时，中间遇上一夜断网 |
 
 上面播放的是 540p 小文件版，看高清请下载：[1080p（78 MB）](https://github.com/JinhaoFang/video-studio/releases/download/after-rain-v1/after-rain.mp4) · [540p 小文件版（10 MB）](https://github.com/JinhaoFang/video-studio/releases/download/after-rain-v1/after-rain-web.mp4)
 
@@ -33,10 +33,10 @@ https://github.com/user-attachments/assets/0f2311ec-410b-409a-b2d1-ef6b43460e6a
 - **角色**：赛璐璐画法，线条、色块和阴影由 `src/kit/engine/` 逐帧画在 Canvas 上；起飞、扑腾、抖羽和人走路都按 [动作规则](episodes/after-rain/motion.md) 来演。
 - **背景**：水粉底图，同一套笔触程序按每个镜头的光照生成；雷雨、夕光、暮色只换参数，[色彩剧本](episodes/after-rain/art.md) 管颜色怎么讲时间。
 - **摄影**：每帧都在动的手持感相机，加柔焦、光晕、颗粒和暗角，每场一组后期参数。
-- **声音**：雨按远处雨幕、瓦顶、地面、檐口滴水分层合成；麻雀叫声、隔墙交谈和哼唱都是合成的无词人声，配乐从小样的动机长出来（[声音设计](episodes/after-rain/sound-design.md)）。
+- **声音**：雨按远处雨幕、瓦顶、地面、檐口滴水分层合成；麻雀叫声用调频和谐波合成，隔墙交谈和哼唱是合成的无词人声，配乐从小样的动机长出来（[声音设计](episodes/after-rain/sound-design.md)）。
 - **片名与署名**：「雨后」用画底图的水粉笔刷按笔顺写成行楷，「雨」的四个点像最后四滴雨落下；署名「溯游」是一方按《说文》字形刻的白文印。
 
-一部片子做完会写一份工作汇报：[《雨后》的汇报](docs/reports/spec-168-after-rain.html)（HTML 页面，下载后用浏览器打开），里面有每张工单的耗时、返工和已知弱点。
+一部片子做完会写一份工作汇报：[《雨后》的汇报](docs/reports/spec-168-after-rain.html)（HTML 页面，下载后用浏览器打开），里面有工程派发的耗时、返工记录和成片的已知弱点。
 
 ## 一人剧组怎么运转
 
@@ -113,20 +113,29 @@ pnpm exec remotion render AfterRain out/after-rain/after-rain.mp4 --gl=swangle -
 
 ## 自己做一部
 
-1. 在仓库里打开 Claude Code 或 Codex，告诉它「你是设计负责人」，它会先读 [角色文档](docs/roles/design.md)。
-2. 用 `/grill-with-docs` 说你想做什么。它一条一条追问，直到方案清楚，再用 `/to-spec` 写成 spec 发到 GitHub Issues。
-3. 用 `run-spec` 执行 spec：设计负责人写纸面决定、拆工单、派给工程 agent、逐张验收，中途请你看预演，最后开 PR 等你看成片。
-4. 满意就合并，再开一个新会话跑 `/retro`，把这部片子学到的写进工作室层，下一部从这里起步。
+1. 先装技能。技能不进 git，每个技能的来源仓库和版本记在 `skills-lock.json`；执行技能 `run-spec` 的安装方法见 [agent-workflow](https://github.com/JinhaoFang/agent-workflow) 的 README。
+2. 在仓库里打开 Claude Code 或 Codex，告诉它「你是设计负责人」，它会先读 [角色文档](docs/roles/design.md)。
+3. 用 `/grill-with-docs` 说你想做什么。它一条一条追问，直到方案清楚；再用 `/to-spec` 写成 spec，用 `/to-tickets` 拆成工单，都发到 GitHub Issues。
+4. 开一个新会话，说「执行 spec #号」，由 `run-spec` 执行：纸面决定设计负责人自己做，其余工单派给工程 agent，逐张验收；中途请你看预演，最后开 PR 等你看成片。
+5. 满意就合并，再开一个新会话跑 `/retro`，把这部片子学到的写进工作室层，下一部从这里起步。
 
-技能的来源和版本记在 `skills-lock.json`。执行技能 `run-spec` 来自 [agent-workflow](https://github.com/JinhaoFang/agent-workflow)，安装方法见那边的 README；其余技能来自 [mattpocock/skills](https://github.com/mattpocock/skills) 和 [remotion-dev/skills](https://github.com/remotion-dev/skills)。完整流程见 [制作工作流](docs/workflow/README.md)。
+完整流程见 [制作工作流](docs/workflow/README.md)。
 
 ## 《雨后》之前
 
 先做过一段 13 秒、两个镜头的 [纯代码小样](episodes/pure-code-sample/README.md)，验证纯代码能不能做出日式剧场动画的质感。引擎、声音合成和样张工具从小样里长出来，后来提进了 `src/kit/`。小样的视频不单独发布，代码和生成器都在仓库里，可以照着复现。
 
+## 致谢
+
+做《雨后》和这套流程时，借鉴过这些项目的做法（只学方法，没有复制代码）：
+
+- [ChetasLua/noroi-iwai](https://github.com/ChetasLua/noroi-iwai)、[ChetasLua/the-last-page](https://github.com/ChetasLua/the-last-page)：纯代码做日式动画短片的做法，见 [研究记录](docs/research/noroi-iwai.md)。
+- [duoduoler-ops/Table-VideoSOP](https://github.com/duoduoler-ops/Table-VideoSOP)：另一套用 agent 做视频的流程，见 [对照](docs/research/table-videosop.md)。
+- [Vincentwei1021/mg-styles-15](https://github.com/Vincentwei1021/mg-styles-15)：15 种 MG 风格的特征、节拍与声音，见 [研究记录](docs/research/mg-styles-15.md)。
+
 ## 许可
 
-- **代码和文档**：MIT，见 [LICENSE](LICENSE)。
+- **代码和文档**：MIT，见 [LICENSE](LICENSE)。只覆盖本仓库自己写的代码和文档，不包括 git 历史里已经移出的内容。
 - **《雨后》的成片、封面和缩略图**（Release 里的媒体文件）：[CC BY-NC-SA 4.0](https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh-hans)。转载请署名「溯游」并附上本仓库链接，不用于商业用途，改编后按同样的许可分享。
 
 《雨后》 · 溯游 · 2026
