@@ -1,32 +1,25 @@
-/**
- * 第 12 镜（尾）的时间数据与画面事件：对齐 storyboard.md「镜头内的锚点」与 contract.md 第 4 节。
- * 片名组件（#183）尚未合并，片名画面留空，title_dot 与 seal_press 按 storyboard 帧号先在此声明。
- * 不依赖浏览器，供镜头渲染、生成器与测试共用。
- * 待定事项：#183 合并后由 #191 接入片名组件并复用其导出的相对帧号。
- */
-import { ease, progress } from "../../../../src/kit/engine/timing.ts";
+/** 第 12 镜的局部时间。亮灯和整幅淡出的第一帧已有可见变化，题字和落印的事件直接取书写组件的时间表。 */
+import { progress } from "../../../../src/kit/engine/timing.ts";
 import { timeShot } from "../../model.ts";
+import { TITLE_FADE_START_FRAME, TITLE_START_OFFSET_SHOT12, titleEventsAtOffset } from "../../title/timing.ts";
 
-export const S12_DISSOLVE_END = 24;
-export const S12_LAMP_ON = 40;
-export const S12_TITLE_START = 64;
-export const S12_TITLE_DOTS = [90, 97, 104, 111] as const;
-export const S12_SEAL_PRESS = 148;
-export const S12_FADE_OUT = 196;
-
-export const s12CameraProgress = (frame: number) =>
-  ease(progress(frame, 12, 176), 2.2, 2.4);
+export const S12_TITLE_START = TITLE_START_OFFSET_SHOT12;
+const lampOn = 40;
+const fadeOut = S12_TITLE_START + TITLE_FADE_START_FRAME;
 
 export const s12Timing = timeShot({
   id: "s12",
   events: [
-    { frame: S12_LAMP_ON, kind: "lamp_on", description: "屋里亮灯，暖光透过格子门落在空竹竿后" },
-    ...S12_TITLE_DOTS.map((frame, i) => ({
-      frame,
-      kind: "title_dot",
-      description: `片名「雨」的第 ${i + 1} 点落定`,
+    { frame: lampOn, kind: "lamp_on", description: "屋里亮灯，暖光透过格子门落在空竹竿后" },
+    ...titleEventsAtOffset(S12_TITLE_START).map((event, index) => ({
+      ...event,
+      description: event.kind === "title_dot" ? `片名「雨」的第 ${index + 1} 点落定` : "盖上「溯游」白文印",
     })),
-    { frame: S12_SEAL_PRESS, kind: "seal_press", description: "盖上「溯游」白文印" },
-    { frame: S12_FADE_OUT, kind: "fade_out", description: "开始淡出到暮色最暗色，环境声同时淡出" },
+    { frame: fadeOut, kind: "fade_out", description: "开始淡出到暮色最暗色，环境声同时淡出" },
   ],
 });
+
+export const lampIntensity = (frame: number) =>
+  frame < lampOn ? 0 : 0.48 + 0.52 * progress(frame, lampOn, lampOn + 3);
+
+export const fadeAmount = (frame: number) => progress(frame, fadeOut - 1, s12Timing.durationInFrames - 1);
