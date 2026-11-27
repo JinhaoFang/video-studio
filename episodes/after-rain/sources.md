@@ -98,6 +98,22 @@
 
 从仓库根目录运行 `pnpm qa loudness out/qa/spec-168/193/mix.wav --target-lufs -16 --tolerance 1 --max-true-peak -1 --out out/qa/spec-168/193` 生成 `loudness.json`。运行 `pnpm qa dropouts out/qa/spec-168/193/mix.wav --floor -60 --fps 24 --out out/qa/spec-168/193` 生成 `dropouts.json` 和逐帧电平图 `levels.svg`。
 
+## #187 第 1–2 镜正式镜头与屋瓦
+
+第 1 镜的分层雨带、檐口流水、水洼涟漪和推近的相机，第 2 镜湿麻雀的张望、挪脚、寒战，都由 `episodes/after-rain/shots/s01-02/`（`index.ts`、`weather.ts`、`acting.ts`、`timing.ts`）按帧算出。雨色、低夕光、暮色三张屋瓦底图的画法改在 `episodes/after-rain/plates-views.ts`，由 `node episodes/after-rain/generate.ts` 重新烘焙并刷新生成清单。颜色只取本期令牌，没有引入第三方代码、外部图片或素材。
+
+## #189 第 7–9 镜正式镜头
+
+甩水、晒羽、抬头看光三个长焦镜头的表演、虚化光斑和空气里的光尘，由 `episodes/after-rain/shots/s07-09/`（`index.ts`、`performance.ts`、`atmosphere.ts`）按帧算出；近景麻雀的细节画法加在 `episodes/after-rain/sparrow.ts`。没有新底图，生成清单只刷新输入哈希。没有引入第三方代码、外部图片或素材。
+
+## #191 第 12 镜正式镜头
+
+暮色空竿的余震、树梢分簇受风、屋里亮灯和片尾题字盖印的排布，由 `episodes/after-rain/shots/s12/`（`index.ts`、`canopy.ts`、`title.ts`、`timing.ts`）按帧算出；片名字骨和印面沿用 #183 的 `title/`。没有新底图，生成清单只刷新输入哈希。没有引入第三方代码、外部图片或素材。
+
+## #203 画面锁定前返修
+
+水洼倒影和踩水碎光（`shots/s04-06/puddle.ts`）、人影（`shots/s04-06/walk.ts`）、第 5 镜虚化天的云光（`shots/s04-06/s05.ts`）、迎面飞的麻雀（`sparrow.ts`）、遮挡翅膀（`shots/s10-11/wing-pass.ts`）、远处戴斗笠的人（`person.ts`）、檐口流水（`shots/s01-02/weather.ts`）都由代码按帧算出；第 4、6 镜院子底图的小水洼改在 `plates-views.ts`，`node episodes/after-rain/generate.ts` 只重烘了 `low-s4`、`low-s6` 两张。没有引入第三方代码、外部图片或素材。
+
 ## #194 锁定版正片与发布封面
 
 交付基线为 `1214bc6`。运行 `node episodes/after-rain/generate.ts` 重建 25 张底图、全片事件表及副本、#193 的最终混音。27 个 public 文件逐项对应生成清单的 `files`，期目录里的事件表对应 `eventTables`。清单记录每个文件的 SHA-256、输入和生成命令。[正片生成清单](data/generated.json)

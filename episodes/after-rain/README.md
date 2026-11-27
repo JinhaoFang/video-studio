@@ -114,7 +114,7 @@ spec #168：纯代码小样《雨后》（[pure-code-sample](../pure-code-sample
 | [shots/](shots/) | 各镜头的代码，一个目录一段（`s01-02`、`s03`、`s04-06`、`s07-09`、`s10-11`、`s12`），各自的 `timing.ts` 放动作和画面事件共用的帧号；`index.ts` 是登记表 |
 | [usePlates.ts](usePlates.ts) | 按镜头懒加载、缓存底图，换镜头时等新底图画好再出帧 |
 | [grade.ts](grade.ts) | 各场的后期参数和黑位（雨色、夕光、晒太阳、低夕光、暮色），第 3 镜雨色转夕光、叠化时的插值 |
-| [sound/](sound/) | 全片声音：按 `score.json` 编译配乐，合成哼唱、麻雀叫、拟音和环境底，混音到 −16 LUFS；现在是 #185 的临时声音，正式声音由 #193 替换 |
+| [sound/](sound/) | 全片声音：按 `score.json` 编译配乐，合成哼唱、麻雀叫、拟音和环境底，混音到 −16 LUFS；正式声音由 #193 完成：雨按物理分层合成、屋里的说话隔墙处理、逐个画面事件按 [sound-design.md](sound-design.md)「听点表」落位 |
 | [title/](title/) | 片名「雨后」的行楷字骨和书写时间、署名「遡游」的满白文印，预览合成 `AfterRainTitlePreview`；`export-cover.ts` 导出透明底封面字和放大的印章检查图。笔刷和刻印工具在 kit 的 `engine/calligraphy.ts`、`engine/seal.ts` |
 
 [layout.md](layout.md) 里新增的对象（屋子正面、小路、水洼 W1、电线和鸟群）由底图和镜头工单按那里的坐标写进代码。
@@ -142,17 +142,19 @@ pnpm exec remotion still AfterRain "$qa/cover-base.png" --frame=995 --scale=2 \
 node episodes/after-rain/title/export-cover.ts --out "$qa/title.png"
 ffmpeg -y -i "$qa/cover-base.png" -i "$qa/title.png" -filter_complex \
   '[1:v]scale=3840:2160:flags=lanczos[t];[0:v][t]overlay=0:216:format=rgb' \
-  -frames:v 1 -q:v 2 -pix_fmt yuvj444p "$qa/cover-youtube.jpg"
+  -frames:v 1 -q:v 2 -pix_fmt yuvj444p out/after-rain/cover-youtube.jpg
 ffmpeg -y -i "$qa/cover-base.png" -i "$qa/title.png" -filter_complex \
   '[0:v]crop=2880:2160:240:0[b];[1:v]scale=3840:2160:flags=lanczos[t];[b][t]overlay=-160:216:format=rgb,scale=1200:900:flags=lanczos' \
-  -frames:v 1 -q:v 2 -pix_fmt yuvj444p "$qa/cover-bilibili.jpg"
+  -frames:v 1 -q:v 2 -pix_fmt yuvj444p out/after-rain/cover-bilibili.jpg
 ```
+
+成片、封面和简介放 `out/after-rain/`；`$qa` 下是验收产物，spec 收尾清理时会删掉。
 
 | 交付位置 | 内容 |
 |---|---|
 | `out/after-rain/after-rain.mp4` | 两平台共用的 1080p24 有声正片 |
-| `$qa/cover-youtube.jpg`、`$qa/cover-bilibili.jpg` | 3840×2160 宽封面、1200×900 首页封面。规格出处见 [sources.md](sources.md#194-锁定版正片与发布封面) |
-| `$qa/description.md` | 带署名的简介草稿，交设计负责人定稿 |
+| `out/after-rain/cover-youtube.jpg`、`out/after-rain/cover-bilibili.jpg` | 3840×2160 宽封面、1200×900 首页封面。规格出处见 [sources.md](sources.md#194-锁定版正片与发布封面) |
+| `out/after-rain/description.md` | 设计负责人定稿的简介，带署名（执行者的草稿在 `$qa/description.md`） |
 | `$qa/sheet/`、`$qa/cuts-*.jpg`、`$qa/master-check.json` | 全片联系表、逐切点对照、逐帧时间戳与锁定版像素核对 |
 | `$qa/loudness.json`、`$qa/dropouts.json`、`$qa/levels.svg` | 对交付 MP4 的响度、真峰值、断音报告与电平图 |
 | `$qa/repeat.json`、`$qa/manifest-check.json`、`$qa/render-time.txt` | 三帧独立复渲的 RGB 字节比对、生成清单核对、全片墙钟耗时 |
