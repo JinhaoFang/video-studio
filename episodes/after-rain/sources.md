@@ -97,3 +97,18 @@
 | `measurements.json`、`placements.json`、`stem-levels.svg` | 母带测量、逐音效落位核对、逐帧分层电平 |
 
 从仓库根目录运行 `pnpm qa loudness out/qa/spec-168/193/mix.wav --target-lufs -16 --tolerance 1 --max-true-peak -1 --out out/qa/spec-168/193` 生成 `loudness.json`。运行 `pnpm qa dropouts out/qa/spec-168/193/mix.wav --floor -60 --fps 24 --out out/qa/spec-168/193` 生成 `dropouts.json` 和逐帧电平图 `levels.svg`。
+
+## #194 锁定版正片与发布封面
+
+交付基线为 `1214bc6`。运行 `node episodes/after-rain/generate.ts` 重建 25 张底图、全片事件表及副本、#193 的最终混音。27 个 public 文件逐项对应生成清单的 `files`，期目录里的事件表对应 `eventTables`。清单记录每个文件的 SHA-256、输入和生成命令。[正片生成清单](data/generated.json)
+
+| 交付物 | 来源与生成方法 |
+|---|---|
+| `after-rain.mp4` | `AfterRain` 按时间表逐帧绘制 12 镜，挂 `mix.wav`，由 Remotion 编码为 H.264/AAC。 |
+| `cover-base.png`、`title.png` | 对正片第 995 帧运行 `remotion still --scale=2`。第二张由 `node episodes/after-rain/title/export-cover.ts --out <输出.png>` 导出，字骨和印面来自 #183。 |
+| `cover-youtube.jpg`、`cover-bilibili.jpg` | FFmpeg 把透明字印叠到第 8 镜麻雀左侧的留白。B 站版从同一张 4K 底图取 4:3 画幅，独立放置字印。两张封面的完整命令见[本期交付清单](README.md#成片与封面复现)。 |
+| `description.md` | 根据本期节拍表撰写的中文简介草稿，署名「溯游」。 |
+
+B 站规格核于 **2026-11-27**。官方《web 投稿封面使用 Q&A》Q1、Q5 说明首页推荐和投稿页用 4:3，推荐列表、个人空间等用 16:9，两个比例可分别设图。创作中心上传面板提示「建议上传尺寸≥1200x900的高清图片」。本次首页封面取 1200×900，宽版可供 16:9 入口使用。[官方封面 Q&A](https://www.bilibili.com/blackboard/era/xXjSYgChj7DWlPzK.html) · [创作中心投稿页](https://member.bilibili.com/york/videoup) · [投稿页公开界面文案 `recommendedCoverResolution`](https://s1.hdslb.com/bfs/static/creator-monorepo/videoup/static/js/index.8804633e.js)
+
+YouTube 版用 3840×2160 横幅 JPG，依据[仓库交付规范](../../docs/video/delivery.md#按展示位置区分的封面)和 [YouTube 官方缩略图说明](https://support.google.com/youtube/answer/72431?hl=zh-Hans)。正片、封面均只用本仓库画面、声音和自绘字印，本工单引入的第三方素材、移植代码与新依赖均为零。

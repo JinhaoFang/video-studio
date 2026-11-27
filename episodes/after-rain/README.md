@@ -118,3 +118,65 @@ spec #168：纯代码小样《雨后》（[pure-code-sample](../pure-code-sample
 | [title/](title/) | 片名「雨后」的行楷字骨和书写时间、署名「遡游」的满白文印，预览合成 `AfterRainTitlePreview`；`export-cover.ts` 导出透明底封面字和放大的印章检查图。笔刷和刻印工具在 kit 的 `engine/calligraphy.ts`、`engine/seal.ts` |
 
 [layout.md](layout.md) 里新增的对象（屋子正面、小路、水洼 W1、电线和鸟群）由底图和镜头工单按那里的坐标写进代码。
+
+## 成片与封面复现
+
+从仓库根目录执行。`browser` 指向本机锁定时使用的 Chrome Headless Shell。生成器先重建画面、事件和最终混音，再渲染 `AfterRain`。本机一次运行一个 Remotion 进程。
+
+```bash
+qa=out/qa/spec-168/194
+film=out/after-rain/after-rain.mp4
+browser=/root/project/video-studio/node_modules/.remotion/chrome-headless-shell/linux64/chrome-headless-shell-linux64/chrome-headless-shell
+mkdir -p "$qa" out/after-rain
+node episodes/after-rain/generate.ts
+/usr/bin/time -f 'elapsed_seconds=%e exit=%x' -o "$qa/render-time.txt" \
+  pnpm exec remotion render AfterRain "$film" --gl=swangle --concurrency=4 \
+  --browser-executable="$browser" --log=verbose > "$qa/render.log" 2>&1
+```
+
+封面取第 8 镜末帧 F995（镜内 F143）。此时光线已走到低夕光，麻雀晒干了羽毛，半闭着眼停在竹竿上。两版都将片名和印章落在左侧留白，给朝右的鸟喙留出空间。B 站版从 4K 底图裁出 4:3，再按上传尺寸缩小。
+
+```bash
+pnpm exec remotion still AfterRain "$qa/cover-base.png" --frame=995 --scale=2 \
+  --gl=swangle --browser-executable="$browser"
+node episodes/after-rain/title/export-cover.ts --out "$qa/title.png"
+ffmpeg -y -i "$qa/cover-base.png" -i "$qa/title.png" -filter_complex \
+  '[1:v]scale=3840:2160:flags=lanczos[t];[0:v][t]overlay=0:216:format=rgb' \
+  -frames:v 1 -q:v 2 -pix_fmt yuvj444p "$qa/cover-youtube.jpg"
+ffmpeg -y -i "$qa/cover-base.png" -i "$qa/title.png" -filter_complex \
+  '[0:v]crop=2880:2160:240:0[b];[1:v]scale=3840:2160:flags=lanczos[t];[b][t]overlay=-160:216:format=rgb,scale=1200:900:flags=lanczos' \
+  -frames:v 1 -q:v 2 -pix_fmt yuvj444p "$qa/cover-bilibili.jpg"
+```
+
+| 交付位置 | 内容 |
+|---|---|
+| `out/after-rain/after-rain.mp4` | 两平台共用的 1080p24 有声正片 |
+| `$qa/cover-youtube.jpg`、`$qa/cover-bilibili.jpg` | 3840×2160 宽封面、1200×900 首页封面。规格出处见 [sources.md](sources.md#194-锁定版正片与发布封面) |
+| `$qa/description.md` | 带署名的简介草稿，交设计负责人定稿 |
+| `$qa/sheet/`、`$qa/cuts-*.jpg`、`$qa/master-check.json` | 全片联系表、逐切点对照、逐帧时间戳与锁定版像素核对 |
+| `$qa/loudness.json`、`$qa/dropouts.json`、`$qa/levels.svg` | 对交付 MP4 的响度、真峰值、断音报告与电平图 |
+| `$qa/repeat.json`、`$qa/manifest-check.json`、`$qa/render-time.txt` | 三帧独立复渲的 RGB 字节比对、生成清单核对、全片墙钟耗时 |
+
+### 本机渲染耗时
+
+锁定版全片墙钟 **27 分 36.05 秒**，含打包和封装。四路并行平均每交付一帧用 **1.062 秒**。Remotion 全片日志中单帧用时最长的是第 9 镜 F1074，**12.945 秒**。`$qa/frame-times.csv` 按全片帧号列出 1560 次作画与后期的毫秒数，`$qa/timing.json` 按镜头汇总，叠化单列。
+
+按本期约定，再用 `remotion still` 串行单独渲代表帧。下表取 Remotion 的 `Rendered still`，不含打包，日志和取样记录见 `$qa/stills/` 与 `$qa/single-frame-times.json`。这批单帧里最慢的是第 3 镜雨滴击中麻雀的 F439，3.770 秒。
+
+| 镜头 | 全片帧 | 秒 | 镜头 | 全片帧 | 秒 |
+|---|---:|---:|---|---:|---:|
+| 1 | 84 | 1.905 | 7 | 800 | 2.479 |
+| 2 | 236 | 2.597 | 8 | 995 | 3.056 |
+| 3 | 439 | 3.770 | 9 | 1074 | 3.111 |
+| 4 | 527 | 2.120 | 10 | 1173 | 1.647 |
+| 5 | 582 | 2.732 | 11 | 1332 | 1.765 |
+| 6 | 694 | 1.981 | 12 | 1492 | 1.553 |
+| 11→12 叠化 | 1355 | 2.108 | | | |
+
+### 成片测量
+
+```bash
+pnpm qa sheet "$film" --count 24 --cols 4 --out "$qa/sheet"
+pnpm qa loudness "$film" --target-lufs -16 --tolerance 1 --max-true-peak -1 --out "$qa"
+pnpm qa dropouts "$film" --floor -60 --out "$qa"
+```
