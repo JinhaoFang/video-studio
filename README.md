@@ -1,101 +1,103 @@
 <div align="center">
 
-<a href="https://github.com/JinhaoFang/video-studio/releases/tag/after-rain-v1"><img src="https://github.com/JinhaoFang/video-studio/releases/download/after-rain-v1/cover-youtube.jpg" alt="《雨后》封面：夕光里，晒干了羽毛的小麻雀停在竹竿上，左侧竖排片名「雨后」和一方红色印章" width="100%"></a>
+<a href="https://github.com/JinhaoFang/video-studio/releases/tag/after-rain-v1"><img src="https://github.com/JinhaoFang/video-studio/releases/download/after-rain-v1/cover-youtube.jpg" alt="After the Rain cover: in the evening light, a small sparrow with dried feathers perches on a bamboo pole; the vertical title and a red seal sit on the left" width="100%"></a>
 
-# 视频工作室
+# Video Studio
 
-**一个人，带一支 agent 剧组，做视频。**
+**One person, a crew of AI agents, and films made entirely from code.**
 
-第一部作品《雨后》是 65 秒的动画短片。画面、配乐、雨声、鸟叫和人声，全部由这个仓库里的代码算出来。
+Our first film, *After the Rain*, is a 65-second Japanese-style animated short. Every frame, the score, the rain, the birdsong and the human voices are computed by the code in this repository.
 
-[观看《雨后》](https://github.com/JinhaoFang/video-studio/releases/tag/after-rain-v1) · [剧组怎么运转](#一人剧组怎么运转) · [自己做一部](#自己做一部) · [English](README.en.md)
+It is video as code, written with [Remotion](https://www.remotion.dev/) and React by a crew of AI agents led by Claude Opus 5.5.
 
-[![纯代码](https://img.shields.io/badge/%E7%B4%A0%E6%9D%90%E6%96%87%E4%BB%B6-0-c8873a)](GLOSSARY.md) [![Remotion 4](https://img.shields.io/badge/Remotion-4-5b6d8a)](https://www.remotion.dev/) [![React 19](https://img.shields.io/badge/React-19-5b6d8a)](https://react.dev/) [![代码许可 MIT](https://img.shields.io/badge/%E4%BB%A3%E7%A0%81%E8%AE%B8%E5%8F%AF-MIT-6f8f6a)](LICENSE)
+[Watch *After the Rain*](https://github.com/JinhaoFang/video-studio/releases/tag/after-rain-v1) · [How the crew works](#how-a-one-person-crew-works) · [Make your own](#make-your-own-film) · [简体中文](README.zh-CN.md)
+
+[![Asset files: 0](https://img.shields.io/badge/asset%20files-0-c8873a)](GLOSSARY.md) [![Remotion 4](https://img.shields.io/badge/Remotion-4-5b6d8a)](https://www.remotion.dev/) [![React 19](https://img.shields.io/badge/React-19-5b6d8a)](https://react.dev/) [![Code license: MIT](https://img.shields.io/badge/code%20license-MIT-6f8f6a)](LICENSE)
 
 </div>
 
-## 《雨后》
+## *After the Rain*
 
 https://github.com/user-attachments/assets/0f2311ec-410b-409a-b2d1-ef6b43460e6a
 
-> 雷雨冲散了同伴，湿透的小麻雀缩在檐下竹竿上，怎么也飞不起来。雨停之后，它在夕光里一点一点晒干羽毛，稻田那头，同伴还在叫它。
+> A thunderstorm scatters the flock. A soaked young sparrow huddles on a bamboo pole under the eaves and cannot fly. When the rain stops, it dries its feathers bit by bit in the evening sun, while across the rice field its companions keep calling.
 
-<img src="https://github.com/JinhaoFang/video-studio/releases/download/after-rain-v1/shots-12.jpg" alt="《雨后》十二个镜头各一帧：从雷雨的冷蓝灰，到夕光的金色，再沉进暮色；最后一格是片名和亮着灯的屋子" width="100%">
+<img src="https://github.com/JinhaoFang/video-studio/releases/download/after-rain-v1/shots-12.jpg" alt="One frame from each of the twelve shots: from the cold blue-grey of the storm to golden evening light, then into dusk; the last frame shows the title and a lit house" width="100%">
 
-| 65 秒 · 12 个镜头 | 0 个素材文件 | 37 张工单 | 不到一天 |
+| 65 s · 12 shots | 0 asset files | 37 tickets | Under a day |
 |---|---|---|---|
-| 1920×1080，24 帧，B 站和 YouTube 共用一个母版 | 没有图片、录音和字体文件，也没用生成图片、音乐或人声的模型 | 设计负责人拆单、验收，其中 29 张派给工程 agent | 正片从 spec 发出到合并约 23 小时，中间遇上一夜断网 |
+| 1920×1080 at 24 fps, one master for Bilibili and YouTube | No images, recordings or font files, and no models that generate images, music or voices | Planned and accepted by the design lead; 29 of them carried out by engineering agents | About 23 hours from spec to merge, including a night-long network outage |
 
-上面播放的是 540p 小文件版，看高清请下载：[1080p（78 MB）](https://github.com/JinhaoFang/video-studio/releases/download/after-rain-v1/after-rain.mp4) · [540p 小文件版（10 MB）](https://github.com/JinhaoFang/video-studio/releases/download/after-rain-v1/after-rain-web.mp4)
+The player above shows the 540p small file; for full quality, download: [1080p (78 MB)](https://github.com/JinhaoFang/video-studio/releases/download/after-rain-v1/after-rain.mp4) · [540p small file (10 MB)](https://github.com/JinhaoFang/video-studio/releases/download/after-rain-v1/after-rain-web.mp4)
 
-**画面和声音怎么从代码里出来**
+**How picture and sound come out of code**
 
-- **角色**：赛璐璐画法，线条、色块和阴影由 `src/kit/engine/` 逐帧画在 Canvas 上；起飞、扑腾、抖羽和人走路都按 [动作规则](episodes/after-rain/motion.md) 来演。
-- **背景**：水粉底图，同一套笔触程序按每个镜头的光照生成；雷雨、夕光、暮色只换参数，[色彩剧本](episodes/after-rain/art.md) 管颜色怎么讲时间。
-- **摄影**：每帧都在动的手持感相机，加柔焦、光晕、颗粒和暗角，每场一组后期参数。
-- **声音**：雨按远处雨幕、瓦顶、地面、檐口滴水分层合成；麻雀叫声用调频和谐波合成，隔墙交谈和哼唱是合成的无词人声，配乐从小样的动机长出来（[声音设计](episodes/after-rain/sound-design.md)）。
-- **片名与署名**：「雨后」用画底图的水粉笔刷按笔顺写成行楷，「雨」的四个点像最后四滴雨落下；署名「溯游」是一方按《说文》字形刻的白文印。
+- **Characters**: cel-style line, flat colour and shadow, drawn frame by frame on a Canvas by `src/kit/engine/`. Take-offs, flapping, feather shakes and the walking figure follow written [motion rules](episodes/after-rain/motion.md).
+- **Backgrounds**: gouache plates produced by one brush-stroke program, lit per shot. Storm, evening light and dusk differ only in parameters, and a [colour script](episodes/after-rain/art.md) decides how colour tells the time of day.
+- **Camera**: a handheld-feeling camera that moves in every frame, with soft focus, bloom, grain and vignette tuned per scene.
+- **Sound**: rain is synthesised in layers (distant curtain, roof tiles, ground, drips from the eaves). The sparrow calls are built from frequency modulation and harmonics, the conversation behind the wall and the humming are synthesised wordless voices, and the score grows out of the motif from the earlier sample ([sound design](episodes/after-rain/sound-design.md)).
+- **Title and signature**: the title is written stroke by stroke in running script with the same gouache brush that paints the backgrounds; the four dots of the first character fall like the last four raindrops. The signature is a carved seal.
 
-一部片子做完会写一份工作汇报：[《雨后》的汇报](docs/reports/spec-168-after-rain.html)（HTML 页面，下载后用浏览器打开），里面有工程派发的耗时、返工记录和成片的已知弱点。
+Each film ends with a work report: [the report for *After the Rain*](docs/reports/spec-168-after-rain.html) (an HTML page; download it and open it in a browser). It covers the time spent on engineering dispatches, the rework, and the known weak spots of the film. The report and most project docs are written in Chinese.
 
-## 一人剧组怎么运转
+## How a one-person crew works
 
-仓库把每部片子当成一个剧组来做：编剧、美术、摄影、动作、剪辑、声音六个部门。两个 agent 角色分工，人只在必要的时候出场。
+Every film is made by a crew of six departments: writing, art, cinematography, animation, editing and sound. Two agent roles split the work, and the human steps in only when needed.
 
-- **你**：选故事，看预演提意见，看成片拍板。
-- **设计负责人**：和你对话的主会话，兼导演和制片。把各部门的决定写在纸面上（镜头剧本、机位图、色彩剧本、动作规则、声音设计），拆成工单，逐张验收。
-- **工程负责人**：设计负责人按工单派出去的 agent，用哪个框架和模型按席位配置。写镜头代码、合成声音、渲染，交回能客观验收的产物。
+- **You**: pick the story, review the previs and give notes, approve the final cut.
+- **Design lead**: the main session you talk to, acting as director and producer. It writes each department's decisions down (storyboard, camera map, colour script, motion rules, sound design), breaks them into tickets and accepts every ticket.
+- **Engineering lead**: the agents the design lead dispatches per ticket, with the framework and model chosen by seat configuration. They write shot code, synthesise sound and render, and hand back results that can be checked objectively.
 
 ```mermaid
 %%{init: {"theme": "base", "fontFamily": "Inter, -apple-system, Segoe UI, PingFang SC, Noto Sans CJK SC, Microsoft YaHei, DejaVu Sans, sans-serif", "flowchart": {"curve": "step", "nodeSpacing": 28, "rankSpacing": 46, "padding": 16, "wrappingWidth": 320}, "themeVariables": {"fontFamily": "Inter, -apple-system, Segoe UI, PingFang SC, Noto Sans CJK SC, Microsoft YaHei, DejaVu Sans, sans-serif", "fontSize": "14px", "primaryColor": "#ffffff", "primaryTextColor": "#1f1f1f", "primaryBorderColor": "#cfcbc1", "lineColor": "#b9b5ab", "clusterBkg": "#faf9f6", "clusterBorder": "#e2dfd7", "edgeLabelBackground": "#ffffff", "titleColor": "#5a5a5a"}}}%%
 flowchart TB
   classDef core fill:#e8f0fc,stroke:#2f6fd6,stroke-width:2px,color:#1f1f1f
   classDef you fill:#f6ead8,stroke:#c8873a,color:#1f1f1f
-  subgraph plan["想清楚"]
+  subgraph plan["Think it through"]
     direction LR
-    idea("`**一个想法**
-    你说想做什么片子`"):::you
-    grill("`**追问成方案**
+    idea("`**An idea**
+    you say what film you want`"):::you
+    grill("`**Grilled into a plan**
     /grill-with-docs`")
-    paper("`**纸面决定与工单**
-    镜头剧本、机位图、色彩剧本`")
+    paper("`**Paper decisions and tickets**
+    storyboard, camera map, colour script`")
     idea --> grill --> paper
   end
-  subgraph make["做出来"]
+  subgraph make["Make it"]
     direction LR
-    crew("`**agent 剧组**
-    设定、底图、镜头、声音、渲染`"):::core
-    previs("`**看预演**
-    你提意见，剧组返工`"):::you
-    final("`**看成片**
-    你拍板合并`"):::you
+    crew("`**Agent crew**
+    designs, plates, shots, sound, render`"):::core
+    previs("`**Previs review**
+    you give notes, the crew reworks`"):::you
+    final("`**Final review**
+    you approve the merge`"):::you
     crew --> previs --> final
-    previs -- 返工 --> crew
+    previs -- rework --> crew
   end
-  retro("`**复盘沉淀**
-  /retro 写进工作室层，下一部从这里起步`")
+  retro("`**Retro**
+  /retro feeds the studio layer for the next film`")
   plan --> make --> retro
 ```
 
-做《雨后》时，用户看完预演提了四条意见：人出场偏慢、有些镜头看着假、雨声不够像、听不出人声。剧组按这四条返工，再出成片。
+On *After the Rain*, the previs drew four notes: the walking figure entered too slowly, some shots looked fake, the rain did not sound real enough, and the voices could not be heard. The crew reworked all four before the final cut.
 
-## 仓库里有什么
+## What is in the repository
 
 ```text
-episodes/after-rain/   《雨后》：镜头剧本、机位图、美术、动作、声音设计，12 个镜头的代码，声音合成，片名
-src/kit/               跨片复用：渲染引擎（线条、赛璐璐、水粉底图、相机、后期、毛笔书写、篆刻印章）、声音合成、样张工具
-tools/                 验收与管线：抽帧、对比、响度、断音检查、纯代码护栏
-docs/video/            视频知识库：剧组各部门的做法和样片，每条有出处
-docs/roles/            设计负责人和工程负责人的分工
-docs/workflow/         制作工作流：剧组、交接、锁定点、沉淀
-docs/reports/          每部片子做完后的工作汇报
+episodes/after-rain/   After the Rain: storyboard, camera map, art, motion and sound design, code for 12 shots, sound synthesis, title
+src/kit/               shared across films: render engine (line, cel, gouache plates, camera, post, brush writing, seal carving), sound synthesis, sample sheets
+tools/                 QA and pipeline: frame grabs, comparison, loudness, dropout checks, the pure-code guard
+docs/video/            film-making knowledge by department, each entry with sources
+docs/roles/            how the design lead and the engineering lead divide the work
+docs/workflow/         production workflow: crew, hand-offs, locks, retros
+docs/reports/          the work report for each finished film
 ```
 
-规则和目录归属见 [AGENTS.md](AGENTS.md)，术语见 [GLOSSARY.md](GLOSSARY.md)，全部文档的入口是 [文档地图](docs/README.md)。
+Rules and ownership are in [AGENTS.md](AGENTS.md), terms in [GLOSSARY.md](GLOSSARY.md), and every document is listed in the [docs map](docs/README.md).
 
-## 自己跑起来
+## Run it yourself
 
-需要 Node.js ≥ 22.18.0、pnpm、ffmpeg 和 ffprobe。从仓库根目录：
+You need Node.js ≥ 22.18.0, pnpm, ffmpeg and ffprobe. From the repository root:
 
 ```bash
 pnpm install
@@ -103,39 +105,39 @@ node episodes/after-rain/generate.ts
 pnpm dev
 ```
 
-`generate.ts` 生成《雨后》的底图、画面事件表和混音，写到 `public/episodes/after-rain/`（媒体不进 git）。`pnpm dev` 打开 Remotion Studio，在 `AfterRain` 合成里可以逐帧看每个镜头。渲染成片：
+`generate.ts` builds the background plates, the event tables and the final mix for *After the Rain* into `public/episodes/after-rain/` (media stays out of git). `pnpm dev` opens Remotion Studio, where the `AfterRain` composition can be stepped through frame by frame. To render the film:
 
 ```bash
 pnpm exec remotion render AfterRain out/after-rain/after-rain.mp4 --gl=swangle --concurrency=4
 ```
 
-`--gl=swangle` 是软件图形，没有 GPU 也能渲；在作者的机器上渲完 65 秒不到半小时。封面和发布文件的做法见 [《雨后》说明](episodes/after-rain/README.md#成片与封面复现)，开发命令见 [开发者手册](docs/development.md)。
+`--gl=swangle` renders with software graphics, so no GPU is needed; the 65 seconds take just under half an hour on the author's machine. Covers and release files are covered in the [episode README](episodes/after-rain/README.md#成片与封面复现), and the developer commands in the [developer guide](docs/development.md).
 
-## 自己做一部
+## Make your own film
 
-1. 先装技能。技能不进 git，每个技能的来源仓库和版本记在 `skills-lock.json`；执行技能 `run-spec` 的安装方法见 [agent-workflow](https://github.com/JinhaoFang/agent-workflow) 的 README。
-2. 在仓库里打开 Claude Code 或 Codex，告诉它「你是设计负责人」，它会先读 [角色文档](docs/roles/design.md)。
-3. 用 `/grill-with-docs` 说你想做什么。它一条一条追问，直到方案清楚；再用 `/to-spec` 写成 spec，用 `/to-tickets` 拆成工单，都发到 GitHub Issues。
-4. 开一个新会话，说「执行 spec #号」，由 `run-spec` 执行：纸面决定设计负责人自己做，其余工单派给工程 agent，逐张验收；中途请你看预演，最后开 PR 等你看成片。
-5. 满意就合并，再开一个新会话跑 `/retro`，把这部片子学到的写进工作室层，下一部从这里起步。
+1. Install the skills first. Skills are not in git; `skills-lock.json` records the source repository and version of each one, and the [agent-workflow](https://github.com/JinhaoFang/agent-workflow) README explains how to install the `run-spec` skill.
+2. Open Claude Code or Codex in the repository and tell it "you are the design lead". It reads the [role document](docs/roles/design.md) first.
+3. Run `/grill-with-docs` and describe the film you want. It questions you point by point until the plan is clear; then `/to-spec` writes the spec and `/to-tickets` breaks it into tickets, both published to GitHub Issues.
+4. In a fresh session, say "run spec #<number>" and `run-spec` takes over: the design lead makes the paper decisions itself, dispatches the other tickets to engineering agents and accepts each one; it asks you to review the previs along the way and opens a PR for the final cut.
+5. If you are happy, merge, then run `/retro` in a fresh session so what this film taught goes into the studio layer for the next one.
 
-完整流程见 [制作工作流](docs/workflow/README.md)。
+The full process is in the [production workflow](docs/workflow/README.md).
 
-## 《雨后》之前
+## Before *After the Rain*
 
-先做过一段 13 秒、两个镜头的 [纯代码小样](episodes/pure-code-sample/README.md)，验证纯代码能不能做出日式剧场动画的质感。引擎、声音合成和样张工具从小样里长出来，后来提进了 `src/kit/`。小样的视频不单独发布，代码和生成器都在仓库里，可以照着复现。
+A 13-second, two-shot [pure-code sample](episodes/pure-code-sample/README.md) came first, to test whether pure code could reach the look of Japanese theatrical animation. The render engine, sound synthesis and sample-sheet tools grew out of it and were later moved into `src/kit/`. The sample video is not released on its own; its code and generators are in the repository and can be reproduced.
 
-## 致谢
+## Acknowledgements
 
-做《雨后》和这套流程时，借鉴过这些项目的做法（只学方法，没有复制代码）：
+These projects shaped how *After the Rain* and this workflow were made. We learned from their methods and copied no code:
 
-- [ChetasLua/noroi-iwai](https://github.com/ChetasLua/noroi-iwai)、[ChetasLua/the-last-page](https://github.com/ChetasLua/the-last-page)：纯代码做日式动画短片的做法，见 [研究记录](docs/research/noroi-iwai.md)。
-- [duoduoler-ops/Table-VideoSOP](https://github.com/duoduoler-ops/Table-VideoSOP)：另一套用 agent 做视频的流程，见 [对照](docs/research/table-videosop.md)。
-- [Vincentwei1021/mg-styles-15](https://github.com/Vincentwei1021/mg-styles-15)：15 种 MG 风格的特征、节拍与声音，见 [研究记录](docs/research/mg-styles-15.md)。
+- [ChetasLua/noroi-iwai](https://github.com/ChetasLua/noroi-iwai) and [ChetasLua/the-last-page](https://github.com/ChetasLua/the-last-page): how to make Japanese-style animated shorts in pure code ([research notes](docs/research/noroi-iwai.md)).
+- [duoduoler-ops/Table-VideoSOP](https://github.com/duoduoler-ops/Table-VideoSOP): another agent-driven video workflow ([comparison](docs/research/table-videosop.md)).
+- [Vincentwei1021/mg-styles-15](https://github.com/Vincentwei1021/mg-styles-15): features, beats and sound of fifteen motion-graphics styles ([research notes](docs/research/mg-styles-15.md)).
 
-## 许可
+## Licence
 
-- **代码和文档**：MIT，见 [LICENSE](LICENSE)。只覆盖本仓库自己写的代码和文档，不包括 git 历史里已经移出的内容。
-- **《雨后》的成片、封面和缩略图**（Release 里的媒体文件）：[CC BY-NC-SA 4.0](https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh-hans)。转载请署名「溯游」并附上本仓库链接，不用于商业用途，改编后按同样的许可分享。
+- **Code and documentation**: MIT, see [LICENSE](LICENSE). It covers only the code and documentation written for this repository, not content that has since been removed and survives only in the git history.
+- **The *After the Rain* film, covers and stills** (the media files in the Release): [CC BY-NC-SA 4.0](https://creativecommons.org/licenses/by-nc-sa/4.0/). Credit 溯游 (Suyou) with a link to this repository, no commercial use, and share adaptations under the same licence.
 
-《雨后》 · 溯游 · 2026
+*After the Rain* · 溯游 (Suyou) · 2026
