@@ -1,6 +1,6 @@
 /**
  * 《雨后》全片装配事件汇总、时间表与后期参数测试（#185 测试接缝）：
- * 1. 验证 12 镜时间表总长 1620 帧（67.5 秒）、s11→s12 的 24 帧叠化区间激活查询；
+ * 1. 验证 12 镜时间表总长 1560 帧（65.0 秒，#186 之后的镜头剧本时间表）、s11→s12 的 24 帧叠化区间激活查询；
  * 2. 验证 collectEvents 汇总的全部画面事件 kind 都在 contract.md 第 4 节表内，且全部 12 种带 ★ 种类全片恰好出现一次；
  * 3. 验证第 3 镜保留小样 S1 的 4 条事件并追加第 158 帧的 mud_step；
  * 4. 验证 score.json（除去 hum_voice 乐句）能按真实事件表通过 kit compileScore 全部 mustEndBefore 约束；
@@ -63,7 +63,7 @@ test("首镜延长 12 帧时，后续画面事件、环境床边界、密度、�
     });
     t.diagnostic(`${name}：[${bed.from}, ${bed.to}) → [${actual.from}, ${actual.to})`);
   }
-  assert.deepEqual(shifted.hush, { from: 924, to: 1068 });
+  assert.deepEqual(shifted.hush, { from: original.hush.from + 12, to: original.hush.to + 12 });
   t.diagnostic(`第 8 镜环境声压低：[${original.hush.from}, ${original.hush.to}) → [${shifted.hush.from}, ${shifted.hush.to})`);
 });
 
@@ -83,17 +83,17 @@ test("单独推迟雨尾事件时，雨的范围跟着事件走，屋檐和稻�
   assert.deepEqual(after.beds.paddy_wind, before.beds.paddy_wind);
 });
 
-test("时间表共 12 镜 1620 帧，且叠化区间 1404–1427 同时激活 s11 和 s12", () => {
+test("时间表共 12 镜 1560 帧，且叠化区间 1344–1367 同时激活 s11 和 s12", () => {
   assert.equal(shotTable.length, 12);
-  assert.equal(durationInFrames, 1620);
+  assert.equal(durationInFrames, 1560);
   assert.equal(fps, 24);
 
-  const beforeDissolve = activeShots(shotTable, 1403);
+  const beforeDissolve = activeShots(shotTable, 1343);
   assert.equal(beforeDissolve.length, 1);
   assert.equal(beforeDissolve[0].row.id, "s11");
   assert.equal(beforeDissolve[0].localFrame, 167);
 
-  const dissolveStart = activeShots(shotTable, 1404);
+  const dissolveStart = activeShots(shotTable, 1344);
   assert.deepEqual(
     dissolveStart.map((h) => [h.row.id, h.localFrame]),
     [
@@ -102,7 +102,7 @@ test("时间表共 12 镜 1620 帧，且叠化区间 1404–1427 同时激活 s1
     ],
   );
 
-  const dissolveEnd = activeShots(shotTable, 1427);
+  const dissolveEnd = activeShots(shotTable, 1367);
   assert.deepEqual(
     dissolveEnd.map((h) => [h.row.id, h.localFrame]),
     [
@@ -111,7 +111,7 @@ test("时间表共 12 镜 1620 帧，且叠化区间 1404–1427 同时激活 s1
     ],
   );
 
-  const afterDissolve = activeShots(shotTable, 1428);
+  const afterDissolve = activeShots(shotTable, 1368);
   assert.equal(afterDissolve.length, 1);
   assert.equal(afterDissolve[0].row.id, "s12");
   assert.equal(afterDissolve[0].localFrame, 24);
