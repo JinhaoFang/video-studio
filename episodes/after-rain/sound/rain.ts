@@ -5,7 +5,7 @@
  * 雨量按场次取自时间表（open 所在镜头约 160%，下一镜 140% → 100%，rain_tail 所在镜头接小样 S1 的 rainAmount），阵风低谷跟着 thunder 事件走；
  * 雨停的顺序是远处先停、近处后停、大水滴最后停。供 render.ts 调用，各层可单独导出试听。
  * 各层的混音电平以雨量 100%、无阵风时的 3 秒参考段（reference）的 RMS 计，见 render.ts 的 rainMixDb 与 RAIN_RMS_DBFS。
- * 待定事项：阵风曲线是声音自己定的，画面侧第 1–2 镜的雨阵风还没有时间数据可取，等镜头工单落地后对齐。
+ * 远处雨幕用第 1–2 镜 weather.ts 的雨带噪声在画面中心取样，叠加近处阵风与雷后的短暂低谷。
  */
 import {
   DURATION as SAMPLE_RAIN_DURATION,
@@ -19,6 +19,7 @@ import {
   seedFor,
   stereo,
 } from "../../../src/kit/sound/dsp.ts";
+import { noise1 } from "../../../src/kit/engine/random.ts";
 import type { EventTable, Stereo } from "../../../src/kit/sound/types.ts";
 
 export type RainLayer =
@@ -44,8 +45,8 @@ export const RAIN_LAYERS: readonly RainLayer[] = [
 export const FIRST_SHOT_RAIN = 1.6;
 export const SECOND_SHOT_RAIN: readonly [number, number] = [1.4, 1];
 export const LULL_AFTER_THUNDER_SECONDS = 0.9;
-export const LULL_SECONDS = 1.6;
-export const LULL_DB = -7;
+export const LULL_SECONDS = 1.0;
+export const LULL_DB = -4;
 
 export type RainPlan = {
   fromFrame: number;
@@ -84,7 +85,14 @@ export const rainPlan = (table: EventTable, seed: number): RainPlan => {
   };
   const fps = table.fps;
   const amount = (frame: number) => {
-    if (frame < first.to) return FIRST_SHOT_RAIN;
+    if (frame < first.to)
+      return curve(
+        [
+          [first.from + (first.to - first.from) * 0.75, FIRST_SHOT_RAIN],
+          [first.to - 1, SECOND_SHOT_RAIN[0]],
+        ],
+        frame,
+      );
     if (frame < secondRange.to)
       return curve(
         [
@@ -126,7 +134,10 @@ export const rainPlan = (table: EventTable, seed: number): RainPlan => {
             ],
             frame,
           );
-    return 20 * Math.log10(gain) + dip;
+    const close = frame >= secondRange.from;
+    const local = frame - (close ? secondRange.from : first.from);
+    const rainBand = noise1(960 / 580 - (close ? -local : local) / 65, 187);
+    return 20 * Math.log10(gain) + dip + (rainBand - 0.5) * 2;
   };
   return {
     fromFrame: first.from,
@@ -206,6 +217,15 @@ export const surfaces: Record<
         gain,
         0,
         0.0006,
+      );
+      decayingTone(
+        out,
+        start,
+        145 + rng() * 210,
+        85 + rng() * 70,
+        gain * 1.6,
+        0,
+        0.0008,
       );
       bandBurst(out, start, 0.004 + rng() * 0.004, gain * 0.45, rng, 250, 2500);
     },
@@ -302,7 +322,7 @@ export const gutterStreams: readonly {
   flow: number;
   continuity: number;
 }[] = [
-  { pan: 0.46, gain: 1, flow: 1.7, continuity: 0.5 },
+  { pan: -0.4, gain: 1, flow: 1.7, continuity: 0.5 },
   { pan: 0.3, gain: 0.6, flow: 1.1, continuity: 0.3 },
   { pan: 0.12, gain: 0.5, flow: 0.9, continuity: 0.2 },
   { pan: 0.38, gain: 0.42, flow: 1.3, continuity: 0.42 },
@@ -317,13 +337,13 @@ export const curtainShapes: readonly {
   air: number[];
 }[] = [
   {
-    edges: [200, 500, 1000, 2000, 4000, 8000, 16000, 23000].map(onePole),
-    weights: [0.3, 0.45, 0.62, 0.9, 1, 0.45, 0.1],
+    edges: [60, 220, 500, 1000, 2000, 4000, 8000, 16000, 23000].map(onePole),
+    weights: [1.05, 0.7, 0.54, 0.74, 0.9, 1, 0.45, 0.1],
     air: [onePole(9000), onePole(9000)],
   },
   {
-    edges: [190, 480, 960, 1900, 3800, 7600, 15000, 22000].map(onePole),
-    weights: [0.3, 0.45, 0.62, 0.9, 1, 0.45, 0.1],
+    edges: [58, 210, 480, 960, 1900, 3800, 7600, 15000, 22000].map(onePole),
+    weights: [1.05, 0.7, 0.54, 0.74, 0.9, 1, 0.45, 0.1],
     air: [onePole(8600), onePole(8600)],
   },
 ];
@@ -372,7 +392,7 @@ const bandBurst = (
   lowHz: number,
   highHz: number,
 ) => {
-  const last = Math.min(out.length, start + Math.ceil((seconds * 6) / rate));
+  const last = Math.min(out.length, start + Math.ceil(seconds * rate));
   const low = onePole(lowHz);
   const high = onePole(highHz);
   let lowState = 0;
@@ -413,6 +433,19 @@ export const synthesizeRain = (
     Math.min(plan.toFrame - 1, t * fps + plan.fromFrame);
   const amountAt = reference ? () => 1 : (t: number) => plan.amount(frameAt(t));
   const gustAt = reference ? () => 0 : (t: number) => plan.gustDb(frameAt(t));
+  const second = table.shotTable[1];
+  const view = (t: number) =>
+    reference
+      ? 0
+      : curve(
+          [
+            [second.startFrame - 1, 0],
+            [second.startFrame + 1, 1],
+            [second.startFrame + second.durationInFrames, 1],
+            [second.startFrame + second.durationInFrames + 2, 0],
+          ],
+          frameAt(t),
+        );
   const layers = Object.fromEntries(
     RAIN_LAYERS.map((layer) => [layer, stereo(n)]),
   ) as Record<RainLayer, Stereo>;
@@ -439,7 +472,7 @@ export const synthesizeRain = (
         air[k] += alpha * (value - air[k]);
         value = air[k];
       }
-      out[i] = value * amount ** 1.7 * 10 ** (gustAt(t) / 20);
+      out[i] = value * amount ** 1.7 * 10 ** ((gustAt(t) - 3 * view(t)) / 20);
     }
   }
 
@@ -456,7 +489,9 @@ export const synthesizeRain = (
     )) {
       const size =
         surface.size[0] + (1 - surface.size[0]) * rng() ** surface.size[1];
-      const gain = size * 10 ** ((gustAt(at) * surface.gust) / 20);
+      const closeDb = name === "bamboo" || name === "wood" ? 3 * view(at) : 0;
+      const roofTail = name === "tile" ? Math.min(1, amountAt(at)) ** 0.45 : 1;
+      const gain = size * roofTail * 10 ** ((gustAt(at) * surface.gust + closeDb) / 20);
       const voice = new Float64Array(Math.ceil(IMPACT_SECONDS * rate));
       surface.render(voice, 0, gain, rng);
       const pan = Math.max(
@@ -512,7 +547,7 @@ export const synthesizeRain = (
         (0.7 + 0.6 * stream.continuity) *
         amount ** 0.9 *
         (0.5 + 0.5 * continuous) *
-        10 ** ((gustAt(t) * 0.5) / 20);
+        10 ** ((gustAt(t) * 0.5 + (k === 0 ? 3 * view(t) : 0)) / 20);
       if (blobs.has(i)) hits.gutters += 1;
     }
     place(

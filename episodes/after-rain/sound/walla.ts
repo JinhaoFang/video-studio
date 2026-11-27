@@ -141,26 +141,25 @@ const utterance = (
     const level = 0.41 + 0.45 * rng();
     const nextMouth = Math.max(0.1, Math.min(1, mouth + (rng() - 0.5) * 0.7));
     const running = !laugh && rng() < 0.22 && i < beats - 1;
+    const transitions = Math.max(1, Math.round((syllable - 0.025) / 0.09));
+    const attack = 0.025;
     onsets.push(at);
-    points.push(
-      { at: at + 0.022 + 0.015 * rng(), hz, level, mouth },
-      {
-        at: at + syllable * 0.55,
+    points.push({ at: at + attack, hz, level, mouth });
+    for (let k = 1; k < transitions; k++) {
+      const fraction = k / transitions;
+      points.push({
+        at: at + attack + (syllable - attack) * fraction,
         hz: hz * (0.94 + 0.12 * rng()),
-        level: level * (0.78 + 0.2 * rng()),
-        mouth: nextMouth,
-      },
-      {
-        at: at + syllable,
-        hz: hz * (laugh ? 0.86 : 0.9 + 0.1 * rng()),
-        level: running
-          ? level * 0.5
-          : i === beats - 1
-            ? 0
-            : 0.02 + 0.05 * rng(),
-        mouth: running ? 0.3 + 0.3 * rng() : 0.12 + 0.1 * rng(),
-      },
-    );
+        level: level * (0.8 + 0.2 * rng()),
+        mouth: k % 2 ? (mouth > 0.5 ? 0.15 : 0.85) : mouth,
+      });
+    }
+    points.push({
+      at: at + syllable,
+      hz: hz * (laugh ? 0.86 : 0.9 + 0.1 * rng()),
+      level: running ? level * 0.5 : i === beats - 1 ? 0 : 0.02 + 0.05 * rng(),
+      mouth: running ? nextMouth : 0.12 + 0.1 * rng(),
+    });
     at += syllable + (running ? 0 : gap);
   }
   const clip = synthesizeVoice(
@@ -229,6 +228,30 @@ const highPass = (channel: Float64Array, hz: number) => {
   }
 };
 
+const wallaShelf = (channel: Float64Array, hz = 260, db = -12) => {
+  const a = 10 ** (db / 40);
+  const w = (2 * Math.PI * hz) / rate;
+  const cos = Math.cos(w);
+  const beta = Math.sqrt(2 * a) * Math.sin(w);
+  const p = a + 1,
+    m = a - 1;
+  const a0 = p + m * cos + beta;
+  const b0 = (a * (p - m * cos + beta)) / a0,
+    b1 = (2 * a * (m - p * cos)) / a0;
+  const b2 = (a * (p - m * cos - beta)) / a0;
+  const a1 = (-2 * (m + p * cos)) / a0,
+    a2 = (p + m * cos - beta) / a0;
+  let s1 = 0,
+    s2 = 0;
+  for (let i = 0; i < channel.length; i++) {
+    const x = channel[i],
+      y = b0 * x + s1;
+    s1 = b1 * x - a1 * y + s2;
+    s2 = b2 * x - a2 * y;
+    channel[i] = y;
+  }
+};
+
 export type WallaRender = {
   output: Stereo;
   shots: { id: string; from: number; to: number }[];
@@ -265,15 +288,19 @@ export const synthesizeWalla = (
     const from = toSample(shot.from);
     const to = toSample(shot.to);
     const speech = stereo(count);
-    for (const [i, line] of placed.entries())
+    for (const [i, line] of placed.entries()) {
+      if (line.shot !== index) continue;
       place(
         speech,
         { samples: clips[i].clip.samples, alignmentSample: 0 },
         from + Math.round(line.at * rate),
-        line.speaker === "older" ? 0.9 : 1,
+        (line.speaker === "older" ? 0.9 : 1) *
+          (line.slot === "lull" || line.laugh ? 1.33 : 1),
         view.pan,
       );
+    }
     for (const channel of speech) {
+      wallaShelf(channel);
       highPass(channel, WALL_HIGH_PASS_HZ);
       lowPass(channel, view.cutoffHz, view.stages);
     }

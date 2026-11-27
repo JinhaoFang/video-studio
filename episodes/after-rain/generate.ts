@@ -2,10 +2,10 @@
  * 《雨后》正片唯一生成入口：运行 `node episodes/after-rain/generate.ts [--force] [--help]`。
  * 1. 使用最多 4 个并发工作线程烘焙全片 25 张水粉底图（含暮色屋灭灯底图与独立亮灯层）到 `public/episodes/after-rain/`（命中 plateKey 缓存时跳过重绘）；
  * 2. 汇总 12 个镜头的画面事件表写入 `episodes/after-rain/data/events.json` 与 `public/episodes/after-rain/events.json`；
- * 3. 调用 `episodes/after-rain/sound/render.ts` 生成 48 kHz 双声道临时混音并复制到 `public/episodes/after-rain/mix.wav`；
+ * 3. 调用 `episodes/after-rain/sound/render.ts` 生成 48 kHz 双声道正片混音并复制到 `public/episodes/after-rain/mix.wav`；
  * 4. 将入口 `episodes/after-rain/AfterRain.tsx`、全部输入与产物 SHA-256 哈希写入 `episodes/after-rain/data/generated.json`。
  * 退出码：0 通过，1 声音响度验收不通过，2 参数错误或运行出错。
- * 待定事项：#193 替换正式声音配方与参数后沿用本入口刷新清单。
+ * 待定事项：无。
  */
 import { spawnSync } from "node:child_process";
 import {
@@ -204,13 +204,14 @@ const generate = async (force: boolean) => {
     audio: {},
   });
 
-  const soundOut = "out/qa/spec-168/185/sound";
+  const soundOut = "out/qa/spec-168/193";
   const soundCommand = [
     `${episode}/sound/render.ts`,
     "--events",
     `${episode}/data/events.json`,
     "--out",
     soundOut,
+    "--stems",
     "--seed",
     "185",
   ];
@@ -219,7 +220,7 @@ const generate = async (force: boolean) => {
     stdio: "inherit",
   });
   if (soundResult.error || soundResult.status !== 0) {
-    const message = `正片临时声音生成失败（退出码 ${soundResult.status}）：${soundResult.error?.message ?? "见上方声音命令输出；清单保持 audio-pending。"}`;
+    const message = `正片声音生成失败（退出码 ${soundResult.status}）：${soundResult.error?.message ?? "见上方声音命令输出；清单保持 audio-pending。"}`;
     if (soundResult.status === 1) throw new MeasurementFailure(message);
     throw new Error(message);
   }
@@ -279,7 +280,7 @@ if (!isMainThread) {
     if (values.help) {
       const totalPlates = plates.length * 2 + viewPlates.length;
       console.log(
-        `用法：${usage}\n烘焙《雨后》全片 ${totalPlates} 张水粉底图、汇总事件表并生成 48 kHz 临时混音到 public/episodes/after-rain/，记录哈希到 episodes/after-rain/data/generated.json。\n--force 忽略缓存强制重绘。`,
+        `用法：${usage}\n烘焙《雨后》全片 ${totalPlates} 张水粉底图、汇总事件表并生成 48 kHz 正片混音到 public/episodes/after-rain/，记录哈希到 episodes/after-rain/data/generated.json。\n--force 忽略缓存强制重绘。`,
       );
     } else {
       await generate(Boolean(values.force));

@@ -84,19 +84,20 @@ export const bandLevels = (
   const n = end - start;
   if (n <= 0) throw new Error(`测量区间为空：${from}–${to} 秒`);
   let nfft = 1;
-  while (nfft < Math.min(n, 8192)) nfft *= 2;
+  while (2 * nfft <= Math.min(n, 8192)) nfft *= 2;
   const binHz = rate / nfft;
   const real = new Float64Array(nfft);
   const imag = new Float64Array(nfft);
   const power = new Float64Array(nfft / 2);
   let energy = 0;
+  for (const channel of channels)
+    for (let i = start; i < end; i++) energy += channel[i] ** 2;
   for (let at = start; at + nfft <= end; at += nfft / 2) {
     for (let c = 0; c < channels.length; c++) {
       real.fill(0);
       imag.fill(0);
       for (let i = 0; i < nfft; i++) {
         const value = channels[c][at + i];
-        energy += value * value;
         real[i] =
           value * (0.5 - 0.5 * Math.cos((2 * Math.PI * i) / (nfft - 1)));
       }
@@ -139,7 +140,7 @@ export const bandLevels = (
     result[`${low}-${high}`] =
       10 *
       Math.log10(
-        Math.max(1e-30, (sum / total) * (energy / (n * channels.length))),
+        Math.max(1e-30, (sum / Math.max(1e-30, total)) * (energy / (n * channels.length))),
       );
   }
   return {

@@ -6,12 +6,12 @@
     "episodes/after-rain/generate.ts"
   ],
   "status": "complete",
-  "cacheKey": "9c8171b54889594b1601cb3c6492a658ed11a97478d7f1031a078104b2b721dc",
-  "plateKey": "e7d1ef3a4fa8f11a4e6537be0baa3535cc400e39e60fdc55ff9636bac7d6cd59",
+  "cacheKey": "d7c8da745eefabc40eed1b7a193d6fe60f741691ae6ec694fe9ea50f6b0320ef",
+  "plateKey": "44870d5d1aafe66d91eba654c39d86fd80f4a393804458bf8fa665eb274215e7",
   "inputs": [
     {
       "path": "episodes/after-rain/generate.ts",
-      "sha256": "4b89bc92a30e88f936802d201c6410075804197fa26776867a8dcc34ccfa3f12"
+      "sha256": "afd14c88d555d4d3b7c15530cbd46b868c720963c3ad130241e441fe01031b64"
     },
     {
       "path": "src/kit/generation/bake.ts",
@@ -55,27 +55,31 @@
     },
     {
       "path": "episodes/after-rain/sound/inputs.ts",
-      "sha256": "0e74ef3a52f71e4ad78a598491d27d44e5533a97cc649e1e14ca30b3158db66c"
+      "sha256": "35bc8b45e7ecc5ba843eb854f5e2013dff48378abfe2a884309a988e48ab3202"
+    },
+    {
+      "path": "episodes/after-rain/sound/spotting.ts",
+      "sha256": "8f41045d501abe2d3b8e1b8a7a43205e20f11238b77428c3f2c9cd06adb7b9e2"
     },
     {
       "path": "episodes/after-rain/sound/sfx.ts",
-      "sha256": "1f2f9ed7799e2f2085a3b1266ba6f3c22dcf22f1878d226cd5f7e2eaff1f448a"
+      "sha256": "b84160c3fd37216866037c8a7eefd45d14b014b7cebaab7d165d79b60ba47a3c"
     },
     {
       "path": "episodes/after-rain/sound/rain.ts",
-      "sha256": "44dc80ee16f7151f8be959519beb5c58b4caca2af42d8c6af1e34fc126977261"
+      "sha256": "ec3091da48abed4ef1e0125521075e2c53df270c89b6623258c16c61290a1832"
     },
     {
       "path": "episodes/after-rain/sound/walla.ts",
-      "sha256": "e24efd0addb50e34d5287d62ce3bedd21053b5f7a4ba5c1690642a06b177ab45"
+      "sha256": "8e24ba2dcd4324bca0aad1638bd8982faffef6e5614752ae27264d8692754ce1"
     },
     {
       "path": "episodes/after-rain/sound/analyze.ts",
-      "sha256": "c1bd6b220d9c95d0296351a2d35e5ad6c8279d3069a37779d1ecf31f5fea7127"
+      "sha256": "10f60c9d23e6a98b4147e60cc38f4e2f7f4323af44a8983f1303618566c2fc53"
     },
     {
       "path": "episodes/after-rain/sound/render.ts",
-      "sha256": "720b1f52485d3451fbec27680ece0a9d9f999abfa80dcd18de19004fb8281c6d"
+      "sha256": "47d85f65e04e462077627d48affea223e31d2a508e7aca35a3fe4058e3d3dc1c"
     },
     {
       "path": "src/kit/shots.ts",
@@ -267,7 +271,7 @@
     },
     {
       "path": "episodes/after-rain/mix.wav",
-      "sha256": "3df632c56d2e0376d61262e3ab1c96c9b6bbadc21aaa15cc34b7ad0297ffdaa2"
+      "sha256": "d0af4ec7bd7bfa0649a551311f8040b1c993a08e299480028d9ee2797df78364"
     }
   ],
   "eventTables": [
@@ -284,7 +288,8 @@
         "--events",
         "episodes/after-rain/data/events.json",
         "--out",
-        "out/qa/spec-168/185/sound",
+        "out/qa/spec-168/193",
+        "--stems",
         "--seed",
         "185"
       ],
@@ -292,18 +297,18 @@
       "channels": 2,
       "master": {
         "before": {
-          "integratedLufs": -17.7,
-          "truePeakDbtp": -2.5
+          "integratedLufs": -19.2,
+          "truePeakDbtp": -4.5
         },
         "after": {
-          "integratedLufs": -16,
-          "truePeakDbtp": -1.2
+          "integratedLufs": -16.2,
+          "truePeakDbtp": -1.5
         },
-        "gainDb": 1.6999999999999993,
-        "maximumReductionDb": 0.45998283781548954,
-        "limiterCeilingDbfs": -1.3
+        "gainDb": 3,
+        "maximumReductionDb": 0.03664599411066316,
+        "limiterCeilingDbfs": -1.55
       },
-      "measurements": "out/qa/spec-168/185/sound/measurements.json"
+      "measurements": "out/qa/spec-168/193/measurements.json"
     }
   }
 }

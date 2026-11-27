@@ -81,3 +81,19 @@
 | `shots/s10-11/wing-pass.ts`、`ambient.ts` | 遮挡转场的翅膀（羽片、羽轴、羽缘、羽枝线）和尘、草、稻浪、雾、云都由镜头代码逐帧绘制，不读任何图片；颜色只取 `tokens.ts`、`tokens-sparrow.ts`。 |
 
 全部画面由本仓库纯代码生成，未引入第三方代码、外部图片或素材。
+
+## #193 正片混音
+
+运行 `node episodes/after-rain/generate.ts`。生成器从时间表、画面事件和 `score.json` 重建 48 kHz 双声道 PCM16 母带 `public/episodes/after-rain/mix.wav`。输入、命令、母带哈希及测量记录见[正片生成清单](data/generated.json)。所有声音来自本仓库的数学合成，第三方声音代码、录音、音色库和新增依赖均为零。
+
+单独运行 `node episodes/after-rain/sound/render.ts --stems --out out/qa/spec-168/193` 可生成以下试听和核对文件。
+
+| 产物 | 内容 |
+|---|---|
+| `mix.wav`、`music.wav`、`sfx.wav`、`ambience.wav` | 成片与可相加的配乐、音效、环境三轨，共用母带包络 |
+| `voice.wav`、`walla.wav`、`hum.wav` | 音效轨的人声子组、屋里两人的短句、从第 6 镜走向第 7 镜的哼唱 |
+| `rain-{curtain,tile,wood,leaves,bamboo,puddles,gutters,lastDrops}.wav`、`rain-sum.wav` | 雨的八个干声层及其和 |
+| `mix-s01.wav`、`mix-s01-02.wav`、`mix-s06-07.wav`、`mix-s08.wav`、`mix-s11.wav` | 从成片按时间表截出的试听 |
+| `measurements.json`、`placements.json`、`stem-levels.svg` | 母带测量、逐音效落位核对、逐帧分层电平 |
+
+从仓库根目录运行 `pnpm qa loudness out/qa/spec-168/193/mix.wav --target-lufs -16 --tolerance 1 --max-true-peak -1 --out out/qa/spec-168/193` 生成 `loudness.json`。运行 `pnpm qa dropouts out/qa/spec-168/193/mix.wav --floor -60 --fps 24 --out out/qa/spec-168/193` 生成 `dropouts.json` 和逐帧电平图 `levels.svg`。
