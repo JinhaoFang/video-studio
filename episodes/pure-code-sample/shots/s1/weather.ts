@@ -3,11 +3,11 @@
  * 遮罩在 1/16 分辨率上逐格计算再放大，天上从太阳向外扩，地上按纵深从远往近扫，边缘用噪声做出云影的不规则；
  * 雨丝和檐口滴水放在米制场景里按相机投影，近的长而淡、远的短而密，按雨量逐根退场，不是均匀粒子；院子水洼里的雨点涟漪跟着院子那层底图走，按雨量变稀。
  */
-import { layer, project } from "../../engine/camera.ts";
-import type { Camera, Vec3 } from "../../engine/camera.ts";
-import { hash, noise2 } from "../../engine/random.ts";
-import { eave, plates, puddles, reference } from "../../scene.ts";
-import { dusk, ink, rain, warm } from "../../tokens.ts";
+import { layer, project } from "../../../../src/kit/engine/camera.ts";
+import type { Camera, Vec3 } from "../../../../src/kit/engine/camera.ts";
+import { hash, noise2 } from "../../../../src/kit/engine/random.ts";
+import { eave, plates, puddles, reference } from "../../../after-rain/scene.ts";
+import { dusk, ink, rain, warm } from "../../../after-rain/tokens.ts";
 import { lightFront, rainAmount, skyFront } from "./timing.ts";
 
 const MW = 120;

@@ -1,7 +1,7 @@
 /** 本期纯逻辑验收：非零镜头起点换算、音效内部对齐点、采样舍入误差与固定种子 PCM 字节确定性。 */
 import assert from "node:assert/strict";
 import { test } from "node:test";
-import { collectEvents, frameToSample } from "./model.ts";
+import { frameToSample } from "../../src/kit/shots.ts";
 import { mixEvents, synthesizeImpact, wav } from "./audio.ts";
 
 const event = (frame: number) => ({
@@ -10,65 +10,6 @@ const event = (frame: number) => ({
   shotId: "second",
   kind: "impact",
   description: "触地",
-});
-
-test("镜头内事件按时间表换算并按全片帧排序", () => {
-  const shots = [
-    {
-      id: "first",
-      durationInFrames: 36,
-      events: [{ frame: 35, kind: "end", description: "尾帧" }],
-    },
-    {
-      id: "second",
-      durationInFrames: 24,
-      events: [
-        { frame: 0, kind: "start", description: "首帧" },
-        { frame: 12, kind: "impact", description: "中间" },
-      ],
-    },
-  ];
-  const events = collectEvents(
-    [
-      { id: "second", startFrame: 36, durationInFrames: 24 },
-      { id: "first", startFrame: 0, durationInFrames: 36 },
-    ],
-    shots,
-  );
-  assert.deepEqual(
-    events.map(({ frame, localFrame, shotId }) => ({
-      frame,
-      localFrame,
-      shotId,
-    })),
-    [
-      { frame: 35, localFrame: 35, shotId: "first" },
-      { frame: 36, localFrame: 0, shotId: "second" },
-      { frame: 48, localFrame: 12, shotId: "second" },
-    ],
-  );
-  assert.throws(
-    () =>
-      collectEvents(
-        [{ id: "first", startFrame: 0, durationInFrames: 37 }],
-        shots,
-      ),
-    /不匹配/,
-  );
-  assert.throws(
-    () =>
-      collectEvents(
-        [{ id: "bad", startFrame: 0, durationInFrames: 24 }],
-        [
-          {
-            id: "bad",
-            durationInFrames: 24,
-            events: [{ frame: 24, kind: "bad", description: "越界" }],
-          },
-        ],
-      ),
-    /超出/,
-  );
 });
 
 test("音效内部对齐点落在事件帧的采样位置，容差不超过半个采样", () => {

@@ -1,0 +1,177 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1240" height="905" viewBox="0 0 1240 905" font-family="'Noto Sans CJK SC','Noto Serif CJK SC','PingFang SC','Microsoft YaHei',sans-serif">
+<rect width="1240" height="905" fill="#f3ede1"/>
+<text x="24" y="34" font-size="20" font-weight="700" fill="#3a2a28">《雨后》场景平面与机位图</text>
+<text x="24" y="56" font-size="13" fill="#8c7f74">俯视，+Y（稻田、西）朝上，+X 朝右；单位米。扇形是机位和视野，数字是镜头号。数值见 layout.md</text>
+<rect x="24" y="72" width="675" height="648" fill="none" stroke="#8c7f74" stroke-width="1"/>
+<rect x="24.0" y="72.0" width="675.0" height="121.5" fill="#e6dcb4" fill-opacity="0.6"/>
+<text x="37.5" y="101.7" font-size="13"  fill="#8c7f74">稻田</text>
+<rect x="64.5" y="541.8" width="378.0" height="164.7" fill="#d9cfbf" stroke="#3a2a28" stroke-width="1.5"/>
+<rect x="64.5" y="517.5" width="378.0" height="24.3" fill="#d9cfbf" fill-opacity="0.5" stroke="#3a2a28" stroke-width="0.8"/>
+<text x="134.7" y="630.9" font-size="13" fill="#3a2a28" >老屋（正面朝西、朝稻田）</text>
+<text x="69.9" y="524.3"   font-size="11" fill="#8c7f74">檐廊</text>
+<polyline points="48.3,477.0 458.7,477.0" fill="none" stroke="#3a2a28" stroke-width="1" stroke-dasharray="6 4"/>
+<text x="461.4" y="482.4"   font-size="11" fill="#8c7f74">檐口线 y=1.5</text>
+<rect x="91.0" y="477.8" width="6.5" height="6.5" fill="#3a2a28"/>
+<rect x="239.5" y="477.8" width="6.5" height="6.5" fill="#3a2a28"/>
+<rect x="374.5" y="477.8" width="6.5" height="6.5" fill="#3a2a28"/>
+<polyline points="267.0,541.8 348.0,541.8" fill="none" stroke="#e3a24a" stroke-width="6"/>
+<text x="272.4" y="563.4"   font-size="11" fill="#e3a24a">亮灯的房间</text>
+<circle cx="105.0" cy="541.8" r="4" fill="#8a6a4a"/>
+<text x="75.3" y="560.7"   font-size="11" fill="#8a6a4a">玄关</text>
+<rect x="24.0" y="209.7" width="391.5" height="21.6" fill="#5f7a5a"/>
+<rect x="442.5" y="209.7" width="216.0" height="21.6" fill="#5f7a5a"/>
+<text x="37.5" y="196.2"   font-size="11" fill="#5f7a5a">树篱</text>
+<text x="404.7" y="196.2"   font-size="11" fill="#8a6a4a">院门</text>
+<ellipse cx="326.7" cy="298.8" rx="29.7" ry="7.6" fill="#7d8aa0" fill-opacity="0.45"/>
+<ellipse cx="231.1" cy="269.1" rx="21.6" ry="7.6" fill="#7d8aa0" fill-opacity="0.45"/>
+<ellipse cx="398.2" cy="252.9" rx="13.5" ry="7.6" fill="#7d8aa0" fill-opacity="0.45"/>
+<ellipse cx="186.8" cy="312.3" rx="17.6" ry="7.6" fill="#7d8aa0" fill-opacity="0.45"/>
+<ellipse cx="229.2" cy="374.4" rx="13.5" ry="8.1" fill="#7d8aa0" fill-opacity="0.8"/>
+<text x="153.6" y="360.9"   font-size="11" fill="#7d8aa0">水洼 W1</text>
+<polyline points="105.0,528.3 159.0,447.3 229.2,374.4 240.0,370.4 294.0,355.5 348.0,339.3 429.0,220.5 510.0,139.5 577.5,72.0" fill="none" stroke="#8a6a4a" stroke-width="2.4" stroke-dasharray="7 5"/>
+<circle cx="240.0" cy="370.4" r="4.5" fill="#8a6a4a"/>
+<text x="245.4" y="358.2"   font-size="11" fill="#8a6a4a">停步点</text>
+<text x="350.7" y="320.4"   font-size="11" fill="#8a6a4a">人的路线（约 74°）</text>
+<polyline points="249.4,483.8 345.3,393.3" fill="none" stroke="#3a2a28" stroke-width="3.5"/>
+<text x="350.7" y="385.2"  fill="#3a2a28" font-size="11">晾衣竹竿</text>
+<line x1="298.3" y1="437.6" x2="641.1" y2="197.5" stroke="#b5523b" stroke-width="2" stroke-dasharray="10 5"/>
+<polygon points="641.1351305349431,197.53826138708723 636.4,205.2 632.3,199.4" fill="#b5523b"/>
+<text x="633.1" y="185.5" font-size="13" fill="#b5523b" text-anchor="end">主轴：栖点 → 鸟群 55°</text>
+<line x1="298.3" y1="437.6" x2="445.5" y2="164.2" stroke="#c9902e" stroke-width="2" />
+<polygon points="445.5243889091296,164.1917817354052 444.7,173.2 438.5,169.8" fill="#c9902e"/>
+<text x="451.5" y="160.2" font-size="13" fill="#c9902e">太阳 28.3°</text>
+<line x1="645.0" y1="396.0" x2="574.8" y2="396.0" stroke="#7d8aa0" stroke-width="2" />
+<polygon points="574.8,396 583.1,392.5 583.1,399.5" fill="#7d8aa0"/>
+<text x="580.8" y="392.0" font-size="13" fill="#7d8aa0">风</text>
+<circle cx="298.3" cy="437.6" r="6" fill="#b5523b"/>
+<polygon points="350.7,242.1 373.5,272.2 323.2,268.0" fill="#2f3b55" fill-opacity="0.16" stroke="#2f3b55" stroke-width="1.2"/>
+<circle cx="350.7" cy="242.1" r="3.2" fill="#2f3b55"/>
+<text x="339.7" y="234.0" font-size="13" font-weight="700" fill="#2f3b55" text-anchor="middle">1</text>
+<polygon points="331.8,317.7 350.5,350.6 311.6,349.6" fill="#2f3b55" fill-opacity="0.16" stroke="#2f3b55" stroke-width="1.2"/>
+<circle cx="331.8" cy="317.7" r="3.2" fill="#2f3b55"/>
+<text x="332.1" y="309.6" font-size="13" font-weight="700" fill="#2f3b55" text-anchor="middle">1止</text>
+<polygon points="279.1,517.5 260.2,484.8 298.1,484.8" fill="#2f3b55" fill-opacity="0.16" stroke="#2f3b55" stroke-width="1.2"/>
+<circle cx="279.1" cy="517.5" r="3.2" fill="#2f3b55"/>
+<text x="279.1" y="533.6" font-size="13" font-weight="700" fill="#2f3b55" text-anchor="middle">3</text>
+<polygon points="241.4,410.9 206.2,397.0 251.4,374.4" fill="#2f3b55" fill-opacity="0.16" stroke="#2f3b55" stroke-width="1.2"/>
+<circle cx="241.4" cy="410.9" r="3.2" fill="#2f3b55"/>
+<text x="246.8" y="425.7" font-size="13" font-weight="700" fill="#2f3b55" text-anchor="middle">4</text>
+<polygon points="226.5,417.1 214.7,381.1 254.3,391.4" fill="#2f3b55" fill-opacity="0.16" stroke="#2f3b55" stroke-width="1.2"/>
+<circle cx="226.5" cy="417.1" r="3.2" fill="#2f3b55"/>
+<text x="223.4" y="432.8" font-size="13" font-weight="700" fill="#2f3b55" text-anchor="middle">6</text>
+<polygon points="523.5,153.0 525.6,115.3 560.3,144.4" fill="#2f3b55" fill-opacity="0.16" stroke="#2f3b55" stroke-width="1.2"/>
+<circle cx="523.5" cy="153.0" r="3.2" fill="#2f3b55"/>
+<text x="515.7" y="166.3" font-size="13" font-weight="700" fill="#2f3b55" text-anchor="middle">11</text>
+<polygon points="361.5,239.4 383.3,263.4 337.5,261.2" fill="#2f3b55" fill-opacity="0.16" stroke="#2f3b55" stroke-width="1.2"/>
+<circle cx="361.5" cy="239.4" r="3.2" fill="#2f3b55"/>
+<text x="376.1" y="231.3" font-size="13" font-weight="700" fill="#2f3b55" text-anchor="middle">12止</text>
+<polygon points="291.8,478.4 289.2,459.6 297.0,460.2" fill="#2f3b55" fill-opacity="0.16" stroke="#2f3b55" stroke-width="1.2"/>
+<circle cx="291.8" cy="478.4" r="3.2" fill="#2f3b55"/>
+<polygon points="296.2,463.2 289.8,445.4 302.6,445.4" fill="#2f3b55" fill-opacity="0.16" stroke="#2f3b55" stroke-width="1.2"/>
+<circle cx="296.2" cy="463.2" r="3.2" fill="#2f3b55"/>
+<polygon points="292.6,485.1 287.3,467.0 300.1,467.7" fill="#2f3b55" fill-opacity="0.16" stroke="#2f3b55" stroke-width="1.2"/>
+<circle cx="292.6" cy="485.1" r="3.2" fill="#2f3b55"/>
+<polygon points="309.4,468.1 298.4,452.7 306.5,449.4" fill="#2f3b55" fill-opacity="0.16" stroke="#2f3b55" stroke-width="1.2"/>
+<circle cx="309.4" cy="468.1" r="3.2" fill="#2f3b55"/>
+<polygon points="323.7,446.8 305.0,443.9 307.2,437.5" fill="#2f3b55" fill-opacity="0.16" stroke="#2f3b55" stroke-width="1.2"/>
+<circle cx="323.7" cy="446.8" r="3.2" fill="#2f3b55"/>
+<polygon points="314.8,451.6 298.2,442.6 303.3,436.6" fill="#2f3b55" fill-opacity="0.16" stroke="#2f3b55" stroke-width="1.2"/>
+<circle cx="314.8" cy="451.6" r="3.2" fill="#2f3b55"/>
+<polygon points="327.8,418.4 318.4,434.8 308.9,420.3" fill="#2f3b55" fill-opacity="0.16" stroke="#2f3b55" stroke-width="1.2"/>
+<circle cx="327.8" cy="418.4" r="3.2" fill="#2f3b55"/>
+<rect x="258.9" y="393.3" width="108.0" height="135.0" fill="none" stroke="#2f3b55" stroke-width="1" stroke-dasharray="3 3"/>
+<text x="370.9" y="540.3"   font-size="11" fill="#2f3b55">右下放大</text>
+<rect x="730" y="72" width="483.6" height="347.2" fill="none" stroke="#8c7f74" stroke-width="1"/>
+<rect x="730.0" y="72.0" width="483.6" height="210.8" fill="#e6dcb4" fill-opacity="0.6"/>
+<polyline points="742.4,282.8 742.4,72.0" fill="none" stroke="#8c7f74" stroke-width="0.6"/>
+<polyline points="866.4,282.8 866.4,72.0" fill="none" stroke="#8c7f74" stroke-width="0.6"/>
+<polyline points="990.4,282.8 990.4,72.0" fill="none" stroke="#8c7f74" stroke-width="0.6"/>
+<polyline points="1114.4,282.8 1114.4,72.0" fill="none" stroke="#8c7f74" stroke-width="0.6"/>
+<polyline points="730.0,282.8 1213.6,282.8" fill="none" stroke="#8c7f74" stroke-width="0.6"/>
+<polyline points="730.0,189.8 1213.6,189.8" fill="none" stroke="#8c7f74" stroke-width="0.6"/>
+<polyline points="730.0,96.8 1213.6,96.8" fill="none" stroke="#8c7f74" stroke-width="0.6"/>
+<polyline points="841.6,171.2 1052.4,171.2" fill="none" stroke="#8a6a4a" stroke-width="2"/>
+<text x="841.6" y="161.9"   font-size="11" fill="#8a6a4a">那个人的田埂 y=30</text>
+<rect x="754.8" y="362.8" width="86.8" height="37.8" fill="#d9cfbf" stroke="#3a2a28"/>
+<rect x="730.0" y="286.5" width="105.4" height="5.0" fill="#5f7a5a"/>
+<rect x="841.6" y="286.5" width="49.6" height="5.0" fill="#5f7a5a"/>
+<polyline points="797.3,349.4 819.3,328.7" fill="none" stroke="#3a2a28" stroke-width="2"/>
+<polyline points="838.5,289.0 857.1,270.4 878.8,220.8 916.0,171.2 953.2,171.2" fill="none" stroke="#8a6a4a" stroke-width="1.6" stroke-dasharray="5 4"/>
+<circle cx="953.2" cy="171.2" r="4" fill="#8a6a4a"/>
+<text x="934.6" y="182.4"   font-size="11" fill="#8a6a4a">人影</text>
+<polyline points="990.4,127.8 1213.6,127.8" fill="none" stroke="#3a2a28" stroke-width="1.5"/>
+<circle cx="990.4" cy="127.8" r="3.5" fill="#3a2a28"/>
+<circle cx="1176.4" cy="127.8" r="3.5" fill="#3a2a28"/>
+<text x="990.4" y="112.3"  fill="#3a2a28" font-size="11">电线（电杆每 30 米）</text>
+<circle cx="1052.4" cy="127.8" r="2.6" fill="#b5523b"/>
+<circle cx="1067.9" cy="127.8" r="2.6" fill="#b5523b"/>
+<circle cx="1077.2" cy="127.8" r="2.6" fill="#b5523b"/>
+<circle cx="1098.9" cy="127.8" r="2.6" fill="#b5523b"/>
+<circle cx="1108.2" cy="127.8" r="2.6" fill="#b5523b"/>
+<circle cx="1126.8" cy="127.8" r="2.6" fill="#b5523b"/>
+<circle cx="1145.4" cy="127.8" r="2.6" fill="#b5523b"/>
+<text x="1064.8" y="148.9"   font-size="12" font-weight="700" fill="#b5523b">鸟群</text>
+<polyline points="808.5,338.8 1114.4,127.8" fill="none" stroke="#b5523b" stroke-width="1.6" stroke-dasharray="8 4"/>
+<text x="940.8" y="263.0"   font-size="11" fill="#b5523b">飞行路线</text>
+<line x1="808.5" y1="338.8" x2="884.9" y2="196.9" stroke="#c9902e" stroke-width="2" />
+<polygon points="884.9150192983951,196.9150506143231 884.1,205.9 877.9,202.6" fill="#c9902e"/>
+<text x="890.9" y="192.9" font-size="13" fill="#c9902e">太阳</text>
+<polygon points="860.2,273.5 863.2,217.8 914.5,260.8" fill="#2f3b55" fill-opacity="0.16" stroke="#2f3b55" stroke-width="1.2"/>
+<circle cx="860.2" cy="273.5" r="3.2" fill="#2f3b55"/>
+<text x="848.4" y="279.6" font-size="13" font-weight="700" fill="#2f3b55" text-anchor="middle">11</text>
+<circle cx="808.5" cy="338.8" r="3.5" fill="#b5523b"/>
+<text x="736.2" y="409.3"   font-size="11" fill="#8c7f74">稻田一侧（比例尺约为左图的 1/4）</text>
+<text x="730" y="440" font-size="13" font-weight="700" fill="#3a2a28">栖点附近放大（比例尺约为左图的 2.6 倍）</text>
+<rect x="730" y="448" width="280" height="350" fill="none" stroke="#8c7f74" stroke-width="1"/>
+<rect x="730.0" y="770.0" width="280.0" height="28.0" fill="#d9cfbf" fill-opacity="0.5"/>
+<polyline points="730.0,665.0 1010.0,665.0" fill="none" stroke="#3a2a28" stroke-width="1" stroke-dasharray="6 4"/>
+<text x="1006.0" y="660.0"   font-size="11" fill="#8c7f74" text-anchor="end">檐口线</text>
+<polyline points="730.0,659.4 954.0,448.0" fill="none" stroke="#3a2a28" stroke-width="4"/>
+<text x="920.0" y="462.0"  fill="#3a2a28" font-size="11">竹竿</text>
+<line x1="832.2" y1="562.8" x2="946.9" y2="482.5" stroke="#b5523b" stroke-width="2" stroke-dasharray="10 5"/>
+<polygon points="946.8812862004588,482.49929891085355 942.1,490.1 938.1,484.4" fill="#b5523b"/>
+<text x="952.9" y="478.5" font-size="13" fill="#b5523b">主轴 55°</text>
+<line x1="832.2" y1="562.8" x2="877.0" y2="479.6" stroke="#c9902e" stroke-width="2" />
+<polygon points="877.0013357549525,479.59489009338415 876.2,488.6 870.0,485.2" fill="#c9902e"/>
+<text x="883.0" y="475.6" font-size="13" fill="#c9902e">太阳</text>
+<polygon points="815.4,668.5 810.6,633.8 825.0,634.8" fill="#2f3b55" fill-opacity="0.16" stroke="#2f3b55" stroke-width="1.2"/>
+<circle cx="815.4" cy="668.5" r="3.2" fill="#2f3b55"/>
+<text x="802.4" y="672.5" font-size="13" font-weight="700" fill="#2f3b55" text-anchor="middle">2</text>
+<polygon points="826.6,629.3 814.7,596.4 838.5,596.4" fill="#2f3b55" fill-opacity="0.16" stroke="#2f3b55" stroke-width="1.2"/>
+<circle cx="826.6" cy="629.3" r="3.2" fill="#2f3b55"/>
+<text x="828.6" y="650.3" font-size="13" font-weight="700" fill="#2f3b55" text-anchor="middle">3止</text>
+<polygon points="817.5,686.0 807.7,652.4 831.3,653.9" fill="#2f3b55" fill-opacity="0.16" stroke="#2f3b55" stroke-width="1.2"/>
+<circle cx="817.5" cy="686.0" r="3.2" fill="#2f3b55"/>
+<text x="804.5" y="694.0" font-size="13" font-weight="700" fill="#2f3b55" text-anchor="middle">5</text>
+<polygon points="860.9,641.9 840.5,613.5 855.6,607.3" fill="#2f3b55" fill-opacity="0.16" stroke="#2f3b55" stroke-width="1.2"/>
+<circle cx="860.9" cy="641.9" r="3.2" fill="#2f3b55"/>
+<text x="872.9" y="657.9" font-size="13" font-weight="700" fill="#2f3b55" text-anchor="middle">7</text>
+<polygon points="898.0,586.6 863.4,581.2 867.4,569.5" fill="#2f3b55" fill-opacity="0.16" stroke="#2f3b55" stroke-width="1.2"/>
+<circle cx="898.0" cy="586.6" r="3.2" fill="#2f3b55"/>
+<text x="912.0" y="590.6" font-size="13" font-weight="700" fill="#2f3b55" text-anchor="middle">8</text>
+<polygon points="874.9,599.2 844.2,582.5 853.6,571.4" fill="#2f3b55" fill-opacity="0.16" stroke="#2f3b55" stroke-width="1.2"/>
+<circle cx="874.9" cy="599.2" r="3.2" fill="#2f3b55"/>
+<text x="886.9" y="616.2" font-size="13" font-weight="700" fill="#2f3b55" text-anchor="middle">9</text>
+<polygon points="908.5,513.1 891.1,543.5 873.7,516.6" fill="#2f3b55" fill-opacity="0.16" stroke="#2f3b55" stroke-width="1.2"/>
+<circle cx="908.5" cy="513.1" r="3.2" fill="#2f3b55"/>
+<text x="922.5" y="515.1" font-size="13" font-weight="700" fill="#2f3b55" text-anchor="middle">10</text>
+<circle cx="832.2" cy="562.8" r="6" fill="#b5523b"/>
+<text x="792.2" y="554.8"   font-size="12" font-weight="700" fill="#b5523b">栖点</text>
+<text x="24" y="760" font-size="14" font-weight="700" fill="#3a2a28">图例</text>
+<g transform="translate(24,786)"><line x1="0" y1="0" x2="34" y2="0" stroke="#b5523b" stroke-width="2" stroke-dasharray="10 5"/></g>
+<text x="70" y="790" font-size="13" fill="#3a2a28">主轴：栖点 → 鸟群，方位角 55°；往右就是去稻田</text>
+<g transform="translate(624,786)"><line x1="0" y1="0" x2="34" y2="0" stroke="#8a6a4a" stroke-width="2.4" stroke-dasharray="7 5"/></g>
+<text x="670" y="790" font-size="13" fill="#3a2a28">人的路线：玄关 → 水洼 W1 → 停步点 → 院门 → 田埂</text>
+<g transform="translate(24,816)"><line x1="0" y1="0" x2="34" y2="0" stroke="#c9902e" stroke-width="2"/></g>
+<text x="70" y="820" font-size="13" fill="#3a2a28">太阳方位 28.3°（高度 27.4° → 16° → 落山）</text>
+<g transform="translate(624,816)"><polygon points="0,0 34,-9 34,9" fill="#2f3b55" fill-opacity="0.16" stroke="#2f3b55"/></g>
+<text x="670" y="820" font-size="13" fill="#3a2a28">机位与视野；1、12 是回看屋子的反向机位，10 是迎面的中性机位</text>
+<g transform="translate(24,846)"><line x1="0" y1="0" x2="34" y2="0" stroke="#e3a24a" stroke-width="6"/></g>
+<text x="70" y="850" font-size="13" fill="#3a2a28">第 12 镜亮灯的格子门</text>
+<g transform="translate(624,846)"><line x1="0" y1="0" x2="34" y2="0" stroke="#3a2a28" stroke-width="1" stroke-dasharray="6 4"/></g>
+<text x="670" y="850" font-size="13" fill="#3a2a28">檐口线：栖点在线外，所以麻雀淋湿</text>
+<g transform="translate(24,876)"><circle cx="17" cy="0" r="6" fill="#b5523b"/></g>
+<text x="70" y="880" font-size="13" fill="#3a2a28">栖点：麻雀全片停在竹竿的这一点</text>
+<g transform="translate(624,876)"><rect x="0" y="-8" width="34" height="16" fill="none" stroke="#2f3b55" stroke-dasharray="3 3"/></g>
+<text x="670" y="880" font-size="13" fill="#3a2a28">虚线框：右下放大图的范围（框里是 2、3止、5、7–10 号机位）</text>
+</svg>

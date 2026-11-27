@@ -1,6 +1,6 @@
 /** S2 占位用的两台近景机位：在麻雀前方偏左约 1 米，长焦，看向竹竿上的麻雀。#155、#156 的正式镜头可以照抄后自行调整，不要改这个文件。 */
-import type { Camera, Vec3 } from "../engine/camera.ts";
-import { poleAt, reference } from "../scene.ts";
+import type { Camera, Vec3 } from "../../../src/kit/engine/camera.ts";
+import { poleAt, reference } from "../../after-rain/scene.ts";
 import { perch } from "./placeholder.ts";
 
 const target = poleAt(perch);

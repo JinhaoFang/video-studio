@@ -40,7 +40,7 @@ spec #S     ─ 确认基线（verify）；由用户决定是否启动派发前�
 能机械判断的规则交给护栏，不靠自觉：
 
 - `pnpm verify`：步骤见 `tools/verify.ts`，运行时每步先打印 `[verify]` 标签；`pnpm verify --static` 跑除测试以外的全部步骤。合并前跑哪一层由工单脚本按改动路径选，配置见 `docs/agents/run-spec.md`。设计负责人用工单脚本的 `verify` 子命令跑它：屏幕只看尾部和一行结论，完整输出进日志，退出码照实，不用 `| tail` 这种会吞掉退出码的写法。
-- 纯代码合成：`node tools/check-guardrails.ts pure-code` 已进入 verify 的静态步骤，检查 `PureCodeSampleA`、`PureCodeSampleB` 及启动入口的即时依赖，拒绝外部媒体、字体和未登记的动态素材路径；本地生成媒体存在时核对哈希。生成清单与重建命令见 `episodes/pure-code-sample/sources.md`，渲染前先运行本期生成器。
+- 纯代码合成：`node tools/check-guardrails.ts pure-code` 已进入 verify 的静态步骤，按 `episodes/pure-code.json` 的登记逐项检查各期纯代码合成及启动入口的即时依赖，拒绝外部媒体、字体和未登记的动态素材路径；本地生成媒体存在时核对哈希。登记表至少要有一项，每个 ID 都须对应 Remotion 实际注册的合成（写法见下文「工具」的 kit 一段）。生成清单与重建命令见各期的 `sources.md`，渲染前先运行该期的生成器。
 - commit-msg 钩子：按 `AGENTS.md` 的格式检查提交信息。
 - CI：开 PR、推送 `ticket/**` 和手动触发时跑 `pnpm verify`，并逐条检查分支上的提交信息，兜住绕过本地钩子的提交。工单分支只有派发时加了 `--allow-push` 才会被推上去。集成分支 `spec/**` 推送时不跑：`land` 合并每张工单前已在本机跑过同样的验证。同一个 PR 的新运行会取消还没跑完的旧运行。本地复现：`pnpm verify`，再 `pnpm check:commits origin/main <分支>`。收尾时工单脚本的 `pr-check` 等 PR 的检查跑完。CI 启动不了时（用户 10-31）：GitHub Actions 的设定不动，改为本机验证。判断办法：`gh run view <运行号>` 里作业一步都没跑就失败，注解写 `The job was not started`（例如 10-29 起的账号计费问题）。在 PR 分支上跑上面两条本地复现命令，把结论评论到 PR，代替这次的 CI 结果。
 
@@ -68,7 +68,7 @@ pnpm 的版本由 `package.json` 的 `packageManager` 固定，本机装的 pnpm
 | 编剧 | 讲什么，按什么顺序讲 | ④ 叙事结构与文案 | `planning.md` |
 | 美术 | 画面静止时长什么样 | ⑤ 画面风格（含色彩、字体）　⑥ 素材来源　⑪ 调色与质感 | `visual-style.md`、`editing.md`「⑪」 |
 | 摄影 | 从哪里看，镜头怎么动 | ⑦ 镜头语言 | `camera.md` |
-| 动作 | 画面里的东西怎么动 | ⑭ 动作（动法、节奏、表演、特效动画） | `visual-style.md` 各动画条目的关键技法；`motion.md` 由纯代码动画正片 spec 补 |
+| 动作 | 画面里的东西怎么动 | ⑭ 动作（动法、节奏、表演、特效动画） | `visual-style.md` 各动画条目的关键技法；[motion.md](../video/motion.md) |
 | 剪辑 | 多长，在哪里切，怎么接 | ⑨ 剪辑（节奏、转场、剪辑手法）　⑩ 画面文字 | `editing.md` |
 | 声音 | 听到什么 | ⑧ 声音（旁白、配乐、音效）　⑫ 混音与响度 | `sound.md` |
 
@@ -103,7 +103,7 @@ pnpm 的版本由 `package.json` 的 `packageManager` 固定，本机装的 pnpm
 
 切点表一个切点一行，写三件事：
 
-- **接法**：从 `docs/video/editing.md`「⑨ 剪辑」里选，例如硬切、切在动作上、遮挡转场、甩镜、图形匹配、焦点转场、光转场、叠化、淡入淡出、跳切、声音先行或延后。其中遮挡转场、甩镜、焦点转场、光转场、淡入淡出、声音先行或延后的条目还没写，由纯代码动画正片 spec 补。
+- **接法**：从 `docs/video/editing.md`「⑨ 剪辑」里选，例如硬切、切在动作上、遮挡转场、甩镜、图形匹配、焦点转场、光转场、叠化、淡入淡出、跳切、声音先行或延后。遮挡、甩镜等接法的特征见[切在动作上](../video/editing.md#切在动作上)至[声音先行或延后](../video/editing.md#声音先行或延后)各条。
 - **两侧要对上什么**：主体位置、屏幕方向、轴线、视线、景别或角度差、动作和道具状态、光和颜色、相机运动、声音。
 - **哪里故意不对上，为什么**。
 
@@ -137,6 +137,34 @@ pnpm 的版本由 `package.json` 的 `packageManager` 固定，本机装的 pnpm
 
 ### 工具
 
+**纯代码动画 kit**。从[小样合成](../../episodes/pure-code-sample/PureCodeSample.tsx)、[样张](../../episodes/pure-code-sample/samples/)和[生成器](../../episodes/pure-code-sample/generate.ts)看调用。新合成在 [纯代码登记表](../../episodes/pure-code.json) 填写 Remotion 注册 ID、源码入口和生成清单。共用入口与清单的版本可合为一项，同目录不同入口各用各的清单。verify 按注册 ID 和入口区分专用加载器，用每项的清单检查该合成和公共启动依赖。
+
+| 模块（相对 `src/kit/`） | 公开接口与用途 |
+|---|---|
+| `engine/random.ts` | `hash`、`rng`、`noise1/2`、`fbm2` 按种子生成可复现的随机数和噪声。 |
+| `engine/timing.ts` | `drawing` 取画张，`hold` 硬停姿势，`progress`、`ease`、`tween` 插值。 |
+| `engine/figure.ts` | `ellipsoid`、`roundCone`、`smin` 组合距离场，`sample`、`field`、`contours` 提取轮廓。 |
+| `engine/ink.ts` | `boil`、`strokes`、`drawStrokes` 把折线画成有压感、带画张抖动的笔画。 |
+| `engine/cel.ts` | `createLayer`、`drawCel`、`placeLayer` 用指定色区、硬边阴影和线条绘制体块。 |
+| `engine/paint.ts` | `paper`、`stroke`、`polygon`、`mottle` 在浮点画布上刷水粉，`toBytes` 输出 RGBA。 |
+| `engine/calligraphy.ts` | `sampleStroke`、`pressureProfile`、`paintCalligraphyStroke`、`paintDropDot` 沿笔画路径刷行楷毛笔字与落墨点。 |
+| `engine/seal.ts` | `sealOutline`、`renderSeal`、`stampStateAt` 刻制带残破与印泥不匀的白文或朱文篆刻印章。 |
+| `engine/camera.ts` | `project`、`directionToView` 和 `layer` 将世界点、光向和不同纵深的底图投到机位。 |
+| `engine/post.ts`、`post-settings.ts` | `createPost(canvas)` 创建摄影链。每帧用 `draw(image, frame, post)` 传入包含 `darkest` 的全部后期参数，用完调用 `dispose`。 |
+| `shots.ts` | `Shot<Surface>` 声明镜头，`filmDuration`、`locateShot`、`collectEvents` 和 `frameToSample` 共用镜头时间表。 |
+| `samples/useFrame.ts` | `useFrame` 等待输入就绪后按帧绘制 Canvas，再应用后期。 |
+| `samples/ModelSheet.tsx` | `ModelSheet` 接收各行参考线、视图和角色绘制函数，输出设定图。 |
+| `samples/ShotPreview.tsx` | `ShotPreview` 接收镜头、后期基准、输入和 surface 构造函数，随播放头预览或指定局部帧出引擎静帧。 |
+| `generation/bake.ts` | Node 端 `bakePlate(paper, output)` 将任意底图烘焙成 PNG。 |
+| `generation/manifest.ts` | `generation` 从源码、数据和运行版本建立缓存，用 `cached`、`platesCached` 核实产物，`save` 写入清单。 |
+| `sound/types.ts`、`dsp.ts` | `EventTable`、`Score`、`SoundDesign` 描述输入，`place`、`reverb` 和 `pcmWav` 处理 48 kHz 采样。 |
+| `sound/voice.ts`、`sound/chirp.ts` | `synthesizeVoice` 根据音高、力度、开口度控制点合成人声，`synthesizeChirp` 根据扫频轨迹和谐波振幅合成鸟叫单音。两者都返回可用 `place` 落位的 `Clip`。参见[《雨后》试听配方](../../episodes/after-rain/auditions/)。 |
+| `sound/score.ts` | `resolveAnchor` 定位乐句，`compileScore` 和 `synthesizeNote` 按乐谱合成独立乐音。 |
+| `sound/mix.ts` | `renderMix(table, score, design, seed, synthesizeSfx, perspective?)` 生成混音与分轨。调用方提供 `(name, seed, options) => Clip`，为事件音效和环境床返回 48 kHz 单声道采样与 `alignmentSample`。参见[小样配方](../../episodes/pure-code-sample/sound/sfx.ts)。 |
+| `sound/measure.ts` | `measure`、`master` 测量响度、真峰值并处理总线，`pitchReport`、`spectrum` 检查音高和频谱。 |
+
+已有的按句工具 `sentence-timing.ts` 用 `sentenceFrame`、`chapterSpans` 定时，`subtitle-schedule.ts` 用 `buildSubtitleSchedule`、`subtitleState` 定字幕条。用法见 [NASA 朋克开场](../../episodes/nasa-punk-opening/README.md)。
+
 画面细节与逐帧运动验收：`pnpm qa crop <视频> <时间点> <x,y…>` 按原始像素裁切一个或多个区域，左上角从 `0,0` 起，默认 600×450，可用 `--width`、`--height` 调整；输出不缩放的 PNG，区域超出画面时报错。`pnpm qa strip <视频> --from <起始帧> --to <结束帧> [--every <帧步长>]` 按从 0 开始的解码帧号取样，包含对齐步长的终点，步长默认 1；每格标帧号和实际呈现时间码，默认 4 列、每页最多 24 格，沿用 `sheet` 的排版与 2000 像素整页上限。两项均支持 `--out` 指定输出目录，详细用法见各自 `--help`。
 
 配音和成片的工具先看 `--help`：逐句配音 `pnpm tts`、等比变速 `node tools/stretch-voice.ts`、配音打分 `pnpm qa voice`、配乐与混音 `node tools/mix-opening.ts`、运动自检 `pnpm qa motion`。本期的复现命令见 [NASA 朋克开场说明](../../episodes/nasa-punk-opening/README.md)。`--help` 里没有的几条：
@@ -144,7 +172,7 @@ pnpm 的版本由 `package.json` 的 `packageManager` 固定，本机装的 pnpm
 - 凭据只从环境变量或 `--env` 指定的文件读，不复制进仓库和日志。
 - `eleven_v4` 不支持 Speed，请求成功不代表生效（[API 研究](../research/nasa-ep04/elevenlabs-api.md)）。
 - 变速总是从原始目录生成到新目录；时间轴读变速后的实测时长，来源说明写明默认倍率和例外。
-- 成片响度用 `pnpm qa loudness` 验收：目标 -16 LUFS、容差 1 LU、真峰值不超过 -1 dBTP，LRA 只报告。
+- 成片响度用 `pnpm qa loudness` 验收：目标 -16 LUFS、容差 1 LU、真峰值不超过 -1 dBTP，LRA 只报告。用 `pnpm qa dropouts` 查成片断音，按 JSON 的帧号和时间码在逐帧电平图里复核低电平段与骤降。默认只报告，显式给检测阈值可判定通过与否。
 - 配音打分的截断标记和运动自检的检出都是复核线索，结合原始转写或画面再下结论。
 
 白板手绘段落可以用外部技能 `srt-whiteboard-animation`（MIT，登记在 `skills-lock.json`）：它把一张线稿按字幕分区，用连续笔迹画成 MP4，作为视频素材放进 Remotion 合成。几点约定：

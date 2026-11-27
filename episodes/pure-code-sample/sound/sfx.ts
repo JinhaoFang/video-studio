@@ -1,8 +1,8 @@
-/** 十四种纯合成音效；对齐点按材质定义的接触/动作极值返回，环境床接受密度曲线；参考电平在混音前统一归一。 */
-import { curve, normalizeReference, random, rate } from "./dsp.ts";
-import type { Clip, SfxName } from "./types.ts";
+/** 十四种纯合成音效；对齐点按材质定义的接触/动作极值返回，环境床接受密度曲线；参考电平在混音前统一归一。 待定事项：无。 */
+import { curve, normalizeReference, random, rate } from "../../../src/kit/sound/dsp.ts";
+import type { Clip, SfxOptions } from "../../../src/kit/sound/types.ts";
 
-export const sfxTiming: Record<SfxName, [number, number]> = {
+const sfxTiming = {
   rain_tail: [4.5, 0],
   eave_drips: [4, 0],
   higurashi: [4, 0],
@@ -17,23 +17,19 @@ export const sfxTiming: Record<SfxName, [number, number]> = {
   pole_spring: [0.8, 0],
   wing_flap: [0.2, 0.09],
   drip_land: [0.18, 0.003],
-};
+} as const;
+export type SfxName = keyof typeof sfxTiming;
 export const synthesizeSfx = (
   name: SfxName,
   seed: number,
-  options: {
-    seconds?: number;
-    ordinal?: number;
-    density?: [number, number][];
-  } = {},
+  options: SfxOptions = {},
 ): Clip => {
   const [defaultDuration, alignment] = sfxTiming[name];
   const seconds = options.seconds ?? defaultDuration;
   const samples = new Float64Array(Math.ceil(seconds * rate));
   const rng = random(seed);
-  const ordinal = options.ordinal ?? 0;
   const twoPi = Math.PI * 2;
-  const cutoff = name === "wing_flap" ? 7000 * 0.76 ** ordinal : 6500;
+  const cutoff = options.cutoffHz ?? (name === "wing_flap" ? 7000 : 6500);
   const alpha = 1 - Math.exp((-twoPi * cutoff) / rate);
   let low = 0,
     dark = 0,

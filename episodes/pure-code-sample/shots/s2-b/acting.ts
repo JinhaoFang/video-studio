@@ -7,13 +7,13 @@
  * anchorsAt 用和 sparrow.ts 同样的颈、头位置估算头部、翼、尾在画面上的位置，只用来放残影的速度线和甩出的水珠。
  * 待定（设计）：甩头的幅度、蓬起的过冲、起飞轨迹的速度和方向是本版自定的。
  */
-import type { V3 } from "../../engine/figure.ts";
-import { add, rotateX, rotateY, rotateZ, sub, toView, viewBasis } from "../../engine/figure.ts";
-import type { Basis, Point } from "../../engine/figure.ts";
-import { hold, tween } from "../../engine/timing.ts";
-import type { Key } from "../../engine/timing.ts";
-import { UNIT } from "../../scene.ts";
-import type { Pose } from "../../sparrow.ts";
+import type { V3 } from "../../../../src/kit/engine/figure.ts";
+import { add, rotateX, rotateY, rotateZ, sub, toView, viewBasis } from "../../../../src/kit/engine/figure.ts";
+import type { Basis, Point } from "../../../../src/kit/engine/figure.ts";
+import { hold, tween } from "../../../../src/kit/engine/timing.ts";
+import type { Key } from "../../../../src/kit/engine/timing.ts";
+import { UNIT } from "../../../after-rain/scene.ts";
+import type { Pose } from "../../../after-rain/sparrow.ts";
 import { shotFrames } from "./staging.ts";
 
 import { beats } from "./timing.ts";

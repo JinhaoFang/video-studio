@@ -4,12 +4,12 @@
  * 相机每帧缓慢连续运动，先极慢推近，起飞后略向右上方跟摇并缓缓停稳在空竹竿与夕光上；
  * 起飞轨迹按画面目标曲线反投影到 3D 空间，确保五次振翅（f80、84、88、92、96）全部清晰可见并平滑飞出画右上角。
  */
-import { focalPx, project } from "../../engine/camera.ts";
-import type { Camera, Vec3 } from "../../engine/camera.ts";
-import { clamp01, ease, mix, progress } from "../../engine/timing.ts";
-import { pole, poleAt, reference } from "../../scene.ts";
-import { restPose } from "../../sparrow.ts";
-import type { Pose } from "../../sparrow.ts";
+import { focalPx, project } from "../../../../src/kit/engine/camera.ts";
+import type { Camera, Vec3 } from "../../../../src/kit/engine/camera.ts";
+import { clamp01, ease, mix, progress } from "../../../../src/kit/engine/timing.ts";
+import { pole, poleAt, reference } from "../../../after-rain/scene.ts";
+import { restPose } from "../../../after-rain/sparrow.ts";
+import type { Pose } from "../../../after-rain/sparrow.ts";
 import { perch } from "../placeholder.ts";
 
 import { DURATION } from "./timing.ts";

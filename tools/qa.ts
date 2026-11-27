@@ -8,6 +8,7 @@ import { cropUsage, runCrop } from "./qa-crop.ts";
 import { framesUsage, runFrames } from "./qa-frames.ts";
 import { sheetUsage, runSheet } from "./qa-sheet.ts";
 import { compareUsage, runCompare } from "./qa-compare.ts";
+import { dropoutsUsage, runDropouts } from "./qa-dropouts.ts";
 import { loudnessUsage, runLoudness } from "./qa-loudness.ts";
 import { sentenceUsage, runSentence } from "./qa-sentence.ts";
 import { voiceUsage, runVoice } from "./qa-voice.ts";
@@ -25,6 +26,7 @@ const commands: Record<
   sheet: { usage: sheetUsage, run: runSheet },
   compare: { usage: compareUsage, run: runCompare },
   loudness: { usage: loudnessUsage, run: runLoudness },
+  dropouts: { usage: dropoutsUsage, run: runDropouts },
   sentence: { usage: sentenceUsage, run: runSentence },
   voice: { usage: voiceUsage, run: runVoice },
   motion: { usage: motionUsage, run: runMotion },

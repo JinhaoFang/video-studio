@@ -4,18 +4,18 @@
  * 做法：同一机位画两遍（雨色一遍、夕光一遍），夕光那遍按光照遮罩盖上去；雨丝和水珠在米制场景里投影；麻雀一拍二，打中的几帧一拍一。
  * 导出名 s1 供镜头登记表使用；时间和事件在 timing.ts。
  */
-import { directionToView, sky } from "../../engine/camera.ts";
-import type { Camera, Vec3 } from "../../engine/camera.ts";
-import { toView, viewBasis } from "../../engine/figure.ts";
-import { drawing, mix, tween } from "../../engine/timing.ts";
-import type { Shot } from "../../model.ts";
-import { drawPole, poleScreen } from "../../pole.ts";
-import { pole, poleAt, reference } from "../../scene.ts";
-import { backlight, drawSparrow, restPose } from "../../sparrow.ts";
-import type { Lighting, Pose } from "../../sparrow.ts";
-import { drawPlate, placeSparrow } from "../../stage.ts";
-import type { PlateImages, Surface } from "../../stage.ts";
-import { rain as rainTone } from "../../tokens.ts";
+import { directionToView } from "../../../../src/kit/engine/camera.ts";
+import type { Camera, Vec3 } from "../../../../src/kit/engine/camera.ts";
+import { toView, viewBasis } from "../../../../src/kit/engine/figure.ts";
+import { drawing, mix, tween } from "../../../../src/kit/engine/timing.ts";
+import type { Shot } from "../../../../src/kit/shots.ts";
+import { drawPole, poleScreen } from "../../../after-rain/pole.ts";
+import { pole, poleAt, reference, sky } from "../../../after-rain/scene.ts";
+import { backlight, drawSparrow, restPose } from "../../../after-rain/sparrow.ts";
+import type { Lighting, Pose } from "../../../after-rain/sparrow.ts";
+import { drawPlate, placeSparrow } from "../../../after-rain/stage.ts";
+import type { PlateImages, Surface } from "../../../after-rain/stage.ts";
+import { rain as rainTone } from "../../../after-rain/tokens.ts";
 import { perch } from "../placeholder.ts";
 import { cameraProgress, DRIP_ENTER, DRIP_FALL, DRIP_HIT, LIGHT_ON_BIRD, s1Timing } from "./timing.ts";
 import { drawDrop, drawEaveDrips, drawRain, drawRipples, fasciaPoint, lightMask, splash } from "./weather.ts";

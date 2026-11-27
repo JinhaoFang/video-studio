@@ -2,8 +2,8 @@
  * 镜头 S1「雨停」的时间：时长、画面事件，以及决定事件帧的几条时间曲线（雨量、光到达的纵深、相机推进、水珠）。
  * 不依赖浏览器，镜头和生成器都读；帧号都是镜头内帧号。光的前沿用"已经照到的最近纵深"（米）表示，从远处扫到近处。
  */
-import { ease, progress } from "../../engine/timing.ts";
-import type { ShotTiming } from "../../model.ts";
+import { ease, progress } from "../../../../src/kit/engine/timing.ts";
+import type { ShotTiming } from "../../../../src/kit/shots.ts";
 
 export const DURATION = 168;
 

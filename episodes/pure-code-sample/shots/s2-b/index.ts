@@ -6,15 +6,15 @@
  * 导出名 s2 和登记表 shots/index.ts 对应；画面事件由 timing.ts 提供，保持原表演与弹道计算的帧号。
  * 待定（设计）：后期只沿用引擎静帧（PureCodeEngineStill）的两个覆盖值；镜头 1 定稿后如有自己的后期参数，这里跟着对齐。
  */
-import type { Camera, Vec3 } from "../../engine/camera.ts";
-import type { Point } from "../../engine/figure.ts";
-import type { Shot } from "../../model.ts";
-import { drawPole, poleScreen } from "../../pole.ts";
-import { pole, poleAt } from "../../scene.ts";
-import { backlight, drawSparrow } from "../../sparrow.ts";
-import type { SparrowView } from "../../sparrow.ts";
-import { placeSparrow } from "../../stage.ts";
-import type { Surface } from "../../stage.ts";
+import type { Camera, Vec3 } from "../../../../src/kit/engine/camera.ts";
+import type { Point } from "../../../../src/kit/engine/figure.ts";
+import type { Shot } from "../../../../src/kit/shots.ts";
+import { drawPole, poleScreen } from "../../../after-rain/pole.ts";
+import { pole, poleAt } from "../../../after-rain/scene.ts";
+import { backlight, drawSparrow } from "../../../after-rain/sparrow.ts";
+import type { SparrowView } from "../../../after-rain/sparrow.ts";
+import { placeSparrow } from "../../../after-rain/stage.ts";
+import type { Surface } from "../../../after-rain/stage.ts";
 import { actingAt, anchorsAt, drawingAt, flightHeading, smearAt } from "./acting.ts";
 import type { Acting, Anchors, Drawing } from "./acting.ts";
 import { drawBackground } from "./background.ts";

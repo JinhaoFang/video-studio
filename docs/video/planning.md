@@ -264,6 +264,47 @@
 - **样片**：[《Spring》][spring]（CC BY 4.0，见[许可][spring-license]；仅在线观看结构，不搬运）。
 - **出处**：[Reich 第 3 章：开端、中段、结尾与冲突发展][story]。
 
+### 起承转合
+
+- **一句话**　用「起」建立情境，「承」延展已经建立的人物关系或处境，「转」改变局面或观众对它的理解，「合」收束开头提出的事情。
+- **适合**　围绕一次明显变化展开的短篇叙事。「转」可以是处境或情绪的改观。
+- **标志特征**　「承」接得上「起」提出的问题或形象。「转」前后有可指认的变化，「合」让观众看见这种变化的结果，并和开头形成照应。
+- **关键技法**　人物的选择、新信息或环境变化都能承担「转」。四个字描述段落作用，篇幅由具体内容决定。[「目标、阻力与变化」](#目标阻力与变化)
+- **出处**　[传杨载《诗法家数》〈绝句〉与〈律诗要法〉的起、承、转、合][yang-zai]。
+
+### 无对白叙事
+
+- **一句话**　让观众从角色的行动、反应和可听见的线索推断发生了什么、角色想要什么。
+- **适合**　目标和变化能用行动或状态表现的短片，也适合希望减轻语言依赖的故事。
+- **标志特征**　观众能指出角色在关注什么、什么使它改变行动、行动带来什么结果。动作的对象和结果在画面或声音中有明确对应。
+- **关键技法**　视线和反应把人物与画外事物连起来，动作前后的姿势或环境变化交代因果。环境声可提示画外活动，反复出现的声音可以联系分开的事件。前后状态的变化即使很小，也可以承担叙事信息。
+- **样片**　[Blender Studio《Spring》][spring]（CC BY 4.0，仅在线观看，观察动作、反应和声音如何交代信息）。
+- **出处**　[耶鲁 Film Analysis 第 2 部分的表演][yale-acting]、[第 5 部分的画外声][yale-sound]、[Blender Studio《Spring》官方简介及声音规格][spring-license]。
+
+### 伏笔与回收
+
+- **一句话**　前面出现的物件、动作、信息或声音，在后面成为理解结果或揭示的线索。
+- **适合**　需要观众事后认出联系、明白转变有来由，或在结尾想起开头的叙事。
+- **标志特征**　线索第一次出现时有当下的作用。回收时观众能认出前面的元素，并理解它为什么再次有意义。
+- **关键技法**　线索可以藏在有独立作用的行动或玩笑中。后段可以用同一个动作、物件或音型的再次出现建立联系，也可以让前段细节在新情境里显出新的意义。
+- **出处**　[编剧 John August 与 Craig Mazin《Scriptnotes》第 693 期〈Setups That Don’t Feel Like Setups〉文字稿][scriptnotes-setups]。
+
+### 喜剧的三次法则
+
+- **一句话**　两次相似的信息或行动建立预期，第三次的变化给出笑点。
+- **适合**　可被观众迅速认出的重复动作、列举或反复遇到的处境。
+- **标志特征**　前两次有共同的结构，第三次保留足以认出规律的部分，结果、对象或反应出现意外差别。
+- **关键技法**　重复的节奏或构图可以把联系变清楚，第三次的落点靠突然变向或揭示新含义。单次动作里的预备和反应也能形成笑点，三次法则专指有重复预期的一类。
+- **出处**　Mark Shatz、Mel Helitzer《Comedy Writing Secrets》第 3 版〈Bewitched, Bothered, and Bewildered: Triples〉，第 112 页起。[Shatz 在 Writer’s Digest 的同题讲解][shatz-triples]
+
+### 节拍表
+
+- **一句话**　把故事中有意义的事件或变化列成提纲，让每一拍的叙事作用和观众感受看得见。
+- **适合**　叙事短片、尤其靠行动和声音交代内容的台本。也能对照伏笔、回收与情绪曲线。
+- **标志特征**　每一拍有能指认的画面或声音，能说明局面、观众所知或感受有何变化。拿掉承载因果或伏笔的一拍，后面的变化会失去依据。
+- **关键技法**　节拍表可标事件或转变、观众此刻的感受、支撑它的画面或声音，以及伏笔与回收的对应。一拍可以跨镜头，一个镜头也可以含好几拍。[部门交付表](../workflow/README.md#各部门交出什么怎么自查) · [纯代码小样镜头剧本](../../episodes/pure-code-sample/storyboard.md)
+- **出处**　[编剧 John August〈WTF is a beat sheet?〉及其合写提纲实例][august-beats]。
+
 ### 倒叙／非线性
 
 - **一句话**：片中事件的出现次序和实际发生次序不同，例如从结果或故事中段切入。
@@ -313,3 +354,8 @@
 [hero]: https://studio.blender.org/projects/hero/
 [wing-it]: https://studio.blender.org/projects/wing-it/
 [wing-it-license]: https://studio.blender.org/projects/wing-it/pages/licensing/
+[yang-zai]: https://sou-yun.cn/PoemComment.aspx?path=%E5%85%83/%E8%A9%A9%E6%B3%95%E5%AE%B6%E6%95%B8
+[yale-acting]: https://filmanalysis.yale.edu/mise-en-scene/
+[scriptnotes-setups]: https://johnaugust.com/2025/scriptnotes-episode-693-setups-that-dont-feel-like-setups-transcript
+[shatz-triples]: https://www.writersdigest.com/there-are-no-rules/comedy-writing-secrets-triples
+[august-beats]: https://johnaugust.com/2010/wtf-is-a-beat-sheet

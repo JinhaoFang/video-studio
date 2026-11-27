@@ -2,7 +2,7 @@
  * S2 B 版的 Node/浏览器共用镜头元数据；表演事件从 acting.ts 迁出，水珠落地帧保留原 drops.ts 弹道计算结果 95/97/100/102/104/109。
  * 事件帧是画张第一次到达该姿势的帧：一缩最紧的画张从第 5 帧起，第一次甩到端点的画张从第 9 帧起（acting.ts 的 held、swing），drops.ts 第一批甩水也从第 9 帧起。
  */
-import type { PictureEvent, ShotTiming } from "../../model.ts";
+import type { PictureEvent, ShotTiming } from "../../../../src/kit/shots.ts";
 
 export const DURATION = 144;
 export const beats = {

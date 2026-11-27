@@ -1,40 +1,28 @@
-/** 两版 312 帧成片的 Canvas → WebGL 入口；镜头内帧驱动画面和摄影，镜头切换同时应用各自后期覆盖，声音读取对应全片事件表生成的混音。 */
-import { useCallback, useMemo, useRef } from "react";
+/** 两版成片共用镜头预览。按全片帧定位镜头，传入镜头内帧，各自加载对应的生成混音。 */
 import { Audio } from "@remotion/media";
 import { AbsoluteFill, staticFile, useCurrentFrame } from "remotion";
-import { defaultPost } from "./engine/post.ts";
-import { height, shotTable, width } from "./model.ts";
+import { ShotPreview } from "../../src/kit/samples/ShotPreview.tsx";
+import { locateShot } from "../../src/kit/shots.ts";
+import { defaultPost } from "../after-rain/tokens.ts";
+import { shotTable } from "./model.ts";
 import { shots } from "./shots/index.ts";
-import { useFrame } from "./samples/useFrame.ts";
-import { usePlates } from "./samples/usePlates.ts";
-import type { PlateSets } from "./samples/usePlates.ts";
+import { surface, usePlates } from "./samples/usePlates.ts";
 
 export type PureCodeSampleProps = { variant: "a" | "b" };
 
 export const PureCodeSample: React.FC<PureCodeSampleProps> = ({ variant }) => {
-  const frame = useCurrentFrame();
-  const canvas = useRef<HTMLCanvasElement>(null);
-  const plates = usePlates();
-  const row = shotTable.find(
-    (item) =>
-      frame >= item.startFrame &&
-      frame < item.startFrame + item.durationInFrames,
-  );
-  if (!row) throw new Error("当前帧不属于镜头时间表。");
-  const current =
+  const { row, localFrame } = locateShot(shotTable, useCurrentFrame());
+  const inputs = usePlates();
+  const shot =
     row.id === "S1" ? shots.s1 : shots[variant === "a" ? "s2-a" : "s2-b"];
-  const localFrame = frame - row.startFrame;
-  const post = useMemo(() => ({ ...defaultPost, ...current.post }), [current]);
-  const render = useCallback(
-    (context: CanvasRenderingContext2D, f: number, images: PlateSets) =>
-      current.draw({ context, ...images }, f),
-    [current],
-  );
-  useFrame(canvas, localFrame, plates, render, post);
   return (
-    <AbsoluteFill>
-      <canvas ref={canvas} width={width} height={height} />
-    </AbsoluteFill>
+    <ShotPreview
+      shot={shot}
+      inputs={inputs}
+      surface={surface}
+      defaults={defaultPost}
+      frame={localFrame}
+    />
   );
 };
 

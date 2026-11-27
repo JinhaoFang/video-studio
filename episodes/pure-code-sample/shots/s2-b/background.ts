@@ -10,13 +10,13 @@
  * 4. 画右上方（云缝下方的那片天）画一团径向的夕光柔光：开头只有下沿探进画面，相机上摇后亮的一角露出来。
  * 待定（设计）：色带的分段、色阶级数、提亮量、光斑的数量和大小、柔光的范围是本版自定的，见汇报的推断清单。
  */
-import { layer, project } from "../../engine/camera.ts";
-import type { Camera } from "../../engine/camera.ts";
-import { fbm2, hash } from "../../engine/random.ts";
-import { reference } from "../../scene.ts";
-import { drawPlate } from "../../stage.ts";
-import type { PlateImages } from "../../stage.ts";
-import { dusk, warm } from "../../tokens.ts";
+import { layer, project } from "../../../../src/kit/engine/camera.ts";
+import type { Camera } from "../../../../src/kit/engine/camera.ts";
+import { fbm2, hash } from "../../../../src/kit/engine/random.ts";
+import { reference } from "../../../after-rain/scene.ts";
+import { drawPlate } from "../../../after-rain/stage.ts";
+import type { PlateImages } from "../../../after-rain/stage.ts";
+import { dusk, warm } from "../../../after-rain/tokens.ts";
 
 const frameSize = { width: 1920, height: 1080 };
 const low = { width: 320, height: 180 };

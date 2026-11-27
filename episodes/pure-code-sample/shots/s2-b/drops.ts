@@ -5,17 +5,17 @@
  * 因为它们的位置种子带画张号，每换一张画就跳位。竹竿回弹时水珠逐颗被甩下、做抛体运动，
  * 落地事件的帧号保留在 timing.ts（原弹道计算结果）；位置全部按固定种子和帧号算，不带状态。
  */
-import type { Point } from "../../engine/figure.ts";
-import { resample, smooth } from "../../engine/figure.ts";
-import { tracePath } from "../../engine/cel.ts";
-import { boil, drawStrokes, strokes } from "../../engine/ink.ts";
-import { hash } from "../../engine/random.ts";
-import { poleScreen } from "../../pole.ts";
-import { pole, UNIT } from "../../scene.ts";
-import { dusk, ink, warm } from "../../tokens.ts";
+import type { Point } from "../../../../src/kit/engine/figure.ts";
+import { resample, smooth } from "../../../../src/kit/engine/figure.ts";
+import { tracePath } from "../../../../src/kit/engine/cel.ts";
+import { boil, drawStrokes, strokes } from "../../../../src/kit/engine/ink.ts";
+import { hash } from "../../../../src/kit/engine/random.ts";
+import { poleScreen } from "../../../after-rain/pole.ts";
+import { pole, UNIT } from "../../../after-rain/scene.ts";
+import { dusk, ink, warm } from "../../../after-rain/tokens.ts";
 import type { Anchors } from "./acting.ts";
 import { poleSag } from "./staging.ts";
-import type { Camera } from "../../engine/camera.ts";
+import type { Camera } from "../../../../src/kit/engine/camera.ts";
 
 const channels = (hex: string) => [1, 3, 5].map((at) => parseInt(hex.slice(at, at + 2), 16));
 const mixHex = (a: string, b: string, t: number) => {

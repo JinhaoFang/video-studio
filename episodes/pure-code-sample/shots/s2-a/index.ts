@@ -4,11 +4,11 @@
  * 衔接 S1 末尾麻雀闭眼湿毛的状态，依次完成一缩、甩水、蓬起停住、睁眼眨眼、抬头看光、压身蓄力、蹬离振翅出画、
  * 空竹竿回弹甩水与相机停稳在夕光余韵上的完整表演。
  */
-import type { Shot } from "../../model.ts";
-import { drawPole } from "../../pole.ts";
-import { backlight, drawSparrow } from "../../sparrow.ts";
-import { placeSparrow } from "../../stage.ts";
-import type { Surface } from "../../stage.ts";
+import type { Shot } from "../../../../src/kit/shots.ts";
+import { drawPole } from "../../../after-rain/pole.ts";
+import { backlight, drawSparrow } from "../../../after-rain/sparrow.ts";
+import { placeSparrow } from "../../../after-rain/stage.ts";
+import type { Surface } from "../../../after-rain/stage.ts";
 import { drawTelephotoBackdrop } from "./backdrop.ts";
 import {
   cameraAt,

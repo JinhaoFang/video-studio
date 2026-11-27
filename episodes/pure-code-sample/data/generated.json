@@ -6,92 +6,112 @@
     "episodes/pure-code-sample/generate.ts"
   ],
   "status": "complete",
-  "cacheKey": "09315a4c5a59dbdfbabbb6aa917d659763b77d3d77160514f4c62ab4740fb1df",
-  "plateKey": "14bcf98175da2ace59e6165cc1bd837852205dc94234c93dce4e29ed822ec006",
+  "cacheKey": "e9aa243440911b1afd865c4a80b312d6d1a123469e4969597cebc8c70c889a27",
+  "plateKey": "3c3ca98596cd10dac73d0e76f7823b0eaf2accd83cefdf85edf2ae6eff44f0eb",
   "inputs": [
     {
       "path": "episodes/pure-code-sample/generate.ts",
-      "sha256": "7c066c0b054db84372edbede0729779cbd1d058d04793afd2dda9420ddb3d8cf"
+      "sha256": "beac0f94cf40baed9454f522a10bee39781272cc9bf486c01b6df561f2b667ac"
     },
     {
-      "path": "episodes/pure-code-sample/model.ts",
-      "sha256": "7557acd064c82f9ee5d3904678edb3c6a932f5d2ff6c2cbb31366580363e5ec4"
+      "path": "src/kit/generation/bake.ts",
+      "sha256": "37db79982ef2c10c07e2c6027c63a2288f7211004045c966da2eefba4fd76edc"
     },
     {
-      "path": "episodes/pure-code-sample/plates.ts",
-      "sha256": "da66d00f5049076336559ea665d28778a237ef9596db12a5c20d764653d3bdc2"
+      "path": "src/kit/generation/manifest.ts",
+      "sha256": "89bb11dfef5e8724ff0fbf429a18e6a832a5ab5189ca8ded9017faeb85fa28f5"
     },
     {
-      "path": "episodes/pure-code-sample/scene.ts",
-      "sha256": "a056ffb27eebff1d424d1d972de315331aed20c0bee16cd02e4e4aecee42faff"
+      "path": "episodes/after-rain/plates.ts",
+      "sha256": "f836d15e0c2642596b90e787f366dd620cc535ba997ecf5e8ab075eb40e6288b"
     },
     {
-      "path": "episodes/pure-code-sample/tokens.ts",
-      "sha256": "3b68663886cc0ff8c26845f61d2f7e35fe8f52fdefb310ce33a5d426019d133e"
+      "path": "episodes/after-rain/scene.ts",
+      "sha256": "5f68ad435107dd46020444d10744d4d38ddc90750620e08b6d9a6b90614cb6a1"
     },
     {
-      "path": "episodes/pure-code-sample/engine/paint.ts",
-      "sha256": "2142e7717b5ecf1e77a54be2dc0b00ed8ec8de450f99f6c9a6593b80013191cc"
+      "path": "episodes/after-rain/tokens.ts",
+      "sha256": "8b6e6d55805c850c92e5455a3117803633a30e52b7959ba4d294bd9716aa539d"
     },
     {
-      "path": "episodes/pure-code-sample/engine/random.ts",
-      "sha256": "a30da1124e65b04a840da264b014d0e37d1c1451561bf6949c6044e561fb548c"
+      "path": "src/kit/engine/paint.ts",
+      "sha256": "453b6d66ab892542405f70d8f6b430a60600050b1b9c6fcc4cd40989407540b0"
     },
     {
-      "path": "episodes/pure-code-sample/engine/camera.ts",
-      "sha256": "16f06a77ddc205575bfd3042718c69bbbd48de1faeb4ac05111a53fe0cd8516b"
+      "path": "src/kit/engine/random.ts",
+      "sha256": "ae65ccebbdbdc26186e38122b1508e4a5a5d17cf916976efc4b9cdf2a5ec09a1"
     },
     {
-      "path": "episodes/pure-code-sample/engine/figure.ts",
-      "sha256": "e16de01d0c45b8e19755b6f9e7fd69cfaa668c3acfcf41787c6e46ce79a9d440"
+      "path": "src/kit/engine/camera.ts",
+      "sha256": "3786b65ff3a5f3444b233ac87d61d9be44c675a75a016f4a78827d9d8d4c21ca"
     },
     {
-      "path": "episodes/pure-code-sample/engine/timing.ts",
-      "sha256": "8426122d6aede3622669f33df41600af71e6d5e7097bd9eebb223ff0bd5c5ab1"
+      "path": "src/kit/engine/figure.ts",
+      "sha256": "07573e85f2797fa0cf54d0996ae5f40b8e6c835f0949f9bf26f48cbe2eb582d3"
     },
     {
-      "path": "episodes/pure-code-sample/shots/s1/timing.ts",
-      "sha256": "199609930d1829f35593607d8d8a8e74c4806d9c9530588571c59d9ce99d3e3e"
-    },
-    {
-      "path": "episodes/pure-code-sample/shots/s2-a/timing.ts",
-      "sha256": "85e2cc7330a54f02bc7fe7423530eb0fb35d0be719c2f16a485904ac9bf93623"
-    },
-    {
-      "path": "episodes/pure-code-sample/shots/s2-b/timing.ts",
-      "sha256": "e31a805a0d2bac0394d5729406f0e6af24bbaa592487884f4492e43a98d91e38"
-    },
-    {
-      "path": "episodes/pure-code-sample/sound/types.ts",
-      "sha256": "60a1f0576fb0f2fc61014b6eb2587dcec3c9bc47d0653d88e89cbe2689ce7d1e"
-    },
-    {
-      "path": "episodes/pure-code-sample/sound/dsp.ts",
-      "sha256": "d31e36199bee567a54a30ee3231222056b146f787d13f9f369d35fddba27cd93"
-    },
-    {
-      "path": "episodes/pure-code-sample/sound/score.ts",
-      "sha256": "b2904417b7c2b5b42ad9f3f1c82f497b1de7d2b4cdb8c31fd2114980d2c4106b"
-    },
-    {
-      "path": "episodes/pure-code-sample/sound/sfx.ts",
-      "sha256": "fc0987427104f8976585f91152724871849e5ded8a41abf094dbc5e966587e71"
-    },
-    {
-      "path": "episodes/pure-code-sample/sound/mix.ts",
-      "sha256": "c6642064ead912485ccec9fff014bb048ee3601549442de45adaa7a82bba9b2b"
-    },
-    {
-      "path": "episodes/pure-code-sample/sound/measure.ts",
-      "sha256": "525e7e5013c3ac075f6f351666437958cdaa44d5ccd5b627aa4c6ecb15e5f15b"
+      "path": "episodes/pure-code-sample/sound/inputs.ts",
+      "sha256": "f3d1b4de5f2316300800163fadfc35cea6ed48df5e640b478c1f9117cd90f08d"
     },
     {
       "path": "episodes/pure-code-sample/sound/render.ts",
-      "sha256": "76a0a067ba5922801dca74015e12fbc7abd1dfe5140261d76ecbe14440bdb51b"
+      "sha256": "339de18d0918af6276789c915c6ff25bfb8437d74e7e011281f019a20d9d0566"
+    },
+    {
+      "path": "episodes/pure-code-sample/sound/perspective.ts",
+      "sha256": "61cd6d87bfd817ff8b8875d0f1cc8305ebbad0481a30216f0295f61652aafc5c"
+    },
+    {
+      "path": "episodes/pure-code-sample/sound/sfx.ts",
+      "sha256": "3f379962419fced8eff4eb391f051269efc9aacad07060266ad974cab77ec903"
+    },
+    {
+      "path": "src/kit/shots.ts",
+      "sha256": "6b390030526f769262d85bea18344132a4be5d0331dbce13aec3d2d25dcc767a"
+    },
+    {
+      "path": "src/kit/sound/types.ts",
+      "sha256": "ae0c986c98463cddf877b317c808d415395e5ef7bb5c859155efbfedcbaaafd0"
+    },
+    {
+      "path": "src/kit/sound/dsp.ts",
+      "sha256": "faf5169f93f72aa0875f0aac91f412911b8da00792483247266cc46f2f30c5d3"
+    },
+    {
+      "path": "src/kit/sound/score.ts",
+      "sha256": "7e4e99102405d73fedcf47bac10a84bedc4321b9059dc07f6d111e97d458f5f2"
+    },
+    {
+      "path": "src/kit/sound/mix.ts",
+      "sha256": "c4e767a1fe4814a2fc0d68b781ffa08980b57615953607273a0b201d858d02b6"
+    },
+    {
+      "path": "src/kit/sound/measure.ts",
+      "sha256": "476c2807d15c7267cf1ccd5471752d19bcf06e224673dc4ce2734d2410c76a09"
     },
     {
       "path": "tools/cli.ts",
       "sha256": "bb85d29fc777b6c06b285a9aed616251bb0812bf1086afb69310e997d3cf5ae0"
+    },
+    {
+      "path": "episodes/pure-code-sample/model.ts",
+      "sha256": "028f5d8e3f8e279290f926fac252fa49dd8c082c5882338115733dbf3c3733a4"
+    },
+    {
+      "path": "src/kit/engine/timing.ts",
+      "sha256": "04e9c5f93180379ffb0e42d2605c0282b6931b26d9f9897717301fda0cc2471f"
+    },
+    {
+      "path": "episodes/pure-code-sample/shots/s1/timing.ts",
+      "sha256": "1dee6c390296c6eab022a8a9c0d342e7b3fe6c21de500e5a89f21725bbca8741"
+    },
+    {
+      "path": "episodes/pure-code-sample/shots/s2-a/timing.ts",
+      "sha256": "8a5d18fed3f5e0db86c17a1f415fec07957986227620b85c45dfe9ca75dc48b8"
+    },
+    {
+      "path": "episodes/pure-code-sample/shots/s2-b/timing.ts",
+      "sha256": "5513b89131913b35a5d0c42cfbaad7ea10acdc3085e32eb7de269cb80100bba5"
     }
   ],
   "dataInputs": [
@@ -119,43 +139,43 @@
     },
     {
       "path": "episodes/pure-code-sample/plate-far-rain.png",
-      "sha256": "2426e0d8015300f9244a9aa2c045a95a23a52771f4dfed52d90c6086c9432126"
+      "sha256": "22962d1dc70b9f66dd2a4893a8aa82d2b5a1aba1efb34f205d23b3226601e410"
     },
     {
       "path": "episodes/pure-code-sample/plate-far-dusk.png",
-      "sha256": "c810244caa60f995ee6c998b5a14afbc30b5750e54537eb2810c0ae5e487f97e"
+      "sha256": "cc45e5cdf6c53b97e1bdadb5f14c24bee1149c4c76ebf1c0fc8c1fd620fae23c"
     },
     {
       "path": "episodes/pure-code-sample/plate-field-rain.png",
-      "sha256": "606661b171052710765d26a440c9a3607c2e4055f1a1a359e301a8c290d867d8"
+      "sha256": "090ea8d70e38c3ee5aa288466435389559ff023f6cdd435cdb2b8470dc2ee888"
     },
     {
       "path": "episodes/pure-code-sample/plate-field-dusk.png",
-      "sha256": "fdf6d3a50d5ad34151ce2d86bc21a0641cc8a93afc1f6007ed60c82fddecf7c1"
+      "sha256": "95307d961cd6002532e466a0b5fadad74976b4614d5104a95b49a8ecedaf5ac1"
     },
     {
       "path": "episodes/pure-code-sample/plate-hedge-rain.png",
-      "sha256": "f76d633b57ab5a8c5b64ca24d15429114476d9d5588f1a8004afefcb82942fe3"
+      "sha256": "71b27185d9d57f7538528aecd44d45a3f0ccb9e8a8243bbc32f285cbf35de2b0"
     },
     {
       "path": "episodes/pure-code-sample/plate-hedge-dusk.png",
-      "sha256": "21f20977fea5ee60e728d7655e2d35aa691eacb86756a6da10d102eb3c504d90"
+      "sha256": "fdfd2d29d91e822c4704ae8c9062487f80b3307e8a388491cd20861f5f5f9ab8"
     },
     {
       "path": "episodes/pure-code-sample/plate-yard-rain.png",
-      "sha256": "4a225d07651a28919e3f848fa2c420fe43ecb2594bf7b26450215ff877972525"
+      "sha256": "16942bba4728c2eeddf7a28d4959854dcec989da3ef4b487f314bc5f6ef83d42"
     },
     {
       "path": "episodes/pure-code-sample/plate-yard-dusk.png",
-      "sha256": "bb03ef0cf891e3430d80a85a257455accbdf81430ba5f09c0d2f3de38a6783c0"
+      "sha256": "9f67727fcad809d549697a72473720dcdb5d53136218422535121b889c7ed39c"
     },
     {
       "path": "episodes/pure-code-sample/plate-eaves-rain.png",
-      "sha256": "c33c1a65063e110346a6d6a9491cc18bf0d0d668cbd48e529d4739aebeb3ca59"
+      "sha256": "d7910b575205b26c8e3227a25abf3771a06fc0c8383f255de179172d49bced9d"
     },
     {
       "path": "episodes/pure-code-sample/plate-eaves-dusk.png",
-      "sha256": "862b04571098853eaf67fc9e7ca4936cb3980a40f86a2c0a1b47806808092fd5"
+      "sha256": "d915fbd883eea32202eefd3a501575f3d2f0e381c06c3b34018c95d988e25170"
     },
     {
       "path": "episodes/pure-code-sample/mix-a.wav",
@@ -166,27 +186,15 @@
       "sha256": "0d9d13b2c0979a50657ef8fcda3eed7fe0d8a17a2b44c19e2889c14cfd42c5e8"
     }
   ],
-  "eventTables": [
-    {
-      "variant": "a",
-      "path": "episodes/pure-code-sample/data/events-a.json",
-      "sha256": "5e65cd07cbaff402b9af493604ae846023663b1f093ace767fee711fb042fcfd"
-    },
-    {
-      "variant": "b",
-      "path": "episodes/pure-code-sample/data/events-b.json",
-      "sha256": "1caf45ba14d67fb3112c5d685b5ad832e276309ecd187c3af590d021f264dcfa"
-    }
-  ],
   "audio": {
     "a": {
       "command": [
-        "/usr/bin/node",
+        "node",
         "episodes/pure-code-sample/sound/render.ts",
         "--events",
         "episodes/pure-code-sample/data/events-a.json",
         "--out",
-        "/root/project/video-studio/out/qa/spec-147/159/sound-a",
+        "out/qa/spec-147/159/sound-a",
         "--seed",
         "158"
       ],
@@ -209,12 +217,12 @@
     },
     "b": {
       "command": [
-        "/usr/bin/node",
+        "node",
         "episodes/pure-code-sample/sound/render.ts",
         "--events",
         "episodes/pure-code-sample/data/events-b.json",
         "--out",
-        "/root/project/video-studio/out/qa/spec-147/159/sound-b",
+        "out/qa/spec-147/159/sound-b",
         "--seed",
         "158"
       ],
@@ -235,5 +243,17 @@
       },
       "measurements": "out/qa/spec-147/159/sound-b/measurements.json"
     }
-  }
+  },
+  "eventTables": [
+    {
+      "variant": "a",
+      "path": "episodes/pure-code-sample/data/events-a.json",
+      "sha256": "5e65cd07cbaff402b9af493604ae846023663b1f093ace767fee711fb042fcfd"
+    },
+    {
+      "variant": "b",
+      "path": "episodes/pure-code-sample/data/events-b.json",
+      "sha256": "1caf45ba14d67fb3112c5d685b5ad832e276309ecd187c3af590d021f264dcfa"
+    }
+  ]
 }

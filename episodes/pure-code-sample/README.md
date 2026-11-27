@@ -59,7 +59,7 @@ spec #147：吸收参照片的方法（[研究记录](../../docs/research/noroi-
 
 #159 将两个镜头和 #158 声音命令接入两版成片：S1 共用，S2 分别取 A、B；S1 为 0–167 帧，S2 为 168–311 帧。画面按镜头内帧号绘制，切镜头时同时切换 `defaultPost` 加各镜头 `post` 覆盖。
 
-- `model.ts`：312 帧时间表、镜头接口、全片事件汇总和帧到采样换算。
+- `model.ts`、`../../src/kit/shots.ts`：312 帧时间表、镜头接口、全片事件汇总和帧到采样换算。
 - `shots/s1/timing.ts`、`shots/s2-{a,b}/timing.ts`：不依赖浏览器的镜头编号、时长与事件。元数据迁移保留原事件帧号；B 版竹竿水珠落地帧为原弹道计算的 95、97、100、102、104、109。
 - `PureCodeSample.tsx`：共用画面组件，加两版各自的字面路径 `staticFile` 混音；共用预览的底图加载和 `delayRender` 绘制等待。
 - `generate.ts`：烘焙雨色/夕光十张底图，生成 `data/events-a.json`、`data/events-b.json` 及其 public 副本，再串行调用 [声音命令](sound/README.md)，将各自混音复制为 `mix-a.wav`、`mix-b.wav`。
@@ -81,7 +81,7 @@ pnpm qa strip out/qa/spec-147/159/pure-code-sample-a.mp4 --from 144 --to 191 --e
 pnpm qa strip out/qa/spec-147/159/pure-code-sample-b.mp4 --from 144 --to 191 --every 1 --out out/qa/spec-147/159/cut-b
 ```
 
-逐条串行运行，不同时开两份渲染。媒体位于 `public/episodes/pure-code-sample/`，验收产物位于 `out/qa/spec-147/159/`，均不进 Git。相关测试：`node --test episodes/pure-code-sample/pipeline.test.ts episodes/pure-code-sample/sound/sound.test.ts`；静态检查 `pnpm verify --static`；完整验证由 land 跑。
+逐条串行运行，不同时开两份渲染。媒体位于 `public/episodes/pure-code-sample/`，验收产物位于 `out/qa/spec-147/159/`，均不进 Git。相关测试：`node --test src/kit/shots.test.ts src/kit/sound/sound.test.ts episodes/pure-code-sample/pipeline.test.ts episodes/pure-code-sample/sound/sound.test.ts`；静态检查 `pnpm verify --static`；完整验证由 land 跑。
 
 **#159 验收**：两版使用 S1 第 51 帧的 `light_break` 重新生成声音，并按上述命令渲染带声成片。两版全部画面事件、交接处 F144–191 连续帧、三帧重复渲染、响度及成本实测见 `out/qa/spec-147/159/report.md`（主工作区）。镜头 1 定稿后继续按上述命令重渲和复查；交接构图、B 版振翅出画由设计负责人在 #157 评价。
 

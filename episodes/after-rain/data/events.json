@@ -1,0 +1,1174 @@
+{
+  "fps": 24,
+  "sampleRate": 48000,
+  "shotTable": [
+    {
+      "id": "s01",
+      "startFrame": 0,
+      "durationInFrames": 144
+    },
+    {
+      "id": "s02",
+      "startFrame": 144,
+      "durationInFrames": 144
+    },
+    {
+      "id": "s03",
+      "startFrame": 288,
+      "durationInFrames": 168
+    },
+    {
+      "id": "s04",
+      "startFrame": 456,
+      "durationInFrames": 72
+    },
+    {
+      "id": "s05",
+      "startFrame": 528,
+      "durationInFrames": 108
+    },
+    {
+      "id": "s06",
+      "startFrame": 636,
+      "durationInFrames": 96
+    },
+    {
+      "id": "s07",
+      "startFrame": 732,
+      "durationInFrames": 120
+    },
+    {
+      "id": "s08",
+      "startFrame": 852,
+      "durationInFrames": 144
+    },
+    {
+      "id": "s09",
+      "startFrame": 996,
+      "durationInFrames": 96
+    },
+    {
+      "id": "s10",
+      "startFrame": 1092,
+      "durationInFrames": 84
+    },
+    {
+      "id": "s11",
+      "startFrame": 1176,
+      "durationInFrames": 192
+    },
+    {
+      "id": "s12",
+      "startFrame": 1344,
+      "durationInFrames": 216
+    }
+  ],
+  "events": [
+    {
+      "frame": 0,
+      "kind": "open",
+      "description": "全片第 0 帧，雨声先进",
+      "shotId": "s01",
+      "localFrame": 0
+    },
+    {
+      "frame": 84,
+      "kind": "lightning",
+      "description": "云里闪一次闪电",
+      "shotId": "s01",
+      "localFrame": 84
+    },
+    {
+      "frame": 110,
+      "kind": "thunder",
+      "description": "画外：远雷，闪电后约 1.1 秒",
+      "shotId": "s01",
+      "localFrame": 110
+    },
+    {
+      "frame": 168,
+      "kind": "companion_call",
+      "description": "画外：画右远处同伴的第一串接触叫",
+      "shotId": "s02",
+      "localFrame": 24
+    },
+    {
+      "frame": 172,
+      "kind": "glance",
+      "description": "抬头转向画右张望，开始转的那一帧",
+      "shotId": "s02",
+      "localFrame": 28
+    },
+    {
+      "frame": 204,
+      "kind": "companion_call",
+      "description": "画外：画右远处同伴的第二串接触叫",
+      "shotId": "s02",
+      "localFrame": 60
+    },
+    {
+      "frame": 208,
+      "kind": "call_weak",
+      "description": "麻雀叫声第 1 声：很弱的接触叫",
+      "shotId": "s02",
+      "localFrame": 64
+    },
+    {
+      "frame": 210,
+      "kind": "claw_shift",
+      "description": "脚爪在竹竿上挪一下",
+      "shotId": "s02",
+      "localFrame": 66
+    },
+    {
+      "frame": 224,
+      "kind": "wing_lift",
+      "description": "翅膀稍稍一抬",
+      "shotId": "s02",
+      "localFrame": 80
+    },
+    {
+      "frame": 236,
+      "kind": "shiver",
+      "description": "打寒战，抖落水珠",
+      "shotId": "s02",
+      "localFrame": 92
+    },
+    {
+      "frame": 248,
+      "kind": "huddle",
+      "description": "缩回去，开始缩的那一帧",
+      "shotId": "s02",
+      "localFrame": 104
+    },
+    {
+      "frame": 288,
+      "kind": "rain_tail",
+      "description": "雨的尾声从第一帧开始渐稀",
+      "shotId": "s03",
+      "localFrame": 0
+    },
+    {
+      "frame": 339,
+      "kind": "light_break",
+      "description": "夕光从云缝里第一次照到远处的稻田",
+      "shotId": "s03",
+      "localFrame": 51
+    },
+    {
+      "frame": 433,
+      "kind": "drip_fall",
+      "description": "檐口那颗长大的水珠离开檐口（画外上方）",
+      "shotId": "s03",
+      "localFrame": 145
+    },
+    {
+      "frame": 439,
+      "kind": "drip_hit",
+      "description": "水珠打中麻雀头顶，它眼睛一闭",
+      "shotId": "s03",
+      "localFrame": 151
+    },
+    {
+      "frame": 446,
+      "kind": "mud_step",
+      "description": "画外：远处传来第一声胶鞋陷泥（3→4 J 切的声音先行）",
+      "shotId": "s03",
+      "localFrame": 158
+    },
+    {
+      "frame": 463,
+      "kind": "basket_creak",
+      "description": "竹篮摆到头吱呀一声",
+      "shotId": "s04",
+      "localFrame": 7
+    },
+    {
+      "frame": 470,
+      "kind": "mud_step",
+      "description": "胶鞋陷进湿泥第 2 步踩实（第 1 步在第 3 镜第 158 帧，画外）",
+      "shotId": "s04",
+      "localFrame": 14
+    },
+    {
+      "frame": 482,
+      "kind": "mud_pull",
+      "description": "胶鞋从泥里拔出，脚跟离地",
+      "shotId": "s04",
+      "localFrame": 26
+    },
+    {
+      "frame": 487,
+      "kind": "basket_creak",
+      "description": "竹篮摆到头吱呀一声",
+      "shotId": "s04",
+      "localFrame": 31
+    },
+    {
+      "frame": 494,
+      "kind": "mud_step",
+      "description": "胶鞋陷进湿泥第 3 步踩实（第 1 步在第 3 镜第 158 帧，画外）",
+      "shotId": "s04",
+      "localFrame": 38
+    },
+    {
+      "frame": 506,
+      "kind": "mud_pull",
+      "description": "胶鞋从泥里拔出，脚跟离地",
+      "shotId": "s04",
+      "localFrame": 50
+    },
+    {
+      "frame": 511,
+      "kind": "basket_creak",
+      "description": "竹篮摆到头吱呀一声",
+      "shotId": "s04",
+      "localFrame": 55
+    },
+    {
+      "frame": 518,
+      "kind": "puddle_step",
+      "description": "最后一步踩进水洼，倒影碎开",
+      "shotId": "s04",
+      "localFrame": 62
+    },
+    {
+      "frame": 527,
+      "kind": "splash_peak",
+      "description": "水花溅到最高，4→5 切点",
+      "shotId": "s04",
+      "localFrame": 71
+    },
+    {
+      "frame": 528,
+      "kind": "flinch",
+      "description": "溅水声一响，麻雀一缩",
+      "shotId": "s05",
+      "localFrame": 0
+    },
+    {
+      "frame": 528,
+      "kind": "call_alarm",
+      "description": "麻雀叫声第 2 声：两个音的警报叫",
+      "shotId": "s05",
+      "localFrame": 0
+    },
+    {
+      "frame": 532,
+      "kind": "windup",
+      "description": "起飞失败的大预备，开始压身",
+      "shotId": "s05",
+      "localFrame": 4
+    },
+    {
+      "frame": 550,
+      "kind": "push_off",
+      "description": "起飞失败蹬竿",
+      "shotId": "s05",
+      "localFrame": 22
+    },
+    {
+      "frame": 552,
+      "kind": "flap_wet",
+      "description": "湿翅膀拼命下扑第 1 下",
+      "shotId": "s05",
+      "localFrame": 24
+    },
+    {
+      "frame": 555,
+      "kind": "flap_wet",
+      "description": "湿翅膀拼命下扑第 2 下",
+      "shotId": "s05",
+      "localFrame": 27
+    },
+    {
+      "frame": 558,
+      "kind": "flap_wet",
+      "description": "湿翅膀拼命下扑第 3 下",
+      "shotId": "s05",
+      "localFrame": 30
+    },
+    {
+      "frame": 559,
+      "kind": "drop_land",
+      "description": "甩出的水珠落到竹竿或地上",
+      "shotId": "s05",
+      "localFrame": 31
+    },
+    {
+      "frame": 561,
+      "kind": "flap_wet",
+      "description": "湿翅膀拼命下扑第 4 下",
+      "shotId": "s05",
+      "localFrame": 33
+    },
+    {
+      "frame": 568,
+      "kind": "hush",
+      "description": "半空悬停开始，不出新音、环境声不断",
+      "shotId": "s05",
+      "localFrame": 40
+    },
+    {
+      "frame": 576,
+      "kind": "drop",
+      "description": "从半空开始掉",
+      "shotId": "s05",
+      "localFrame": 48
+    },
+    {
+      "frame": 582,
+      "kind": "fall_back",
+      "description": "掉回竹竿",
+      "shotId": "s05",
+      "localFrame": 54
+    },
+    {
+      "frame": 584,
+      "kind": "flap_wet",
+      "description": "落回竹竿乱扑保持平衡第 1 下",
+      "shotId": "s05",
+      "localFrame": 56
+    },
+    {
+      "frame": 587,
+      "kind": "flap_wet",
+      "description": "落回竹竿乱扑保持平衡第 2 下",
+      "shotId": "s05",
+      "localFrame": 59
+    },
+    {
+      "frame": 587,
+      "kind": "pole_spring",
+      "description": "竹竿下沉后弹回的第一下",
+      "shotId": "s05",
+      "localFrame": 59
+    },
+    {
+      "frame": 589,
+      "kind": "drop_land",
+      "description": "甩出的水珠落到竹竿或地上",
+      "shotId": "s05",
+      "localFrame": 61
+    },
+    {
+      "frame": 591,
+      "kind": "drop_land",
+      "description": "甩出的水珠落到竹竿或地上",
+      "shotId": "s05",
+      "localFrame": 63
+    },
+    {
+      "frame": 593,
+      "kind": "drop_land",
+      "description": "甩出的水珠落到竹竿或地上",
+      "shotId": "s05",
+      "localFrame": 65
+    },
+    {
+      "frame": 612,
+      "kind": "steady",
+      "description": "在竹竿上稳住并转向画右",
+      "shotId": "s05",
+      "localFrame": 84
+    },
+    {
+      "frame": 622,
+      "kind": "call_small",
+      "description": "麻雀叫声第 3 声：喘着气的一小声",
+      "shotId": "s05",
+      "localFrame": 94
+    },
+    {
+      "frame": 640,
+      "kind": "step_stop",
+      "description": "停步的最后一脚",
+      "shotId": "s06",
+      "localFrame": 4
+    },
+    {
+      "frame": 646,
+      "kind": "toe_turn",
+      "description": "脚尖转向麻雀的一小步踩实",
+      "shotId": "s06",
+      "localFrame": 10
+    },
+    {
+      "frame": 646,
+      "kind": "basket_creak",
+      "description": "竹篮摆到头吱呀一声",
+      "shotId": "s06",
+      "localFrame": 10
+    },
+    {
+      "frame": 651,
+      "kind": "basket_creak",
+      "description": "竹篮摆到头吱呀一声",
+      "shotId": "s06",
+      "localFrame": 15
+    },
+    {
+      "frame": 656,
+      "kind": "toe_turn",
+      "description": "脚尖转向麻雀的一小步踩实",
+      "shotId": "s06",
+      "localFrame": 20
+    },
+    {
+      "frame": 657,
+      "kind": "basket_creak",
+      "description": "竹篮摆到头吱呀一声",
+      "shotId": "s06",
+      "localFrame": 21
+    },
+    {
+      "frame": 680,
+      "kind": "toe_turn",
+      "description": "脚尖转回小路的一小步踩实",
+      "shotId": "s06",
+      "localFrame": 44
+    },
+    {
+      "frame": 688,
+      "kind": "toe_turn",
+      "description": "脚尖转回小路的一小步踩实",
+      "shotId": "s06",
+      "localFrame": 52
+    },
+    {
+      "frame": 690,
+      "kind": "hum_start",
+      "description": "那个人边走边轻轻哼唱起",
+      "shotId": "s06",
+      "localFrame": 54
+    },
+    {
+      "frame": 694,
+      "kind": "mud_step",
+      "description": "离开院子第 1 步踩实",
+      "shotId": "s06",
+      "localFrame": 58
+    },
+    {
+      "frame": 703,
+      "kind": "mud_pull",
+      "description": "胶鞋从湿路抬起离地",
+      "shotId": "s06",
+      "localFrame": 67
+    },
+    {
+      "frame": 709,
+      "kind": "basket_creak",
+      "description": "竹篮摆到头吱呀一声",
+      "shotId": "s06",
+      "localFrame": 73
+    },
+    {
+      "frame": 714,
+      "kind": "mud_step",
+      "description": "离开院子第 2 步踩实",
+      "shotId": "s06",
+      "localFrame": 78
+    },
+    {
+      "frame": 723,
+      "kind": "mud_pull",
+      "description": "胶鞋从湿路抬起离地",
+      "shotId": "s06",
+      "localFrame": 87
+    },
+    {
+      "frame": 729,
+      "kind": "basket_creak",
+      "description": "竹篮摆到头吱呀一声",
+      "shotId": "s06",
+      "localFrame": 93
+    },
+    {
+      "frame": 742,
+      "kind": "shake",
+      "description": "第一次甩水（只甩头）变向",
+      "shotId": "s07",
+      "localFrame": 10
+    },
+    {
+      "frame": 746,
+      "kind": "shake",
+      "description": "第一次甩水（只甩头）变向",
+      "shotId": "s07",
+      "localFrame": 14
+    },
+    {
+      "frame": 752,
+      "kind": "drop_land",
+      "description": "甩出的水珠落到竹竿或地上",
+      "shotId": "s07",
+      "localFrame": 20
+    },
+    {
+      "frame": 760,
+      "kind": "shake",
+      "description": "第二次甩水（连身子）变向",
+      "shotId": "s07",
+      "localFrame": 28
+    },
+    {
+      "frame": 762,
+      "kind": "shake",
+      "description": "第二次甩水（连身子）变向",
+      "shotId": "s07",
+      "localFrame": 30
+    },
+    {
+      "frame": 766,
+      "kind": "shake",
+      "description": "第二次甩水（连身子）变向",
+      "shotId": "s07",
+      "localFrame": 34
+    },
+    {
+      "frame": 768,
+      "kind": "shake",
+      "description": "第二次甩水（连身子）变向",
+      "shotId": "s07",
+      "localFrame": 36
+    },
+    {
+      "frame": 774,
+      "kind": "drop_land",
+      "description": "甩出的水珠落到竹竿或地上",
+      "shotId": "s07",
+      "localFrame": 42
+    },
+    {
+      "frame": 788,
+      "kind": "shake",
+      "description": "第三次甩水（全身猛甩）变向",
+      "shotId": "s07",
+      "localFrame": 56
+    },
+    {
+      "frame": 790,
+      "kind": "shake",
+      "description": "第三次甩水（全身猛甩）变向",
+      "shotId": "s07",
+      "localFrame": 58
+    },
+    {
+      "frame": 792,
+      "kind": "shake",
+      "description": "第三次甩水（全身猛甩）变向",
+      "shotId": "s07",
+      "localFrame": 60
+    },
+    {
+      "frame": 794,
+      "kind": "shake",
+      "description": "第三次甩水（全身猛甩）变向",
+      "shotId": "s07",
+      "localFrame": 62
+    },
+    {
+      "frame": 796,
+      "kind": "shake",
+      "description": "第三次甩水（全身猛甩）变向",
+      "shotId": "s07",
+      "localFrame": 64
+    },
+    {
+      "frame": 798,
+      "kind": "shake",
+      "description": "第三次甩水（全身猛甩）变向",
+      "shotId": "s07",
+      "localFrame": 66
+    },
+    {
+      "frame": 800,
+      "kind": "shake",
+      "description": "第三次甩水（全身猛甩）变向",
+      "shotId": "s07",
+      "localFrame": 68
+    },
+    {
+      "frame": 802,
+      "kind": "shake",
+      "description": "第三次甩水（全身猛甩）变向",
+      "shotId": "s07",
+      "localFrame": 70
+    },
+    {
+      "frame": 806,
+      "kind": "drop_land",
+      "description": "甩出的水珠落到竹竿或地上",
+      "shotId": "s07",
+      "localFrame": 74
+    },
+    {
+      "frame": 808,
+      "kind": "puff",
+      "description": "甩完蓬成滑稽圆球",
+      "shotId": "s07",
+      "localFrame": 76
+    },
+    {
+      "frame": 852,
+      "kind": "hush",
+      "description": "全片唯一长静默开始，不出新音、环境声不断",
+      "shotId": "s08",
+      "localFrame": 0
+    },
+    {
+      "frame": 1026,
+      "kind": "look_up",
+      "description": "抬头到位，眼中光点亮起",
+      "shotId": "s09",
+      "localFrame": 30
+    },
+    {
+      "frame": 1052,
+      "kind": "companion_call",
+      "description": "画外：远处同伴的接触叫再次响起",
+      "shotId": "s09",
+      "localFrame": 56
+    },
+    {
+      "frame": 1066,
+      "kind": "claw_shift",
+      "description": "脚爪在竹竿上挪一下",
+      "shotId": "s09",
+      "localFrame": 70
+    },
+    {
+      "frame": 1074,
+      "kind": "call_clear",
+      "description": "麻雀叫声第 4 声：清楚的接触叫",
+      "shotId": "s09",
+      "localFrame": 78
+    },
+    {
+      "frame": 1104,
+      "kind": "crouch",
+      "description": "起飞前开始压身",
+      "shotId": "s10",
+      "localFrame": 12
+    },
+    {
+      "frame": 1148,
+      "kind": "takeoff",
+      "description": "脚离开竹竿",
+      "shotId": "s10",
+      "localFrame": 56
+    },
+    {
+      "frame": 1149,
+      "kind": "pole_spring",
+      "description": "脚蹬离后竹竿压到最低，开始弹回",
+      "shotId": "s10",
+      "localFrame": 57
+    },
+    {
+      "frame": 1151,
+      "kind": "wingbeat",
+      "description": "起飞第一下大下扑",
+      "shotId": "s10",
+      "localFrame": 59
+    },
+    {
+      "frame": 1155,
+      "kind": "wingbeat",
+      "description": "迎面冲向镜头第 2 下扑翅",
+      "shotId": "s10",
+      "localFrame": 63
+    },
+    {
+      "frame": 1159,
+      "kind": "wingbeat",
+      "description": "迎面冲向镜头第 3 下扑翅",
+      "shotId": "s10",
+      "localFrame": 67
+    },
+    {
+      "frame": 1163,
+      "kind": "wingbeat",
+      "description": "迎面冲向镜头第 4 下扑翅",
+      "shotId": "s10",
+      "localFrame": 71
+    },
+    {
+      "frame": 1167,
+      "kind": "wingbeat",
+      "description": "迎面冲向镜头第 5 下扑翅",
+      "shotId": "s10",
+      "localFrame": 75
+    },
+    {
+      "frame": 1168,
+      "kind": "wing_pass",
+      "description": "翅膀开始遮满画面，掠过镜头的风声起",
+      "shotId": "s10",
+      "localFrame": 76
+    },
+    {
+      "frame": 1170,
+      "kind": "wingbeat",
+      "description": "迎面冲向镜头第 6 下扑翅",
+      "shotId": "s10",
+      "localFrame": 78
+    },
+    {
+      "frame": 1173,
+      "kind": "wingbeat",
+      "description": "迎面冲向镜头第 7 下扑翅",
+      "shotId": "s10",
+      "localFrame": 81
+    },
+    {
+      "frame": 1187,
+      "kind": "wingbeat",
+      "description": "稻田上空波浪式飞行扑翅段下扑",
+      "shotId": "s11",
+      "localFrame": 11
+    },
+    {
+      "frame": 1189,
+      "kind": "wingbeat",
+      "description": "稻田上空波浪式飞行扑翅段下扑",
+      "shotId": "s11",
+      "localFrame": 13
+    },
+    {
+      "frame": 1191,
+      "kind": "wingbeat",
+      "description": "稻田上空波浪式飞行扑翅段下扑",
+      "shotId": "s11",
+      "localFrame": 15
+    },
+    {
+      "frame": 1193,
+      "kind": "wingbeat",
+      "description": "稻田上空波浪式飞行扑翅段下扑",
+      "shotId": "s11",
+      "localFrame": 17
+    },
+    {
+      "frame": 1195,
+      "kind": "wingbeat",
+      "description": "稻田上空波浪式飞行扑翅段下扑",
+      "shotId": "s11",
+      "localFrame": 19
+    },
+    {
+      "frame": 1197,
+      "kind": "wingbeat",
+      "description": "稻田上空波浪式飞行扑翅段下扑",
+      "shotId": "s11",
+      "localFrame": 21
+    },
+    {
+      "frame": 1205,
+      "kind": "wingbeat",
+      "description": "稻田上空波浪式飞行扑翅段下扑",
+      "shotId": "s11",
+      "localFrame": 29
+    },
+    {
+      "frame": 1207,
+      "kind": "wingbeat",
+      "description": "稻田上空波浪式飞行扑翅段下扑",
+      "shotId": "s11",
+      "localFrame": 31
+    },
+    {
+      "frame": 1209,
+      "kind": "wingbeat",
+      "description": "稻田上空波浪式飞行扑翅段下扑",
+      "shotId": "s11",
+      "localFrame": 33
+    },
+    {
+      "frame": 1211,
+      "kind": "wingbeat",
+      "description": "稻田上空波浪式飞行扑翅段下扑",
+      "shotId": "s11",
+      "localFrame": 35
+    },
+    {
+      "frame": 1213,
+      "kind": "wingbeat",
+      "description": "稻田上空波浪式飞行扑翅段下扑",
+      "shotId": "s11",
+      "localFrame": 37
+    },
+    {
+      "frame": 1215,
+      "kind": "wingbeat",
+      "description": "稻田上空波浪式飞行扑翅段下扑",
+      "shotId": "s11",
+      "localFrame": 39
+    },
+    {
+      "frame": 1223,
+      "kind": "wingbeat",
+      "description": "稻田上空波浪式飞行扑翅段下扑",
+      "shotId": "s11",
+      "localFrame": 47
+    },
+    {
+      "frame": 1225,
+      "kind": "wingbeat",
+      "description": "稻田上空波浪式飞行扑翅段下扑",
+      "shotId": "s11",
+      "localFrame": 49
+    },
+    {
+      "frame": 1227,
+      "kind": "wingbeat",
+      "description": "稻田上空波浪式飞行扑翅段下扑",
+      "shotId": "s11",
+      "localFrame": 51
+    },
+    {
+      "frame": 1229,
+      "kind": "wingbeat",
+      "description": "稻田上空波浪式飞行扑翅段下扑",
+      "shotId": "s11",
+      "localFrame": 53
+    },
+    {
+      "frame": 1231,
+      "kind": "wingbeat",
+      "description": "稻田上空波浪式飞行扑翅段下扑",
+      "shotId": "s11",
+      "localFrame": 55
+    },
+    {
+      "frame": 1233,
+      "kind": "wingbeat",
+      "description": "稻田上空波浪式飞行扑翅段下扑",
+      "shotId": "s11",
+      "localFrame": 57
+    },
+    {
+      "frame": 1241,
+      "kind": "wingbeat",
+      "description": "稻田上空波浪式飞行扑翅段下扑",
+      "shotId": "s11",
+      "localFrame": 65
+    },
+    {
+      "frame": 1243,
+      "kind": "wingbeat",
+      "description": "稻田上空波浪式飞行扑翅段下扑",
+      "shotId": "s11",
+      "localFrame": 67
+    },
+    {
+      "frame": 1245,
+      "kind": "wingbeat",
+      "description": "稻田上空波浪式飞行扑翅段下扑",
+      "shotId": "s11",
+      "localFrame": 69
+    },
+    {
+      "frame": 1247,
+      "kind": "wingbeat",
+      "description": "稻田上空波浪式飞行扑翅段下扑",
+      "shotId": "s11",
+      "localFrame": 71
+    },
+    {
+      "frame": 1249,
+      "kind": "wingbeat",
+      "description": "稻田上空波浪式飞行扑翅段下扑",
+      "shotId": "s11",
+      "localFrame": 73
+    },
+    {
+      "frame": 1251,
+      "kind": "wingbeat",
+      "description": "稻田上空波浪式飞行扑翅段下扑",
+      "shotId": "s11",
+      "localFrame": 75
+    },
+    {
+      "frame": 1259,
+      "kind": "wingbeat",
+      "description": "稻田上空波浪式飞行扑翅段下扑",
+      "shotId": "s11",
+      "localFrame": 83
+    },
+    {
+      "frame": 1261,
+      "kind": "wingbeat",
+      "description": "稻田上空波浪式飞行扑翅段下扑",
+      "shotId": "s11",
+      "localFrame": 85
+    },
+    {
+      "frame": 1263,
+      "kind": "wingbeat",
+      "description": "稻田上空波浪式飞行扑翅段下扑",
+      "shotId": "s11",
+      "localFrame": 87
+    },
+    {
+      "frame": 1265,
+      "kind": "wingbeat",
+      "description": "稻田上空波浪式飞行扑翅段下扑",
+      "shotId": "s11",
+      "localFrame": 89
+    },
+    {
+      "frame": 1267,
+      "kind": "wingbeat",
+      "description": "稻田上空波浪式飞行扑翅段下扑",
+      "shotId": "s11",
+      "localFrame": 91
+    },
+    {
+      "frame": 1269,
+      "kind": "wingbeat",
+      "description": "稻田上空波浪式飞行扑翅段下扑",
+      "shotId": "s11",
+      "localFrame": 93
+    },
+    {
+      "frame": 1277,
+      "kind": "wingbeat",
+      "description": "稻田上空波浪式飞行扑翅段下扑",
+      "shotId": "s11",
+      "localFrame": 101
+    },
+    {
+      "frame": 1279,
+      "kind": "wingbeat",
+      "description": "稻田上空波浪式飞行扑翅段下扑",
+      "shotId": "s11",
+      "localFrame": 103
+    },
+    {
+      "frame": 1281,
+      "kind": "wingbeat",
+      "description": "稻田上空波浪式飞行扑翅段下扑",
+      "shotId": "s11",
+      "localFrame": 105
+    },
+    {
+      "frame": 1283,
+      "kind": "wingbeat",
+      "description": "稻田上空波浪式飞行扑翅段下扑",
+      "shotId": "s11",
+      "localFrame": 107
+    },
+    {
+      "frame": 1285,
+      "kind": "wingbeat",
+      "description": "稻田上空波浪式飞行扑翅段下扑",
+      "shotId": "s11",
+      "localFrame": 109
+    },
+    {
+      "frame": 1287,
+      "kind": "wingbeat",
+      "description": "稻田上空波浪式飞行扑翅段下扑",
+      "shotId": "s11",
+      "localFrame": 111
+    },
+    {
+      "frame": 1295,
+      "kind": "wingbeat",
+      "description": "稻田上空波浪式飞行扑翅段下扑",
+      "shotId": "s11",
+      "localFrame": 119
+    },
+    {
+      "frame": 1296,
+      "kind": "companion_call",
+      "description": "画外：电线上同伴的叫声越飞越近",
+      "shotId": "s11",
+      "localFrame": 120
+    },
+    {
+      "frame": 1297,
+      "kind": "wingbeat",
+      "description": "稻田上空波浪式飞行扑翅段下扑",
+      "shotId": "s11",
+      "localFrame": 121
+    },
+    {
+      "frame": 1299,
+      "kind": "wingbeat",
+      "description": "稻田上空波浪式飞行扑翅段下扑",
+      "shotId": "s11",
+      "localFrame": 123
+    },
+    {
+      "frame": 1301,
+      "kind": "wingbeat",
+      "description": "稻田上空波浪式飞行扑翅段下扑",
+      "shotId": "s11",
+      "localFrame": 125
+    },
+    {
+      "frame": 1303,
+      "kind": "wingbeat",
+      "description": "稻田上空波浪式飞行扑翅段下扑",
+      "shotId": "s11",
+      "localFrame": 127
+    },
+    {
+      "frame": 1305,
+      "kind": "wingbeat",
+      "description": "稻田上空波浪式飞行扑翅段下扑",
+      "shotId": "s11",
+      "localFrame": 129
+    },
+    {
+      "frame": 1308,
+      "kind": "companion_call",
+      "description": "画外：电线上同伴的叫声越飞越近",
+      "shotId": "s11",
+      "localFrame": 132
+    },
+    {
+      "frame": 1313,
+      "kind": "wingbeat",
+      "description": "稻田上空波浪式飞行扑翅段下扑",
+      "shotId": "s11",
+      "localFrame": 137
+    },
+    {
+      "frame": 1315,
+      "kind": "wingbeat",
+      "description": "稻田上空波浪式飞行扑翅段下扑",
+      "shotId": "s11",
+      "localFrame": 139
+    },
+    {
+      "frame": 1317,
+      "kind": "wingbeat",
+      "description": "落地前刹车扑翅",
+      "shotId": "s11",
+      "localFrame": 141
+    },
+    {
+      "frame": 1319,
+      "kind": "wingbeat",
+      "description": "落地前刹车扑翅",
+      "shotId": "s11",
+      "localFrame": 143
+    },
+    {
+      "frame": 1321,
+      "kind": "wingbeat",
+      "description": "落地前刹车扑翅",
+      "shotId": "s11",
+      "localFrame": 145
+    },
+    {
+      "frame": 1326,
+      "kind": "land",
+      "description": "落到电线上，在同伴中间",
+      "shotId": "s11",
+      "localFrame": 150
+    },
+    {
+      "frame": 1332,
+      "kind": "flock_shift",
+      "description": "旁边的同伴（第 5 只）双脚离线挪开",
+      "shotId": "s11",
+      "localFrame": 156
+    },
+    {
+      "frame": 1334,
+      "kind": "call_home",
+      "description": "麻雀叫声第 5 声：回到同伴中间的接触叫",
+      "shotId": "s11",
+      "localFrame": 158
+    },
+    {
+      "frame": 1336,
+      "kind": "flock_shift",
+      "description": "旁边的同伴（第 6 只）双脚离线挪开",
+      "shotId": "s11",
+      "localFrame": 160
+    },
+    {
+      "frame": 1338,
+      "kind": "flock_shift",
+      "description": "旁边的同伴（第 2 只）双脚离线挪开",
+      "shotId": "s11",
+      "localFrame": 162
+    },
+    {
+      "frame": 1340,
+      "kind": "companion_call",
+      "description": "电线上旁边的同伴回应的接触叫",
+      "shotId": "s11",
+      "localFrame": 164
+    },
+    {
+      "frame": 1346,
+      "kind": "companion_call",
+      "description": "电线上旁边的同伴回应的接触叫",
+      "shotId": "s11",
+      "localFrame": 170
+    },
+    {
+      "frame": 1352,
+      "kind": "companion_call",
+      "description": "电线上旁边的同伴回应的接触叫",
+      "shotId": "s11",
+      "localFrame": 176
+    },
+    {
+      "frame": 1384,
+      "kind": "lamp_on",
+      "description": "屋里亮灯，暖光透过格子门落在空竹竿后",
+      "shotId": "s12",
+      "localFrame": 40
+    },
+    {
+      "frame": 1434,
+      "kind": "title_dot",
+      "description": "片名「雨」的第 1 点落定",
+      "shotId": "s12",
+      "localFrame": 90
+    },
+    {
+      "frame": 1441,
+      "kind": "title_dot",
+      "description": "片名「雨」的第 2 点落定",
+      "shotId": "s12",
+      "localFrame": 97
+    },
+    {
+      "frame": 1448,
+      "kind": "title_dot",
+      "description": "片名「雨」的第 3 点落定",
+      "shotId": "s12",
+      "localFrame": 104
+    },
+    {
+      "frame": 1455,
+      "kind": "title_dot",
+      "description": "片名「雨」的第 4 点落定",
+      "shotId": "s12",
+      "localFrame": 111
+    },
+    {
+      "frame": 1492,
+      "kind": "seal_press",
+      "description": "盖上「溯游」白文印",
+      "shotId": "s12",
+      "localFrame": 148
+    },
+    {
+      "frame": 1540,
+      "kind": "fade_out",
+      "description": "开始淡出到暮色最暗色，环境声同时淡出",
+      "shotId": "s12",
+      "localFrame": 196
+    }
+  ]
+}

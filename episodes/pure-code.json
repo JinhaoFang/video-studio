@@ -1,0 +1,12 @@
+[
+  {
+    "ids": ["PureCodeSampleA", "PureCodeSampleB"],
+    "entry": "episodes/pure-code-sample/PureCodeSample.tsx",
+    "manifest": "episodes/pure-code-sample/data/generated.json"
+  },
+  {
+    "ids": ["AfterRain"],
+    "entry": "episodes/after-rain/AfterRain.tsx",
+    "manifest": "episodes/after-rain/data/generated.json"
+  }
+]

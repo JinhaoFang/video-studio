@@ -7,15 +7,16 @@
  * 5) 蓬起与起飞后从身侧飘散的细小绒羽（看光前收净，不干扰看光帧）与夕光尘粒。
  * 所有颜色均取自 tokens.ts，不写散落色值。
  */
-import { project } from "../../engine/camera.ts";
-import type { Camera, Vec3 } from "../../engine/camera.ts";
-import type { Point } from "../../engine/figure.ts";
-import { boil, drawStrokes, strokes } from "../../engine/ink.ts";
-import { hash, rng } from "../../engine/random.ts";
-import { clamp01, ease, progress } from "../../engine/timing.ts";
-import { poleScreen } from "../../pole.ts";
-import { pole, poleAt } from "../../scene.ts";
-import { dusk, ink, rain, sparrow as spPalette, warm } from "../../tokens.ts";
+import { project } from "../../../../src/kit/engine/camera.ts";
+import type { Camera, Vec3 } from "../../../../src/kit/engine/camera.ts";
+import type { Point } from "../../../../src/kit/engine/figure.ts";
+import { boil, drawStrokes, strokes } from "../../../../src/kit/engine/ink.ts";
+import { hash, rng } from "../../../../src/kit/engine/random.ts";
+import { clamp01, ease, progress } from "../../../../src/kit/engine/timing.ts";
+import { poleScreen } from "../../../after-rain/pole.ts";
+import { pole, poleAt } from "../../../after-rain/scene.ts";
+import { dusk, ink, rain, warm } from "../../../after-rain/tokens.ts";
+import { sparrowPalettes } from "../../../after-rain/tokens-sparrow.ts";
 import { perch } from "../placeholder.ts";
 import type { SparrowState } from "./choreography.ts";
 import { perchPoint, poleBendAmount, poleBendAt } from "./choreography.ts";
@@ -139,10 +140,10 @@ type DownFeather = {
 };
 
 const DOWN_FEATHERS: readonly DownFeather[] = [
-  { spawn: 22, life: 20, origin: [-182, -88], vx: -84, vy: -24, size: 9.8, swayAmp: 18, swayFreq: 0.24, phase: 0.4, tone: spPalette.belly.lit },
-  { spawn: 22, life: 18, origin: [176, -96], vx: 92, vy: -20, size: 8.6, swayAmp: 16, swayFreq: 0.28, phase: 2.1, tone: spPalette.cheek.lit },
-  { spawn: 77, life: 34, origin: [-68, -14], vx: -86, vy: -14, size: 10.6, swayAmp: 24, swayFreq: 0.2, phase: 1.3, tone: spPalette.wingBar.lit },
-  { spawn: 78, life: 32, origin: [52, 24], vx: -42, vy: 18, size: 8.8, swayAmp: 19, swayFreq: 0.24, phase: 3.7, tone: spPalette.belly.lit },
+  { spawn: 22, life: 20, origin: [-182, -88], vx: -84, vy: -24, size: 9.8, swayAmp: 18, swayFreq: 0.24, phase: 0.4, tone: sparrowPalettes.duskDry.belly.lit },
+  { spawn: 22, life: 18, origin: [176, -96], vx: 92, vy: -20, size: 8.6, swayAmp: 16, swayFreq: 0.28, phase: 2.1, tone: sparrowPalettes.duskDry.cheek.lit },
+  { spawn: 77, life: 34, origin: [-68, -14], vx: -86, vy: -14, size: 10.6, swayAmp: 24, swayFreq: 0.2, phase: 1.3, tone: sparrowPalettes.duskDry.wingBar.lit },
+  { spawn: 78, life: 32, origin: [52, 24], vx: -42, vy: 18, size: 8.8, swayAmp: 19, swayFreq: 0.24, phase: 3.7, tone: sparrowPalettes.duskDry.belly.lit },
 ];
 
 const traceTeardrop = (ctx: CanvasRenderingContext2D, rx: number, ry: number) => {
@@ -369,7 +370,7 @@ export const drawActionSmear = (
     if (behind) {
       const a0 = dir > 0 ? -2.75 : -0.35;
       const a1 = dir > 0 ? -1.15 : -1.95;
-      drawCrescentArc(ctx, hx, hy, ppu * 1.15, ppu * 0.68, a0, a1, hexRgba(spPalette.crown.lit, 0.28 * s));
+      drawCrescentArc(ctx, hx, hy, ppu * 1.15, ppu * 0.68, a0, a1, hexRgba(sparrowPalettes.duskDry.crown.lit, 0.28 * s));
       drawCrescentArc(ctx, hx, hy, ppu * 1.24, ppu * 0.88, a0 + dir * 0.1, a1, hexRgba(warm.rim, 0.24 * s));
     } else {
       for (let k = 0; k < 4; k++) {
@@ -402,7 +403,7 @@ export const drawActionSmear = (
           pts.push([wcx + Math.cos(a) * rad * 1.05, wcy + Math.sin(a) * rad * 0.92]);
         }
         const bpts = boil(pts, seed + k * 23, 0.5);
-        const col = k % 2 === 0 ? hexRgba(spPalette.mantle.lit, 0.32 * s) : hexRgba(warm.rim, 0.36 * s);
+        const col = k % 2 === 0 ? hexRgba(sparrowPalettes.duskDry.mantle.lit, 0.32 * s) : hexRgba(warm.rim, 0.36 * s);
         drawStrokes(
           ctx,
           strokes(bpts, false, { ...style, seed: seed + k * 67, base: Math.max(2.6, ppu * 0.048) * s, max: 7.5 }),

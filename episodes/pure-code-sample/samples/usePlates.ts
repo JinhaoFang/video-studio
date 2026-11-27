@@ -4,9 +4,11 @@
  */
 import { useEffect, useState } from "react";
 import { cancelRender, staticFile } from "remotion";
-import type { PlateImages } from "../stage.ts";
+import type { PlateImages } from "../../after-rain/stage.ts";
 
 export type PlateSets = { plates: PlateImages; rain: PlateImages };
+
+export const surface = (context: CanvasRenderingContext2D, images: PlateSets) => ({ context, ...images });
 
 export const usePlates = () => {
   const [images, setImages] = useState<PlateSets | null>(null);

@@ -2,7 +2,7 @@
  * S2 A 版的 Node/浏览器共用镜头元数据；表演事件从原 choreography.ts 迁出。
  * pole_drip 是 effects.ts 里 POLE_DROPS 按弹道落到地面（z=0）的帧：第 78、79 帧甩下的两颗在第 93、94 帧落地，合成一声记在 93；第 81 帧的落在 96，第 85 帧的落在 100。改了水珠的释放帧或初速要重算。
  */
-import type { ShotTiming } from "../../model.ts";
+import type { ShotTiming } from "../../../../src/kit/shots.ts";
 
 export const DURATION = 144;
 export const s2Timing: ShotTiming = {

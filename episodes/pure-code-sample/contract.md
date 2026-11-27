@@ -36,15 +36,15 @@
 
 | 模块 | 文件 |
 |---|---|
-| 随机与噪声 | `engine/random.ts` |
-| 时间 | `engine/timing.ts` |
-| 线条 | `engine/ink.ts` |
-| 赛璐璐 | `engine/cel.ts`；角色形体的距离场、取样、轮廓提取在 `engine/figure.ts` |
-| 水粉 | 笔触和画布 `engine/paint.ts`；底图内容 `plates.ts`；烘焙在 `generate.ts` |
-| 相机 | `engine/camera.ts`；场景布置（参考机位、竹竿、檐口、各层底图的纵深）`scene.ts` |
-| 摄影 | `engine/post.ts` |
-| 主角 | `sparrow.ts`；本期令牌 `tokens.ts` |
-| 共用道具与舞台 | 竹竿 `pole.ts`；按相机摆底图、把麻雀放到场景里 `stage.ts`（设计负责人） |
+| 随机与噪声 | `../../src/kit/engine/random.ts` |
+| 时间 | `../../src/kit/engine/timing.ts` |
+| 线条 | `../../src/kit/engine/ink.ts` |
+| 赛璐璐 | `../../src/kit/engine/cel.ts`；角色形体的距离场、取样、轮廓提取在 `../../src/kit/engine/figure.ts` |
+| 水粉 | 笔触和画布 `../../src/kit/engine/paint.ts`；底图内容 `../after-rain/plates.ts`；烘焙在 `../../src/kit/generation/bake.ts` |
+| 相机 | `../../src/kit/engine/camera.ts`；场景布置（参考机位、竹竿、檐口、各层底图的纵深）`../after-rain/scene.ts` |
+| 摄影 | `../../src/kit/engine/post.ts` |
+| 主角 | `../after-rain/sparrow.ts`；本期令牌 `../after-rain/tokens.ts` |
+| 共用道具与舞台 | 竹竿 `../after-rain/pole.ts`；按相机摆底图、把麻雀放到场景里 `../after-rain/stage.ts`（设计负责人） |
 | 镜头 | 登记表 `shots/index.ts`；S1 在 `shots/s1/`，S2 的 A、B 两版在 `shots/s2-a/`、`shots/s2-b/`；占位与机位示例 `shots/placeholder.ts`、`shots/placeholder-s2.ts` |
 | 样张与预览 | `samples/`：设定图 `ModelSheet.tsx`、引擎静帧 `EngineStill.tsx`、单镜头预览 `ShotPreview.tsx`（合成 `PureCodeS1`、`PureCodeS2A`、`PureCodeS2B`） |
 
@@ -56,7 +56,7 @@
 
 ## 3. 镜头接口
 
-以 `model.ts` 的 `Shot<Surface>` 为准，每个镜头对外只提供四样：
+以 `../../src/kit/shots.ts` 的 `Shot<Surface>` 为准，每个镜头对外只提供四样：
 
 | 字段 | 含义 |
 |---|---|

@@ -1,0 +1,1098 @@
+{
+  "version": 1,
+  "fps": 24,
+  "key": "F major",
+  "instruments": {
+    "piano_felt": {
+      "name": "毡锤钢琴",
+      "range": [
+        "F3",
+        "F6"
+      ],
+      "notes": "琴槌垫毡，起音软、高频少；乐句内踩延音踏板，乐句结束抬起"
+    },
+    "strings_pad": {
+      "name": "弦乐长音",
+      "range": [
+        "F2",
+        "A5"
+      ],
+      "notes": "加弱音器的小弦乐组，每个声部 4 名演奏者，音高和揉弦各自轻微漂移；只拉长音，音量由 expression 控制"
+    },
+    "harp": {
+      "name": "竖琴",
+      "range": [
+        "C2",
+        "G6"
+      ],
+      "notes": "拨弦，自然衰减；gliss 是按 F 大调音阶的快速刮奏"
+    },
+    "glockenspiel": {
+      "name": "钟琴",
+      "range": [
+        "F5",
+        "C8"
+      ],
+      "notes": "软槌，余音长；只在光到（第 3 镜）和落进同伴中间（第 11 镜）各点两下，两处同样的 F6、C7"
+    },
+    "hum_voice": {
+      "name": "哼唱（剧中人声）",
+      "range": [
+        "G3",
+        "D4"
+      ],
+      "notes": "那个人边走边哼：闭口的 m 音为主，乐句开头偶尔开口带一点 n；音与音之间有轻微滑音；音准有 ±10 音分的自然起伏，时值有 ±1–2 帧的松紧；中音区，听不出是男是女。由 #184 的纯代码人声合成（kit 的 Instrument 目前只有四件乐器，由 #184 决定怎么接进来）"
+    }
+  },
+  "sections": [
+    {
+      "id": "storm",
+      "name": "雷雨",
+      "from": {
+        "event": "open"
+      },
+      "notes": "没有配乐，只有雷雨、檐下流水和屋里模糊的说话"
+    },
+    {
+      "id": "light",
+      "name": "光来",
+      "from": {
+        "event": "light_break"
+      },
+      "notes": "小样原样：动机的头两个音，弦乐从极弱进来；最后一滴之前完全退掉"
+    },
+    {
+      "id": "fall",
+      "name": "起飞失败",
+      "from": {
+        "event": "fall_back"
+      },
+      "notes": "只在掉回竹竿时竖琴拨一下，其余交给拟音和停顿"
+    },
+    {
+      "id": "hum",
+      "name": "哼唱",
+      "from": {
+        "event": "hum_start"
+      },
+      "notes": "剧中的哼唱，不配乐"
+    },
+    {
+      "id": "shake",
+      "name": "甩水与晒太阳",
+      "from": {
+        "event": "puff"
+      },
+      "notes": "小样原样：蓬起时竖琴拨一下；之后不出新音，余音自然收完，一直到看光（整个第 8 镜是静默）"
+    },
+    {
+      "id": "look",
+      "name": "看光",
+      "from": {
+        "event": "look_up"
+      },
+      "notes": "小样原样：动机再出一次，弦乐转到 B♭"
+    },
+    {
+      "id": "crouch",
+      "name": "压身",
+      "from": {
+        "event": "crouch"
+      },
+      "notes": "小样原样：弦乐转到 C，渐强"
+    },
+    {
+      "id": "flight",
+      "name": "起飞",
+      "from": {
+        "event": "takeoff"
+      },
+      "notes": "小样原样：竖琴上行刮奏，弦乐回到 F，钢琴往上走 F–A–C–D，接进主旋律"
+    },
+    {
+      "id": "theme",
+      "name": "飞过稻田",
+      "from": {
+        "event": "land",
+        "offsetFrames": -139
+      },
+      "notes": "主旋律第一次完整奏出，3/4 拍，F | B♭ C | Dm | B♭ C"
+    },
+    {
+      "id": "dusk",
+      "name": "暮色",
+      "from": {
+        "event": "lamp_on"
+      },
+      "notes": "最后一个和弦，F；之后不出新音"
+    }
+  ],
+  "phrases": [
+    {
+      "id": "light",
+      "section": "light",
+      "anchor": {
+        "event": "light_break"
+      },
+      "tempo": 72,
+      "notes": [
+        {
+          "instrument": "glockenspiel",
+          "pitch": "F6",
+          "beat": 0,
+          "beats": 3,
+          "velocity": 0.22
+        },
+        {
+          "instrument": "glockenspiel",
+          "pitch": "C7",
+          "beat": 0.5,
+          "beats": 3,
+          "velocity": 0.16
+        },
+        {
+          "instrument": "piano_felt",
+          "pitch": "C5",
+          "beat": 0,
+          "beats": 1.5,
+          "velocity": 0.42
+        },
+        {
+          "instrument": "piano_felt",
+          "pitch": "A4",
+          "beat": 1.5,
+          "beats": 1,
+          "velocity": 0.36
+        },
+        {
+          "instrument": "piano_felt",
+          "pitch": "F3",
+          "beat": 0,
+          "beats": 4,
+          "velocity": 0.24
+        },
+        {
+          "instrument": "piano_felt",
+          "pitch": "B-4",
+          "beat": 2.5,
+          "beats": 1,
+          "velocity": 0.32
+        },
+        {
+          "instrument": "piano_felt",
+          "pitch": "G4",
+          "beat": 3.5,
+          "beats": 1,
+          "velocity": 0.28
+        },
+        {
+          "instrument": "strings_pad",
+          "pitch": "F3",
+          "beat": 0,
+          "beats": 4.5,
+          "velocity": 0.5
+        },
+        {
+          "instrument": "strings_pad",
+          "pitch": "C4",
+          "beat": 0,
+          "beats": 4.5,
+          "velocity": 0.5
+        },
+        {
+          "instrument": "strings_pad",
+          "pitch": "A4",
+          "beat": 0.5,
+          "beats": 4,
+          "velocity": 0.45
+        }
+      ],
+      "expression": [
+        {
+          "instrument": "strings_pad",
+          "points": [
+            [
+              0,
+              0
+            ],
+            [
+              2,
+              0.3
+            ],
+            [
+              3.5,
+              0.35
+            ],
+            [
+              4.5,
+              0
+            ]
+          ]
+        }
+      ],
+      "mustEndBefore": {
+        "event": "drip_fall"
+      }
+    },
+    {
+      "id": "fall",
+      "section": "fall",
+      "anchor": {
+        "event": "fall_back"
+      },
+      "tempo": 80,
+      "articulation": "掉回竹竿那一下，竖琴低音拨一个空五度，拨完就放，让它自然响完；这是第 5 镜唯一的配乐",
+      "notes": [
+        {
+          "instrument": "harp",
+          "pitch": "F2",
+          "beat": 0,
+          "beats": 2,
+          "velocity": 0.34
+        },
+        {
+          "instrument": "harp",
+          "pitch": "C3",
+          "beat": 0,
+          "beats": 2,
+          "velocity": 0.26
+        }
+      ]
+    },
+    {
+      "id": "hum",
+      "section": "hum",
+      "anchor": {
+        "event": "hum_start"
+      },
+      "tempo": 72,
+      "articulation": "剧中声音：主旋律的前两小节，降低八度。人往画右走远，远近由混音的声音视点处理（越走越远、越来越闷），乐谱里不写渐弱；最后的 G3 已经很远，被第 7 镜第三次甩水盖住也没关系，旋律要到第 11 镜才完整",
+      "notes": [
+        {
+          "instrument": "hum_voice",
+          "pitch": "C4",
+          "beat": 0.5,
+          "beats": 1,
+          "velocity": 0.5
+        },
+        {
+          "instrument": "hum_voice",
+          "pitch": "A3",
+          "beat": 1.5,
+          "beats": 0.5,
+          "velocity": 0.42
+        },
+        {
+          "instrument": "hum_voice",
+          "pitch": "C4",
+          "beat": 2,
+          "beats": 1,
+          "velocity": 0.48
+        },
+        {
+          "instrument": "hum_voice",
+          "pitch": "D4",
+          "beat": 3,
+          "beats": 1,
+          "velocity": 0.52
+        },
+        {
+          "instrument": "hum_voice",
+          "pitch": "C4",
+          "beat": 4,
+          "beats": 0.5,
+          "velocity": 0.45
+        },
+        {
+          "instrument": "hum_voice",
+          "pitch": "A3",
+          "beat": 4.5,
+          "beats": 0.5,
+          "velocity": 0.4
+        },
+        {
+          "instrument": "hum_voice",
+          "pitch": "G3",
+          "beat": 5,
+          "beats": 1.5,
+          "velocity": 0.36
+        }
+      ]
+    },
+    {
+      "id": "puff",
+      "section": "shake",
+      "anchor": {
+        "event": "puff"
+      },
+      "tempo": 80,
+      "notes": [
+        {
+          "instrument": "harp",
+          "pitch": "F2",
+          "beat": 0,
+          "beats": 2,
+          "velocity": 0.4
+        },
+        {
+          "instrument": "harp",
+          "pitch": "F4",
+          "beat": 0,
+          "beats": 2,
+          "velocity": 0.28
+        }
+      ],
+      "articulation": "让它自然响完：拨一下之后不止音、不再出新音，余音和厅堂尾声自然衰减，接进看光的弦乐"
+    },
+    {
+      "id": "look",
+      "section": "look",
+      "anchor": {
+        "event": "look_up"
+      },
+      "tempo": 72,
+      "notes": [
+        {
+          "instrument": "strings_pad",
+          "pitch": "B-2",
+          "beat": 0,
+          "beats": 0.75,
+          "velocity": 0.45
+        },
+        {
+          "instrument": "strings_pad",
+          "pitch": "F3",
+          "beat": 0,
+          "beats": 0.75,
+          "velocity": 0.45
+        },
+        {
+          "instrument": "strings_pad",
+          "pitch": "D4",
+          "beat": 0,
+          "beats": 0.75,
+          "velocity": 0.4
+        },
+        {
+          "instrument": "piano_felt",
+          "pitch": "C5",
+          "beat": 0,
+          "beats": 0.5,
+          "velocity": 0.34
+        },
+        {
+          "instrument": "piano_felt",
+          "pitch": "A4",
+          "beat": 0.5,
+          "beats": 1,
+          "velocity": 0.3
+        }
+      ],
+      "expression": [
+        {
+          "instrument": "strings_pad",
+          "points": [
+            [
+              0,
+              0
+            ],
+            [
+              0.4,
+              0.35
+            ],
+            [
+              0.75,
+              0.3
+            ]
+          ]
+        }
+      ],
+      "mustEndBefore": {
+        "event": "crouch",
+        "instruments": [
+          "strings_pad"
+        ]
+      }
+    },
+    {
+      "id": "crouch",
+      "section": "crouch",
+      "anchor": {
+        "event": "crouch"
+      },
+      "tempo": 80,
+      "notes": [
+        {
+          "instrument": "strings_pad",
+          "pitch": "C3",
+          "beat": 0,
+          "beats": 2.4,
+          "velocity": 0.5
+        },
+        {
+          "instrument": "strings_pad",
+          "pitch": "G3",
+          "beat": 0,
+          "beats": 2.4,
+          "velocity": 0.5
+        },
+        {
+          "instrument": "strings_pad",
+          "pitch": "E4",
+          "beat": 0,
+          "beats": 2.4,
+          "velocity": 0.45
+        }
+      ],
+      "expression": [
+        {
+          "instrument": "strings_pad",
+          "points": [
+            [
+              0,
+              0.25
+            ],
+            [
+              1.6,
+              0.45
+            ],
+            [
+              2.4,
+              0.55
+            ]
+          ]
+        }
+      ],
+      "mustEndBefore": {
+        "event": "takeoff",
+        "instruments": [
+          "strings_pad"
+        ]
+      },
+      "articulation": "正片的压身比小样长（第 10 镜 12–56 帧），属和弦一直垫到蹬离竹竿之前，渐强"
+    },
+    {
+      "id": "flight",
+      "section": "flight",
+      "anchor": {
+        "event": "takeoff"
+      },
+      "tempo": 80,
+      "notes": [
+        {
+          "instrument": "harp",
+          "gliss": {
+            "from": "F3",
+            "to": "F6",
+            "scale": "F major"
+          },
+          "beat": -0.25,
+          "beats": 0.75,
+          "velocity": 0.45
+        },
+        {
+          "instrument": "strings_pad",
+          "pitch": "F3",
+          "beat": 0,
+          "beats": 2,
+          "velocity": 0.55
+        },
+        {
+          "instrument": "strings_pad",
+          "pitch": "C4",
+          "beat": 0,
+          "beats": 2,
+          "velocity": 0.55
+        },
+        {
+          "instrument": "strings_pad",
+          "pitch": "A4",
+          "beat": 0,
+          "beats": 2,
+          "velocity": 0.5
+        },
+        {
+          "instrument": "strings_pad",
+          "pitch": "F5",
+          "beat": 0.5,
+          "beats": 1.5,
+          "velocity": 0.4
+        },
+        {
+          "instrument": "piano_felt",
+          "pitch": "F4",
+          "beat": 0,
+          "beats": 0.5,
+          "velocity": 0.4
+        },
+        {
+          "instrument": "piano_felt",
+          "pitch": "A4",
+          "beat": 0.5,
+          "beats": 0.5,
+          "velocity": 0.42
+        },
+        {
+          "instrument": "piano_felt",
+          "pitch": "C5",
+          "beat": 1,
+          "beats": 0.5,
+          "velocity": 0.44
+        },
+        {
+          "instrument": "piano_felt",
+          "pitch": "D5",
+          "beat": 1.5,
+          "beats": 0.5,
+          "velocity": 0.4
+        }
+      ],
+      "expression": [
+        {
+          "instrument": "strings_pad",
+          "points": [
+            [
+              0,
+              0.45
+            ],
+            [
+              1,
+              0.55
+            ],
+            [
+              2,
+              0.2
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "id": "theme",
+      "section": "theme",
+      "anchor": {
+        "event": "land"
+      },
+      "tempo": 88,
+      "expression": [
+        {
+          "instrument": "strings_pad",
+          "points": [
+            [
+              -9,
+              0.22
+            ],
+            [
+              -6,
+              0.3
+            ],
+            [
+              -3,
+              0.42
+            ],
+            [
+              0,
+              0.58
+            ],
+            [
+              2,
+              0.5
+            ],
+            [
+              3.25,
+              0.38
+            ]
+          ]
+        }
+      ],
+      "articulation": "主旋律第一次完整奏出：钢琴拿旋律，后两小节弦乐在下方八度跟进；竖琴按 3/4 拍一拍一个音，像华尔兹的低音加和弦；落进同伴中间（beat 0）是全曲最高的 F5，钟琴点两下，和第 3 镜光到时同样的两个音。最后的 C5 不解决，留给亮灯",
+      "mustEndBefore": {
+        "event": "lamp_on"
+      },
+      "notes": [
+        {
+          "instrument": "piano_felt",
+          "pitch": "C5",
+          "beat": -8.5,
+          "beats": 1,
+          "velocity": 0.42
+        },
+        {
+          "instrument": "piano_felt",
+          "pitch": "A4",
+          "beat": -7.5,
+          "beats": 0.5,
+          "velocity": 0.36
+        },
+        {
+          "instrument": "piano_felt",
+          "pitch": "C5",
+          "beat": -7,
+          "beats": 1,
+          "velocity": 0.42
+        },
+        {
+          "instrument": "piano_felt",
+          "pitch": "D5",
+          "beat": -6,
+          "beats": 1,
+          "velocity": 0.46
+        },
+        {
+          "instrument": "piano_felt",
+          "pitch": "C5",
+          "beat": -5,
+          "beats": 0.5,
+          "velocity": 0.4
+        },
+        {
+          "instrument": "piano_felt",
+          "pitch": "A4",
+          "beat": -4.5,
+          "beats": 0.5,
+          "velocity": 0.38
+        },
+        {
+          "instrument": "piano_felt",
+          "pitch": "G4",
+          "beat": -4,
+          "beats": 1,
+          "velocity": 0.4
+        },
+        {
+          "instrument": "piano_felt",
+          "pitch": "A4",
+          "beat": -3,
+          "beats": 1,
+          "velocity": 0.44
+        },
+        {
+          "instrument": "piano_felt",
+          "pitch": "C5",
+          "beat": -2,
+          "beats": 1,
+          "velocity": 0.48
+        },
+        {
+          "instrument": "piano_felt",
+          "pitch": "D5",
+          "beat": -1,
+          "beats": 1,
+          "velocity": 0.52
+        },
+        {
+          "instrument": "piano_felt",
+          "pitch": "F5",
+          "beat": 0,
+          "beats": 1.5,
+          "velocity": 0.6
+        },
+        {
+          "instrument": "piano_felt",
+          "pitch": "D5",
+          "beat": 1.5,
+          "beats": 0.5,
+          "velocity": 0.46
+        },
+        {
+          "instrument": "piano_felt",
+          "pitch": "C5",
+          "beat": 2,
+          "beats": 1.25,
+          "velocity": 0.42
+        },
+        {
+          "instrument": "piano_felt",
+          "pitch": "F3",
+          "beat": -9,
+          "beats": 3,
+          "velocity": 0.26
+        },
+        {
+          "instrument": "piano_felt",
+          "pitch": "B-3",
+          "beat": -6,
+          "beats": 2,
+          "velocity": 0.26
+        },
+        {
+          "instrument": "piano_felt",
+          "pitch": "C4",
+          "beat": -4,
+          "beats": 1,
+          "velocity": 0.26
+        },
+        {
+          "instrument": "piano_felt",
+          "pitch": "D4",
+          "beat": -3,
+          "beats": 3,
+          "velocity": 0.28
+        },
+        {
+          "instrument": "piano_felt",
+          "pitch": "B-3",
+          "beat": 0,
+          "beats": 2,
+          "velocity": 0.3
+        },
+        {
+          "instrument": "piano_felt",
+          "pitch": "C4",
+          "beat": 2,
+          "beats": 1.25,
+          "velocity": 0.28
+        },
+        {
+          "instrument": "strings_pad",
+          "pitch": "F3",
+          "beat": -9,
+          "beats": 3,
+          "velocity": 0.42
+        },
+        {
+          "instrument": "strings_pad",
+          "pitch": "C4",
+          "beat": -9,
+          "beats": 3,
+          "velocity": 0.42
+        },
+        {
+          "instrument": "strings_pad",
+          "pitch": "A4",
+          "beat": -9,
+          "beats": 3,
+          "velocity": 0.42
+        },
+        {
+          "instrument": "strings_pad",
+          "pitch": "B-2",
+          "beat": -6,
+          "beats": 2,
+          "velocity": 0.45
+        },
+        {
+          "instrument": "strings_pad",
+          "pitch": "F3",
+          "beat": -6,
+          "beats": 2,
+          "velocity": 0.45
+        },
+        {
+          "instrument": "strings_pad",
+          "pitch": "D4",
+          "beat": -6,
+          "beats": 2,
+          "velocity": 0.45
+        },
+        {
+          "instrument": "strings_pad",
+          "pitch": "C3",
+          "beat": -4,
+          "beats": 1,
+          "velocity": 0.45
+        },
+        {
+          "instrument": "strings_pad",
+          "pitch": "G3",
+          "beat": -4,
+          "beats": 1,
+          "velocity": 0.45
+        },
+        {
+          "instrument": "strings_pad",
+          "pitch": "E4",
+          "beat": -4,
+          "beats": 1,
+          "velocity": 0.45
+        },
+        {
+          "instrument": "strings_pad",
+          "pitch": "D3",
+          "beat": -3,
+          "beats": 3,
+          "velocity": 0.5
+        },
+        {
+          "instrument": "strings_pad",
+          "pitch": "A3",
+          "beat": -3,
+          "beats": 3,
+          "velocity": 0.5
+        },
+        {
+          "instrument": "strings_pad",
+          "pitch": "F4",
+          "beat": -3,
+          "beats": 3,
+          "velocity": 0.5
+        },
+        {
+          "instrument": "strings_pad",
+          "pitch": "B-2",
+          "beat": 0,
+          "beats": 2,
+          "velocity": 0.55
+        },
+        {
+          "instrument": "strings_pad",
+          "pitch": "F3",
+          "beat": 0,
+          "beats": 2,
+          "velocity": 0.55
+        },
+        {
+          "instrument": "strings_pad",
+          "pitch": "D4",
+          "beat": 0,
+          "beats": 2,
+          "velocity": 0.55
+        },
+        {
+          "instrument": "strings_pad",
+          "pitch": "C3",
+          "beat": 2,
+          "beats": 1.25,
+          "velocity": 0.5
+        },
+        {
+          "instrument": "strings_pad",
+          "pitch": "G3",
+          "beat": 2,
+          "beats": 1.25,
+          "velocity": 0.5
+        },
+        {
+          "instrument": "strings_pad",
+          "pitch": "E4",
+          "beat": 2,
+          "beats": 1.25,
+          "velocity": 0.5
+        },
+        {
+          "instrument": "strings_pad",
+          "pitch": "A4",
+          "beat": -3,
+          "beats": 1,
+          "velocity": 0.36
+        },
+        {
+          "instrument": "strings_pad",
+          "pitch": "C5",
+          "beat": -2,
+          "beats": 1,
+          "velocity": 0.4
+        },
+        {
+          "instrument": "strings_pad",
+          "pitch": "D5",
+          "beat": -1,
+          "beats": 1,
+          "velocity": 0.44
+        },
+        {
+          "instrument": "strings_pad",
+          "pitch": "F5",
+          "beat": 0,
+          "beats": 1.5,
+          "velocity": 0.48
+        },
+        {
+          "instrument": "strings_pad",
+          "pitch": "D5",
+          "beat": 1.5,
+          "beats": 0.5,
+          "velocity": 0.4
+        },
+        {
+          "instrument": "strings_pad",
+          "pitch": "C5",
+          "beat": 2,
+          "beats": 1.25,
+          "velocity": 0.38
+        },
+        {
+          "instrument": "harp",
+          "pitch": "F2",
+          "beat": -9,
+          "beats": 1,
+          "velocity": 0.32
+        },
+        {
+          "instrument": "harp",
+          "pitch": "A3",
+          "beat": -8,
+          "beats": 1,
+          "velocity": 0.24
+        },
+        {
+          "instrument": "harp",
+          "pitch": "C4",
+          "beat": -7,
+          "beats": 1,
+          "velocity": 0.24
+        },
+        {
+          "instrument": "harp",
+          "pitch": "B-2",
+          "beat": -6,
+          "beats": 1,
+          "velocity": 0.32
+        },
+        {
+          "instrument": "harp",
+          "pitch": "D4",
+          "beat": -5,
+          "beats": 1,
+          "velocity": 0.24
+        },
+        {
+          "instrument": "harp",
+          "pitch": "C3",
+          "beat": -4,
+          "beats": 1,
+          "velocity": 0.3
+        },
+        {
+          "instrument": "harp",
+          "pitch": "D2",
+          "beat": -3,
+          "beats": 1,
+          "velocity": 0.32
+        },
+        {
+          "instrument": "harp",
+          "pitch": "A3",
+          "beat": -2,
+          "beats": 1,
+          "velocity": 0.24
+        },
+        {
+          "instrument": "harp",
+          "pitch": "F4",
+          "beat": -1,
+          "beats": 1,
+          "velocity": 0.26
+        },
+        {
+          "instrument": "harp",
+          "pitch": "B-2",
+          "beat": 0,
+          "beats": 1,
+          "velocity": 0.36
+        },
+        {
+          "instrument": "harp",
+          "pitch": "F4",
+          "beat": 1,
+          "beats": 1,
+          "velocity": 0.26
+        },
+        {
+          "instrument": "harp",
+          "pitch": "C3",
+          "beat": 2,
+          "beats": 1,
+          "velocity": 0.3
+        },
+        {
+          "instrument": "glockenspiel",
+          "pitch": "F6",
+          "beat": 0,
+          "beats": 3,
+          "velocity": 0.22
+        },
+        {
+          "instrument": "glockenspiel",
+          "pitch": "C7",
+          "beat": 0.5,
+          "beats": 2.75,
+          "velocity": 0.16
+        }
+      ]
+    },
+    {
+      "id": "last",
+      "section": "dusk",
+      "anchor": {
+        "event": "lamp_on"
+      },
+      "tempo": 66,
+      "expression": [
+        {
+          "instrument": "strings_pad",
+          "points": [
+            [
+              0,
+              0.35
+            ],
+            [
+              2,
+              0.3
+            ],
+            [
+              6,
+              0
+            ]
+          ]
+        }
+      ],
+      "articulation": "亮灯时的最后一个和弦：主旋律在这里解决到 F。钢琴的 F5 单独留着（和小样结尾同一个音），弦乐垫着淡出，竖琴低音拨一下；片名书写和盖印时不再出新音",
+      "mustEndBefore": {
+        "event": "fade_out"
+      },
+      "notes": [
+        {
+          "instrument": "piano_felt",
+          "pitch": "F5",
+          "beat": 0,
+          "beats": 3,
+          "velocity": 0.32
+        },
+        {
+          "instrument": "piano_felt",
+          "pitch": "F3",
+          "beat": 0,
+          "beats": 3,
+          "velocity": 0.22
+        },
+        {
+          "instrument": "harp",
+          "pitch": "F2",
+          "beat": 0,
+          "beats": 3,
+          "velocity": 0.3
+        },
+        {
+          "instrument": "strings_pad",
+          "pitch": "F2",
+          "beat": 0,
+          "beats": 6,
+          "velocity": 0.36
+        },
+        {
+          "instrument": "strings_pad",
+          "pitch": "C3",
+          "beat": 0,
+          "beats": 6,
+          "velocity": 0.34
+        },
+        {
+          "instrument": "strings_pad",
+          "pitch": "A3",
+          "beat": 0,
+          "beats": 6,
+          "velocity": 0.32
+        },
+        {
+          "instrument": "strings_pad",
+          "pitch": "F4",
+          "beat": 0,
+          "beats": 6,
+          "velocity": 0.28
+        }
+      ]
+    }
+  ],
+  "notes": "时间：每个乐句挂在一个时间轴锚点上（anchor：画面事件 kind，或镜头号加镜头内帧号），乐句内按 tempo 的拍子写 beat（可为负，表示在锚点之前进入）和 beats（时值）。同一种事件出现多次时 anchor 取第一次。velocity 0–1。expression 是弦乐长音的音量曲线，点为 [拍, 0–1]。mustEndBefore：乐句的音符必须在这个锚点之前结束（instruments 限定只约束哪些乐器），用来给音效让位。pitch 用科学音高记法，降号写成 -（B-4 是降 B4）。 本期加了一件剧中的「乐器」hum_voice（哼唱）。锚点的画面事件种类由本期约定（#179）登记；beat 为负的乐句在锚点之前进入。"
+}
