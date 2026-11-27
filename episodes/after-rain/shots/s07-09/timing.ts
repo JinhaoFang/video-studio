@@ -3,7 +3,6 @@
  * 不依赖浏览器，供镜头渲染、生成器与测试共用。
  * 待定事项：无。
  */
-import { ease, progress } from "../../../../src/kit/engine/timing.ts";
 import { timeShot } from "../../model.ts";
 
 export const S07_SHAKE_1 = [10, 14] as const;
@@ -12,9 +11,6 @@ export const S07_SHAKE_3 = [56, 58, 60, 62, 64, 66, 68, 70] as const;
 export const S07_DROP_LANDS = [20, 42, 74] as const;
 export const S07_PUFF = 76;
 export const S07_BLINK = 88;
-
-export const s07CameraProgress = (frame: number) =>
-  ease(progress(frame, 0, s07Timing.durationInFrames - 1), 2.0, 2.0);
 
 export const s07Timing = timeShot({
   id: "s07",
@@ -31,9 +27,6 @@ export const S08_HUSH = 0;
 export const S08_BLINK_1 = 50;
 export const S08_BLINK_2 = 110;
 
-export const s08CameraProgress = (frame: number) =>
-  ease(progress(frame, 0, s08Timing.durationInFrames - 1), 2.4, 2.4);
-
 export const s08Timing = timeShot({
   id: "s08",
   events: [
@@ -47,9 +40,6 @@ export const S09_LOOK_UP = 30;
 export const S09_COMPANION_CALL = 56;
 export const S09_CLAW_SHIFT = 70;
 export const S09_CALL_CLEAR = 78;
-
-export const s09CameraProgress = (frame: number) =>
-  ease(progress(frame, 0, s09Timing.durationInFrames - 1), 2.0, 2.2);
 
 export const s09Timing = timeShot({
   id: "s09",

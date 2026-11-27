@@ -6,6 +6,7 @@
  * 姿势支持受惊瞪眼、起飞失败全套关键姿势、半闭眼晒太阳、抬头看光、近中景大展翅/屈腕上挥/下扑拖影与干笔速度线、展尾伸脚刹车落地；
  * 光照支持 sparrowLight(preset, direction) 直取雨色/夕光/低夕光/暮色色指定，以及 mixSparrowLight 在场间平滑过渡，同时完全兼容小样 S1/S2 的 backlight 与 sheetLight。
  * 局部坐标以"单位"计（身体半径约 1，全长约 3.3），x 朝前、y 朝左、z 朝上，原点是站立时的身体中心，脚踩在 z = FOOT_Z。
+ * 近景按翼面排飞羽与覆羽，沿胸背和颊冠的羽流打散色界，半眯的眼睑在头部投影里取松弧。
  * 待定事项：无。
  */
 import { createLayer, drawCel, placeLayer, tracePath } from "../../src/kit/engine/cel.ts";
@@ -1110,7 +1111,7 @@ const softContour = (
   if (ampBase < 0.25) return loop;
   const n = loop.length;
   const flip = loopArea(loop) < 0 ? -1 : 1;
-  const period = ppu * 0.24;
+  const period = ppu * (ppu > 60 ? 0.1 : 0.24);
   let s = 0;
   let clumpStart = 0;
   let clump = 0;
@@ -1129,13 +1130,16 @@ const softContour = (
       clumpAmp = 0.55 + 0.85 * hash(seed, clump * 2 + 1);
     }
     const u = (s - clumpStart) / clumpLen;
-    const shape = Math.sqrt(Math.max(0, Math.sin(Math.PI * u)));
+    const shape = ppu > 60
+      ? 1.8 * (u < 0.77 ? u / 0.77 : (1 - u) / 0.23) ** 1.6
+      : Math.sqrt(Math.max(0, Math.sin(Math.PI * u)));
     const tx = next[0] - prev[0];
     const ty = next[1] - prev[1];
     const l = Math.hypot(tx, ty) || 1;
     const nx = (ty / l) * flip;
     const ny = (-tx / l) * flip;
-    const d = ampBase * faceWeight(p) * clumpAmp * (shape - 0.35);
+    const nap = ppu > 60 ? shape * (0.3 + 0.38 * hash(seed, clump, 8)) - 0.65 : shape - 0.35;
+    const d = ampBase * faceWeight(p) * clumpAmp * nap;
     out.push([p[0] + nx * d, p[1] + ny * d]);
   }
   return out;
@@ -1185,6 +1189,13 @@ export const drawSparrow = (
   const L = normalize(view.lighting.direction);
   const threshold = view.lighting.threshold ?? 0.06;
   const ppu = view.ppu;
+  const near = ppu > 60;
+  const featherBreak = (p: V3) => {
+    if (!near) return 0;
+    const along = p[0] * 6 + p[2] * 3;
+    const across = p[1] * 24 + p[2] * 18 - p[0] * 11;
+    return 0.06 * Math.sin(along + 1.6 * Math.sin(across)) + 0.024 * Math.sin(2.2 * across + along);
+  };
   const cell = Math.min(6, Math.max(1.3, ppu * 0.048));
   const spacing = Math.max(1.3, Math.min(3.2, ppu * 0.022));
   const drawingSeed = Math.floor(hash(seed, view.drawing) * 1e6);
@@ -1221,7 +1232,7 @@ export const drawSparrow = (
     field(s, (p, n) => {
       const d = n[0] * L[0] + n[1] * L[1] + n[2] * L[2];
       const wave = (noise1(p[0] * 2.3 + p[2] * 1.7, seed + 7) - 0.5) * 0.16;
-      return d - threshold - bias + wave;
+      return d - threshold - bias + wave + featherBreak(p) * 0.65;
     });
   const rimMode = view.lighting.rim?.mode ?? "back";
   const rimField = (s: Sampled) =>
@@ -1315,14 +1326,14 @@ export const drawSparrow = (
       const q = headLocal(p);
       const sphereGate = Math.hypot(q[0] / 0.88, q[1] / 0.84, q[2] / 0.82) - 1;
       const neck = r.headness(p) * 3 - headBias;
-      return neck + r.ruffle * Math.min(0, sphereGate * 2.2 - neck);
+      return neck + r.ruffle * Math.min(0, sphereGate * 2.2 - neck) + featherBreak(q) * 2;
     };
     const headF = field(sBody, (p) => headMask(p));
     const gate = (p: V3, m: number) => Math.max(m, headMask(p) - 0.06);
     const cap = field(sBody, (p) => {
       const q = headLocal(p);
       const zb = 0.05 + 0.13 * (q[0] / 0.72) + 0.03 * Math.sin(q[1] * 9);
-      return gate(p, zb - q[2]);
+      return gate(p, zb - q[2] + featherBreak(q) * 0.65);
     });
     const spot = field(sBody, (p) => {
       const q = headLocal(p);
@@ -1332,7 +1343,7 @@ export const drawSparrow = (
       const d =
         Math.hypot(q[0] - c[0], (q[1] - c[1]) * 0.35, (q[2] - c[2]) * 0.95) -
         0.172;
-      return Math.max(d, 0.34 - Math.abs(q[1]));
+      return Math.max(d + featherBreak(q) * 0.16, 0.34 - Math.abs(q[1]));
     });
     const bib = field(sBody, (p) => {
       const q = headLocal(p);
@@ -1356,7 +1367,7 @@ export const drawSparrow = (
       const n = normalize(sub(b, [0, 0, -0.05]));
       const m =
         0.12 - (n[2] - 0.62 * n[0]) + 0.04 * Math.sin(b[1] * 7 + b[0] * 3);
-      return Math.max(m, -headMask(p));
+      return Math.max(m + featherBreak(b), -headMask(p));
     });
     const streakCenters: [V3, V3][] = [
       [
@@ -1464,6 +1475,33 @@ export const drawSparrow = (
         ctx.save();
         tracePath(ctx, tufted);
         ctx.clip("evenodd");
+
+        if (near) {
+          for (let k = 0; k < 380; k++) {
+            const angle = hash(180, k, 1) * 2 * Math.PI;
+            const h = 2 * hash(180, k, 2) - 1;
+            const ring = Math.sqrt(1 - h * h);
+            const local: V3 = [0.22 + 0.98 * ring * Math.cos(angle) * r.scaleBody,
+              0.91 * ring * Math.sin(angle) * r.scaleBody, -0.02 + h * 0.96 * r.scaleBody];
+            const point = r.fromBody(local);
+            const normal = normalize(sub(point, r.fromBody([0.22, 0, -0.02])));
+            const n = toView(basis, normal);
+            if (n[2] > -0.06 || r.headness(point) < 0.06) continue;
+            const p = screen(point);
+            const tailward = 0.034 + 0.096 * hash(180, k, 3);
+            const length = tailward * (1 + 0.4 * r.sleekWet);
+            const tip = screen(r.fromBody([local[0] - length * (0.7 + h * 0.35), local[1], local[2] - length * (0.78 - h * 0.6)]));
+            const width = ppu * (0.004 + 0.014 * hash(180, k, 4));
+            const tone = local[2] - 0.62 * local[0] > 0.12 ? activePalette.mantle : activePalette.belly;
+            ctx.save();
+            ctx.globalAlpha *= 0.14 + hash(180, k, 5) * 0.22;
+            ctx.fillStyle = dot(n, L) > threshold ? tone.shade : tone.lit;
+            ctx.beginPath();ctx.moveTo(...p);
+            ctx.quadraticCurveTo(tip[0] + width, tip[1] - width, tip[0], tip[1]);
+            ctx.quadraticCurveTo(tip[0] - width, tip[1] - width, p[0], p[1]);ctx.fill();
+            ctx.restore();
+          }
+        }
 
         if (r.sleekWet > 0) {
           ctx.save();
@@ -1755,57 +1793,25 @@ export const drawSparrow = (
           ctx.save();
           if (openRaw > 0.12) {
             if (open < 0.78) {
-              const lidLevel = 1 - (1 - open) * 1.18;
-              ellipseOnSurface(ctx, b, fwdS, upS, () => {
+              const radiusX = Math.hypot(...fwdS);
+              const radiusY = Math.hypot(...upS);
+              const lidAxis: Point = [Math.sign(fwdS[0]) * radiusX, fwdS[1] * 0.14];
+              const lidUp: Point = [0, -radiusY];
+              ellipseOnSurface(ctx, b, lidAxis, lidUp, () => {
                 ctx.beginPath();
-                ctx.moveTo(-1.3, -1.3);
-                ctx.lineTo(1.3, -1.3);
-                ctx.lineTo(1.3, lidLevel);
-                ctx.quadraticCurveTo(0, lidLevel - 0.14, -1.3, lidLevel);
+                ctx.moveTo(-1, 0);
+                ctx.bezierCurveTo(-0.56, 0.24, 0.52, 0.28, 1, 0.06);
+                ctx.bezierCurveTo(0.6, -open * 1.48, -0.5, -open * 1.6, -1, 0);
                 ctx.closePath();
-                ctx.clip();
-                ctx.beginPath();
-                ctx.arc(0, 0, 1, 0, Math.PI * 2);
                 ctx.fillStyle = sparrowCommon.eye;
                 ctx.fill();
-              });
-              const glintStrength =
-                pose.glint !== undefined
-                  ? clamp01(pose.glint)
-                  : 0.7 + 0.3 * clamp01(pose.sparkle);
-              if (glintStrength > 0.08) {
-                const upLen = Math.hypot(upS[0], upS[1]);
-                const fwdLen = Math.hypot(fwdS[0], fwdS[1]);
-                const gx = b[0] + light2d[0] * fwdLen * 0.24;
-                const gy = b[1] + upLen * 0.28;
-                const gr = Math.max(
-                  1,
-                  upLen * (0.13 + 0.13 * glintStrength) * Math.min(1, facing * 1.4),
-                );
-                ctx.fillStyle = sparrowCommon.glint;
+                ctx.clip();
+                ctx.globalAlpha *= pose.glint ?? 0.52;
                 ctx.beginPath();
-                ctx.arc(gx, gy, gr, 0, Math.PI * 2);
+                ctx.ellipse(0.28, -0.02, 0.16, 0.1, 0, 0, Math.PI * 2);
+                ctx.fillStyle = sparrowCommon.glint;
                 ctx.fill();
-              }
-              const lidPts = Array.from({ length: 9 }, (_, k): Point => {
-                const t = (k / 8) * 2 - 1;
-                const sag = (1 - t * t) * 0.12;
-                const ly = lidLevel - sag;
-                return [
-                  b[0] + fwdS[0] * t * 1.18 + upS[0] * ly,
-                  b[1] + fwdS[1] * t * 1.18 + upS[1] * ly,
-                ];
               });
-              drawStrokes(
-                ctx,
-                strokes(lidPts, false, {
-                  ...style(91, lineBase * 1.15),
-                  breakEvery: [1e4, 1e4],
-                  dropLit: 0,
-                  minLength: 4,
-                }),
-                ink.color,
-              );
             } else {
               ellipseOnSurface(ctx, b, fwdS, upS, () => {
                 ctx.beginPath();
@@ -1876,12 +1882,13 @@ export const drawSparrow = (
             }
           } else {
             const curve = pose.eyeClosedCurve;
+            const relaxed = near && pose.wet < 1 && pose.crouch < 0.2;
             const pts = Array.from({ length: 9 }, (_, k): Point => {
               const t = k / 8 - 0.5;
               const bend = (1 - 4 * t * t) * curve * 0.45;
               return [
                 b[0] + fwdS[0] * t * 2.5 + upS[0] * bend,
-                b[1] + fwdS[1] * t * 2.5 + upS[1] * bend,
+                b[1] + fwdS[1] * t * (relaxed ? 0.32 : 2.5) + upS[1] * bend,
               ];
             });
             const thick = Math.hypot(upS[0], upS[1]) * 0.6;
@@ -2092,6 +2099,35 @@ export const drawSparrow = (
         4 + (side > 0 ? 0 : 1),
         (s) => {
           const wingLocal = (p: V3) => r.wingFrame(side, r.toBody(p));
+          if (!r.spreadWing && near) {
+            const regions: CelPart["regions"] = [];
+            const feather = (x: number, z: number, length: number, width: number, fall: number, color: Tone, edge: number) => {
+              const vane = (inset: number) => Array.from({ length: 32 }, (_, k) => {
+                const angle = (k / 32) * Math.PI * 2;
+                const t = (1 - Math.cos(angle)) / 2;
+                const breadth = Math.sin(angle) * width * (0.45 + 0.8 * t);
+                const at = t * (1 - inset * (0.6 + 0.45 * Math.sin(angle)));
+                return screen(r.fromBody(r.wingToBody(side, [
+                  x - length * at, side * 0.12,
+                  z - fall * at + 0.04 * Math.sin(at * Math.PI) + breadth * (1 - inset),
+                ])));
+              });
+              regions.push({ loops: [vane(0)], tone: T({
+                lit: mixHex(color.lit, activePalette.wingBar.lit, edge),
+                shade: mixHex(color.shade, activePalette.wingBar.shade, edge),
+              }) }, { loops: [vane(0.055)], tone: T(color) });
+            };
+            for (let k = 0; k < 6; k++) {
+              feather(0.32 - k * 0.058, -0.28 + k * 0.12, 1.34 + k * 0.038, 0.115, 0.08 + k * 0.055, activePalette.streak, 0.38);
+            }
+            for (let k = 0; k < 6; k++) {
+              feather(0.78 - k * 0.032, -0.14 + k * 0.1, 0.83 + k * 0.056 + 0.095 * hash(180,k), 0.11 + 0.03 * hash(k,4), 0.16 + k * 0.028, activePalette.mantle, 0.34);
+            }
+            for (let k = 0; k < 4; k++) {
+              feather(0.8 - k * 0.07, 0.14 + k * 0.078, 0.48 + k * 0.06, 0.12, 0.14, activePalette.crown, 0.21);
+            }
+            return regions;
+          }
           if (!r.spreadWing) {
             const bar = (v0: number, u0: number, u1: number) =>
               field(s, (p) => {
@@ -2174,7 +2210,7 @@ export const drawSparrow = (
               basis,
               sub(r.fromBody([0, side, 0]), r.fromBody([0, 0, 0])),
             )[2];
-            if (sideFacing > -0.2) return [];
+            if (sideFacing > -0.2 || near) return [];
             for (let f = 0; f < 4; f++) {
               const pts: Point[] = [];
               const v0 = -0.5 + f * 0.22;
