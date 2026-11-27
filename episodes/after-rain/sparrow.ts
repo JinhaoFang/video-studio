@@ -1178,6 +1178,53 @@ const tintTone = (base: Tone, l: Lighting): Tone => ({
     : base.shade,
 });
 
+export const drawApproachingBody = (ctx: CanvasRenderingContext2D, view: SparrowView, pose: Pose) => {
+  const p = resolvePalette(view.lighting, pose.wet);
+  const shape = (path: string, color: string) => {
+    ctx.fillStyle = color;
+    ctx.fill(new Path2D(path));
+  };
+  ctx.save();
+  ctx.translate(view.x, view.y);
+  ctx.rotate((view.roll ?? 0) - 0.04 * pose.wingFlap);
+  const bodyScale = view.ppu / 66;
+  ctx.scale(bodyScale, bodyScale);
+  shape("M-37,-10 Q-66,15 -89,51 Q-78,55 -58,40 L-65,52 Q-32,40 -17,17 Z", p.streak.shade);
+  shape("M-41,-24 C-78,-6 -78,33 -51,46 C-32,56 -7,42 11,30 C38,17 57,-12 56,-48 C47,-83 -10,-74 -41,-24Z", p.mantle.shade);
+  const breast = new Path2D("M-36,-53 C-61,-35 -66,-5 -61,16 Q-65,21 -60,27 Q-57,25 -55,26 C-46,49 -17,49 6,36 Q27,26 39,9 Q49,1 53,-13 L51,-11 C65,-38 55,-60 37,-72Z");
+  ctx.fillStyle = p.belly.shade;
+  ctx.fill(breast);
+  ctx.save();
+  ctx.clip(breast);
+  shape("M-59,-63 Q-70,-26 -58,-17 L-55,-22 Q-48,-8 -44,-11 Q-45,3 -38,4 L-39,-1 Q-26,21 -5,22 L-9,19 Q15,29 41,4 L62,-16 80,-80Z", p.belly.lit);
+  for (let i = 0; i < 22; i++) {
+    const x = -48 + hash(i, 180) * 93;
+    const y = -18 + hash(i, 203) * 55;
+    ctx.fillStyle = i % 3 ? p.belly.shade : p.cheek.lit;
+    ctx.globalAlpha = 0.23;
+    ctx.beginPath();
+    ctx.moveTo(x, y);
+    ctx.quadraticCurveTo(x + 1, y + 3.6, x - 4.6, y + 7.4);
+    ctx.quadraticCurveTo(x - 0.5, y + 4, x, y);
+    ctx.fill();
+  }
+  ctx.restore();
+  shape("M-47,-52 C-51,-77 -39,-103 -15,-110 C13,-122 44,-115 57,-96 Q68,-81 61,-64 Q61,-42 41,-30 Q23,-20 3,-26 L7,-23 Q-22,-24 -37,-41 L-36,-36 Q-46,-41 -47,-52Z", p.cheek.shade);
+  shape("M-38,-65 Q-35,-93 -8,-100 Q26,-110 53,-92 Q66,-78 57,-58 Q55,-41 37,-35 Q17,-26 -2,-31 L0,-28 Q-29,-33 -38,-51Z", p.cheek.lit);
+  shape("M-47,-58 C-55,-88 -37,-111 -11,-117 C19,-125 51,-115 59,-96 L62,-84 Q52,-88 45,-88 Q32,-93 19,-88 L22,-91 Q4,-90 -5,-82 Q-18,-82 -26,-70 L-24,-77 Q-40,-67 -44,-52Z", p.crown.lit);
+  shape("M-48,-59 Q-50,-87 -34,-100 Q-43,-81 -29,-84 L-32,-77 Q-21,-85 -10,-82 Q-32,-69 -40,-55 L-44,-49Z", p.crown.shade);
+  shape("M-28,-58 Q-23,-65 -12,-61 Q-5,-56 -10,-47 Q-13,-42 -17,-44 L-20,-42 Q-34,-44 -28,-58Z", p.patch.lit);
+  shape("M19,-54 Q29,-59 44,-58 Q49,-50 40,-41 L36,-35 Q28,-39 23,-45 L24,-41Z", p.patch.shade);
+  shape("M-2,-81 Q6,-90 14,-82 Q18,-74 11,-69 Q2,-65 -4,-73Z", sparrowCommon.eye);
+  shape("M44,-88 Q50,-93 53,-86 Q55,-80 49,-78 Q44,-79 44,-88Z", p.patch.shade);
+  shape("M3,-80 Q4,-84 7,-83 Q10,-81 7,-78 Q4,-76 3,-80Z", sparrowCommon.glint);
+  shape("M20,-73 Q31,-82 41,-79 L59,-68 Q53,-60 37,-55 Q28,-60 20,-73Z", p.beak.shade);
+  shape("M20,-73 Q30,-83 42,-80 Q52,-75 59,-68 L38,-66Z", p.beak.lit);
+  shape("M28,-76 Q35,-80 41,-78 L53,-71 Q40,-76 28,-76Z", mixHex(p.beak.lit, p.wingBar.lit, 0.48));
+  if (view.lighting.rim) shape("M-6,-117 Q27,-129 52,-104 Q23,-124 -6,-117Z", view.lighting.rim.color);
+  ctx.restore();
+};
+
 export const drawSparrow = (
   target: CanvasRenderingContext2D,
   view: SparrowView,

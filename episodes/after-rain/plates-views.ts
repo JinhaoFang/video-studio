@@ -1821,7 +1821,7 @@ const paintLowYard = (plate: ViewPlate, variant: "s4" | "s6"): Paper => {
     const cyP = (yMin + yMax) * 0.5;
     const bankPoly = ptsWater.map(([x, y]) => [cxP + (x - cxP) * 1.07, cyP + (y - cyP) * 1.14] as [number, number]);
     fill(b, bankPoly, mudDeep, 2.8, 0.72);
-    fill(b, ptsWater, skyReflect, 2.2, 0.96);
+    fill(b, ptsWater, isHero ? skyReflect : mixRgb(skyReflect, mudDeep, 0.65), isHero ? 2.2 : 1.0, 0.96);
 
     const cloudRef = mixRgb(skyCool, rgb(dusk.cloud.shadow), 0.34);
     const warmRef = mixRgb(skyWarm, rgb(dusk.cloudGap[1]), 0.45);
@@ -1858,7 +1858,7 @@ const paintLowYard = (plate: ViewPlate, variant: "s4" | "s6"): Paper => {
         } else if (xm > cxP - (xMaxP - xMinP) * 0.08) {
           col = mixRgb(skyReflect, warmRef, Math.min(0.5, ((xm - cxP + (xMaxP - xMinP) * 0.1) / Math.max(1, xMaxP - cxP)) * 0.45));
         }
-        line(b, [[sx0, yy], [sx1, yy + b.r.range(-0.7, 0.7)]], Math.max(2.4, ((yMax - yMin) / rows) * 1.48), jitter(b, col, 0.022), {
+        line(b, [[sx0, yy], [sx1, yy + b.r.range(-0.7, 0.7)]], Math.max(2.4, ((yMax - yMin) / rows) * 1.48), jitter(b, isHero ? col : mixRgb(col, mudDeep, 0.58), 0.022), {
           dry: 0.24,
           body: 0.76,
           alpha: 0.88,
@@ -1881,11 +1881,36 @@ const paintLowYard = (plate: ViewPlate, variant: "s4" | "s6"): Paper => {
         alpha: 0.5,
         taper: [0.35, 0.35],
       });
-      line(b, curve([rx0 + 4, yy], [rx1 - 4, yy + b.r.range(-0.5, 0.5)], 0.008, 4), b.r.range(1.2, 2.2), rgb(warm.dropHighlight), {
+      line(b, curve([rx0 + 4, yy], [rx1 - 4, yy + b.r.range(-0.5, 0.5)], 0.008, 4), b.r.range(1.2, 2.2), isHero ? rgb(warm.dropHighlight) : mixRgb(cloudRef, mudDark, 0.4), {
         dry: 0.36,
         alpha: 0.72,
         taper: [0.35, 0.35],
       });
+    }
+    if (!isHero) {
+      const { width, height, data } = b.c;
+      const tint = rgb(lowYard.shadow);
+      for (let iy = Math.max(0, Math.ceil(b.P(0, yMin)[1])); iy < Math.min(height, b.P(0, yMax)[1]); iy++) {
+        const y = rect.y0 + (iy + 0.5) / b.k;
+        const v = (y - yMin) / (yMax - yMin);
+        const crossings: number[] = [];
+        ptsWater.forEach(([ax, ay], i) => {
+          const [bx, by] = ptsWater[(i + 1) % steps];
+          if ((ay > y) !== (by > y)) crossings.push(ax + (bx - ax) * (y - ay) / (by - ay));
+        });
+        crossings.sort((a, c) => a - c);
+        for (let k = 1; k < crossings.length; k += 2) {
+          const lo = b.P(crossings[k - 1], y)[0];
+          const hi = b.P(crossings[k], y)[0];
+          for (let ix = Math.max(0, Math.ceil(lo)); ix < Math.min(width, hi); ix++) {
+            const sy = b.P(0, hedgeBaseY - 8 - v * (hedgeBaseY - rect.y0 - 24) + 6 * noise1(ix / 52 + v * 9, seedP))[1];
+            const src = 4 * (Math.max(0, Math.min(height - 1, Math.floor(sy))) * width + ix);
+            const dst = 4 * (iy * width + ix);
+            const edge = Math.min(1, v * 14, (1 - v) * 14, (ix - lo) / 4, (hi - ix) / 4);
+            for (let ch = 0; ch < 3; ch++) data[dst + ch] = mudDeep[ch] * (1 - edge) + edge * (data[src + ch] * 0.72 + tint[ch] * 0.28);
+          }
+        }
+      }
     }
   };
 

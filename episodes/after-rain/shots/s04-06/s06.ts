@@ -192,7 +192,7 @@ const drawS06 = (surface: Surface, frame: number) => {
     { frame: 41, x: puddleW1.x + 0.2, y: puddleW1.y - 0.05 },
     { frame: 73, x: puddleW1.x - 0.02, y: puddleW1.y + 0.12 },
   ];
-  drawPuddle(ctx, camera, { frame, drawing: drawingIndex, look: S06_PUDDLE_LOOK, ripples });
+  drawPuddle(ctx, camera, { frame, id: "low-s6", image: viewImage(surface, "low-s6"), look: S06_PUDDLE_LOOK, ripples });
 
   drawPersonShadow(ctx, camera, pose, origin, S06_WALK_DIR, { color: lowYard.shadow, drawing: drawingIndex, alpha: 0.62 });
 

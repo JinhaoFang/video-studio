@@ -9,7 +9,7 @@
  * 画面要活：麻雀在竹竿上的影子按太阳方向画（脚下最暗、往后渐淡），每下扑腾甩出水珠、有的落到竹竿上碎开，下扑加干笔速度线，蹬竿那一帧画拖影。
  * 待定事项：无。
  */
-import { project } from "../../../../src/kit/engine/camera.ts";
+import { layer, project } from "../../../../src/kit/engine/camera.ts";
 import type { Camera, Vec3 } from "../../../../src/kit/engine/camera.ts";
 import type { Point } from "../../../../src/kit/engine/figure.ts";
 import { boil, drawStrokes, strokes } from "../../../../src/kit/engine/ink.ts";
@@ -17,10 +17,10 @@ import { hash, rng } from "../../../../src/kit/engine/random.ts";
 import { clamp01, drawing, ease, mix, progress } from "../../../../src/kit/engine/timing.ts";
 import type { Shot } from "../../../../src/kit/shots.ts";
 import { drawPole, poleScreen } from "../../pole.ts";
-import { perchT, pole, poleAt, shotCameras, sun } from "../../scene.ts";
+import { perchT, pole, poleAt, shotCameras, sun, viewPlates } from "../../scene.ts";
 import { drawSparrow, restPose, sparrowLight, sparrowPoses } from "../../sparrow.ts";
 import type { Pose } from "../../sparrow.ts";
-import { drawViewPlate, placeSparrow, viewImage } from "../../stage.ts";
+import { placeSparrow, viewImage } from "../../stage.ts";
 import type { Surface } from "../../stage.ts";
 import { closeup, dusk, ink, warm } from "../../tokens.ts";
 import { overshoot, travel } from "./camera.ts";
@@ -557,6 +557,34 @@ const drawSpeedLines = (ctx: CanvasRenderingContext2D, x: number, y: number, ppu
   ctx.restore();
 };
 
+const skyPlate = viewPlates.find(p => p.id === "closeup-s5")!;
+const drawMovingSky = (ctx: CanvasRenderingContext2D, camera: Camera, image: HTMLImageElement, frame: number) => {
+  const t = layer(skyPlate.reference, camera, skyPlate.distance);
+  const drift = -frame * camera.width * 0.003 / 24;
+  ctx.save();
+  ctx.translate(t.dx, t.dy);
+  ctx.scale(t.scale, t.scale);
+  ctx.translate(skyPlate.rect.x0, skyPlate.rect.y0);
+  const h = image.height / skyPlate.k;
+  const w = image.width / skyPlate.k;
+  const strips = 32;
+  for (let i = 0; i < strips; i++) {
+    const y = i / strips;
+    const shift = drift * clamp01((0.83 - y) / 0.12);
+    ctx.drawImage(image, 0, y * image.height, image.width, image.height / strips + 1, shift, y * h, w, h / strips + 1 / skyPlate.k);
+  }
+  for (const [x, y, radius] of [[0.69, 0.31, 0.062], [0.66, 0.39, 0.033], [0.72, 0.28, 0.026]]) {
+    const cx = x * w + drift, cy = y * h;
+    const glow = ctx.createRadialGradient(cx, cy, 0, cx, cy, radius * h);
+    glow.addColorStop(0, hexRgba(warm.bokeh[0], 0.17));
+    glow.addColorStop(0.65, hexRgba(warm.bokeh[0], 0.095));
+    glow.addColorStop(1, hexRgba(warm.bokeh[0], 0));
+    ctx.fillStyle = glow;
+    ctx.fillRect(cx - radius * h, cy - radius * h, radius * h * 2, radius * h * 2);
+  }
+  ctx.restore();
+};
+
 const drawS05 = (surface: Surface, frame: number) => {
   const ctx = surface.context;
   const camera = s05CameraAt(frame);
@@ -566,7 +594,7 @@ const drawS05 = (surface: Surface, frame: number) => {
 
   ctx.fillStyle = closeup.s5.skyWarm;
   ctx.fillRect(0, 0, camera.width, camera.height);
-  drawViewPlate(ctx, viewImage(surface, "closeup-s5"), "closeup-s5", camera);
+  drawMovingSky(ctx, camera, viewImage(surface, "closeup-s5"), frame);
 
   drawPole(ctx, camera, { state: "dusk", drawing: state.drawing, bend: bendFn, drops: 0 });
   drawPoleDrops(ctx, camera, frame, (f) => s05PoleBend(f) ?? (() => 0));

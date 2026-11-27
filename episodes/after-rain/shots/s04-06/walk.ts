@@ -141,7 +141,6 @@ export const drawPersonShadow = (
   const left = legFrame(pose, 1);
   const right = legFrame(pose, -1);
   const pelvis: V3 = [pose.pelvisX, pose.pelvisY, HIP_Z + pose.pelvisZ];
-  const waistPoint: V3 = [pelvis[0] + 0.02, pelvis[1], 1.02 + pose.pelvisZ];
   const shoulder: V3 = [pelvis[0] + 0.035, pelvis[1] * 0.6, 1.38 + pose.pelvisZ * 0.3];
   const head: V3 = [pelvis[0] + 0.02, pelvis[1] * 0.4, 1.66];
   const basket = basketCenterLocal(pose);
@@ -151,6 +150,8 @@ export const drawPersonShadow = (
     return [w[0] - sun[0] * t, w[1] - sun[1] * t, 0];
   };
   const segments: [V3, V3, number][] = [
+    [left.toe, left.heel, 0.046],
+    [right.toe, right.heel, 0.046],
     [left.heel, left.knee, 0.062],
     [left.knee, left.hip, 0.088],
     [right.heel, right.knee, 0.062],
@@ -187,14 +188,14 @@ export const drawPersonShadow = (
     const cut: Vec3 = [a[0] + (b[0] - a[0]) * t, a[1] + (b[1] - a[1]) * t, 0];
     return da < NEAR ? [cut, b] : [a, cut];
   };
-  const addCapsule = (path: Path2D, a0: Vec3, b0: Vec3, halfWidth: number, grow: number) => {
+  const addCapsule = (path: Path2D, a0: Vec3, b0: Vec3, halfWidth: number, growA: number, growB: number) => {
     const clipped = clipNear(a0, b0);
     if (!clipped) return;
     const [a, b] = clipped;
     const sa = screen(a);
     const sb = screen(b);
-    const wa = Math.min(900, (halfWidth + grow) * scaleAt(a));
-    const wb = Math.min(900, (halfWidth + grow) * scaleAt(b));
+    const wa = Math.min(900, (halfWidth + growA) * scaleAt(a));
+    const wb = Math.min(900, (halfWidth + growB) * scaleAt(b));
     const nearPush = Math.max(wa, wb) * 1.2;
     if (depthOf(a) < NEAR * 4) sa[1] += nearPush;
     if (depthOf(b) < NEAR * 4) sb[1] += nearPush;
@@ -212,9 +213,9 @@ export const drawPersonShadow = (
     };
     const angA = Math.atan2(ny, nx);
     pts.push([sa[0] + nx * wa, sa[1] + ny * wa], [sb[0] + nx * wb, sb[1] + ny * wb]);
-    cap(sb, angA, wb, 1);
+    cap(sb, angA, wb, -1);
     pts.push([sa[0] - nx * wa, sa[1] - ny * wa]);
-    cap(sa, angA + Math.PI, wa, 1);
+    cap(sa, angA + Math.PI, wa, -1);
     trace(path, wob(pts, Math.round(halfWidth * 1000)));
   };
   const addDisc = (path: Path2D, c: Vec3, radius: number, grow: number) => {
@@ -229,26 +230,24 @@ export const drawPersonShadow = (
     trace(path, wob(pts, 77));
   };
 
-  const penumbra = new Path2D();
-  const core = new Path2D();
-  for (const [a, b, w] of segments) {
-    addCapsule(penumbra, ground(a), ground(b), w, 0.07);
-    addCapsule(core, ground(a), ground(b), w, 0.012);
-  }
-  addDisc(penumbra, ground(basket), 0.13, 0.07);
-  addDisc(core, ground(basket), 0.13, 0.012);
   ctx.save();
-  ctx.fillStyle = hexRgba(color, alpha * 0.07 * strength);
-  ctx.fill(penumbra, "nonzero");
-  const feet = screen(ground([(left.ankle[0] + right.ankle[0]) / 2, (left.ankle[1] + right.ankle[1]) / 2, 0]));
-  const farPoint = ground(head);
-  const far = depthOf(farPoint) < NEAR ? screen(ground(waistPoint)) : screen(farPoint);
-  const grad = ctx.createLinearGradient(feet[0], feet[1], far[0], far[1]);
-  grad.addColorStop(0, hexRgba(color, alpha * strength));
-  grad.addColorStop(0.4, hexRgba(color, alpha * 0.82 * strength));
-  grad.addColorStop(1, hexRgba(color, alpha * 0.42 * strength));
+  const feet = screen(toWorld([pelvis[0], pelvis[1], 0], origin, azimuth));
+  const distal = screen(ground([pelvis[0], pelvis[1], 0.22]));
+  const grad = ctx.createLinearGradient(feet[0], feet[1], feet[0] + 4 * (distal[0] - feet[0]), feet[1] + 4 * (distal[1] - feet[1]));
+  grad.addColorStop(0, hexRgba(color, 0.88));
+  grad.addColorStop(1, hexRgba(color, 0.18));
   ctx.fillStyle = grad;
-  ctx.fill(core, "nonzero");
+  for (let band = 11; band >= 0; band--) {
+    const blur = (band / 11 - 0.38) * 0.24;
+    const silhouette = new Path2D();
+    for (const [a, b, width] of segments) {
+      addCapsule(silhouette, ground(a), ground(b), width, blur * Math.max(0, a[2]), blur * Math.max(0, b[2]));
+    }
+    addDisc(silhouette, ground(basket), 0.13, blur * basket[2]);
+    ctx.globalAlpha = alpha * strength / 9;
+    ctx.fill(silhouette);
+  }
+  ctx.globalAlpha = 1;
 
   for (const leg of [left, right]) {
     if (!leg.onGround || depthOf(ground(leg.ankle)) < NEAR) continue;

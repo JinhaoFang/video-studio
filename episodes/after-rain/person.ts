@@ -1505,22 +1505,18 @@ export const drawDistantPerson = (target: CanvasRenderingContext2D, view: Distan
   const h = Math.max(10, view.heightPx);
   const d = drawing(frame, 2);
   const stepFrame = ((d.frame % 32) + 32) % 32;
-  const poseIdx = Math.floor((stepFrame % 16) / 4);
   const swap = stepFrame >= 16 ? -1 : 1;
   const seed = view.seed ?? 181;
   const boilPx = Math.min(0.4, h * 0.013);
-  const bSeed = jitterSeed(seed, d.index);
+  const bSeed = jitterSeed(seed, 0);
 
-  const bobTable = [0, 0.048, -0.012, -0.042];
-  const strideTable = [0.22, 0.16, 0.03, 0.14];
-  const liftTable = [0.01, 0.01, 0.075, 0.06];
-  const basketLagTable = [0.06, 0.15, 0.09, -0.05];
-
-  const bob = bobTable[poseIdx] * h;
-  const stride = strideTable[poseIdx] * h * swap;
-  const backLift = liftTable[poseIdx] * h;
-  const basketSwing = basketLagTable[poseIdx] * swap;
-  const lean = 0.055 * h * dir;
+  const phase = (stepFrame % 16) / 16;
+  const stride = h * 0.2 * Math.cos(phase * Math.PI) * swap;
+  const bob = h * (0.014 * Math.sin(phase * Math.PI * 2) - 0.008 * Math.cos(phase * Math.PI * 2));
+  const backLift = Math.max(0, Math.sin(phase * Math.PI)) ** 2 * h * 0.105;
+  const armSwing = 0.1 * Math.cos((stepFrame - 2) * Math.PI / 16);
+  const basketSwing = 0.10 * Math.cos((stepFrame - 5) * Math.PI / 16);
+  const lean = (0.034 + armSwing * 0.08) * h * dir;
 
   const palette = view.light ? personPalettes[view.light] : undefined;
   const bodyColor = palette ? palette.trousers.shade : distantPersonColors.silhouette;
@@ -1533,11 +1529,15 @@ export const drawDistantPerson = (target: CanvasRenderingContext2D, view: Distan
   const layer = createLayer(view.x - pad, view.y - h - pad * 0.4, pad * 2, h + pad * 0.8, ink.supersample);
   const ctx = layer.ctx;
 
-  const pt = (nx: number, ny: number): Point => [view.x + nx * h * dir, view.y - ny * h + bob];
   const poly = (pts: Point[], color: string, k: number) => {
     const b = boil(pts, bSeed + k * 13, boilPx);
     ctx.beginPath();
-    b.forEach((p, i) => (i === 0 ? ctx.moveTo(p[0], p[1]) : ctx.lineTo(p[0], p[1])));
+    const last = b[b.length - 1];
+    ctx.moveTo((last[0] + b[0][0]) / 2, (last[1] + b[0][1]) / 2);
+    b.forEach(([x, y], i) => {
+      const next = b[(i + 1) % b.length];
+      ctx.quadraticCurveTo(x, y, (x + next[0]) / 2, (y + next[1]) / 2);
+    });
     ctx.closePath();
     ctx.fillStyle = color;
     ctx.fill();
@@ -1549,7 +1549,7 @@ export const drawDistantPerson = (target: CanvasRenderingContext2D, view: Distan
     const sign = front ? 1 : -1;
     const isForwardFoot = sign * swap > 0;
     const fx = view.x + (sign * stride + 0.02 * h) * dir;
-    const fy = view.y - (front ? 0 : backLift);
+    const fy = view.y - (sign * swap < 0 ? backLift : 0);
     const kneeX = mix(view.x + hipX, fx, 0.5) + (front ? 0.045 : 0.025) * h * dir;
     const kneeY = mix(hipY, fy, 0.48) - (front ? 0.01 : 0.03) * h;
     const wTop = Math.max(1.4, h * 0.092);
@@ -1601,14 +1601,14 @@ export const drawDistantPerson = (target: CanvasRenderingContext2D, view: Distan
     2,
   );
 
-  const handX = view.x + (0.145 + basketSwing * 0.42) * h * dir + lean * 0.5;
+  const handX = view.x + (0.16 + armSwing) * h * dir + lean * 0.5;
   const handY = view.y - 0.55 * h + bob;
   ctx.strokeStyle = bodyColor;
   ctx.lineWidth = Math.max(1.1, h * 0.065);
   ctx.lineCap = "round";
   ctx.beginPath();
   ctx.moveTo(view.x + 0.055 * h * dir + lean, view.y - 0.75 * h + bob);
-  ctx.lineTo(handX, handY);
+  ctx.quadraticCurveTo(handX - 0.065 * h * dir, handY - h * 0.10, handX, handY);
   ctx.stroke();
 
   const bCenterX = handX + basketSwing * 0.55 * h * dir;
@@ -1630,33 +1630,39 @@ export const drawDistantPerson = (target: CanvasRenderingContext2D, view: Distan
   ctx.arc(bCenterX, bTopY, 0.072 * h, Math.PI, 0);
   ctx.stroke();
 
-  poly(
-    [
-      pt(-0.26, 0.84),
-      pt(0.03, 0.99),
-      pt(0.29, 0.84),
-      pt(0.02, 0.81),
-    ],
-    hatColor,
-    4,
-  );
-
-  if (rimAlpha > 0.05) {
-    ctx.save();
-    ctx.globalAlpha = rimAlpha;
-    ctx.strokeStyle = rimColor;
-    ctx.lineWidth = Math.max(1, h * 0.042);
-    ctx.lineCap = "round";
-    ctx.beginPath();
-    const hatApex = pt(0.03, 0.99);
-    const hatFront = pt(0.29, 0.84);
-    ctx.moveTo(hatApex[0], hatApex[1]);
-    ctx.lineTo(hatFront[0], hatFront[1]);
-    ctx.moveTo(bCenterX + dir * 0.102 * h, bTopY);
-    ctx.lineTo(bCenterX + dir * 0.075 * h, bBotY);
-    ctx.stroke();
-    ctx.restore();
-  }
-
+  const crownX = view.x + lean + h * armSwing * 0.06;
+  const brimY = view.y - 0.88 * h + bob;
+  ctx.save();
+  ctx.translate(crownX, brimY);
+  ctx.scale(dir * h, h);
+  ctx.rotate(-0.06 + armSwing * 0.12);
+  ctx.beginPath();
+  ctx.moveTo(-0.068, -0.035);
+  ctx.bezierCurveTo(-0.091, 0.055, -0.05, 0.11, 0.045, 0.108);
+  ctx.quadraticCurveTo(0.095, 0.072, 0.074, -0.024);
+  ctx.fillStyle = bodyColor;
+  ctx.fill();
+  ctx.beginPath();
+  ctx.moveTo(-0.202, 0.018);
+  ctx.bezierCurveTo(-0.15, -0.018, -0.062, -0.097, -0.017, -0.115);
+  ctx.quadraticCurveTo(0.015, -0.125, 0.08, -0.064);
+  ctx.quadraticCurveTo(0.161, -0.019, 0.213, 0.008);
+  ctx.bezierCurveTo(0.137, 0.046, -0.135, 0.061, -0.202, 0.018);
+  ctx.fillStyle = hatColor;
+  ctx.fill();
+  ctx.beginPath();
+  ctx.moveTo(-0.19, 0.02);
+  ctx.quadraticCurveTo(0.02, 0.013, 0.205, 0.008);
+  ctx.quadraticCurveTo(0.012, 0.082, -0.19, 0.02);
+  ctx.fillStyle = bodyColor;
+  ctx.fill();
+  ctx.strokeStyle = rimColor;
+  ctx.globalAlpha = rimAlpha * 0.78;
+  ctx.lineWidth = 0.012;
+  ctx.beginPath();
+  ctx.moveTo(0.002, -0.112);
+  ctx.quadraticCurveTo(0.098, -0.05, 0.186, -0.001);
+  ctx.stroke();
+  ctx.restore();
   placeLayer(target, layer);
 };

@@ -135,25 +135,32 @@ export const drawRunoff = (
   ctx.scale(t.scale, t.scale);
   ctx.lineCap = "round";
   const sky = rain.cloud.edge;
+  const gust = 0.04 + 0.16 * noise1(frame / 54, 187);
   gutters.forEach((g, i) => {
-    const pulse = noise1(frame / 12 + i * 4.1, 187);
-    const length = (0.025 + 0.36 * pulse ** 2) * g.scale;
-    const drift = length * 0.05;
+    const channel = hash(187, i, 5);
+    const flow = i === 23 || i === 42 ? 1.6 : 0.06 + 0.85 * channel ** 2;
+    const period = 12 + Math.floor(hash(187, i, 1) * 23);
+    const pulseAt = (f: number) => noise1(f / (8 + period / 2) + i * 4.1, 187);
+    const reachAt = (f: number) => flow * g.scale * (0.04 + 0.36 * pulseAt(f) ** 2);
+    const pulse = pulseAt(frame);
+    const length = reachAt(frame);
+    const drift = length * gust;
     ctx.strokeStyle = sky;
-    ctx.globalAlpha = 0.22 + 0.2 * pulse;
-    ctx.lineWidth = 0.8 + 1.4 * pulse;
+    ctx.globalAlpha = (0.22 + 0.2 * pulse) * Math.min(1, 0.3 + flow);
+    ctx.lineWidth = 0.7 + flow * (1.4 + pulse);
     ctx.beginPath();
     ctx.moveTo(g.x, g.y);
     ctx.quadraticCurveTo(g.x, g.y + length * 0.65, g.x + drift, g.y + length);
     ctx.stroke();
-    const age = (frame + i * 9) % (9 + Math.floor(hash(187, i, 1) * 13));
+    const age = (frame + i * 9) % period;
+    const release = frame - age;
+    const neck = reachAt(release);
     const fall = 4.9 * (age / 24) ** 2 * g.scale;
+    const landingX = g.x + neck * (0.04 + 0.16 * noise1(release / 54, 187)) + fall * (gust + 0.03 * (channel - 0.5));
+    ctx.lineWidth *= 0.76;
     ctx.beginPath();
-    ctx.moveTo(g.x + drift + fall * 0.055, g.y + length + fall);
-    ctx.lineTo(
-      g.x + drift + fall * 0.055 + 0.4,
-      g.y + length + fall + age * 0.65,
-    );
+    ctx.moveTo(landingX, g.y + neck + fall);
+    ctx.lineTo(landingX + gust * age * 0.55, g.y + neck + fall + age * 0.55);
     ctx.stroke();
   });
   pools.forEach(({ c, rx, ry }, p) => {

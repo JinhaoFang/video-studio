@@ -15,7 +15,7 @@ import { drawDistantPerson, placeDistantPerson } from "../../person.ts";
 import { drawPole, poleScreen } from "../../pole.ts";
 import { perchT, sunLow, viewPlates } from "../../scene.ts";
 import type { ViewPlate } from "../../scene.ts";
-import { drawSparrow, sparrowLight } from "../../sparrow.ts";
+import { drawApproachingBody, drawSparrow, sparrowLight } from "../../sparrow.ts";
 import type { SparrowView } from "../../sparrow.ts";
 import { drawViewPlate, viewImage } from "../../stage.ts";
 import type { Surface } from "../../stage.ts";
@@ -57,7 +57,7 @@ import {
   s11HeroState,
   s11Timing,
 } from "./timing.ts";
-import { drawWingPass } from "./wing-pass.ts";
+import { drawFlightWing, drawWingPass } from "./wing-pass.ts";
 
 const deg = (value: number) => (value * Math.PI) / 180;
 
@@ -86,7 +86,17 @@ const drawS10Sparrow = (ctx: CanvasRenderingContext2D, camera: Camera, frame: nu
     drawing: s10Drawing(frame),
     seed: 18510,
   };
-  drawSparrow(ctx, view, s10Pose(frame));
+  const pose = s10Pose(frame);
+  if (frame <= S10_TAKEOFF) {
+    drawSparrow(ctx, view, pose);
+    return;
+  }
+  const step = frame - S10_WING_START;
+  const bank = Math.min(1, (frame - S10_TAKEOFF) / 10);
+  const drawWing = (side: number) => drawFlightWing(ctx, side, p.x, p.y, view.ppu, pose.wingFlap + side * bank * 0.12, pose.wingFold ?? 0, step);
+  drawWing(1);
+  drawWing(-1);
+  drawApproachingBody(ctx, { ...view, roll: bank * 0.12 }, pose);
 };
 
 const drawLaunchSmear = (ctx: CanvasRenderingContext2D, camera: Camera, frame: number) => {
@@ -152,13 +162,13 @@ const drawS10 = (surface: Surface, frame: number) => {
   }
 
   drawDust(ctx, camera, s10CameraAt(0), frame, false);
-  if (frame < S10_WING_START) {
+  if (frame < S10_WING_START + 5) {
     drawS10Sparrow(ctx, camera, frame);
     drawLaunchSmear(ctx, camera, frame);
   }
   drawDust(ctx, camera, s10CameraAt(0), frame, true);
 
-  if (frame >= S10_WING_START) {
+  if (frame >= S10_WING_START + 5) {
     drawWingPass(ctx, frame - S10_WING_START);
   }
 };

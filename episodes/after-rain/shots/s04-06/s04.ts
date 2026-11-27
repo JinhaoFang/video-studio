@@ -151,7 +151,8 @@ const drawS04 = (surface: Surface, frame: number) => {
   }
   const puddleState = {
     frame,
-    drawing,
+    id: "low-s4" as const,
+    image: viewImage(surface, "low-s4"),
     look: S04_PUDDLE_LOOK,
     ripples,
     shatter: stepAge >= 0 ? { frame: S04_PUDDLE_STEP, x: stepSole[0], y: stepSole[1], strength: 1 } : undefined,
