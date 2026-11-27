@@ -34,7 +34,7 @@
   - 格式由 commit-msg 钩子检查（`pnpm install` 时启用，没生效就运行 `node tools/install-hooks.ts`），CI 再查一遍。
 - 只做工单范围内的事。新增依赖在汇报里写明理由，优先选发布超过 7 天的版本。
 - 媒体（配音、音乐、图片、视频素材、渲染结果）不进 git：素材放 `public/episodes/<期>/`，渲染输出放 `out/`，来源和授权记在该期的 `sources.md`。
-- `references/` 是参考资料，只读。
+- `references/` 是参考资料，只读，不进 git。仓库是公开的，进 git 就是公开发布：别人的文字（转写、台本、文案）和授权没定的内容放 `references/` 或本机，仓库里只放自己写的分析和带出处的短引用。
 - 调用外部程序时参数用数组传，不拼 shell 字符串。
 - 一期做完后的复盘与沉淀、改工作室层的 PR 怎么审，按 `docs/workflow/README.md`「复利」。
 - 验证命令：`pnpm verify`，步骤见 `tools/verify.ts`。CI 什么时候跑见 `docs/workflow/README.md`「护栏」。

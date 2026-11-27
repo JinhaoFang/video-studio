@@ -1,7 +1,7 @@
 {
   "verificationCommand": ["pnpm", "verify"],
   "installCommand": ["pnpm", "install", "--frozen-lockfile"],
-  "symlinkDirectories": ["references", ".agents"],
+  "symlinkDirectories": ["references", ".agents", "node_modules/.remotion"],
   "acceptanceRoot": "out/qa",
   "codexSandbox": "danger-full-access",
   "workTypes": {

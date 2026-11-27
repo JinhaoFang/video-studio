@@ -36,6 +36,7 @@
 | 剧组底座 | 一期由剧组来做：编剧、美术、摄影、动作、剪辑、声音六个部门，设计负责人兼任导演和制片；各类片子用同一个剧组，只是各部门的做法不同，每期六个部门都在，用不上的写「不适用」和理由。13 项清单改成按部门排，新增 ⑭ 动作；各部门写明交出什么、交给谁、怎么自查；交接以全片装配为主干，镜头之间看切点表，画面和声音之间看听点表，上游锁定后下游才开工；视频工单写 `部门：`，和工作类型分开；设计负责人只亲手做纸面决定、验收和最后微调，画面的定稿也可以派出去迭代；`docs/video/` 缺的转场、连贯规则、机位图、动作、拟音等知识由纯代码动画正片 spec 补（用户 11-26） | `docs/workflow/README.md`「一期视频」、`docs/adr/0003-crew-base-by-department.md`、`docs/roles/`、`GLOSSARY.md`「剧组」 |
 | 纯代码动画正片 | 《雨后》65 秒、12 个镜头，剧组底座第一次在完整片子上跑通：纸面决定 → 设定和底图 → 全片预演给用户看 → 按段派镜头 → 画面锁定 → 听点表和混音 → 成片和封面；引擎、声音合成、样张工具提进 `src/kit/`，纯代码护栏按 `episodes/pure-code.json` 登记检查，`docs/video/` 补了 90 条带出处的知识（spec #168，PR #205；用户看成片的结论记在 #195） | `episodes/after-rain/README.md`、`docs/reports/spec-168-after-rain.html` |
 | 对外展示 | 《雨后》公开分享，让更多人看到一人剧组能做出什么、也开始自己做：根目录 README 面向第一次来的人，默认显示英文、简体中文版单独一个文件，主要面向美国、台湾、日本和欧洲的观众（用户 11-27 改，原为中文为主）；仓库简介中英双语，写明用 AI agent 和 Claude Opus 做，话题沿用同类项目常用的词；以《雨后》为代表作讲剧组怎么运转、怎么跑起来、怎么做自己的一部；开发命令移到 `docs/development.md`；成片、封面和缩略图发在 GitHub Release，README 引用 Release 里的文件，媒体仍不进 git；只发《雨后》成片，小样视频不发；复刻他人视频的 NASA 朋克开场和内部产品宣传片 ClinMesh 移出仓库，剩下的代码和文档按 MIT（用户 11-27） | `README.md`、`README.zh-CN.md`、`episodes/after-rain/README.md`「GitHub 展示」 |
+| spec #168 复盘 | land 停在「文件不存在」的根因是 `public/` 被列两次，`.gitignore` 改为忽略整个 `public/`；执行者 worktree 链入主工作区的无头浏览器；运镜分三段不对称、跟拍晚半拍、画面停住也要活，雨声分层和 GitHub 渠道补进视频知识；画面锁定前审完最后一批；事件帧由画法的同一份计算推出；仓库公开，别人的文字不进 git；测试接缝外可加测公开行为；流程问题记进 `agent-workflow` 的观察记录（用户 11-27） | `docs/roles/`、`docs/workflow/README.md`「一期视频」、`docs/video/`、`AGENTS.md`、`docs/agents/run-spec.md` |
 
 进行中的工作以 GitHub 上打开的 spec 为准，不写进本文。
 
@@ -58,7 +59,6 @@
 
 - kit 组件要写测试时，测试的运行环境怎么定：现在 `.test.ts` 都按 Node 环境检查和运行，测不了 JSX。
 - kit 复用欠账：中英文加空格（`text-spacing.ts`）和颗粒暗角（`FilmFinish.tsx`）在 NASA 朋克开场和 ClinMesh 两期各写过一份，没有提进 `src/kit/`；两期 11-27 移出仓库后，当前版本里已经没有这两段代码，旧实现见提交 `ffe625a`；以后要不要复用、怎么复用，等下一期真用到时再定。
+- kit 的镜头时间表不支持叠化：`src/kit/shots.ts` 的 `locateShot` 一帧只返回一个镜头，`src/kit/sound/mix.ts` 的 `validateEvents` 拒绝前后镜头重叠的时间表；《雨后》第 11→12 镜的叠化用 `episodes/after-rain/model.ts` 的 `activeShots` 自己绕开（PR #205）。下一期再要叠化时，把这两处提回 kit。
 - 时间轴来源类型：`tools/build-timeline.ts` 只认 `temporary` 和 `elevenlabs`，非 ElevenLabs 的正式配音（如 ClinMesh 的 MiniMax）只能记成 `elevenlabs`。#114 曾加过 `local`，后来按审阅撤回；要不要加，再定。
 - 视频知识的维护：做完一期后由 `/retro` 按这一期的证据更正和补充 `docs/video/`（spec #147 复盘改了日式动画等条目与代码路线冲突的说法，补了静默与环境底噪、视线引导、纯代码合成的声音）；出处里的平台规格页会改版，什么时候复查还没定。
-- `land` 保留被忽略文件时同一个文件列两次，第二次移动报「文件不存在」：spec #168 出现 14 次，每次手动移到保留目录再重跑。根因在 `agent-workflow`；本仓库能先做的是把能按生成清单重建的期媒体（如 `public/episodes/after-rain/`）加进 `docs/agents/run-spec.json` 的 `disposableIgnored`，加不加、按期加还是等上游修，再定。
-- 执行者 worktree 里没有 Remotion 的无头浏览器，spec #168 的镜头工单都借主工作区的路径渲染；派发安装时带上，还是写进工程文档，再定。
