@@ -181,9 +181,9 @@
 - **一句话**：站在一个地方向左或向右转头，依次看到同一空间里的不同部分。
 - **适合**：连接两个人或位置、跟随横向动作、揭示原本在画外的东西；快速摇动会让细节难以辨认。
 - **标志特征**：相机所在位置基本不变，观看方向左右旋转。
-- **关键技法**：水平转动相机；速度和揭示内容会影响观众感到从容还是急迫。24 fps、180° 快门下，RED 给的经验值是摇过一整个画幅宽度不少于约 7 秒，再快画面会一顿一顿地抖；改快门角或帧率会改变这个速度，快门角越大运动模糊越多，可以摇得快一些。
+- **关键技法**：水平转动相机；速度和揭示内容会影响观众感到从容还是急迫。24 fps、180° 快门下，RED 给的经验值是摇过一整个画幅宽度不少于约 7 秒，再快画面会一顿一顿地抖；改快门角或帧率会改变这个速度，快门角越大运动模糊越多，可以摇得快一些。这是起点，不是硬上限：主体贴近相机掠过时的短暂快摇不必照它，在两个主体之间快速甩过去的甩镜不适用这条。《雨后》的验收值是至少 5 秒一个画幅宽度，更快的摇做成带运动模糊的甩镜或切开（[本期动作规则](../../episodes/after-rain/motion.md)「别摇太快」）。
 - **样片**：[耶鲁「PAN」中的《毒品网络》《司汤达综合征》](https://filmanalysis.yale.edu/cinematography/#pan)（片段；原片版权，仅观看）。
-- **出处**：耶鲁大学 Film Analysis，[Pan](https://filmanalysis.yale.edu/cinematography/#pan)：左右旋转直接连接同一空间内的位置，速度有叙事作用。RED，[Panning Speed Best Practices](https://www.reddigitalcinema.com/red-101/camera-panning-speed)：约 7 秒一个画幅宽度的经验值及其前提（2026-11-27 读取）。
+- **出处**：耶鲁大学 Film Analysis，[Pan](https://filmanalysis.yale.edu/cinematography/#pan)：左右旋转直接连接同一空间内的位置，速度有叙事作用。RED，[Panning Speed Best Practices](https://www.reddigitalcinema.com/red-101/camera-panning-speed)：约 7 秒一个画幅宽度的经验值、前提和例外（2026-11-27 读取）。
 
 ### 上下摇镜
 
